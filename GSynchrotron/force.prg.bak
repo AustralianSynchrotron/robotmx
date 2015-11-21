@@ -167,7 +167,7 @@ Function ReadForces(ByRef returnForces() As Double)
 Fend
 ''Setup move until force trigger value
 Function SetupForceTrigger(ByVal forceName As Integer, ByVal threshold As Real)
-	''Print "SetupForceTrigger forceName: " + Str$(forceName) + " threshold: " + Str$(threshold)
+	Print "SetupForceTrigger forceName: " + Str$(forceName) + " threshold: " + Str$(threshold)
     FSClearTrigger()
 
     ''for torque, "less" is "greater". Will be changed if vendor fix this bug

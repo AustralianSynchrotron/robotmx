@@ -1,6 +1,8 @@
 '' SuperPuck/PuckAdaptor Properties
 #define SUPERPUCK_WIDTH 72.0
 #define SUPERPUCK_HEIGHT 137.0
+#define SP_EDGE_THICKNESS 6.0
+#define SP_CENTER_TO_PUCK_CENTER_LENGTH 33.5 ''72-(6.0+32.5)
 
 #define PUCK_A 0
 #define PUCK_B 1
