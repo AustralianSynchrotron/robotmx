@@ -22,14 +22,14 @@ Fend
 Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum As Integer, uOffset As Real, ByRef scanZdistance As Real)
 	Real radiusToCircleCassette, standbyPointU, standbyZoffsetFromCassetteBottom
 	
-	radiusToCircleCassette = CASSETTE_RADIUS * CASSETTE_SHRINK_IN_LN2 - 3.0
+	radiusToCircleCassette = CASSETTE_RADIUS * CASSETTE_SHRINK_FACTOR - 3.0
 	
 	Real Uangle
 	Uangle = g_AngleOfFirstColumn(cassette_position) + uOffset
 	standbyPointU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, (Uangle - g_UForNormalStandby(cassette_position)))
 	
 	'' 15mm above Maximum Cassette Height = SUPERPUCK_HEIGHT
-	standbyZoffsetFromCassetteBottom = CASSETTE_SHRINK_IN_LN2 * SUPERPUCK_HEIGHT + 15.0
+	standbyZoffsetFromCassetteBottom = CASSETTE_SHRINK_FACTOR * SUPERPUCK_HEIGHT + 15.0
 
 	'' Internally sets P(pointNum) to CircumferencePointFromU
 	GTSetCircumferencePointFromU(cassette_position, standbyPointU, radiusToCircleCassette, standbyZoffsetFromCassetteBottom, pointNum)
@@ -48,7 +48,6 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	LimZ g_Jump_LimZ_LN2
 	Jump P(standbyPointNum)
 
-	InitForceConstants
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
 	If Not (ForceTouch(-FORCE_ZFORCE, maxZdistanceToScan, False)) Then
@@ -71,10 +70,10 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 	Real calib_highEdge_height_in_LN2, calib_lowEdge_height_in_LN2
 	Real normal_height_in_LN2, superpuck_height_in_LN2
 	
-	calib_highEdge_height_in_LN2 = CASSETTE_CAL_HEIGHT * CASSETTE_SHRINK_IN_LN2
-	calib_lowEdge_height_in_LN2 = (CASSETTE_CAL_HEIGHT - CASSETTE_EDGE_HEIGHT) * CASSETTE_SHRINK_IN_LN2
-	normal_height_in_LN2 = CASSETTE_HEIGHT * CASSETTE_SHRINK_IN_LN2
-	superpuck_height_in_LN2 = SUPERPUCK_HEIGHT * CASSETTE_SHRINK_IN_LN2
+	calib_highEdge_height_in_LN2 = CASSETTE_CAL_HEIGHT * CASSETTE_SHRINK_FACTOR
+	calib_lowEdge_height_in_LN2 = (CASSETTE_CAL_HEIGHT - CASSETTE_EDGE_HEIGHT) * CASSETTE_SHRINK_FACTOR
+	normal_height_in_LN2 = CASSETTE_HEIGHT * CASSETTE_SHRINK_FACTOR
+	superpuck_height_in_LN2 = SUPERPUCK_HEIGHT * CASSETTE_SHRINK_FACTOR
 	
 	Real calib_highEdge_height_difference, calib_lowEdge_height_difference
 	calib_highEdge_height_difference = Abs(calib_highEdge_height_in_LN2 - cassetteHeight)
@@ -198,16 +197,16 @@ Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirst
 	average_height = average_height / NumberOfHeights
 	
 	'' Verify that maxHeight-minHeight is less than Calibration Cassette Edge Height
-	If (maxHeight - minHeight) > (CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_IN_LN2 + MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY) Then
+	If (maxHeight - minHeight) > (CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_FACTOR + MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY) Then
 		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTfindAverageCassetteHeight failed: maxHeight-minHeight > Calibration Cassette Edge Height!")
 		GTfindAverageCassetteHeight = False
 		Exit Function
 	EndIf
     
-    If (maxHeight - minHeight) > 0.5 * CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_IN_LN2 Then
+    If (maxHeight - minHeight) > 0.5 * CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_FACTOR Then
     	'' It can only be calibration cassette, so add edge height to low edge height in calculating average height
     	Real edgeThreshold
-        edgeThreshold = maxHeight - 0.5 * CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_IN_LN2
+        edgeThreshold = maxHeight - 0.5 * CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_FACTOR
         For tryIndex = 0 To NumberOfHeights - 1
             If heights(tryIndex) < edgeThreshold Then
                average_height = average_height + (CASSETTE_EDGE_HEIGHT / NumberOfHeights) '' / NumberOfHeights because it is added to average

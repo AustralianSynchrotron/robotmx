@@ -57,4 +57,33 @@ move p> 6
 > move p6
 > jump p1
 > jump p3
+> Print str$((abs(g_TQScale_Picker) + Abs(g_TQScale_Placer))/2)
+1.7738164886832
+> 
+-0.004344888031485
+> Print str$(g_TQScale_Placer)
+-1.7781613767147
+> ju
+1.7694716006517
+> jump p102
+!!Error: 7007, Specified point number was not defined. Specify a teach point number.
+> move P52
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset err
+!!Error: 3100, Syntax error.
+> reset error
+> move Here :Z(-150)
+> P21 = XY(0,0,0,0)
+> 
+> 
+> 
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> Print Str$(g_SampleDistancefromPuckSurface(2,1,0))
+-0.286952
+> Print Str$(g_SP_SamplePresent(2,1,0))
+-1
+> Print Str$(True)
+-1
 > 

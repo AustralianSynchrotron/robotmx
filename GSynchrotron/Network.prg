@@ -211,8 +211,8 @@ Function UpdateClient(receiver As Integer, msg$ As String)
 		Case EVTNO_STATE_ERR
 		Case EVTNO_PRINT_EVENT
 			''printing the message causes the vb event specified
-			Print msg$
-			SPELCom_Event 1000, msg$
+			''Print msg$
+			''SPELCom_Event 1000, msg$
 		Default
 			''send message to vb client
 			SPELCom_Event receiver, msg$

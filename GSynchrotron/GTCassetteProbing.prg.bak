@@ -63,23 +63,22 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	g_RunResult$ = "success GTProbeOneCassette"
 Fend
 
-Function ProbeAllPorts(cassette_position As Integer)
+Function GTProbeAllPorts(cassette_position As Integer)
+	Integer rowIndex, columnIndex
+
 	Select g_CassetteType(cassette_position)
 		Case CALIBRATION_CASSETTE
-			Integer rowIndex, columnIndex
-			rowIndex = 0
 			For columnIndex = 0 To NUM_COLUMNS - 1
+				rowIndex = 0
 				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
-			Next
-			rowIndex = NUM_ROWS - 1
-			For columnIndex = 0 To NUM_COLUMNS - 1
+
+				rowIndex = NUM_ROWS - 1
 				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
 			Next
 			
 		Case NORMAL_CASSETTE
-			Integer rowIndex, columnIndex
-			For rowIndex = 0 To NUM_ROWS - 1
-				For columnIndex = 0 To NUM_COLUMNS - 1
+			For columnIndex = 0 To NUM_COLUMNS - 1
+				For rowIndex = 0 To NUM_ROWS - 1
 					GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
 				Next
 			Next
@@ -99,21 +98,12 @@ Function ProbeAllPorts(cassette_position As Integer)
 	Send
 Fend
 
-Function GTtestCassetteScan()
-
-	Integer cassette_position
-	cassette_position = LEFT_CASSETTE
-	
+Function GTtestCassetteScan(cassette_position As Integer)
 	GTInitialize
-	
-	g_RunResult$ = "progress GTtestCassetteScan->GTInitAllPoints"
-	If Not GTInitAllPoints Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints failed")
-		g_RunResult$ = "error GTInitAllPoints"
-		Exit Function
-	EndIf
 	
 	g_RunResult$ = "progress GTtestCassetteScan->GTProbeOneCassette"
 	GTProbeOneCassette(cassette_position)
+	
+	GTProbeAllPorts(cassette_position)
 Fend
 

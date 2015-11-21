@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/05 01:33:42:812,DS:0000004440,CS:09235,MA:00-0C-29-BE-C0-E6,EI:           
-sActiveChild="GTSuperPuckUtilities.prg"
+ENVT0100,LM:2015/11/05 07:58:03:108,DS:0000004413,CS:16972,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=16
 ProgramFile1 {
@@ -15,7 +15,7 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=61
@@ -48,7 +48,7 @@ ProgramFile4 {
 }
 ProgramFile5 {
 	sName="Network.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=34
@@ -159,7 +159,7 @@ ProgramFile14 {
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -192,7 +192,7 @@ IncludeFile1 {
 }
 IncludeFile2 {
 	sName="networkdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=-284
@@ -248,7 +248,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=152
 		nTop=88
@@ -258,7 +258,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
@@ -305,7 +305,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=93
 		nTop=-4

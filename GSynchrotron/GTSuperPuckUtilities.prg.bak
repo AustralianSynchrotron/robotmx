@@ -115,8 +115,8 @@ Function GTperfectSPPortOffset(cassette_position As Integer, portIndex As Intege
 	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
 		offsetFromPortDeepEnd = m_SP_Puck_Thickness(puckIndex) - distanceFromPuckSurface
 	EndIf
-	offsetXfromPortDeepEnd = offsetFromPortDeepEnd * Cos(DegToRad(angle_to_puck_center + 90))
-	offsetYfromPortDeepEnd = offsetFromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
+	offsetXfromPortDeepEnd = offsetfromPortDeepEnd * Cos(DegToRad(angle_to_puck_center + 90))
+	offsetYfromPortDeepEnd = offsetfromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
 	
 	dx = puck_center_x + puckCenterToPortCenter_X + offsetXfromPortDeepEnd
 	dy = puck_center_y + puckCenterToPortCenter_Y + offsetYfromPortDeepEnd
@@ -159,9 +159,9 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, perfectP
 	offsetYfromPortDeepEnd = offsetfromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
 	
 	Real dx, dy, dz
-	dx = (superpuck_edge_x + offsetXfromPortDeepEnd) * CASSETTE_SHRINK_IN_LN2
-	dy = (superpuck_edge_y + offsetYfromPortDeepEnd) * CASSETTE_SHRINK_IN_LN2
-	dz = superpuck_edge_z * CASSETTE_SHRINK_IN_LN2
+	dx = (superpuck_edge_x + offsetXfromPortDeepEnd) * CASSETTE_SHRINK_FACTOR
+	dy = (superpuck_edge_y + offsetYfromPortDeepEnd) * CASSETTE_SHRINK_FACTOR
+	dz = superpuck_edge_z * CASSETTE_SHRINK_FACTOR
 	
 	'' Set perfect point	
 	Real perfectX, perfectY, perfectZ
@@ -206,25 +206,21 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 	Real scanDistance
 	scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
 	
-	InitForceConstants
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
 		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection failed: error in ForceTouch!")
 		GTprobeAdaptorAngleCorrection = False
 		Exit Function
 	EndIf
-
-	SetVerySlowSpeed
-	Move P(standbyPoint)
-	
+		
 	Real error_from_perfectPoint_in_mm
-	error_from_perfectPoint_in_mm = Dist(Here, P(perfectPoint))
+	error_from_perfectPoint_in_mm = Dist(RealPos, P(perfectPoint))
 	
 	'' Determine sign of error_from_perfectPoint_in_mm
 	'' If cassette is touched before reaching perfectPoint, then -(minus) sign
 	'' ElseIf cassette is touched only going further after perfectPoint, then +(plus) sign
 	Real distance_here_to_destination, distance_perfect_to_destination
-	distance_here_to_destination = Dist(Here, P(destinationPoint))
+	distance_here_to_destination = Dist(RealPos, P(destinationPoint))
 	distance_perfect_to_destination = Dist(P(perfectPoint), P(destinationPoint))
 	If distance_here_to_destination > distance_perfect_to_destination Then
 		error_from_perfectPoint_in_mm = -error_from_perfectPoint_in_mm
@@ -237,6 +233,9 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 		GTprobeAdaptorAngleCorrection = False
 		Exit Function
 	EndIf
+	
+	SetVerySlowSpeed
+	Move P(standbyPoint)
 	
 	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection:(" + GTCassetteName$(cassette_position) + ") completed.")
 	GTprobeAdaptorAngleCorrection = True
@@ -258,6 +257,7 @@ Function GTsetupAdaptorAngleCorrection(cassette_position As Integer, error_from_
 		adaptorAngleError = RadToDeg(-error_from_perfectPoint_in_mm / SUPERPUCK_WIDTH)
 	EndIf
 		
+	'' adaptor Angle Error should be less than 1.02 degrees
 	If Abs(adaptorAngleError) > 1.02 Then
 		GTUpdateClient(TASK_FAILURE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + " adaptorAngleError=" + Str$(adaptorAngleError) + "> 1.02 degrees")
 		GTsetupAdaptorAngleCorrection = False
@@ -265,7 +265,7 @@ Function GTsetupAdaptorAngleCorrection(cassette_position As Integer, error_from_
 	EndIf
 	
 	m_adaptorAngleError(cassette_position) = adaptorAngleError
-	GTUpdateClient(TASK_DONE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + " adaptorAngleError=" + Str$(adaptorAngleError))
+	GTUpdateClient(TASK_DONE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + " adaptorAngleError=" + Str$(adaptorAngleError) + "degrees")
 	GTsetupAdaptorAngleCorrection = True
 Fend
 
@@ -305,22 +305,27 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer)
 	
 	Jump P(standbyPoint)
 	
-	InitForceConstants
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
 	g_PuckPresent(cassette_position, puckIndex) = PUCK_ABSENT
-	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, True) Then
-		If Dist(P(standbyPoint), Here) < PROBE_STANDBY_DISTANCE - PROBE_DISTANCE_TOLERANCE Then
-			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch (" + puckName$(puckIndex) + ") stopped before reaching puck surface.")
-		ElseIf Dist(P(standbyPoint), Here) < PROBE_STANDBY_DISTANCE + PROBE_DISTANCE_TOLERANCE Then
+	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
+		'' distancePuckSurfacetoHere holds the distance from current position of magnet to puck surface
+		Real distancePuckSurfacetoHere
+		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
+		
+		If distancePuckSurfacetoHere < -OVERPRESS_DISTANCE_FOR_PUCK Then
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch (" + puckName$(puckIndex) + ") stopped " + Str$(distancePuckSurfacetoHere) + "mm before reaching theoretical puck surface.")
+		ElseIf distancePuckSurfacetoHere < OVERPRESS_DISTANCE_FOR_PUCK Then
 			g_PuckPresent(cassette_position, puckIndex) = PUCK_PRESENT
 			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch detected " + puckName$(puckIndex) + ".")
 		Else
-			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch (" + puckName$(puckIndex) + ") moved beyond puck surface.")
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch (" + puckName$(puckIndex) + ") moved " + Str$(distancePuckSurfacetoHere) + "mm beyond theoretical puck surface.")
 		EndIf
 	Else
-		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch failed to detect " + puckName$(puckIndex) + "!")
+		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch failed to detect " + puckName$(puckIndex) + " even after travelling maximum scan distance!")
 	EndIf
+	
+	Move P(standbyPoint)
 Fend
 
 Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer)
@@ -335,26 +340,35 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	Real maxDistanceToScan
 	maxDistanceToScan = PROBE_STANDBY_DISTANCE + OVERPRESS_DISTANCE_FOR_PUCK + PIN_DEEP_IN_PUCK_DISTANCE
 	
-	Jump P(standbyPoint)
+	'' Jump to a new puck otherwise Move would make the tong hit the puck
+	If portIndex = 0 Then
+		Jump P(standbyPoint)
+		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	Else
+		Move P(standbyPoint)
+	EndIf
 		
-	InitForceConstants
-	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
-	
 	g_SP_SamplePresent(cassette_position, puckIndex, portIndex) = SAMPLE_ABSENT
-	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, True) Then
+	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 	
-		g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), Here) - PROBE_STANDBY_DISTANCE
+		Real distanceSampleSurfacetoHere
+		distanceSampleSurfacetoHere = Dist(P(standbyPoint), RealPos) - (PROBE_STANDBY_DISTANCE + PIN_DEEP_IN_PUCK_DISTANCE)
 		
-		If g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) < OVERPRESS_DISTANCE_FOR_PUCK - PROBE_DISTANCE_TOLERANCE Then
-			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch on " + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped before reaching sample surface.")
-		ElseIf g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) < OVERPRESS_DISTANCE_FOR_PUCK + PROBE_DISTANCE_TOLERANCE Then
+		g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = distanceSampleSurfacetoHere
+		
+		If distanceSampleSurfacetoHere < -OVERPRESS_DISTANCE_FOR_PUCK Then
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch on " + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distanceSampleSurfacetoHere) + "mm before reaching theoretical sample surface.")
+		ElseIf distanceSampleSurfacetoHere < OVERPRESS_DISTANCE_FOR_PUCK Then
 			g_SP_SamplePresent(cassette_position, puckIndex, portIndex) = SAMPLE_PRESENT
-			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch detected Sample at" + puckName$(puckIndex) + ":" + Str$(portIndex + 1))
+			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch detected Sample at " + puckName$(puckIndex) + ":" + Str$(portIndex + 1))
 		Else
-			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch on" + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved beyond sample surface.")
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch on " + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distanceSampleSurfacetoHere) + "mm beyond theoretical sample surface.")
 		EndIf
 	Else
-		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch failed to detect " + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + "!")
+		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch failed to detect " + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!")
 	EndIf
+	
+	TwistRelease
+	Move P(standbyPoint)
 Fend
 

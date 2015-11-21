@@ -48,7 +48,6 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	LimZ g_Jump_LimZ_LN2
 	Jump P(standbyPointNum)
 
-	InitForceConstants
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
 	If Not (ForceTouch(-FORCE_ZFORCE, maxZdistanceToScan, False)) Then
@@ -57,7 +56,7 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 		Exit Function
 	EndIf
 	
-	cassetteTopZvalue = CZ(Here) - MAGNET_HEAD_RADIUS
+	cassetteTopZvalue = CZ(RealPos) - MAGNET_HEAD_RADIUS
 	
 	SetVerySlowSpeed
 	Move P(standbyPointNum)

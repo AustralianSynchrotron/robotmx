@@ -37,11 +37,14 @@ Function GTSetCircumferencePointFromU(cassette_position As Integer, U As Real, r
 	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R '' Hand = Righty
 Fend
 
-Function rowName$(rowIndex As Integer)
-	rowName$ = Chr$(Asc("A") + rowIndex)
+Function columnName$(columnIndex As Integer)
+	columnName$ = Chr$(Asc("A") + columnIndex)
 Fend
 
 Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer)
+	Tool PLACER_TOOL
+	LimZ g_Jump_LimZ_LN2
+	
 	Integer standbyPoint
 	standbyPoint = 52
 	
@@ -51,36 +54,44 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	adjustedU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, (Uangle - g_UForNormalStandby(cassette_position)))
 
 	Real ZoffsetFromBottom
-	ZoffsetFromBottom = (CASSETTE_A1_HEIGHT + CASSETTE_ROW_HEIGHT * rowIndex) * CASSETTE_SHRINK_IN_LN2
+	ZoffsetFromBottom = (CASSETTE_A1_HEIGHT + CASSETTE_ROW_HEIGHT * rowIndex) * CASSETTE_SHRINK_FACTOR
 
 	Real standby_circle_radius
-	standby_circle_radius = CASSETTE_RADIUS * CASSETTE_SHRINK_IN_LN2 + PROBE_STANDBY_DISTANCE
+	standby_circle_radius = CASSETTE_RADIUS * CASSETTE_SHRINK_FACTOR + PROBE_STANDBY_DISTANCE
 	
 	GTSetCircumferencePointFromU(cassette_position, adjustedU, standby_circle_radius, ZoffsetFromBottom, standbyPoint)
 			
 	Real maxDistanceToScan
 	maxDistanceToScan = PROBE_STANDBY_DISTANCE + OVERPRESS_DISTANCE_FOR_CAS + PIN_DEEP_IN_CAS_DISTANCE
 	
-	Jump P(standbyPoint)
-		
-	InitForceConstants
-	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	'' Jump to a new column otherwise Move would make the tong hit the cassette
+	If rowIndex = 0 Then
+		Jump P(standbyPoint)
+		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	Else
+		Move P(standbyPoint)
+	EndIf
 	
 	g_CAS_SamplePresent(cassette_position, rowIndex, columnIndex) = SAMPLE_ABSENT
-	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, True) Then
+	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 	
-		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
+		Real distanceSampleSurfacetoHere
+		distanceSampleSurfacetoHere = Dist(P(standbyPoint), RealPos) - (PROBE_STANDBY_DISTANCE + PIN_DEEP_IN_CAS_DISTANCE)
 		
-		If g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) < OVERPRESS_DISTANCE_FOR_CAS - PROBE_DISTANCE_TOLERANCE Then
-			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on " + rowName$(rowIndex) + ":" + Str$(columnIndex + 1) + " stopped before reaching sample surface.")
-		ElseIf g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) < OVERPRESS_DISTANCE_FOR_CAS + PROBE_DISTANCE_TOLERANCE Then
+		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = distanceSampleSurfacetoHere
+		
+		If distanceSampleSurfacetoHere < -OVERPRESS_DISTANCE_FOR_CAS Then
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on " + columnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " stopped " + Str$(distanceSampleSurfacetoHere) + "mm before reaching theoretical sample surface.")
+		ElseIf distanceSampleSurfacetoHere < OVERPRESS_DISTANCE_FOR_CAS Then
 			g_CAS_SamplePresent(cassette_position, rowIndex, columnIndex) = SAMPLE_PRESENT
-			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch detected Sample at" + rowName$(rowIndex) + ":" + Str$(columnIndex + 1))
+			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch detected Sample at " + columnName$(columnIndex) + ":" + Str$(rowIndex + 1))
 		Else
-			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on" + rowName$(rowIndex) + ":" + Str$(columnIndex + 1) + " moved beyond sample surface.")
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on " + columnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distanceSampleSurfacetoHere) + "mm beyond theoretical sample surface.")
 		EndIf
 	Else
-		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch failed to detect " + rowName$(rowIndex) + ":" + Str$(columnIndex + 1) + "!")
+		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch failed to detect " + columnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!")
 	EndIf
+	
+	Move P(standbyPoint)
 Fend
 
