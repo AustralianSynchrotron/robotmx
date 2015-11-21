@@ -1,12 +1,12 @@
 #include "mxrobotdefs.inc"
 #include "GTCassettedefs.inc"
 
-Real m_TiltOffsets(3)
+Global Real g_TiltOffsets(3)
 
 Function GTsetTiltOffsets(cassette_position As Integer, PerfectXoffset As Real, PerfectYoffset As Real, PerfectZoffset As Real)
-	m_TiltOffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
-	m_TiltOffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
-	m_TiltOffsets(2) = PerfectZoffset - (PerfectXoffset * g_tiltDX(cassette_position) + PerfectYoffset * g_tiltDY(cassette_position))
+	g_TiltOffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
+	g_TiltOffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
+	g_TiltOffsets(2) = PerfectZoffset - (PerfectXoffset * g_tiltDX(cassette_position) + PerfectYoffset * g_tiltDY(cassette_position))
 	
 Fend
 
@@ -26,9 +26,9 @@ Function GTSetCircumferencePointFromU(cassette_position As Integer, U As Real, r
 	
 	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, ZoffsetFromBottom)
 	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
-	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + m_TiltOffsets(0)
-	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + m_TiltOffsets(1)
-	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + m_TiltOffsets(2)
+	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + g_TiltOffsets(0)
+	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + g_TiltOffsets(1)
+	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + g_TiltOffsets(2)
 	
 	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R '' Hand = Righty
 Fend

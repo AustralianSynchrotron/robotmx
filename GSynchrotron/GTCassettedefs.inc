@@ -5,10 +5,25 @@
 #define NUM_CASSETTES 3
 
 '' Cassette Type
-#define CALIBRATION_CASSETTE 0
-#define NORMAL_CASSETTE 1
-#define SUPERPUCK_CASSETTE 2
+#define UNKNOWN_CASSETTE 0	'' Unknown cassette, Cassette Absent, Cassette Problem
+#define CALIBRATION_CASSETTE 1
+#define NORMAL_CASSETTE 2
+#define SUPERPUCK_CASSETTE 3
+
+'' Acceptable error in cassette height in mm
+#define ACCPT_ERROR_IN_CASSETTE_HEIGHT 0.4
+'' Retry Threshold for height in mm
+#define MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY 1.4
 
 '' SuperPuck/PuckAdaptor Properties
+#define SUPERPUCK_WIDTH 72.0
 #define SUPERPUCK_HEIGHT 137.0
+#define PUCK_A 0
+#define PUCK_B 1
+#define PUCK_C 2
+#define PUCK_D 3
+#define NUM_PUCKS 4
+
+#define PROBE_STANDBY_DISTANCE 5.0
+#define PROBE_ADAPTOR_DISTANCE 3.0
 

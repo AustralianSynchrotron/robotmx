@@ -1,1 +1,88 @@
+#include "mxrobotdefs.inc"
+#include "GTCassettedefs.inc"
+
+Global Real g_TiltOffsets(3)
+
+Function GTsetTiltOffsets(cassette_position As Integer, PerfectXoffset As Real, PerfectYoffset As Real, PerfectZoffset As Real)
+	g_TiltOffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
+	g_TiltOffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
+	g_TiltOffsets(2) = PerfectZoffset - (PerfectXoffset * g_tiltDX(cassette_position) + PerfectYoffset * g_tiltDY(cassette_position))
+	
+Fend
+
+'' To get a point on the circumference of the circle with radius taken from the cassette center [cassette's bottom center's (X,Y) location]
+Function GTSetCircumferencePointFromU(cassette_position As Integer, U As Real, radius As Real, ZoffsetFromBottom As Real, pointNum As Integer)
+	Real theta
+	Real PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter
+	Real AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust
+
+	'' theta is the angle subtended on the cassette center from the positive x-axis.
+	'' Since U orients the magnet towards center, theta = U + 180 degrees
+	theta = DegToRad(U + 180)
+
+	'' Get Perfect X, Y coordinates offsets of the point on the circumference of the circle with radius from cassette's bottom center
+	PerfectXoffsetFromCassetteCenter = radius * Cos(theta)
+	PerfectYoffsetFromCassetteCenter = radius * Sin(theta)
+	
+	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, ZoffsetFromBottom)
+	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
+	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + g_TiltOffsets(0)
+	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + g_TiltOffsets(1)
+	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+	
+	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R '' Hand = Righty
+Fend
+
+'' If distance > 0 then travelDepth is greater than puck thickness
+'' distance is the offset from puck's deepest end
+Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distance As Real, pointNum As Integer)
+	Real U
+	Real PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom
+	Real AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust
+	
+	GTperfectPuckOffset(cassette_position, portIndex, puckIndex, distance, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
+
+	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom)
+	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
+	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + g_TiltOffsets(0)
+	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + g_TiltOffsets(1)
+	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+
+	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
+Fend
+
+Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, standbyPointNum As Integer, ByRef perfectX As Real, ByRef perfectY As Real, ByRef perfectZ As Real, ByRef perfectU As Real)
+	Real angle_to_puck_center
+	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(PUCK_A)
+	
+	perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
+	
+	Real puck_center_x, puck_center_y
+	puck_center_x = SUPERPUCK_WIDTH * Cos(DegToRad(angle_to_puck_center))
+	puck_center_y = SUPERPUCK_WIDTH * Sin(DegToRad(angle_to_puck_center))
+	puck_center_z = m_SP_PuckCenter_Height(PUCK_A)
+	
+	Real travelDepth, travelDepthX, travelDepthY
+	travelDepth = m_SP_Puck_Thickness(PUCK_A)
+	travelDepthX = travelDepth * Cos(DegToRad(angle_to_puck_center + 90))
+	travelDepthY = travelDepth * Sin(DegToRad(angle_to_puck_center + 90))
+	
+	Real dx, dy, dz
+	dx = (puck_center_x + travelDepthX) * CASSETTE_SHRINK_IN_LN2
+	dy = (puck_center_y + travelDepthY) * CASSETTE_SHRINK_IN_LN2
+	dz = puck_center_z * CASSETTE_SHRINK_IN_LN2
+	
+	GTsetTiltOffsets(cassette_position, dx, dy, dz)
+	perfectX = g_CenterX(cassette_position) + g_TiltOffsets(0)
+	perfectY = g_CenterY(cassette_position) + g_TiltOffsets(1)
+	perfectZ = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+	
+	
+	'' Set standby point
+	Real sinU, cosU, standbyXoffset, standbyYoffset
+	sinU = Sin(DegToRad(perfectU)); cosU = Cos(DegToRad(perfectU))
+	standbyXoffset = PROBE_STANDBY_DISTANCE * cosU
+	standbyYoffset = PROBE_STANDBY_DISTANCE * sinU
+	P(standbyPointNum) = XY(perfectX - standbyXoffset, perfectY - standbyYoffset, perfectZ, perfectU) /R
+Fend
 

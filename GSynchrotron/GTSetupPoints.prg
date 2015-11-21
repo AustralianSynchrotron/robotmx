@@ -3,7 +3,7 @@
 #include "GTReporterdefs.inc"
 
 Function GTCheckPoint(pointNum As Integer) As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, LOW_LEVEL_FUNCTION, "GTCheckPoint entered with P" + Str$(pointNum))
+	GTUpdateClient(TASK_ENTERED_REPORT, LOW_LEVEL_FUNCTION, "GTCheckPoint(P" + Str$(pointNum) + ")")
 	If (Not PDef(P(pointNum))) Then
 		GTUpdateClient(TASK_FAILURE_REPORT, LOW_LEVEL_FUNCTION, "GTCheckPoint: P" + Str$(pointNum) + " is not defined yet!")
 		GTCheckPoint = False
@@ -17,7 +17,7 @@ Function GTCheckPoint(pointNum As Integer) As Boolean
 Fend
 
 Function GTCheckTool(toolNum As Integer) As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, LOW_LEVEL_FUNCTION, "GTCheckTool entered with Tool(" + Str$(toolNum) + ")")
+	GTUpdateClient(TASK_ENTERED_REPORT, LOW_LEVEL_FUNCTION, "GTCheckTool(Tool(" + Str$(toolNum) + "))")
 	P51 = TLSet(toolNum)
 	If CX(P51) = 0 Or CY(P51) = 0 Or CU(P51) = 0 Then
 		GTUpdateClient(TASK_FAILURE_REPORT, LOW_LEVEL_FUNCTION, "GTCheckTool: Tool(" + Str$(toolNum) + ") is not defined yet!")
@@ -29,37 +29,37 @@ Function GTCheckTool(toolNum As Integer) As Boolean
 Fend
 
 Function GTInitBasicPoints() As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTInitBasicPoints entered")
+	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTInitBasicPoints")
  	'' Check Points P0, P1 and P18
 	If GTCheckPoint(0) And GTCheckPoint(1) And GTCheckPoint(18) Then
-		GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitBasicPoints successfully completed.")
+		GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitBasicPoints completed.")
 		GTInitBasicPoints = True
 	Else
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitBasicPoints failed: error in GTCheckPoint!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitBasicPoints: error in GTCheckPoint!")
 		GTInitBasicPoints = False
 	EndIf
 Fend
 
 Function GTInitMagnetPoints() As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints entered")
+	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints")
 	
  	'' Check Points P6, P16 and P26
 	If Not (GTCheckPoint(6) Or GTCheckPoint(16) Or GTCheckPoint(26)) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints failed: error in GTCheckPoint!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints: error in GTCheckPoint!")
 		GTInitMagnetPoints = False
 		Exit Function
 	EndIf
 	
 	'' Check Points P10, P11 and P12
 	If Not (GTCheckPoint(10) Or GTCheckPoint(11) Or GTCheckPoint(12)) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints failed: error in GTCheckPoint!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints: error in GTCheckPoint!")
 		GTInitMagnetPoints = False
 		Exit Function
 	EndIf
 	
 	'' Check Tool 1 (pickerTool) and Tool 2 (placerTool)
 	If Not (GTCheckTool(1) Or GTCheckTool(2)) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints failed: error in GTCheckTool!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints: error in GTCheckTool!")
 		GTInitMagnetPoints = False
 		Exit Function
 	EndIf
@@ -105,59 +105,59 @@ Function GTInitMagnetPoints() As Boolean
 	tong_dumbbell_gap = MAGNET_HEAD_RADIUS + CAVITY_RADIUS + 0.5
 	P5 = P16 +X(tong_dumbbell_gap * -g_dumbbell_Perfect_sinValue) +Y(tong_dumbbell_gap * g_dumbbell_Perfect_cosValue)
 	
-	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints successfully completed.")
+	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitMagnetPoints completed.")
 	GTInitMagnetPoints = True
 Fend
 
 Function GTInitCassettePoints() As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints entered")
+	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints")
 	
  	'' Check Point P6: dumbbell cradle needed to decided cassette orientation
 	If Not GTCheckPoint(6) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints failed: error in GTCheckPoint!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints: error in GTCheckPoint!")
 		GTInitCassettePoints = False
 		Exit Function
 	EndIf
 	
 	'' Check Left Cassette Points P34, P41 and P44
 	If Not (GTCheckPoint(34) Or GTCheckPoint(41) Or GTCheckPoint(44)) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints failed: error in GTCheckPoint!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints: error in GTCheckPoint!")
 		GTInitCassettePoints = False
 		Exit Function
 	EndIf
 	
 	'' Check Middle Cassette Points P35, P42 and P45
 	If Not (GTCheckPoint(35) Or GTCheckPoint(42) Or GTCheckPoint(45)) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints failed: error in GTCheckPoint!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints: error in GTCheckPoint!")
 		GTInitCassettePoints = False
 		Exit Function
 	EndIf
 	
 	'' Check Right Cassette Points P36, P43 and P46
 	If Not (GTCheckPoint(36) Or GTCheckPoint(43) Or GTCheckPoint(46)) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints failed: error in GTCheckPoint!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints: error in GTCheckPoint!")
 		GTInitCassettePoints = False
 		Exit Function
 	EndIf
 
 	'' Setup location and required angles for each cassette
 	If Not (GTSetupCassetteAllProperties(LEFT_CASSETTE) Or GTSetupCassetteAllProperties(MIDDLE_CASSETTE) Or GTSetupCassetteAllProperties(RIGHT_CASSETTE)) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints failed: error in GTSetupCassetteAllProperties!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints: error in GTSetupCassetteAllProperties!")
 		GTInitCassettePoints = False
 		Exit Function
 	EndIf
 	
-	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints successfully completed.")
+	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints completed.")
 	GTInitCassettePoints = True
 Fend
 
 Function GTInitAllPoints() As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints entered")
+	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints")
 
 	g_RunResult$ = "Progress GTInitAllPoints->GTInitBasicPoints"
 	If Not GTInitBasicPoints() Then
 		g_RunResult$ = "Error GTInitBasicPoints"
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints failed: error in GTInitBasicPoints!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints: error in GTInitBasicPoints!")
 		GTInitAllPoints = False
 		Exit Function
 	EndIf
@@ -165,7 +165,7 @@ Function GTInitAllPoints() As Boolean
 	g_RunResult$ = "Progress GTInitAllPoints->GTInitMagnetPoints"
 	If Not GTInitMagnetPoints() Then
 		g_RunResult$ = "Error GTInitMagnetPoints"
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints failed: error in GTInitMagnetPoints!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints: error in GTInitMagnetPoints!")
 		GTInitAllPoints = False
 		Exit Function
 	EndIf
@@ -173,13 +173,13 @@ Function GTInitAllPoints() As Boolean
 	g_RunResult$ = "Progress GTInitAllPoints->GTInitCassettePoints"
 	If Not GTInitCassettePoints() Then
 		g_RunResult$ = "Error GTInitCassettePoints"
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints failed: error in GTInitCassettePoints!")
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints: error in GTInitCassettePoints!")
 		GTInitAllPoints = False
 		Exit Function
 	EndIf
 	
 	g_RunResult$ = "Success GTInitAllPoints"
-	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints successfully completed.")
+	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints completed.")
 	GTInitAllPoints = True
 Fend
 
