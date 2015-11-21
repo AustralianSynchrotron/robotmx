@@ -1,8 +1,11 @@
+#include "forcedefs.inc"
 #include "mxrobotdefs.inc"
 #include "GTCassettedefs.inc"
 
-Global Real g_TiltOffsets(3)
+Global Real g_SampleDistancefromCASSurface(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
+Global Boolean g_CAS_SamplePresent(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
 
+Global Real g_TiltOffsets(3)
 Function GTsetTiltOffsets(cassette_position As Integer, PerfectXoffset As Real, PerfectYoffset As Real, PerfectZoffset As Real)
 	g_TiltOffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
 	g_TiltOffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
@@ -33,56 +36,50 @@ Function GTSetCircumferencePointFromU(cassette_position As Integer, U As Real, r
 	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R '' Hand = Righty
 Fend
 
-'' If distance > 0 then travelDepth is greater than puck thickness
-'' distance is the offset from puck's deepest end
-Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distance As Real, pointNum As Integer)
-	Real U
-	Real PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom
-	Real AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust
-	
-	GTperfectPuckOffset(cassette_position, portIndex, puckIndex, distance, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
-
-	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom)
-	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
-	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + g_TiltOffsets(0)
-	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + g_TiltOffsets(1)
-	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + g_TiltOffsets(2)
-
-	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
+Function rowName$(rowIndex As Integer)
+	rowName$ = Chr$(Asc("A") + rowIndex)
 Fend
 
-Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, standbyPointNum As Integer, ByRef perfectX As Real, ByRef perfectY As Real, ByRef perfectZ As Real, ByRef perfectU As Real)
-	Real angle_to_puck_center
-	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(PUCK_A)
+Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer)
+	Integer standbyPoint
+	standbyPoint = 52
 	
-	perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
+	Real CAScolumnAngleOffset, Uangle, adjustedU
+	CAScolumnAngleOffset = (columnIndex * 360.0) / NUM_COLUMNS
+	Uangle = g_AngleOfFirstColumn(cassette_position) + g_AngleOffset(cassette_position) + CAScolumnAngleOffset + 180
+	adjustedU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, (Uangle - g_UForNormalStandby(cassette_position)))
+
+	Real ZoffsetFromBottom
+	ZoffsetFromBottom = (CASSETTE_A1_HEIGHT + CASSETTE_ROW_HEIGHT * rowIndex) * CASSETTE_SHRINK_IN_LN2
+
+	Real standby_circle_radius
+	standby_circle_radius = CASSETTE_RADIUS * CASSETTE_SHRINK_IN_LN2 + PROBE_STANDBY_DISTANCE
 	
-	Real puck_center_x, puck_center_y
-	puck_center_x = SUPERPUCK_WIDTH * Cos(DegToRad(angle_to_puck_center))
-	puck_center_y = SUPERPUCK_WIDTH * Sin(DegToRad(angle_to_puck_center))
-	puck_center_z = m_SP_PuckCenter_Height(PUCK_A)
+	GTSetCircumferencePointFromU(cassette_position, adjustedU, standby_circle_radius, ZoffsetFromBottom, standbyPoint)
+			
+	Real maxDistanceToScan
+	maxDistanceToScan = PROBE_STANDBY_DISTANCE + OVERPRESS_DISTANCE_FOR_CAS + PIN_DEEP_IN_CAS_DISTANCE
 	
-	Real travelDepth, travelDepthX, travelDepthY
-	travelDepth = m_SP_Puck_Thickness(PUCK_A)
-	travelDepthX = travelDepth * Cos(DegToRad(angle_to_puck_center + 90))
-	travelDepthY = travelDepth * Sin(DegToRad(angle_to_puck_center + 90))
+	Jump P(standbyPoint)
+		
+	InitForceConstants
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
-	Real dx, dy, dz
-	dx = (puck_center_x + travelDepthX) * CASSETTE_SHRINK_IN_LN2
-	dy = (puck_center_y + travelDepthY) * CASSETTE_SHRINK_IN_LN2
-	dz = puck_center_z * CASSETTE_SHRINK_IN_LN2
+	g_CAS_SamplePresent(cassette_position, rowIndex, columnIndex) = SAMPLE_ABSENT
+	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, True) Then
 	
-	GTsetTiltOffsets(cassette_position, dx, dy, dz)
-	perfectX = g_CenterX(cassette_position) + g_TiltOffsets(0)
-	perfectY = g_CenterY(cassette_position) + g_TiltOffsets(1)
-	perfectZ = g_BottomZ(cassette_position) + g_TiltOffsets(2)
-	
-	
-	'' Set standby point
-	Real sinU, cosU, standbyXoffset, standbyYoffset
-	sinU = Sin(DegToRad(perfectU)); cosU = Cos(DegToRad(perfectU))
-	standbyXoffset = PROBE_STANDBY_DISTANCE * cosU
-	standbyYoffset = PROBE_STANDBY_DISTANCE * sinU
-	P(standbyPointNum) = XY(perfectX - standbyXoffset, perfectY - standbyYoffset, perfectZ, perfectU) /R
+		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = Dist(P(standbyPoint), Here) - PROBE_STANDBY_DISTANCE
+		
+		If g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) < OVERPRESS_DISTANCE_FOR_CAS - PROBE_DISTANCE_TOLERANCE Then
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on " + rowName$(rowIndex) + ":" + Str$(columnIndex + 1) + " stopped before reaching sample surface.")
+		ElseIf g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) < OVERPRESS_DISTANCE_FOR_CAS + PROBE_DISTANCE_TOLERANCE Then
+			g_CAS_SamplePresent(cassette_position, rowIndex, columnIndex) = SAMPLE_PRESENT
+			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch detected Sample at" + rowName$(rowIndex) + ":" + Str$(columnIndex + 1))
+		Else
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on" + rowName$(rowIndex) + ":" + Str$(columnIndex + 1) + " moved beyond sample surface.")
+		EndIf
+	Else
+		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch failed to detect " + rowName$(rowIndex) + ":" + Str$(columnIndex + 1) + "!")
+	EndIf
 Fend
 

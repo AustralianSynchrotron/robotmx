@@ -13,6 +13,10 @@ Real m_SP_Ports_6_16_Circle_Radius
 
 Real m_adaptorAngleError(NUM_CASSETTES)
 
+Global Boolean g_PuckPresent(NUM_CASSETTES, NUM_PUCKS)
+Global Real g_SampleDistancefromPuckSurface(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
+Global Boolean g_SP_SamplePresent(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
+
 Function initSuperPuckConstants()
 	m_SP_Alpha(PUCK_A) = 45.0
 	m_SP_Alpha(PUCK_B) = 45.0
@@ -43,9 +47,23 @@ Function initSuperPuckConstants()
 	m_SP_Ports_6_16_Circle_Radius = 26.31
 Fend
 
+Function puckName$(puckIndex As Integer)
+	If puckIndex = PUCK_A Then
+		puckName$ = "PUCK_A"
+	ElseIf puckIndex = PUCK_B Then
+		puckName$ = "PUCK_B"
+	ElseIf puckIndex = PUCK_C Then
+		puckName$ = "PUCK_C"
+	ElseIf puckIndex = PUCK_D Then
+		puckName$ = "PUCK_D"
+	Else
+		puckName$ = "PUCK_NOT_DEFINED"
+	EndIf
+Fend
+
 '' distanceFromPuckSurface > 0 is the offset away from the puck
 '' distanceFromPuckSurface < 0 is the offset into the puck (port)
-Function GTperfectPuckOffset(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, ByRef dx As Real, ByRef dy As Real, ByRef dz As Real, ByRef u As Real)
+Function GTperfectSPPortOffset(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, ByRef dx As Real, ByRef dy As Real, ByRef dz As Real, ByRef u As Real)
 	'' Horizontal angle from Cassette Center to Puck Center
 	Real angle_to_puck_center
 	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex) + m_adaptorAngleError(cassette_position)
@@ -112,7 +130,7 @@ Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, pu
 	Real PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom
 	Real AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust
 	
-	GTperfectPuckOffset(cassette_position, portIndex, puckIndex, distanceFromPuckSurface, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
+	GTperfectSPPortOffset(cassette_position, portIndex, puckIndex, distanceFromPuckSurface, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
 
 	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom)
 	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
@@ -175,12 +193,12 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 
 	Integer standbyPoint, perfectPoint, destinationPoint
 
-	standbyPoint = 52
 	perfectPoint = 102
-	destinationPoint = 103
+	standbyPoint = 52
+	destinationPoint = 53
 	GTgetAdaptorAngleErrorProbePoint(cassette_position, perfectPoint, standbyPoint, destinationPoint)
 
-	Tool 2
+	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 	
 	Jump P(standbyPoint)
@@ -220,17 +238,23 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 		Exit Function
 	EndIf
 	
-	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection:(" + GTCassetteName$(cassette_position) + ") completed")
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection:(" + GTCassetteName$(cassette_position) + ") completed.")
 	GTprobeAdaptorAngleCorrection = True
 Fend
 
 Function GTsetupAdaptorAngleCorrection(cassette_position As Integer, error_from_perfectPoint_in_mm As Real) As Boolean
 	m_adaptorAngleError(cassette_position) = 0
 	
+	''because error is very small, for error_from_perfectPoint_in_mm < 0.8mm
+	''the error between accurate calculation and estimation is about 0.4%
+	''so we will go with estimation
+	''the accurate formula is in the document adaptor_error.xls
 	Real adaptorAngleError
 	If (error_from_perfectPoint_in_mm >= 0) Then
+		'' magnet edge is pushing adaptor edge
 		adaptorAngleError = RadToDeg(-error_from_perfectPoint_in_mm / (SUPERPUCK_WIDTH - MAGNET_HEAD_RADIUS))
 	Else
+		'' magnet center is pushing adaptor edge
 		adaptorAngleError = RadToDeg(-error_from_perfectPoint_in_mm / SUPERPUCK_WIDTH)
 	EndIf
 		
@@ -243,5 +267,94 @@ Function GTsetupAdaptorAngleCorrection(cassette_position As Integer, error_from_
 	m_adaptorAngleError(cassette_position) = adaptorAngleError
 	GTUpdateClient(TASK_DONE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + " adaptorAngleError=" + Str$(adaptorAngleError))
 	GTsetupAdaptorAngleCorrection = True
+Fend
+
+Function GTsetSPPuckProbeStandbyPoint(cassette_position As Integer, puckIndex As Integer, standbyPointNum As Integer, ByRef scanDistance As Real)
+	Integer port4Index, port14Index
+	port4Index = 3;	port14Index = 13
+	
+	Integer temporaryPort4StandbyPoint, temporaryPort14StandbyPoint, temporaryPuckStandbyPoint
+	temporaryPort4StandbyPoint = 105; temporaryPort14StandbyPoint = 106; temporaryPuckStandbyPoint = 107
+	
+	GTsetSPPortPoint(cassette_position, port4Index, puckIndex, PROBE_STANDBY_DISTANCE, temporaryPort4StandbyPoint)
+	GTsetSPPortPoint(cassette_position, port14Index, puckIndex, PROBE_STANDBY_DISTANCE, temporaryPort14StandbyPoint)
+	
+	P(temporaryPuckStandbyPoint) = (P(temporaryPort4StandbyPoint) + P(temporaryPort14StandbyPoint)) /2
+	
+	Real standbyX, standbyY, standbyZ, standbyU
+	standbyX = CX(P(temporaryPuckStandbyPoint)) / 2.0
+	standbyY = CY(P(temporaryPuckStandbyPoint)) / 2.0
+	standbyZ = CZ(P(temporaryPuckStandbyPoint)) / 2.0
+	standbyU = CU(P(temporaryPuckStandbyPoint)) / 2.0
+
+	P(standbyPointNum) = XY(standbyX, standbyY, standbyZ, standbyU) /R
+	
+	scanDistance = PROBE_STANDBY_DISTANCE + OVERPRESS_DISTANCE_FOR_PUCK
+Fend
+
+Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer)
+	Tool PLACER_TOOL
+	LimZ g_Jump_LimZ_LN2
+	
+	Integer standbyPoint
+	standbyPoint = 52
+	
+	Real maxDistanceToScan
+
+	GTsetSPPuckProbeStandbyPoint(cassette_position, puckIndex, standbyPoint, ByRef maxDistanceToScan)
+	
+	Jump P(standbyPoint)
+	
+	InitForceConstants
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	
+	g_PuckPresent(cassette_position, puckIndex) = PUCK_ABSENT
+	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, True) Then
+		If Dist(P(standbyPoint), Here) < PROBE_STANDBY_DISTANCE - PROBE_DISTANCE_TOLERANCE Then
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPucks: ForceTouch (" + puckName$(puckIndex) + ") stopped before reaching puck surface.")
+		ElseIf Dist(P(standbyPoint), Here) < PROBE_STANDBY_DISTANCE + PROBE_DISTANCE_TOLERANCE Then
+			g_PuckPresent(cassette_position, puckIndex) = PUCK_PRESENT
+			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPucks: ForceTouch detected " + puckName$(puckIndex) + ".")
+		Else
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPucks: ForceTouch (" + puckName$(puckIndex) + ") moved beyond puck surface.")
+		EndIf
+	Else
+		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPucks: ForceTouch failed to detect " + puckName$(puckIndex) + "!")
+	EndIf
+Fend
+
+Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer)
+	Tool PLACER_TOOL
+	LimZ g_Jump_LimZ_LN2
+
+	Integer standbyPoint
+	standbyPoint = 52
+	
+	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, PROBE_STANDBY_DISTANCE, standbyPoint)
+	
+	Real maxDistanceToScan
+	maxDistanceToScan = PROBE_STANDBY_DISTANCE + OVERPRESS_DISTANCE_FOR_PUCK + PIN_DEEP_IN_PUCK_DISTANCE
+	
+	Jump P(standbyPoint)
+		
+	InitForceConstants
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	
+	g_SP_SamplePresent(cassette_position, puckIndex, portIndex) = SAMPLE_ABSENT
+	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, True) Then
+	
+		g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), Here) - PROBE_STANDBY_DISTANCE
+		
+		If g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) < OVERPRESS_DISTANCE_FOR_PUCK - PROBE_DISTANCE_TOLERANCE Then
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch on " + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped before reaching sample surface.")
+		ElseIf g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) < OVERPRESS_DISTANCE_FOR_PUCK + PROBE_DISTANCE_TOLERANCE Then
+			g_SP_SamplePresent(cassette_position, puckIndex, portIndex) = SAMPLE_PRESENT
+			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch detected Sample at" + puckName$(puckIndex) + ":" + Str$(portIndex + 1))
+		Else
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch on" + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved beyond sample surface.")
+		EndIf
+	Else
+		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch failed to detect " + puckName$(puckIndex) + ":" + Str$(portIndex + 1) + "!")
+	EndIf
 Fend
 

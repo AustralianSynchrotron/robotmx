@@ -10,7 +10,7 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	
 	standbyPointNum = 52
 	
-	Tool 1
+	Tool PICKER_TOOL
 	
 	g_RunResult$ = "progress GTProbeOneCassette->GTSetScanCassetteTopStandbyPoint"
 	GTSetScanCassetteTopStandbyPoint(cassette_position, standbyPointNum, 0, ByRef scanZdistance)
@@ -63,10 +63,48 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	g_RunResult$ = "success GTProbeOneCassette"
 Fend
 
+Function ProbeAllPorts(cassette_position As Integer)
+	Integer rowIndex, columnIndex
+
+	Select g_CassetteType(cassette_position)
+		Case CALIBRATION_CASSETTE
+			rowIndex = 0
+			For columnIndex = 0 To NUM_COLUMNS - 1
+				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
+			Next
+			rowIndex = NUM_ROWS - 1
+			For columnIndex = 0 To NUM_COLUMNS - 1
+				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
+			Next
+			
+		Case NORMAL_CASSETTE
+			For rowIndex = 0 To NUM_ROWS - 1
+				For columnIndex = 0 To NUM_COLUMNS - 1
+					GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
+				Next
+			Next
+			
+		Case SUPERPUCK_CASSETTE
+			Integer puckIndex, portIndex
+			For puckIndex = 0 To NUM_PUCKS - 1
+				GTprobeSPPuck(cassette_position, puckIndex)
+			
+				If g_PuckPresent(cassette_position, puckIndex) Then
+					For portIndex = 0 To NUM_PUCK_PORTS - 1
+						GTprobeSPPort(cassette_position, puckIndex, portIndex)
+					Next
+				EndIf
+			Next
+			
+	Send
+Fend
+
 Function GTtestCassetteScan()
 
 	Integer cassette_position
 	cassette_position = LEFT_CASSETTE
+	
+	GTInitialize
 	
 	g_RunResult$ = "progress GTtestCassetteScan->GTInitAllPoints"
 	If Not GTInitAllPoints Then
@@ -75,5 +113,7 @@ Function GTtestCassetteScan()
 		Exit Function
 	EndIf
 	
+	g_RunResult$ = "progress GTtestCassetteScan->GTProbeOneCassette"
+	GTProbeOneCassette(cassette_position)
 Fend
 
