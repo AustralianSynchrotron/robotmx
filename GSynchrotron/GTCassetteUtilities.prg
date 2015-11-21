@@ -69,7 +69,7 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	g_CAS_SamplePresent(cassette_position, rowIndex, columnIndex) = SAMPLE_ABSENT
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, True) Then
 	
-		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = Dist(P(standbyPoint), Here) - PROBE_STANDBY_DISTANCE
+		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		
 		If g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) < OVERPRESS_DISTANCE_FOR_CAS - PROBE_DISTANCE_TOLERANCE Then
 			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on " + rowName$(rowIndex) + ":" + Str$(columnIndex + 1) + " stopped before reaching sample surface.")

@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/04 00:52:31:373,DS:0000004438,CS:27767,MA:00-0C-29-BE-C0-E6,EI:           
-sActiveChild="GTCassetteProbing.prg"
+ENVT0100,LM:2015/11/05 01:33:42:812,DS:0000004440,CS:09235,MA:00-0C-29-BE-C0-E6,EI:           
+sActiveChild="GTSuperPuckUtilities.prg"
 bMdiMaximized=True
 nProgramFileCount=16
 ProgramFile1 {
@@ -71,7 +71,7 @@ ProgramFile6 {
 ProgramFile7 {
 	sName="GTCassetteProbing.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -159,7 +159,7 @@ ProgramFile14 {
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -169,7 +169,7 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="GTIntialization.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0

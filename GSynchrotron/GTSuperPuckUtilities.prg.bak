@@ -311,15 +311,15 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer)
 	g_PuckPresent(cassette_position, puckIndex) = PUCK_ABSENT
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, True) Then
 		If Dist(P(standbyPoint), Here) < PROBE_STANDBY_DISTANCE - PROBE_DISTANCE_TOLERANCE Then
-			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPucks: ForceTouch (" + puckName$(puckIndex) + ") stopped before reaching puck surface.")
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch (" + puckName$(puckIndex) + ") stopped before reaching puck surface.")
 		ElseIf Dist(P(standbyPoint), Here) < PROBE_STANDBY_DISTANCE + PROBE_DISTANCE_TOLERANCE Then
 			g_PuckPresent(cassette_position, puckIndex) = PUCK_PRESENT
-			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPucks: ForceTouch detected " + puckName$(puckIndex) + ".")
+			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch detected " + puckName$(puckIndex) + ".")
 		Else
-			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPucks: ForceTouch (" + puckName$(puckIndex) + ") moved beyond puck surface.")
+			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch (" + puckName$(puckIndex) + ") moved beyond puck surface.")
 		EndIf
 	Else
-		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPucks: ForceTouch failed to detect " + puckName$(puckIndex) + "!")
+		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPuck: ForceTouch failed to detect " + puckName$(puckIndex) + "!")
 	EndIf
 Fend
 

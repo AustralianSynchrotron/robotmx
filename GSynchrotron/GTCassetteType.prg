@@ -57,7 +57,7 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 		Exit Function
 	EndIf
 	
-	cassetteTopZvalue = CZ(Here) - MAGNET_HEAD_RADIUS
+	cassetteTopZvalue = CZ(RealPos) - MAGNET_HEAD_RADIUS
 	
 	SetVerySlowSpeed
 	Move P(standbyPointNum)

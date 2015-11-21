@@ -1,6 +1,7 @@
 #include "forcedefs.inc"
 #include "mxrobotdefs.inc"
 #include "GTCassettedefs.inc"
+#include "GTReporterdefs.inc"
 
 Global Real g_SampleDistancefromCASSurface(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
 Global Boolean g_CAS_SamplePresent(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)

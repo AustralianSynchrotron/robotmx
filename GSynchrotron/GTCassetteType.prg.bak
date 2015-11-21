@@ -49,7 +49,7 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	Jump P(standbyPointNum)
 
 	InitForceConstants
-	''ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
 	If Not (ForceTouch(-FORCE_ZFORCE, maxZdistanceToScan, False)) Then
 		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTScanCassetteTop: ForceTouch failed to detect Cassette!")
