@@ -7,7 +7,7 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	Real cassette_top_Z_value, scanned_cassette_height
 	Integer guessedCassetteType
 	Real guessedCassetteType_height_error
-		
+	
 	standbyPointNum = 52
 	
 	Tool 1
@@ -51,7 +51,7 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	EndIf
 	
 	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		g_RunResult$ = "progress GTProbeOneCassette-GTprobeAdaptorAngleCorrection"
+		g_RunResult$ = "progress GTProbeOneCassette->GTprobeAdaptorAngleCorrection"
 		GTprobeAdaptorAngleCorrection(cassette_position)
 	EndIf
 	

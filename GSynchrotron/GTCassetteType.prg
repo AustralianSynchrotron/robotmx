@@ -6,12 +6,12 @@
 Global Integer g_CassetteType(NUM_CASSETTES)
 
 
-Function GTCassetteType$(cassette_position As Integer) As String
-	If g_CassetteType(cassette_position) = CALIBRATION_CASSETTE Then
+Function GTCassetteType$(cassetteType As Integer) As String
+	If cassetteType = CALIBRATION_CASSETTE Then
 		GTCassetteType$ = "calibration_cassette"
-	ElseIf g_CassetteType(cassette_position) = NORMAL_CASSETTE Then
+	ElseIf cassetteType = NORMAL_CASSETTE Then
 		GTCassetteType$ = "normal_cassette"
-	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+	ElseIf cassetteType = SUPERPUCK_CASSETTE Then
 		GTCassetteType$ = "superpuck_cassette"
 	Else
 		GTCassetteType$ = "unknown_cassette"
@@ -43,7 +43,7 @@ Fend
 
 
 Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Real, ByRef cassetteTopZvalue As Real) As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop(standbyPoint=P" + Str$(standbyPointNum) + ", maxZdistanceToScan=" + Str$(maxZdistanceToScan) + ")")
+	GTUpdateClient(TASK_ENTERED_REPORT, MID_LEVEL_FUNCTION, "GTScanCassetteTop(standbyPoint=P" + Str$(standbyPointNum) + ", maxZdistanceToScan=" + Str$(maxZdistanceToScan) + ")")
 	
 	LimZ g_Jump_LimZ_LN2
 	Jump P(standbyPointNum)
@@ -52,7 +52,7 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	''ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
 	If Not (ForceTouch(-FORCE_ZFORCE, maxZdistanceToScan, False)) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop: ForceTouch failed to detect Cassette!")
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTScanCassetteTop: ForceTouch failed to detect Cassette!")
 		GTScanCassetteTop = False
 		Exit Function
 	EndIf
@@ -62,26 +62,37 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	SetVerySlowSpeed
 	Move P(standbyPointNum)
 	
-	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop completed. cassetteTopZvalue=" + Str$(cassetteTopZvalue))
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTScanCassetteTop completed. cassetteTopZvalue=" + Str$(cassetteTopZvalue))
 	GTScanCassetteTop = True
 Fend
 
 
 Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight As Real, ByRef guessedCassetteType As Integer, ByRef min_height_error As Real) As Boolean
-
-	Real calibration_height_in_LN2, normal_height_in_LN2, superpuck_height_in_LN2
-	''To store difference in top Zvalue of scanned cassette from calibration, normal and superpuck cassettes respectively
-	Real calibration_height_difference, normal_height_difference, superpuck_height_difference
+	Real calib_highEdge_height_in_LN2, calib_lowEdge_height_in_LN2
+	Real normal_height_in_LN2, superpuck_height_in_LN2
 	
-	calibration_height_in_LN2 = CASSETTE_CAL_HEIGHT * CASSETTE_SHRINK_IN_LN2
+	calib_highEdge_height_in_LN2 = CASSETTE_CAL_HEIGHT * CASSETTE_SHRINK_IN_LN2
+	calib_lowEdge_height_in_LN2 = (CASSETTE_CAL_HEIGHT - CASSETTE_EDGE_HEIGHT) * CASSETTE_SHRINK_IN_LN2
 	normal_height_in_LN2 = CASSETTE_HEIGHT * CASSETTE_SHRINK_IN_LN2
 	superpuck_height_in_LN2 = SUPERPUCK_HEIGHT * CASSETTE_SHRINK_IN_LN2
 	
-	calibration_height_difference = Abs(calibration_height_in_LN2 - cassetteHeight)
+	Real calib_highEdge_height_difference, calib_lowEdge_height_difference
+	calib_highEdge_height_difference = Abs(calib_highEdge_height_in_LN2 - cassetteHeight)
+	calib_lowEdge_height_difference = Abs(calib_lowEdge_height_in_LN2 - cassetteHeight)
+
+	''To store difference in top Zvalue of scanned cassette from calibration, normal and superpuck cassettes respectively
+	Real calibration_height_difference, normal_height_difference, superpuck_height_difference
+	
+	If calib_highEdge_height_difference < calib_lowEdge_height_difference Then
+		calibration_height_difference = calib_highEdge_height_difference
+	Else
+		calibration_height_difference = calib_lowEdge_height_difference
+	EndIf
+	
 	normal_height_difference = Abs(normal_height_in_LN2 - cassetteHeight)
 	superpuck_height_difference = Abs(superpuck_height_in_LN2 - cassetteHeight)
 
-	
+	'' Guess the cassette type with minimum height difference from the scanned cassette
 	If (calibration_height_difference < normal_height_difference) And (calibration_height_difference < superpuck_height_difference) Then
 		guessedCassetteType = CALIBRATION_CASSETTE
 		min_height_error = calibration_height_difference
@@ -128,7 +139,7 @@ Fend
 
 
 Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirstHeight As Real, guessedCassetteType As Integer, ByRef average_height As Real) As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTfindAverageCassetteHeight(cassette_position=" + GTCassetteName$(cassette_position) + ", cassetteFirstHeight=" + Str$(cassetteFirstHeight) + ", guessedCassetteType=" + GTCassetteType$(guessedCassetteType) + ")")
+	GTUpdateClient(TASK_ENTERED_REPORT, MID_LEVEL_FUNCTION, "GTfindAverageCassetteHeight(cassette_position=" + GTCassetteName$(cassette_position) + ", cassetteFirstHeight=" + Str$(cassetteFirstHeight) + ", guessedCassetteType=" + GTCassetteType$(guessedCassetteType) + ")")
 
 	Integer standbyPoint
 	Integer NumberOfHeights, tryIndex
@@ -145,9 +156,9 @@ Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirst
 		
 			If GTScanCassetteTop(standbyPoint, scanZdistance, ByRef cassette_top_Z_value) Then
 				heights(tryIndex) = cassette_top_Z_value - g_BottomZ(cassette_position)
-				GTUpdateClient(TASK_MESSAGE_REPORT, HIGH_LEVEL_FUNCTION, "GTfindAverageCassetteHeight: Detected Cassette Height = " + Str$(heights(tryIndex)))
+				GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTfindAverageCassetteHeight: Detected Cassette Height = " + Str$(heights(tryIndex)))
 			Else
-				GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTfindAverageCassetteHeight failed: error in GTScanCassetteTop!")
+				GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTfindAverageCassetteHeight failed: error in GTScanCassetteTop!")
 				GTfindAverageCassetteHeight = False
 				Exit Function
 			EndIf
@@ -159,9 +170,9 @@ Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirst
 		
 			If GTScanCassetteTop(standbyPoint, scanZdistance, ByRef cassette_top_Z_value) Then
 				heights(tryIndex) = cassette_top_Z_value - g_BottomZ(cassette_position)
-				GTUpdateClient(TASK_MESSAGE_REPORT, HIGH_LEVEL_FUNCTION, "GTfindAverageCassetteHeight: Detected Cassette Height = " + Str$(heights(tryIndex)))
+				GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTfindAverageCassetteHeight: Detected Cassette Height = " + Str$(heights(tryIndex)))
 			Else
-				GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTfindAverageCassetteHeight failed: error in GTScanCassetteTop!")
+				GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTfindAverageCassetteHeight failed: error in GTScanCassetteTop!")
 				GTfindAverageCassetteHeight = False
 				Exit Function
 			EndIf
@@ -188,11 +199,13 @@ Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirst
 	
 	'' Verify that maxHeight-minHeight is less than Calibration Cassette Edge Height
 	If (maxHeight - minHeight) > (CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_IN_LN2 + MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTfindAverageCassetteHeight failed: maxHeight-minHeight > Calibration Cassette Edge Height!")
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTfindAverageCassetteHeight failed: maxHeight-minHeight > Calibration Cassette Edge Height!")
 		GTfindAverageCassetteHeight = False
 		Exit Function
 	EndIf
+    
     If (maxHeight - minHeight) > 0.5 * CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_IN_LN2 Then
+    	'' It can only be calibration cassette, so add edge height to low edge height in calculating average height
     	Real edgeThreshold
         edgeThreshold = maxHeight - 0.5 * CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_IN_LN2
         For tryIndex = 0 To NumberOfHeights - 1
@@ -202,7 +215,7 @@ Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirst
         Next
     EndIf
 	
-	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTfindAverageCassetteHeight completed. averageHeight=" + Str$(average_height))
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTfindAverageCassetteHeight completed. averageHeight=" + Str$(average_height))
 	GTfindAverageCassetteHeight = True
 Fend
 

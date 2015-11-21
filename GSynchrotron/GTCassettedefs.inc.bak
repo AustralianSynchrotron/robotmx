@@ -16,6 +16,7 @@
 #define MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY 1.4
 
 '' SuperPuck/PuckAdaptor Properties
+#define SUPERPUCK_WIDTH 72.0
 #define SUPERPUCK_HEIGHT 137.0
 #define PUCK_A 0
 #define PUCK_B 1

@@ -118,7 +118,7 @@ Function GTSetupCassetteAllProperties(cassette_position As Integer) As Boolean
 	GTSetupCoordinates cassette_position, Cassette_BottomCenterPoint
 	
 	If Not GTSetupTilt(cassette_position, Cassette_ProbeTopPoint, Cassette_ProbeBottomPoint) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTSetupCassetteAllProperties: error in GTSetupTilt!")
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTSetupCassetteAllProperties: error in GTSetupTilt!")
 		GTSetupCassetteAllProperties = False
 		Exit Function
 	EndIf

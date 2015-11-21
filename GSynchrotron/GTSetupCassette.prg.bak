@@ -40,6 +40,7 @@ Function GTSetupCoordinates(cassette_position As Integer, pointNum As Integer)
 	g_CenterX(cassette_position) = CX(P(pointNum))
 	g_CenterY(cassette_position) = CY(P(pointNum))
 	g_BottomZ(cassette_position) = CZ(P(pointNum))
+	g_AngleOffset(cassette_position) = CU(P(pointNum))
 	PLabel pointNum, GTCassetteName$(cassette_position)
 Fend
 

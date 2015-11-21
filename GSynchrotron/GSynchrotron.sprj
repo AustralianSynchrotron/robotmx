@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/10/28 12:44:46:848,DS:0000007809,CS:09996,MA:00-0C-29-BE-C0-E6,EI:           
+ENVT0100,LM:2015/11/01 12:12:37:057,DS:0000007811,CS:26901,MA:00-0C-29-BE-C0-E6,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="10/28/2015 11:40:03 PM"
+	sLastModified="10/30/2015 3:15:14 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=True
@@ -82,27 +82,27 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="GTSetupCassette.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile12 {
 	sName="GTSetupPoints.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile13 {
 	sName="GTReporter.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile14 {
 	sName="GTCassetteType.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile16 {

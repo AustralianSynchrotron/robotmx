@@ -7,7 +7,7 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	Real cassette_top_Z_value, scanned_cassette_height
 	Integer guessedCassetteType
 	Real guessedCassetteType_height_error
-		
+	
 	standbyPointNum = 52
 	
 	Tool 1
@@ -21,7 +21,7 @@ Function GTProbeOneCassette(cassette_position As Integer)
 		GTUpdateClient(TASK_MESSAGE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop completed.  Detected Cassette Height = " + Str$(scanned_cassette_height))
 	Else
 		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop failed: error in GTScanCassetteTop!")
-		g_RunResult$ = "error GTScanCassetteTop"
+		g_RunResult$ = "error GTProbeOneCassette->GTScanCassetteTop"
 		Exit Function
 	EndIf
 
