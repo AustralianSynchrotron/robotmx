@@ -100,11 +100,12 @@ Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer)
 	standbyPoint = 52
 	
 	'' Set perfect point	
+	Real ActualOffsets(3)
 	Real perfectX, perfectY, perfectZ
-	GTsetTiltOffsets(cassette_position, dx, dy, dz)
-	perfectX = g_CenterX(cassette_position) + g_TiltOffsets(0)
-	perfectY = g_CenterY(cassette_position) + g_TiltOffsets(1)
-	perfectZ = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+	GTapplyTiltToOffsets(cassette_position, dx, dy, dz, ByRef ActualOffsets())
+	perfectX = g_CenterX(cassette_position) + ActualOffsets(0)
+	perfectY = g_CenterY(cassette_position) + ActualOffsets(1)
+	perfectZ = g_BottomZ(cassette_position) + ActualOffsets(2)
 	P(perfectPoint) = XY(perfectX, perfectY, perfectZ, perfectU) /R
 
 
@@ -208,11 +209,12 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckInde
 	dz = (puck_center_z + puckCenterToEdge_Z) * CASSETTE_SHRINK_FACTOR
 	
 	'' Set perfect point	
+	Real ActualOffsets(3)
 	Real perfectX, perfectY, perfectZ
-	GTsetTiltOffsets(cassette_position, dx, dy, dz)
-	perfectX = g_CenterX(cassette_position) + g_TiltOffsets(0)
-	perfectY = g_CenterY(cassette_position) + g_TiltOffsets(1)
-	perfectZ = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+	GTapplyTiltToOffsets(cassette_position, dx, dy, dz, ByRef Actualoffsets())
+	perfectX = g_CenterX(cassette_position) + Actualoffsets(0)
+	perfectY = g_CenterY(cassette_position) + Actualoffsets(1)
+	perfectZ = g_BottomZ(cassette_position) + Actualoffsets(2)
 	P(perfectPointNum) = XY(perfectX, perfectY, perfectZ, perfectU) /R
 
 
@@ -253,6 +255,8 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 	Real scanDistance
 	scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
 	
+	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
 		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection failed: error in ForceTouch!")
@@ -260,6 +264,8 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 		Exit Function
 	EndIf
 		
+	GTLoadPreviousRobotSpeedMode
+	
 	Real error_from_perfectPoint_in_mm
 	error_from_perfectPoint_in_mm = Dist(RealPos, P(perfectPoint))
 	
@@ -275,7 +281,6 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 	
 	GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection: " + GTpuckName$(puckIndex) + " error_from_perfectPoint_in_mm=" + Str$(error_from_perfectPoint_in_mm))
 
-	SetVerySlowSpeed
 	Move P(standbyPoint)
 
 	If Not GTsetupAdaptorAngleCorrection(cassette_position, puckIndex, error_from_perfectPoint_in_mm) Then
@@ -399,11 +404,12 @@ Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, pu
 	
 	GTperfectSPPortOffset(cassette_position, portIndex, puckIndex, distanceFromPuckSurface, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
 
-	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom)
-	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
-	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + g_TiltOffsets(0)
-	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + g_TiltOffsets(1)
-	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+	Real ActualOffsetsFromCassetteCenter(3)
+	GTapplyTiltToOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom, ByRef ActualOffsetsFromCassetteCenter())
+	'' Set Absolute X,Y,Z Coordinates after GTapplyTiltToOffsets
+	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + ActualOffsetsFromCassetteCenter(0)
+	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + ActualOffsetsFromCassetteCenter(1)
+	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + ActualOffsetsFromCassetteCenter(2)
 
 	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
 Fend
@@ -485,6 +491,8 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	EndIf
 		
+	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+
 	g_SP_SamplePresent(cassette_position, puckIndex, portIndex) = SAMPLE_ABSENT
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 	
@@ -510,6 +518,9 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	EndIf
 	
 	Move P(standbyPoint)
+
+	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
+	GTLoadPreviousRobotSpeedMode
 Fend
 
 Function GTprobeAllPortsInPuck(cassette_position As Integer, puckIndex As Integer)

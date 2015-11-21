@@ -1,14 +1,14 @@
-ENVT0100,LM:2015/11/19 23:43:25:812,DS:0000007908,CS:00517,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/11/20 09:29:19:921,DS:0000007960,CS:19551,MA:00-0C-29-BE-C0-E6,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="11/20/2015 10:42:55 AM"
+	sLastModified="11/20/2015 8:29:19 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
-	bRebuildRequired=False
+	bRebuildRequired=True
 	bClearControllerProject=False
 	bClearGlobalPreserves=False
 }
@@ -71,8 +71,8 @@ ProgramFile8 {
 	bStoreInController=True
 }
 ProgramFile9 {
-	sName="GTInsideDewarVars.prg"
-	bCompiled=True
+	sName="GTMagnetAndRobotSpeed.prg"
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile10 {
@@ -87,7 +87,7 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="GTSetupPoints.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile13 {
@@ -107,7 +107,7 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="GTIntialization.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 nIncludeFileCount=7
@@ -465,4 +465,7 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=0
+nGuiBuilderFileCount=1
+GuiBuilderFile1 {
+	sName="GSynchrotron.gui"
+}

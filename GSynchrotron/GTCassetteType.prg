@@ -50,17 +50,19 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	LimZ g_Jump_LimZ_LN2
 	Jump P(standbyPointNum)
 
-	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
 	
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If Not (ForceTouch(-FORCE_ZFORCE, maxZdistanceToScan, False)) Then
 		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTScanCassetteTop: ForceTouch failed to detect Cassette!")
 		GTScanCassetteTop = False
 		Exit Function
 	EndIf
+
+	GTLoadPreviousRobotSpeedMode
 	
 	cassetteTopZvalue = CZ(RealPos) - MAGNET_HEAD_RADIUS
-	
-	SetVerySlowSpeed
+
 	Move P(standbyPointNum)
 	
 	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTScanCassetteTop completed. cassetteTopZvalue=" + Str$(cassetteTopZvalue))

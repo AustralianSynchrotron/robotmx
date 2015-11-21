@@ -56,7 +56,6 @@ Function GTProbeOneCassette(cassette_position As Integer) As Boolean
 		EndIf
 	EndIf
 	
-	SetVerySlowSpeed
 	g_RunResult$ = "success GTProbeOneCassette"
 	GTProbeOneCassette = True
 Fend

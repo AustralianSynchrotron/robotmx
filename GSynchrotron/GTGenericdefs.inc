@@ -19,6 +19,11 @@
 #define SAMPLE_ABSENT False
 #define SAMPLE_PRESENT True
 
+
+#define DISTANCE_P3_TO_P6 20.0 ''mm
+#define MAGNET_AXIS_TO_CRADLE_EDGE 2.8 'mm
+#define MAGNET_PROBE_DISTANCE_TOLERANCE (MAGNET_HEAD_RADIUS + 0.1)
+
 '' Could be CASSETTE_SHRINK_IN_LN2
 #define CASSETTE_SHRINK_FACTOR 1.0
 
@@ -27,3 +32,9 @@
 #define ACCPT_ERROR_IN_CASSETTE_HEIGHT 0.4
 '' Retry Threshold for height in mm
 #define MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY 1.4
+
+''Robot Speed Modes
+#define ULTRA_SLOW_SPEED 0
+#define VERY_SLOW_SPEED 1
+#define FAST_SPEED 2
+

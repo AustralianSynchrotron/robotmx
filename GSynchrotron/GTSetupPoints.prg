@@ -3,6 +3,11 @@
 #include "GTCassettedefs.inc"
 #include "GTReporterdefs.inc"
 
+'' Note: All angle values in GT domain are in degrees
+Global Real g_dumbbell_Perfect_Angle
+Global Real g_dumbbell_Perfect_cosValue
+Global Real g_dumbbell_Perfect_sinValue
+
 Function GTCheckPoint(pointNum As Integer) As Boolean
 	GTUpdateClient(TASK_ENTERED_REPORT, LOW_LEVEL_FUNCTION, "GTCheckPoint(P" + Str$(pointNum) + ")")
 	If (Not PDef(P(pointNum))) Then
@@ -72,8 +77,8 @@ Function GTInitMagnetPoints() As Boolean
 	g_dumbbell_Perfect_cosValue = Cos(DegToRad(g_dumbbell_Perfect_Angle))
 	g_dumbbell_Perfect_sinValue = Sin(DegToRad(g_dumbbell_Perfect_Angle))
 	
-	'' Cooling Point: 20mm in the perpendicular direction from center of dumbbell
-	P3 = P6 +X(20.0 * -g_dumbbell_Perfect_sinValue) +Y(20.0 * g_dumbbell_Perfect_cosValue)
+	'' Cooling Point: DISTANCE_P3_TO_P6=20.0mm in the perpendicular direction from center of dumbbell
+	P3 = P6 +X(DISTANCE_P3_TO_P6 * -g_dumbbell_Perfect_sinValue) +Y(DISTANCE_P3_TO_P6 * g_dumbbell_Perfect_cosValue)
 
 	'' High Above CoolPoint, get the tong out of LN2
 	P2 = P3 :Z(-2)

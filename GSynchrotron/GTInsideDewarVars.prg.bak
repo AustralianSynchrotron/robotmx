@@ -1,6 +1,66 @@
+#include "GTGenericdefs.inc"
+#include "GTSuperPuckdefs.inc"
+#include "GTReporterdefs.inc"
+
 '' Note: All angle values in GT domain are in degrees
 Global Real g_dumbbell_Perfect_Angle
 Global Real g_dumbbell_Perfect_cosValue
 Global Real g_dumbbell_Perfect_sinValue
+
+Integer m_previousAcceleration, m_previousDeceleration
+Real m_previousStraightAcceleration, m_previousStraightDeceleration
+Integer m_previousSpeedSetting
+Real m_previousStraightSpeedSetting
+
+Function GTSaveCurrentRobotSpeedMode
+	m_previousAcceleration = Accel(1)
+	m_previousDeceleration = Accel(2)
+	m_previousSpeedSetting = Speed(1)
+
+	m_previousStraightAcceleration = AccelS(1)
+	m_previousStraightDeceleration = AccelS(2)
+	m_previousStraightSpeedSetting = SpeedS(1)
+Fend
+
+Function GTsetRobotSpeedMode(speed_mode As Byte)
+	GTSaveCurrentRobotSpeedMode
+	
+	Select speed_mode
+		Case ULTRA_SLOW_SPEED
+			SetUltraSlowSpeed
+			
+		Case VERY_SLOW_SPEED
+			SetVerySlowSpeed
+			
+		Case FAST_SPEED
+			SetFastSpeed
+	Send
+Fend
+
+Function GTLoadPreviousRobotSpeedMode
+	Accel m_previousAcceleration, m_previousDeceleration
+	Speed m_previousSpeedSetting
+	
+	AccelS m_previousStraightAcceleration, m_previousStraightDeceleration
+	SpeedS m_previousStraightSpeedSetting
+Fend
+
+Function GTIsDumbbellInsideCassette() As Boolean
+	Real maxDistanceToScan
+	maxDistanceToScan = SUPERPUCK_HEIGHT * 1.5
+	
+	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+	
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	If ForceTouch(FORCE_ZFORCE, maxDistanceToScan, False) Then
+		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "IsMagnetInTong: ForceTouch touched an obstacle for jump now.")
+		GTIsDumbbellInsideCassette = True
+	Else
+		GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "IsMagnetInTong: ForceTouch didnot find cassette obstacles in jump!")
+		GTIsDumbbellInsideCassette = False
+	EndIf
+	
+	GTLoadPreviousRobotSpeedMode
+Fend
 
 

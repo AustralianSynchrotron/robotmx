@@ -17,12 +17,10 @@ Function GTCassetteName$(cassette_position As Integer) As String
 	EndIf
 Fend
 
-Global Real g_TiltOffsets(3)
-Function GTsetTiltOffsets(cassette_position As Integer, PerfectXoffset As Real, PerfectYoffset As Real, PerfectZoffset As Real)
-	g_TiltOffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
-	g_TiltOffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
-	g_TiltOffsets(2) = PerfectZoffset - (PerfectXoffset * g_tiltDX(cassette_position) + PerfectYoffset * g_tiltDY(cassette_position))
-	
+Function GTapplyTiltToOffsets(cassette_position As Integer, PerfectXoffset As Real, PerfectYoffset As Real, PerfectZoffset As Real, ByRef Actualoffsets() As Real)
+	Actualoffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
+	Actualoffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
+	Actualoffsets(2) = PerfectZoffset - (PerfectXoffset * g_tiltDX(cassette_position) + PerfectYoffset * g_tiltDY(cassette_position))
 Fend
 
 '' To get a point on the circumference of the circle with radius taken from the cassette center [cassette's bottom center's (X,Y) location]
@@ -39,11 +37,12 @@ Function GTSetCircumferencePointFromU(cassette_position As Integer, U As Real, r
 	PerfectXoffsetFromCassetteCenter = radius * Cos(theta)
 	PerfectYoffsetFromCassetteCenter = radius * Sin(theta)
 	
-	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, ZoffsetFromBottom)
-	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
-	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + g_TiltOffsets(0)
-	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + g_TiltOffsets(1)
-	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+	Real ActualOffsetsFromCassetteCenter(3)
+	GTapplyTiltToOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, ZoffsetFromBottom, ByRef ActualOffsetsFromCassetteCenter())
+	'' Set Absolute X,Y,Z Coordinates after GTapplyTiltToOffsets
+	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + ActualOffsetsFromCassetteCenter(0)
+	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + ActualOffsetsFromCassetteCenter(1)
+	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + ActualOffsetsFromCassetteCenter(2)
 	
 	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R '' Hand = Righty
 Fend
@@ -83,6 +82,8 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		Move P(standbyPoint)
 	EndIf
 	
+	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+	
 	g_CAS_SamplePresent(cassette_position, rowIndex, columnIndex) = SAMPLE_ABSENT
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 
@@ -108,6 +109,9 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	EndIf
 	
 	Move P(standbyPoint)
+	
+	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
+	GTLoadPreviousRobotSpeedMode
 Fend
 
 Function GTprobeAllPortsInColumn(cassette_position As Integer, columnIndex As Integer)
