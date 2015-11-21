@@ -11,7 +11,7 @@
 #define SUPERPUCK_CASSETTE 3
 
 '' Acceptable error in cassette height in mm
-#define ACCPT_ERROR_IN_CASSETTE_HEIGHT 0.04
+#define ACCPT_ERROR_IN_CASSETTE_HEIGHT 0.4
 '' Retry Threshold for height in mm
 #define MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY 1.4
 

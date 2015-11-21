@@ -47,4 +47,14 @@
 > g_reportmask = 62
 > g_reportingfunctionmask = 6
 > 
+> Jump XY(g_CenterX(2),g_CenterY(2),-100,g_AngleofFirstColumn(2))
+> Jump Here +Z(20) +U(-45+g_AngleOffset(2))
+> Move Here -z(20)
+> jump P1
+> jump p3
+move p> 6
+!!Error: 3100, Syntax error.
+> move p6
+> jump p1
+> jump p3
 > 

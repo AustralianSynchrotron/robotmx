@@ -42,9 +42,9 @@ Function initSuperPuckConstants()
 	m_SP_Ports_6_16_Circle_Radius = 26.31
 Fend
 
-'' If distance > 0 then travelDepth is greater than puck thickness
-'' distance is the offset from puck's deepest point
-Function GTperfectPuckOffset(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distance As Real, ByRef dx As Real, ByRef dy As Real, ByRef dz As Real, ByRef u As Real)
+'' distanceFromPuckSurface > 0 is the offset away from the puck
+'' distanceFromPuckSurface < 0 is the offset into the puck (port)
+Function GTperfectPuckOffset(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, ByRef dx As Real, ByRef dy As Real, ByRef dz As Real, ByRef u As Real)
 	'' Horizontal angle from Cassette Center to Puck Center
 	Real angle_to_puck_center
 	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex) + m_adaptorAngleError(cassette_position)
@@ -90,28 +90,28 @@ Function GTperfectPuckOffset(cassette_position As Integer, portIndex As Integer,
 	EndIf
 	puckCenterToPortCenter_Z = VerticalDistancePuckCenterToPort
 
-	Real travelDepth, travelDepthX, travelDepthY
+	Real offsetFromPortDeepEnd, offsetXfromPortDeepEnd, offsetYfromPortDeepEnd
 	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
-		travelDepth = m_SP_Puck_Thickness(puckIndex) + distance
+		offsetFromPortDeepEnd = m_SP_Puck_Thickness(puckIndex) + distanceFromPuckSurface
 	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
-		travelDepth = m_SP_Puck_Thickness(puckIndex) - distance
+		offsetFromPortDeepEnd = m_SP_Puck_Thickness(puckIndex) - distanceFromPuckSurface
 	EndIf
-	travelDepthX = travelDepth * Cos(DegToRad(angle_to_puck_center + 90))
-	travelDepthY = travelDepth * Sin(DegToRad(angle_to_puck_center + 90))
+	offsetXfromPortDeepEnd = offsetFromPortDeepEnd * Cos(DegToRad(angle_to_puck_center + 90))
+	offsetYfromPortDeepEnd = offsetFromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
 	
-	dx = puck_center_x + puckCenterToPortCenter_X + travelDepthX
-	dy = puck_center_y + puckCenterToPortCenter_Y + travelDepthY
+	dx = puck_center_x + puckCenterToPortCenter_X + offsetXfromPortDeepEnd
+	dy = puck_center_y + puckCenterToPortCenter_Y + offsetYfromPortDeepEnd
 	dz = puck_center_z + puckCenterToPortCenter_Z
 Fend
 
-'' If distance > 0 then travelDepth is greater than puck thickness
-'' distance is the offset from puck's deepest end
-Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distance As Real, pointNum As Integer)
+'' distanceFromPuckSurface > 0 is the offset away from the puck
+'' distanceFromPuckSurface < 0 is the offset into the puck (port)
+Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, pointNum As Integer)
 	Real U
 	Real PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom
 	Real AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust
 	
-	GTperfectPuckOffset(cassette_position, portIndex, puckIndex, distance, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
+	GTperfectPuckOffset(cassette_position, portIndex, puckIndex, distanceFromPuckSurface, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
 
 	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom)
 	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
@@ -133,14 +133,14 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, standbyP
 	puck_center_y = SUPERPUCK_WIDTH * Sin(DegToRad(angle_to_puck_center))
 	puck_center_z = m_SP_PuckCenter_Height(PUCK_A)
 	
-	Real travelDepth, travelDepthX, travelDepthY
-	travelDepth = m_SP_Puck_Thickness(PUCK_A)
-	travelDepthX = travelDepth * Cos(DegToRad(angle_to_puck_center + 90))
-	travelDepthY = travelDepth * Sin(DegToRad(angle_to_puck_center + 90))
+	Real offsetfromPortDeepEnd, offsetXfromPortDeepEnd, offsetYfromPortDeepEnd
+	offsetfromPortDeepEnd = m_SP_Puck_Thickness(PUCK_A)
+	offsetXfromPortDeepEnd = offsetfromPortDeepEnd * Cos(DegToRad(angle_to_puck_center + 90))
+	offsetYfromPortDeepEnd = offsetfromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
 	
 	Real dx, dy, dz
-	dx = (puck_center_x + travelDepthX) * CASSETTE_SHRINK_IN_LN2
-	dy = (puck_center_y + travelDepthY) * CASSETTE_SHRINK_IN_LN2
+	dx = (puck_center_x + offsetXfromPortDeepEnd) * CASSETTE_SHRINK_IN_LN2
+	dy = (puck_center_y + offsetYfromPortDeepEnd) * CASSETTE_SHRINK_IN_LN2
 	dz = puck_center_z * CASSETTE_SHRINK_IN_LN2
 	
 	GTsetTiltOffsets(cassette_position, dx, dy, dz)

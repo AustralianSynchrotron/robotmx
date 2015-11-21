@@ -1,4 +1,4 @@
-ENVT0100,LM:2015/11/02 00:48:48:126,DS:0000004426,CS:27975,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/11/02 11:26:09:079,DS:0000004442,CS:21885,MA:00-80-4C-A4-84-A0,EI:           
 sActiveChild="GTCassettedefs.inc"
 bMdiMaximized=True
 nProgramFileCount=16
@@ -15,7 +15,7 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=61
@@ -26,7 +26,7 @@ ProgramFile2 {
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=-137
@@ -37,7 +37,7 @@ ProgramFile3 {
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=13
@@ -48,7 +48,7 @@ ProgramFile4 {
 }
 ProgramFile5 {
 	sName="Network.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=34
@@ -59,7 +59,7 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -81,7 +81,7 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="GTCassetteUtilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -103,7 +103,7 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="GTNumericManipulations.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -114,7 +114,7 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="GTSetupCassette.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -125,7 +125,7 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="GTSetupPoints.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -136,7 +136,7 @@ ProgramFile12 {
 }
 ProgramFile13 {
 	sName="GTReporter.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -169,7 +169,7 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="GTIntialization.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -181,7 +181,7 @@ ProgramFile16 {
 nIncludeFileCount=5
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=3
@@ -192,7 +192,7 @@ IncludeFile1 {
 }
 IncludeFile2 {
 	sName="networkdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=-284
@@ -203,7 +203,7 @@ IncludeFile2 {
 }
 IncludeFile3 {
 	sName="forcedefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -215,7 +215,7 @@ IncludeFile3 {
 IncludeFile4 {
 	sName="GTCassettedefs.inc"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -225,7 +225,7 @@ IncludeFile4 {
 }
 IncludeFile5 {
 	sName="GTReporterdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -305,7 +305,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=93
 		nTop=-4

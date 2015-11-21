@@ -203,6 +203,7 @@ Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirst
 		GTfindAverageCassetteHeight = False
 		Exit Function
 	EndIf
+    
     If (maxHeight - minHeight) > 0.5 * CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_IN_LN2 Then
     	'' It can only be calibration cassette, so add edge height to low edge height in calculating average height
     	Real edgeThreshold
