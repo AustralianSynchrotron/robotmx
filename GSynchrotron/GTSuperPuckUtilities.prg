@@ -12,8 +12,10 @@ Real m_SP_Puck_RotationAngle(NUM_PUCKS)
 Real m_SP_Ports_1_5_Circle_Radius
 Real m_SP_Ports_6_16_Circle_Radius
 
+'' m_adaptorAngleError is only used in this module, so it doesn't need to be a global variable!
+'' it is declared as a global variable for debugging purposes only
 '' adaptor angle error is with respect to PUCK_A
-Real m_adaptorAngleError(NUM_CASSETTES, NUM_PUCKS)
+Global Real m_adaptorAngleError(NUM_CASSETTES, NUM_PUCKS)
 
 Global Boolean g_PuckPresent(NUM_CASSETTES, NUM_PUCKS)
 Global Real g_SampleDistancefromPuckSurface(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
@@ -157,11 +159,11 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckInde
 	Real angleBetweenConsecutivePorts
 	Real portIndex, portIndexInCircle
 	If puckIndex = PUCK_A Or puckIndex = PUCK_B Then
-		'' probe for adaptor angle correction inline with the line joining puck center to center of port11
-		portIndex = 10
-	Else ''If puckIndex = PUCK_C Or puckIndex = PUCK_D Then
 		'' probe for adaptor angle correction inline with the line joining puck center to center of port12
 		portIndex = 11
+	Else ''If puckIndex = PUCK_C Or puckIndex = PUCK_D Then
+		'' probe for adaptor angle correction inline with the line joining puck center to center of port11
+		portIndex = 10
 	EndIf
 	
 	If portIndex < 5 Then
@@ -299,10 +301,10 @@ Function GTsetupAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 	Real HorzDistSPCenterToProbePoint
 	HorzDistSPCenterToProbePoint = SP_CENTER_TO_PUCK_CENTER_LENGTH + Abs(m_HorzDistancePuckCenterToSPEdge(puckIndex))
 	If (error_from_perfectPoint_in_mm >= 0) Then
-		'' magnet edge is pushing adaptor edge
+		'' magnet edge is pushing adaptor edge, (-) minus sign is to project the angle in global coordinates
 		adaptorAngleError = RadToDeg(-error_from_perfectPoint_in_mm / (HorzDistSPCenterToProbePoint - MAGNET_HEAD_RADIUS))
 	Else
-		'' magnet center is pushing adaptor edge
+		'' magnet center is pushing adaptor edge, (-) minus sign is to project the angle in global coordinates
 		adaptorAngleError = RadToDeg(-error_from_perfectPoint_in_mm / HorzDistSPCenterToProbePoint)
 	EndIf
 		
@@ -509,4 +511,26 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	
 	Move P(standbyPoint)
 Fend
+
+Function GTprobeAllPortsInPuck(cassette_position As Integer, puckIndex As Integer)
+	g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
+	If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex) Then
+		g_RunResult$ = "error GTprobeAllPortsInPuck->GTprobeAdaptorAngleCorrection!"
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTprobeAllPortsInPuck failed: error in GTprobeAdaptorAngleCorrection!")
+		GTprobeAllPortsInPuck = False
+		Exit Function
+	EndIf
+
+	g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
+	GTprobeSPPuck(cassette_position, puckIndex)
+
+	If g_PuckPresent(cassette_position, puckIndex) Then
+		Integer portIndex
+		For portIndex = 0 To NUM_PUCK_PORTS - 1
+			g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(portIndex) + ")"
+			GTprobeSPPort(cassette_position, puckIndex, portIndex)
+		Next
+	EndIf
+Fend
+
 

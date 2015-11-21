@@ -62,52 +62,23 @@ Function GTProbeOneCassette(cassette_position As Integer) As Boolean
 Fend
 
 Function GTProbeAllPorts(cassette_position As Integer) As Boolean
-	Integer rowIndex, columnIndex
-
-	Select g_CassetteType(cassette_position)
-		Case CALIBRATION_CASSETTE
-			For columnIndex = 0 To NUM_COLUMNS - 1
-				rowIndex = 0
-				g_RunResult$ = "progress GTProbeAllPorts->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
-				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
-
-				rowIndex = NUM_ROWS - 1
-				g_RunResult$ = "progress GTProbeAllPorts->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
-				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
-			Next
-			
-		Case NORMAL_CASSETTE
-			For columnIndex = 0 To NUM_COLUMNS - 1
-				For rowIndex = 0 To NUM_ROWS - 1
-					g_RunResult$ = "progress GTProbeAllPorts->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
-					GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
-				Next
-			Next
-			
-		Case SUPERPUCK_CASSETTE
-			Integer puckIndex, portIndex
-			For puckIndex = 0 To NUM_PUCKS - 1
-				GTSPpositioningMove(cassette_position, puckIndex)
-				
-				g_RunResult$ = "progress GTProbeAllPorts->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-				If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex) Then
-					g_RunResult$ = "error GTProbeAllPorts->GTprobeAdaptorAngleCorrection!"
-					GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeAllPorts failed: error in GTprobeAdaptorAngleCorrection!")
-					GTProbeAllPorts = False
-					Exit Function
-				EndIf
-
-				g_RunResult$ = "progress GTProbeAllPorts->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-				GTprobeSPPuck(cassette_position, puckIndex)
-			
-				If g_PuckPresent(cassette_position, puckIndex) Then
-					For portIndex = 0 To NUM_PUCK_PORTS - 1
-						g_RunResult$ = "progress GTProbeAllPorts->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(portIndex) + ")"
-						GTprobeSPPort(cassette_position, puckIndex, portIndex)
-					Next
-				EndIf
-			Next
-	Send
+	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		Integer puckIndex
+		For puckIndex = 0 To NUM_PUCKS - 1
+			g_RunResult$ = "progress GTProbeAllPorts->GTprobeAllPortsInPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
+			GTprobeAllPortsInPuck(cassette_position, puckIndex)
+		Next
+	ElseIf (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Or (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Then
+		Integer columnIndex
+		For columnIndex = 0 To NUM_COLUMNS - 1
+			g_RunResult$ = "progress GTProbeAllPorts->GTprobeAllPortsInColumn(" + GTCassetteName$(cassette_position) + ",col=" + GTcolumnName$(columnIndex) + ")"
+			GTprobeAllPortsInColumn(cassette_position, columnIndex)
+		Next
+	Else
+		g_RunResult$ = "error GTProbeAllPorts: " + GTCassetteName$(cassette_position) + " type is unknown/absent."
+		GTProbeAllPorts = False
+		Exit Function
+	EndIf
 
 	g_RunResult$ = "success GTProbeAllPorts(" + GTCassetteName$(cassette_position) + ")"
 	GTProbeAllPorts = True
