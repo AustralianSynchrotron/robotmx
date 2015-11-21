@@ -1,19 +1,25 @@
 #include "GTReporterdefs.inc"
 #include "networkdefs.inc"
 
-Integer g_ReportingLevel
-Integer g_ReportingFunctionLevel
+Global Integer g_ReportingLevel
+Global Integer g_ReportingFunctionLevel
+Global Boolean g_PrintReports
 
 '' Wrapper around UpdateClient to filter network messages based on g_ReportingLevel
 '' Function level filtering only applies to INFO_LEVEL and DEBUG_LEVEL Reports
 Function GTUpdateClient(report_type As Integer, function_level As Integer, msg$ As String)
 	g_ReportingLevel = DEBUG_LEVEL ''Should be set from EPICS
+	g_ReportingFunctionLevel = LOW_LEVEL_FUNCTION
+	g_PrintReports = True
 	
 	If g_ReportingLevel < ERROR_LEVEL Then
 		Exit Function
 	EndIf
 	
 		If report_type = TASK_FAILURE_REPORT Then
+			If g_PrintReports Then
+				Print msg$
+			EndIf
 			UpdateClient EVTNO_FOREGROUND_ERR, msg$
 		EndIf
 	

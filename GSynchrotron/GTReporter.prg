@@ -3,11 +3,19 @@
 
 Global Integer g_ReportingLevel
 Global Integer g_ReportingFunctionLevel
+Global Boolean g_PrintReports
 
 '' Wrapper around UpdateClient to filter network messages based on g_ReportingLevel
 '' Function level filtering only applies to INFO_LEVEL and DEBUG_LEVEL Reports
 Function GTUpdateClient(report_type As Integer, function_level As Integer, msg$ As String)
 	g_ReportingLevel = DEBUG_LEVEL ''Should be set from EPICS
+	g_ReportingFunctionLevel = LOW_LEVEL_FUNCTION
+	g_PrintReports = True
+	
+	'' We might have to put the Print msg$ inside the filters
+	If g_PrintReports Then
+		Print msg$
+	EndIf
 	
 	If g_ReportingLevel < ERROR_LEVEL Then
 		Exit Function
