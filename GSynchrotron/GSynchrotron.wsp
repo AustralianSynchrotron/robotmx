@@ -1,0 +1,290 @@
+ENVT0100,LM:2015/10/15 06:44:46:169,DS:0000003708,CS:14662,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="GTSetupPoints.prg"
+bMdiMaximized=True
+nProgramFileCount=12
+ProgramFile1 {
+	sName="magnet.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=72
+		nTop=83
+		nWidth=1144
+		nHeight=406
+	}
+}
+ProgramFile2 {
+	sName="cassette.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=61
+		nTop=145
+		nWidth=1144
+		nHeight=406
+	}
+}
+ProgramFile3 {
+	sName="gonio.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=-137
+		nTop=119
+		nWidth=1144
+		nHeight=406
+	}
+}
+ProgramFile4 {
+	sName="utilities.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=13
+		nTop=169
+		nWidth=1144
+		nHeight=406
+	}
+}
+ProgramFile5 {
+	sName="Network.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=34
+		nTop=122
+		nWidth=1144
+		nHeight=406
+	}
+}
+ProgramFile6 {
+	sName="force.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile7 {
+	sName="GTSetupPoints.prg"
+	bOpened=True
+	nWinState=2
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile8 {
+	sName="GTInsideDewarVars.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile9 {
+	sName="GTNumericManipulations.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile10 {
+	sName="GTSetupCassette.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile11 {
+	sName="GTCassetteProbing.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile12 {
+	sName="GTCassetteUtilities.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+nIncludeFileCount=4
+IncludeFile1 {
+	sName="mxrobotdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=3
+		nTop=236
+		nWidth=1144
+		nHeight=406
+	}
+}
+IncludeFile2 {
+	sName="networkdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=-284
+		nTop=164
+		nWidth=1144
+		nHeight=406
+	}
+}
+IncludeFile3 {
+	sName="forcedefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+IncludeFile4 {
+	sName="GTCassettedefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+nPointFileCount=1
+PointFile1 {
+	sName="robot1.pts"
+	bOpened=False
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=123
+		nHeight=34
+	}
+}
+sActiveWindow="main.prg"
+CmdWindow {
+	bOpened=True
+	Window {
+		nLeft=289
+		nTop=46
+		nWidth=897
+		nHeight=406
+	}
+	nWinState=0
+}
+RunWindow {
+	bOpened=True
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=674
+		nHeight=378
+	}
+	nWinState=0
+}
+IOLabelEditor {
+	bOpened=False
+	Window {
+		nLeft=40
+		nTop=47
+		nWidth=699
+		nHeight=398
+	}
+	nWinState=0
+}
+IOMonitor {
+	bOpened=False
+	Window {
+		nLeft=595
+		nTop=309
+		nWidth=470
+		nHeight=342
+	}
+}
+TaskMgr {
+	bOpened=False
+	Window {
+		nLeft=498
+		nTop=208
+		nWidth=827
+		nHeight=530
+	}
+}
+Macros {
+	bOpened=False
+	Window {
+		nLeft=273
+		nTop=158
+		nWidth=478
+		nHeight=422
+	}
+}
+RobotMgr {
+	bOpened=True
+	Window {
+		nLeft=93
+		nTop=-4
+		nWidth=690
+		nHeight=485
+	}
+}
+UserErrorEditor {
+	bOpened=False
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=464
+		nHeight=367
+	}
+	nWinState=0
+}
+VisionGuide {
+	bOpened=False
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=0
+		nHeight=0
+	}
+	nWinState=0
+}
+GUIBuilder {
+	bOpened=False
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=0
+		nHeight=0
+	}
+	nWinState=0
+}

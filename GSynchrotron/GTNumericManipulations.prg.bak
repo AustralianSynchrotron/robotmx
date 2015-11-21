@@ -1,0 +1,50 @@
+'' Copyright (c) 2015  Australian Synchrotron
+''
+'' This library is free software; you can redistribute it and/or
+'' modify it under the terms of the GNU Lesser General Public
+'' Licence as published by the Free Software Foundation; either
+'' version 2.1 of the Licence, or (at your option) any later version.
+''
+'' This library is distributed in the hope that it will be useful,
+'' but WITHOUT ANY WARRANTY; without even the implied warranty of
+'' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+'' Lesser General Public Licence for more details.
+''
+'' You should have received a copy of the GNU Lesser General Public
+'' Licence along with this library; if not, write to the Free Software
+'' Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+''
+'' Contact details:
+'' gautam@motion-solutions.com.au
+''
+'' Modification Log
+'' 06/10/15 Initial Release
+
+
+
+'' Returns angle in degrees in the range [lowerBound, upperBound)
+Function GTBoundAngle(lowerBound As Real, upperBound As Real, Angle As Real) As Real
+	Do While (Angle < lowerBound)
+	  Angle = Angle + 360
+	Loop
+
+	Do While (Angle >= upperBound)
+	  Angle = Angle - 360
+	Loop
+
+	GTBoundAngle = Angle
+Fend
+
+
+
+Function GTAngleToPerfectOrientationAngle(Angle As Real) As Real
+	'' BoundAngle to [0,360)
+	Angle = GTBoundAngle(0, 360, Angle)
+	
+	Integer OrientationIndex
+	OrientationIndex = Int(Angle / 90.0 + 0.5)
+	
+	GTAngleToPerfectOrientationAngle = OrientationIndex * 90.0
+	
+Fend
+

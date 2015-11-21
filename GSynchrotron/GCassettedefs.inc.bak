@@ -1,0 +1,5 @@
+#define LEFT_CASSETTE 0
+#define MIDDLE_CASSETTE 0
+#define RIGHT_CASSETTE 0
+#define NUM_CASSETTES 4
+
