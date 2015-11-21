@@ -1,3 +1,4 @@
+#include "forcedefs.inc"
 #include "mxrobotdefs.inc"
 #include "GTCassettedefs.inc"
 #include "GTReporterdefs.inc"
@@ -111,7 +112,7 @@ Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, pu
 	Real PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom
 	Real AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust
 	
-	GTperfectPuckOffset(cassette_position, portIndex, puckIndex, distance, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
+	GTperfectPuckOffset(cassette_position, portIndex, puckIndex, distanceFromPuckSurface, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
 
 	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom)
 	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
@@ -122,16 +123,17 @@ Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, pu
 	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
 Fend
 
-Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, standbyPointNum As Integer, ByRef perfectX As Real, ByRef perfectY As Real, ByRef perfectZ As Real, ByRef perfectU As Real)
+Function GTgetAdaptorAngleErrorProbePoints(cassette_position As Integer, perfectPointNum As Integer, standbyPointNum As Integer, destinationPointNum As Integer)
 	Real angle_to_puck_center
 	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(PUCK_A)
 	
+	Real perfectU
 	perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
 	
-	Real puck_center_x, puck_center_y, puck_center_z
-	puck_center_x = SUPERPUCK_WIDTH * Cos(DegToRad(angle_to_puck_center))
-	puck_center_y = SUPERPUCK_WIDTH * Sin(DegToRad(angle_to_puck_center))
-	puck_center_z = m_SP_PuckCenter_Height(PUCK_A)
+	Real superpuck_edge_x, superpuck_edge_y, superpuck_edge_z
+	superpuck_edge_x = SUPERPUCK_WIDTH * Cos(DegToRad(angle_to_puck_center))
+	superpuck_edge_y = SUPERPUCK_WIDTH * Sin(DegToRad(angle_to_puck_center))
+	superpuck_edge_z = m_SP_PuckCenter_Height(PUCK_A)
 	
 	Real offsetfromPortDeepEnd, offsetXfromPortDeepEnd, offsetYfromPortDeepEnd
 	offsetfromPortDeepEnd = m_SP_Puck_Thickness(PUCK_A)
@@ -139,32 +141,44 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, standbyP
 	offsetYfromPortDeepEnd = offsetfromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
 	
 	Real dx, dy, dz
-	dx = (puck_center_x + offsetXfromPortDeepEnd) * CASSETTE_SHRINK_IN_LN2
-	dy = (puck_center_y + offsetYfromPortDeepEnd) * CASSETTE_SHRINK_IN_LN2
-	dz = puck_center_z * CASSETTE_SHRINK_IN_LN2
+	dx = (superpuck_edge_x + offsetXfromPortDeepEnd) * CASSETTE_SHRINK_IN_LN2
+	dy = (superpuck_edge_y + offsetYfromPortDeepEnd) * CASSETTE_SHRINK_IN_LN2
+	dz = superpuck_edge_z * CASSETTE_SHRINK_IN_LN2
 	
+	'' Set perfect point	
+	Real perfectX, perfectY, perfectZ
 	GTsetTiltOffsets(cassette_position, dx, dy, dz)
 	perfectX = g_CenterX(cassette_position) + g_TiltOffsets(0)
 	perfectY = g_CenterY(cassette_position) + g_TiltOffsets(1)
 	perfectZ = g_BottomZ(cassette_position) + g_TiltOffsets(2)
-		
-	'' Set standby point
-	Real sinU, cosU, standbyXoffset, standbyYoffset
+	P(perfectPointNum) = XY(perfectX, perfectY, perfectZ, perfectU) /R
+
+
+	Real sinU, cosU
 	sinU = Sin(DegToRad(perfectU)); cosU = Cos(DegToRad(perfectU))
+	'' Set standby point
+	Real standbyXoffset, standbyYoffset
 	standbyXoffset = PROBE_STANDBY_DISTANCE * cosU
 	standbyYoffset = PROBE_STANDBY_DISTANCE * sinU
 	P(standbyPointNum) = XY(perfectX - standbyXoffset, perfectY - standbyYoffset, perfectZ, perfectU) /R
+	
+	'' Set destination point
+	Real destinationXoffset, destinationYoffset
+	destinationXoffset = PROBE_ADAPTOR_DISTANCE * cosU
+	destinationYoffset = PROBE_ADAPTOR_DISTANCE * sinU
+	P(destinationPointNum) = XY(perfectX + destinationXoffset, perfectY + destinationYoffset, perfectZ, perfectU) /R
 Fend
 
 
 Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 	GTUpdateClient(TASK_ENTERED_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection(" + GTCassetteName$(cassette_position) + ")")
 
-	Integer standbyPoint
-	Real perfectX, perfectY, perfectZ, perfectU
+	Integer standbyPoint, perfectPoint, destinationPoint
 
 	standbyPoint = 52
-	GTgetAdaptorAngleErrorProbePoint(cassette_position, standbyPoint, ByRef perfectX, ByRef perfectY, ByRef perfectZ, ByRef perfectU)
+	perfectPoint = 102
+	destinationPoint = 103
+	GTgetAdaptorAngleErrorProbePoints(cassette_position, perfectPoint, standbyPoint, destinationPoint)
 
 	Tool 2
 	LimZ g_Jump_LimZ_LN2
@@ -174,6 +188,8 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 	Real scanDistance
 	scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
 	
+	InitForceConstants
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
 		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection failed: error in ForceTouch!")
 		GTprobeAdaptorAngleCorrection = False
@@ -182,7 +198,7 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 
 
 
-
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection(" + GTCassetteName$(cassette_position) + ") completed with error=")
 	GTprobeAdaptorAngleCorrection = True
 Fend
 

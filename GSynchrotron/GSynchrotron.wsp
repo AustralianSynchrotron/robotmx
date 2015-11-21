@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/02 11:26:09:079,DS:0000004442,CS:21885,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="GTCassettedefs.inc"
+ENVT0100,LM:2015/11/03 01:27:55:500,DS:0000004450,CS:31564,MA:00-0C-29-BE-C0-E6,EI:           
+sActiveChild="GTSuperPuckUtilities.prg"
 bMdiMaximized=True
 nProgramFileCount=16
 ProgramFile1 {
@@ -159,7 +159,7 @@ ProgramFile14 {
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -248,7 +248,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=152
 		nTop=88
@@ -258,7 +258,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
