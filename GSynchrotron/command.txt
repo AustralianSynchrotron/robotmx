@@ -454,4 +454,49 @@ P94  = XY(    94.857,  375.656, -222.614,   90.647 )  /R /0
 > jump p52
 !!Error: 4031, Cannot execute a motion command when the motor is in the off state.
 > jump p52
+> print g_RunResult$
+GTScanCassetteTop: ForceTouch failed to detect Cassette!
+> jump p5
+> jump p15
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> jump p15
+> jump P43
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> jump p46
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> jump P35
+> jump p42
+> print P42
+ X:  -84.226 Y:  395.501 Z: -286.865 U:    0.000 V:    0.000 W:    0.000 /R /0
+> print Here
+ X:  -84.249 Y:  395.483 Z: -286.871 U:    0.042 V:    0.000 W:    0.000 /R /0
+> jump p35
+> jump p45
+> ExecuteCommand(BGMain)
+!!Error: 3100, Syntax error.
+> m_spel.ExecuteCommand("BGMain")
+!!Error: 3100, Syntax error.
+> Eval("BGMain")
+!!Error: 3100, Syntax error.
+> Xqt BGMain
+!!Error: 3804, Specified command cannot be executed from the Command window.
+> print here
+ X: -335.395 Y:  379.834 Z:  -32.024 U:  203.141 V:    0.000 W:    0.000 /R /0
+> P18 = Here
+> savepoints "robot1.pts"
+> jump p1
+> jump p0
+> jump p1
+> jump p3
+> jump p3 :z(-10)
+> jump p3
+> move p6
+> jump p1
+> jump p6
+> move p3
+> jump p1
+> reset err
+!!Error: 3100, Syntax error.
+> reset Error
+> motor Off
 > 

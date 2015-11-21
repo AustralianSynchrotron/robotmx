@@ -1,0 +1,14 @@
+'' Reporting Level
+#define ERROR_LEVEL 0
+#define WARNING_LEVEL 1
+#define INFO_LEVEL 2
+#define DEBUG_LEVEL 3
+
+'' Report Type
+#define TASK_ENTERED_REPORT
+#define TASK_PROGRESS_REPORT
+#define TASK_DONE_REPORT
+#define TASK_WARNING_REPORT
+#define TASK_FAILURE_REPORT
+#define TASK_MESSAGE_REPORT
+

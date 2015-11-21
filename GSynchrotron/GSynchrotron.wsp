@@ -1,7 +1,7 @@
-ENVT0100,LM:2015/10/15 06:44:46:169,DS:0000003708,CS:14662,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="GTSetupPoints.prg"
+ENVT0100,LM:2015/10/18 23:41:53:328,DS:0000003979,CS:10512,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Command"
 bMdiMaximized=True
-nProgramFileCount=12
+nProgramFileCount=13
 ProgramFile1 {
 	sName="magnet.prg"
 	bOpened=True
@@ -71,7 +71,7 @@ ProgramFile6 {
 ProgramFile7 {
 	sName="GTSetupPoints.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -134,7 +134,18 @@ ProgramFile12 {
 		nHeight=260
 	}
 }
-nIncludeFileCount=4
+ProgramFile13 {
+	sName="GTReporter.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+nIncludeFileCount=5
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bOpened=True
@@ -179,6 +190,17 @@ IncludeFile4 {
 		nHeight=260
 	}
 }
+IncludeFile5 {
+	sName="GTReporterdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
@@ -195,12 +217,12 @@ sActiveWindow="main.prg"
 CmdWindow {
 	bOpened=True
 	Window {
-		nLeft=289
-		nTop=46
+		nLeft=228
+		nTop=57
 		nWidth=897
 		nHeight=406
 	}
-	nWinState=0
+	nWinState=2
 }
 RunWindow {
 	bOpened=True

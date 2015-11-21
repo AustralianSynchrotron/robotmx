@@ -1,14 +1,14 @@
-ENVT0100,LM:2015/10/15 06:37:54:872,DS:0000007314,CS:23569,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/10/16 03:55:22:762,DS:0000007476,CS:29977,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="cf90ef4f-b7ca-434a-b7fd-b86bb8ddb8d2"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="10/15/2015 3:37:53 PM"
+	sLastModified="10/16/2015 12:55:21 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
-	bRebuildRequired=False
+	bRebuildRequired=True
 	bClearControllerProject=False
 	bClearGlobalPreserves=False
 }
@@ -29,7 +29,7 @@ UserErrorsFile {
 	nChecksum=0
 }
 nRobotCount=1
-nProgramFileCount=12
+nProgramFileCount=13
 ProgramFile1 {
 	sName="magnet.prg"
 	bCompiled=True
@@ -82,7 +82,7 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="GTCassetteProbing.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile12 {
@@ -90,7 +90,12 @@ ProgramFile12 {
 	bCompiled=True
 	bStoreInController=True
 }
-nIncludeFileCount=4
+ProgramFile13 {
+	sName="GTReporter.prg"
+	bCompiled=False
+	bStoreInController=True
+}
+nIncludeFileCount=5
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bStoreInController=True
@@ -105,6 +110,10 @@ IncludeFile3 {
 }
 IncludeFile4 {
 	sName="GTCassettedefs.inc"
+	bStoreInController=True
+}
+IncludeFile5 {
+	sName="GTReporterdefs.inc"
 	bStoreInController=True
 }
 nPointFileCount=1

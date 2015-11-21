@@ -39,7 +39,7 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	GTScanCassetteTop = True
 Fend
 
-Function GTtestCassetteScan()
+Function GTtestCassetteScan(cassette_position As Integer)
 	Integer standbyPointNum
 	Real scanZdistance, cassetteHeight
 	String status$
@@ -50,7 +50,7 @@ Function GTtestCassetteScan()
 	
 	Tool 1
 	
-	GTSetScanCassetteTopStandbyPoint(LEFT_CASSETTE, standbyPointNum, ByRef scanZdistance)
+	GTSetScanCassetteTopStandbyPoint(cassette_position, standbyPointNum, ByRef scanZdistance)
 	InitForceConstants
 	''ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If GTScanCassetteTop(standbyPointNum, scanZdistance, ByRef cassetteHeight, ByRef status$) Then
@@ -58,5 +58,19 @@ Function GTtestCassetteScan()
 	Else
 		g_RunResult$ = status$
 	EndIf
+Fend
+
+Function AAATestGTFunction
+	GTExecute("GTtestCassetteScan", "RIGHT_CASSETTE")
+Fend
+
+Function GTExecute(function_to_call$ As String, func_args$ As String)
+	Integer errCode
+	String command$, result$
+	command$ = function_to_call$ + "(" + func_args$ + ")"
+	errCode = EVal("Jump P18")
+	Print command$
+	Print Str$(errCode)
+	Print result$
 Fend
 
