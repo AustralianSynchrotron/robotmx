@@ -12,7 +12,8 @@ Real m_SP_Puck_RotationAngle(NUM_PUCKS)
 Real m_SP_Ports_1_5_Circle_Radius
 Real m_SP_Ports_6_16_Circle_Radius
 
-Real m_adaptorAngleError(NUM_CASSETTES, NUM_PUCKS)
+'' puck angle error is with respect to PUCK_A, PUCK_B
+Real m_puckAngleError(NUM_CASSETTES, NUM_PUCKS)
 
 Global Boolean g_PuckPresent(NUM_CASSETTES, NUM_PUCKS)
 Global Real g_SampleDistancefromPuckSurface(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
@@ -62,12 +63,84 @@ Function GTpuckName$(puckIndex As Integer)
 	EndIf
 Fend
 
+Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer) As Boolean
+	Real angle_to_puck_center
+	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex)
+	
+	Real perfectU
+	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
+		perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
+	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
+		perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center + 90) - g_UForNormalStandby(cassette_position)))
+	EndIf
+	
+	Real puck_edge_x, puck_edge_y, puck_edge_z
+	Real positioningPoint_from_SPCenter
+	positioningPoint_from_SPCenter = SUPERPUCK_WIDTH - 10
+	puck_edge_x = positioningPoint_from_SPCenter * Cos(DegToRad(angle_to_puck_center))
+	puck_edge_y = positioningPoint_from_SPCenter * Sin(DegToRad(angle_to_puck_center))
+	puck_edge_z = SUPERPUCK_HEIGHT /2
+	
+	
+	Real offsetFromPortDeepEnd, offsetXfromPortDeepEnd, offsetYfromPortDeepEnd
+	offsetFromPortDeepEnd = m_SP_Puck_Thickness(puckIndex)
+	offsetXfromPortDeepEnd = offsetFromPortDeepEnd * Cos(DegToRad(angle_to_puck_center + 90))
+	offsetYfromPortDeepEnd = offsetFromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
+	
+	Real dx, dy, dz
+	dx = (puck_edge_x + offsetXfromPortDeepEnd) * CASSETTE_SHRINK_FACTOR
+	dy = (puck_edge_y + offsetYfromPortDeepEnd) * CASSETTE_SHRINK_FACTOR
+	dz = puck_edge_z * CASSETTE_SHRINK_FACTOR
+	
+	
+	Integer standbyPoint, perfectPoint
+	perfectPoint = 102
+	standbyPoint = 52
+	
+	'' Set perfect point	
+	Real perfectX, perfectY, perfectZ
+	GTsetTiltOffsets(cassette_position, dx, dy, dz)
+	perfectX = g_CenterX(cassette_position) + g_TiltOffsets(0)
+	perfectY = g_CenterY(cassette_position) + g_TiltOffsets(1)
+	perfectZ = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+	P(perfectPoint) = XY(perfectX, perfectY, perfectZ, perfectU) /R
+
+
+	Real sinU, cosU
+	sinU = Sin(DegToRad(perfectU)); cosU = Cos(DegToRad(perfectU))
+	'' Set standby point
+	Real standbyXoffset, standbyYoffset
+	standbyXoffset = PROBE_STANDBY_DISTANCE * cosU
+	standbyYoffset = PROBE_STANDBY_DISTANCE * sinU
+	P(standbyPoint) = XY(perfectX - standbyXoffset, perfectY - standbyYoffset, perfectZ, perfectU) /R
+	
+	
+	Tool PLACER_TOOL
+	LimZ g_Jump_LimZ_LN2
+
+	Jump P(standbyPoint)
+	
+	Real scanDistance
+	scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
+	
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTSPpositioningMove failed: error in ForceTouch!")
+		GTSPpositioningMove = False
+		Exit Function
+	EndIf
+
+	Move P(standbyPoint)
+	GTSPpositioningMove = True
+Fend
+
+
 '' distanceFromPuckSurface > 0 is the offset away from the puck
 '' distanceFromPuckSurface < 0 is the offset into the puck (port)
 Function GTperfectSPPortOffset(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, ByRef dx As Real, ByRef dy As Real, ByRef dz As Real, ByRef u As Real)
 	'' Horizontal angle from Cassette Center to Puck Center
 	Real angle_to_puck_center
-	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex) + m_adaptorAngleError(cassette_position, puckIndex)
+	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex) + m_puckAngleError(cassette_position, puckIndex)
 	
 	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
 		u = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
@@ -142,8 +215,10 @@ Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, pu
 	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
 Fend
 
+
+
 Real m_HorzDistancePuckCenterToSPEdge(NUM_PUCKS)
-Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckIndex As Integer, perfectPointNum As Integer, standbyPointNum As Integer, destinationPointNum As Integer)
+Function GTgetPuckAngleErrorProbePoint(cassette_position As Integer, puckIndex As Integer, perfectPointNum As Integer, standbyPointNum As Integer, destinationPointNum As Integer)
 	Real angle_to_puck_center
 	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex)
 	
@@ -234,110 +309,96 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckInde
 	P(destinationPointNum) = XY(perfectX + destinationXoffset, perfectY + destinationYoffset, perfectZ, perfectU) /R
 Fend
 
-Real m_error_from_perfectPoint_in_mm(NUM_PUCKS)
-Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
-	GTUpdateClient(TASK_ENTERED_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection(" + GTCassetteName$(cassette_position) + ")")
+Function GTprobePuckAngleCorrection(cassette_position As Integer, puckIndex As Integer) As Boolean
+	GTUpdateClient(TASK_ENTERED_REPORT, MID_LEVEL_FUNCTION, "GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + ":" + GTpuckName$(puckIndex) + ")")
 
 	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 
 	Integer standbyPoint, perfectPoint, destinationPoint
-
 	perfectPoint = 102
 	standbyPoint = 52
 	destinationPoint = 53
 	
-	Integer puckIndex
-	For puckIndex = 0 To NUM_PUCKS - 1
-		GTgetAdaptorAngleErrorProbePoint(cassette_position, puckIndex, perfectPoint, standbyPoint, destinationPoint)
+	GTgetPuckAngleErrorProbePoint(cassette_position, puckIndex, perfectPoint, standbyPoint, destinationPoint)
+	
+	Jump P(standbyPoint)
+	
+	Real scanDistance
+	scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
+	
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTprobePuckAngleCorrection failed: error in ForceTouch!")
+		GTprobePuckAngleCorrection = False
+		Exit Function
+	EndIf
 		
-		Jump P(standbyPoint)
-		
-		Real scanDistance
-		scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
-		
-		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
-		If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
-			GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection failed: error in ForceTouch!")
-			GTprobeAdaptorAngleCorrection = False
-			Exit Function
-		EndIf
-			
+	Real error_from_perfectPoint_in_mm
+	error_from_perfectPoint_in_mm = Dist(RealPos, P(perfectPoint))
+	
+	'' Determine sign of error_from_perfectPoint_in_mm
+	'' If cassette is touched before reaching perfectPoint, then -(minus) sign
+	'' ElseIf cassette is touched only going further after perfectPoint, then +(plus) sign
+	Real distance_here_to_destination, distance_perfect_to_destination
+	distance_here_to_destination = Dist(RealPos, P(destinationPoint))
+	distance_perfect_to_destination = Dist(P(perfectPoint), P(destinationPoint))
+	If (distance_here_to_destination > distance_perfect_to_destination) Then
+		error_from_perfectPoint_in_mm = -error_from_perfectPoint_in_mm
+	EndIf
+	
+	GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobePuckAngleCorrection: " + GTpuckName$(puckIndex) + " error_from_perfectPoint_in_mm=" + Str$(error_from_perfectPoint_in_mm))
 
-		m_error_from_perfectPoint_in_mm(puckIndex) = Dist(RealPos, P(perfectPoint))
-		
-		'' Determine sign of error_from_perfectPoint_in_mm
-		'' If cassette is touched before reaching perfectPoint, then -(minus) sign
-		'' ElseIf cassette is touched only going further after perfectPoint, then +(plus) sign
-		Real distance_here_to_destination, distance_perfect_to_destination
-		distance_here_to_destination = Dist(RealPos, P(destinationPoint))
-		distance_perfect_to_destination = Dist(P(perfectPoint), P(destinationPoint))
-		If (distance_here_to_destination > distance_perfect_to_destination) Then
-			m_error_from_perfectPoint_in_mm(puckIndex) = -m_error_from_perfectPoint_in_mm(puckIndex)
-		EndIf
-		
-		GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection: " + GTpuckName$(puckIndex) + " error_from_perfectPoint_in_mm=" + Str$(m_error_from_perfectPoint_in_mm(puckIndex)))
+	SetVerySlowSpeed
+	Move P(standbyPoint)
 
-		SetVerySlowSpeed
-		Move P(standbyPoint)
-	Next
-
-	If Not GTsetupAdaptorAngleCorrection(cassette_position) Then
-		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection failed: error in GTsetupAdaptorAngleCorrection!")
-		GTprobeAdaptorAngleCorrection = False
+	If Not GTsetupPuckAngleCorrection(cassette_position, puckIndex, error_from_perfectPoint_in_mm) Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTprobePuckAngleCorrection failed: error in GTsetupPuckAngleCorrection!")
+		GTprobePuckAngleCorrection = False
 		Exit Function
 	EndIf
 	
-	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection:(" + GTCassetteName$(cassette_position) + ") completed.")
-	GTprobeAdaptorAngleCorrection = True
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTprobePuckAngleCorrection:(" + GTCassetteName$(cassette_position) + ":" + GTpuckName$(puckIndex) + ") completed.")
+	GTprobePuckAngleCorrection = True
 Fend
 
-Function GTsetupAdaptorAngleCorrection(cassette_position As Integer) As Boolean
+Function GTsetupPuckAngleCorrection(cassette_position As Integer, puckIndex As Integer, error_from_perfectPoint_in_mm As Real) As Boolean
 	''because error is very small, for error_from_perfectPoint_in_mm < 0.8mm
 	''the error between accurate calculation and estimation is about 0.4%
 	''so we will go with estimation
 	''the accurate formula is in the document adaptor_error.xls
-	Real adaptorAngleError, avg_adaptorAngleError
 
-	Integer puckIndex
-	avg_adaptorAngleError = 0
-	For puckIndex = 0 To NUM_PUCKS - 1
-		m_adaptorAngleError(cassette_position, puckIndex) = 0
+	m_puckAngleError(cassette_position, puckIndex) = 0
+
+	Real puckAngleError
+	'' Horizontal distance between Probe point and the vertical line through SuperPuck Center 
+	Real HorzDistSPCenterToProbePoint
+	HorzDistSPCenterToProbePoint = SP_CENTER_TO_PUCK_CENTER_LENGTH + Abs(m_HorzDistancePuckCenterToSPEdge(puckIndex))
+	If (error_from_perfectPoint_in_mm >= 0) Then
+		'' magnet edge is pushing adaptor edge
+		puckAngleError = RadToDeg(-error_from_perfectPoint_in_mm / (HorzDistSPCenterToProbePoint - MAGNET_HEAD_RADIUS))
+	Else
+		'' magnet center is pushing adaptor edge
+		puckAngleError = RadToDeg(-error_from_perfectPoint_in_mm / HorzDistSPCenterToProbePoint)
+	EndIf
+		
+	'' Because PUCK_C and PUCK_D are probed from the opposite direction, the angle error is in the opposite direction
+	If (puckIndex = PUCK_C) Or (puckIndex = PUCK_D) Then
+		puckAngleError = -puckAngleError
+	EndIf
 	
-		'' Horizontal distance between Probe point and the vertical line through SuperPuck Center 
-		Real HorzDistSPCenterToProbePoint
-		HorzDistSPCenterToProbePoint = SP_CENTER_TO_PUCK_CENTER_LENGTH + Abs(m_HorzDistancePuckCenterToSPEdge(puckIndex))
-		If (m_error_from_perfectPoint_in_mm(puckIndex) >= 0) Then
-			'' magnet edge is pushing adaptor edge
-			adaptorAngleError = RadToDeg(-m_error_from_perfectPoint_in_mm(puckIndex) / (HorzDistSPCenterToProbePoint - MAGNET_HEAD_RADIUS))
-		Else
-			'' magnet center is pushing adaptor edge
-			adaptorAngleError = RadToDeg(-m_error_from_perfectPoint_in_mm(puckIndex) / HorzDistSPCenterToProbePoint)
-		EndIf
-			
-		'' Because PUCK_C and PUCK_D are probed from the opposite direction, the angle error is in the opposite direction
-		If (puckIndex = PUCK_C) Or (puckIndex = PUCK_D) Then
-			adaptorAngleError = -adaptorAngleError
-		EndIf
-		
-		GTUpdateClient(TASK_MESSAGE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + ":" + GTpuckName$(puckIndex) + " adaptorAngleError=" + Str$(adaptorAngleError))
-		'' adaptor Angle Error should be less than 1.02 degrees
-		If Abs(adaptorAngleError) > 1.02 Then
-			GTUpdateClient(TASK_FAILURE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + ":" + GTpuckName$(puckIndex) + " adaptorAngleError=" + Str$(adaptorAngleError) + "> 1.02 degrees")
-			GTsetupAdaptorAngleCorrection = False
-			Exit Function
-		EndIf
-		
-		m_adaptorAngleError(cassette_position, puckIndex) = adaptorAngleError
-		
-		avg_adaptorAngleError = avg_adaptorAngleError + adaptorAngleError
-	Next
+	GTUpdateClient(TASK_MESSAGE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupPuckAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + ":" + GTpuckName$(puckIndex) + " puckAngleError=" + Str$(puckAngleError))
+	'' adaptor Angle Error should be less than 1.02 degrees
+	If Abs(puckAngleError) > 1.02 Then
+		GTUpdateClient(TASK_FAILURE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupPuckAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + ":" + GTpuckName$(puckIndex) + " puckAngleError=" + Str$(puckAngleError) + "> 1.02 degrees")
+		GTsetupPuckAngleCorrection = False
+		Exit Function
+	EndIf
 	
-	avg_adaptorAngleError = avg_adaptorAngleError / NUM_PUCKS
-		
-	''m_adaptorAngleError(cassette_position) = avg_adaptorAngleError
-	GTUpdateClient(TASK_DONE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + " avg_adaptorAngleError=" + Str$(avg_adaptorAngleError) + "degrees")
-	GTsetupAdaptorAngleCorrection = True
+	m_puckAngleError(cassette_position, puckIndex) = puckAngleError
+	
+	GTUpdateClient(TASK_DONE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupPuckAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + ":" + GTpuckName$(puckIndex))
+	GTsetupPuckAngleCorrection = True
 Fend
 
 
@@ -375,7 +436,7 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer)
 
 	GTsetSPPuckProbeStandbyPoint(cassette_position, puckIndex, standbyPoint, ByRef maxDistanceToScan)
 	
-	Jump P(standbyPoint)
+	Move P(standbyPoint)
 	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
@@ -412,12 +473,10 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	Real maxDistanceToScan
 	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK
 	
-	'' Jump to a new puck otherwise Move would make the tong hit the puck
+	Move P(standbyPoint)
+
 	If portIndex = 0 Then
-		Jump P(standbyPoint)
 		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
-	Else
-		Move P(standbyPoint)
 	EndIf
 		
 	g_SP_SamplePresent(cassette_position, puckIndex, portIndex) = SAMPLE_ABSENT

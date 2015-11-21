@@ -3,7 +3,7 @@
 #include "GTSuperPuckdefs.inc"
 #include "GTReporterdefs.inc"
 
-Function GTProbeOneCassette(cassette_position As Integer)
+Function GTProbeOneCassette(cassette_position As Integer) As Boolean
 	Integer standbyPointNum
 	Real scanZdistance
 	Real cassette_top_Z_value, scanned_cassette_height
@@ -24,6 +24,7 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	Else
 		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop failed: error in GTScanCassetteTop!")
 		g_RunResult$ = "error GTProbeOneCassette->GTScanCassetteTop"
+		GTProbeOneCassette = False
 		Exit Function
 	EndIf
 
@@ -32,6 +33,7 @@ Function GTProbeOneCassette(cassette_position As Integer)
 		If guessedCassetteType_height_error > MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY Then
 			GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeOneCassette->GTCassetteTypeFromHeight failed: guessedCassetteType_height_error > MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY!")
 			g_RunResult$ = "error GTProbeOneCassette->GTCassetteTypeFromHeight: guessedCassetteType_height_error > MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY"
+			GTProbeOneCassette = False
 			Exit Function
 		Else
 			GTUpdateClient(TASK_MESSAGE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeOneCassette->GTCassetteTypeFromHeight: guessedCassetteType_height_error < MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY. Starting comprehensive scan for Cassette Type")
@@ -42,30 +44,24 @@ Function GTProbeOneCassette(cassette_position As Integer)
 				If Not GTCassetteTypeFromHeight(cassette_position, averageCassetteHeight, ByRef guessedCassetteType, ByRef guessedCassetteType_height_error) Then
 					g_RunResult$ = "error GTCassetteTypeFromHeight: averageHeight > ACCPT_ERROR_IN_CASSETTE_HEIGHT"
 					GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeOneCassette->GTCassetteTypeFromHeight failed: guessedCassetteType_height_error=" + Str$(guessedCassetteType_height_error) + " for averageCassetteHeight=" + Str$(averageCassetteHeight))
+					GTProbeOneCassette = False
 					Exit Function
 				EndIf
 			Else
 				g_RunResult$ = "error GTProbeOneCassette->GTfindAverageCassetteHeight!"
 				GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeOneCassette failed: error in GTfindAverageCassetteHeight!")
+				GTProbeOneCassette = False
 				Exit Function
 			EndIf
 		EndIf
 	EndIf
 	
-	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		g_RunResult$ = "progress GTProbeOneCassette->GTprobeAdaptorAngleCorrection"
-		If Not GTprobeAdaptorAngleCorrection(cassette_position) Then
-			g_RunResult$ = "error GTProbeOneCassette->GTprobeAdaptorAngleCorrection!"
-			GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeOneCassette failed: error in GTprobeAdaptorAngleCorrection!")
-			Exit Function
-		EndIf
-	EndIf
-	
 	SetVerySlowSpeed
 	g_RunResult$ = "success GTProbeOneCassette"
+	GTProbeOneCassette = True
 Fend
 
-Function GTProbeAllPorts(cassette_position As Integer)
+Function GTProbeAllPorts(cassette_position As Integer) As Boolean
 	Integer rowIndex, columnIndex
 
 	Select g_CassetteType(cassette_position)
@@ -91,6 +87,15 @@ Function GTProbeAllPorts(cassette_position As Integer)
 		Case SUPERPUCK_CASSETTE
 			Integer puckIndex, portIndex
 			For puckIndex = 0 To NUM_PUCKS - 1
+
+				g_RunResult$ = "progress GTProbeAllPorts->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
+				If Not GTprobePuckAngleCorrection(cassette_position, puckIndex) Then
+					g_RunResult$ = "error GTProbeAllPorts->GTprobePuckAngleCorrection!"
+					GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeAllPorts failed: error in GTprobePuckAngleCorrection!")
+					GTProbeAllPorts = False
+					Exit Function
+				EndIf
+
 				g_RunResult$ = "progress GTProbeAllPorts->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
 				GTprobeSPPuck(cassette_position, puckIndex)
 			
@@ -101,9 +106,9 @@ Function GTProbeAllPorts(cassette_position As Integer)
 					Next
 				EndIf
 			Next
-			
 	Send
 	g_RunResult$ = "success GTProbeAllPorts(" + GTCassetteName$(cassette_position) + ")"
+	GTProbeAllPorts = True
 Fend
 
 Function ResetPorts(cassette_position As Integer)
@@ -132,10 +137,13 @@ Function GTtestCassetteScan(cassette_position As Integer)
 	''Remove after defining Gonio point
 	P21 = XY(0, 0, 0, 0)
 	
-	GTInitialize
+	If Not GTInitialize Then
+		Exit Function
+	EndIf
 	
-	g_RunResult$ = "progress GTtestCassetteScan->GTProbeOneCassette"
-	GTProbeOneCassette(cassette_position)
+	If Not GTProbeOneCassette(cassette_position) Then
+		Exit Function
+	EndIf
 	
 	GTProbeAllPorts(cassette_position)
 Fend
