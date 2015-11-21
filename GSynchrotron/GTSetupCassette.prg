@@ -1,4 +1,5 @@
 #include "mxrobotdefs.inc"
+#include "GTGenericdefs.inc"
 #include "GTCassettedefs.inc"
 #include "GTReporterdefs.inc"
 
@@ -18,16 +19,6 @@ Global Real g_CenterY(NUM_CASSETTES)
 Global Real g_BottomZ(NUM_CASSETTES)
 
 Global Real g_AngleOffset(NUM_CASSETTES)
-
-Function GTCassetteName$(cassette_position As Integer) As String
-	If cassette_position = LEFT_CASSETTE Then
-		GTCassetteName$ = "left_cassette"
-	ElseIf cassette_position = MIDDLE_CASSETTE Then
-		GTCassetteName$ = "middle_cassette"
-	ElseIf cassette_position = RIGHT_CASSETTE Then
-		GTCassetteName$ = "right_cassette"
-	EndIf
-Fend
 
 Function GTSetupDirection(cassette_position As Integer, column_A_Angle As Real, standbyU As Real, secondaryStandbyU As Real)
 	g_AngleOfFirstColumn(cassette_position) = column_A_Angle

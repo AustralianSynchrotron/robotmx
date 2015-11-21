@@ -1,4 +1,6 @@
+#include "GTGenericdefs.inc"
 #include "GTCassettedefs.inc"
+#include "GTSuperPuckdefs.inc"
 #include "GTReporterdefs.inc"
 
 Function GTProbeOneCassette(cassette_position As Integer)
@@ -98,7 +100,31 @@ Function GTProbeAllPorts(cassette_position As Integer)
 	Send
 Fend
 
+Function ResetPorts(cassette_position As Integer)
+	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		Integer puckIndex, portIndex
+		For puckIndex = 0 To NUM_ROWS - 1
+			g_PuckPresent(cassette_position, puckIndex) = False
+			For portIndex = 0 To NUM_PUCK_PORTS - 1
+				g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = 0.0
+				g_SP_SamplePresent(cassette_position, puckIndex, NUM_PUCK_PORTS) = False
+			Next
+		Next
+	Else
+		Integer columnIndex, rowIndex
+		For columnIndex = 0 To NUM_COLUMNS - 1
+			For rowIndex = 0 To NUM_ROWS - 1
+				
+			Next
+		Next
+	EndIf
+Fend
+
 Function GTtestCassetteScan(cassette_position As Integer)
+	
+	''Remove after defining Gonio point
+	P21 = XY(0, 0, 0, 0)
+	
 	GTInitialize
 	
 	g_RunResult$ = "progress GTtestCassetteScan->GTProbeOneCassette"

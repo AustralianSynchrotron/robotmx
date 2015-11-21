@@ -1,6 +1,8 @@
 #include "forcedefs.inc"
 #include "mxrobotdefs.inc"
+#include "GTGenericdefs.inc"
 #include "GTCassettedefs.inc"
+#include "GTSuperPuckdefs.inc"
 #include "GTReporterdefs.inc"
 
 Global Integer g_CassetteType(NUM_CASSETTES)

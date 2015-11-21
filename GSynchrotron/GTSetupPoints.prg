@@ -1,4 +1,5 @@
 #include "mxrobotdefs.inc"
+#include "GTGenericdefs.inc"
 #include "GTCassettedefs.inc"
 #include "GTReporterdefs.inc"
 

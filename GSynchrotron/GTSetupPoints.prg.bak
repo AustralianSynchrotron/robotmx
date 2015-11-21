@@ -58,7 +58,7 @@ Function GTInitMagnetPoints() As Boolean
 	EndIf
 	
 	'' Check Tool 1 (pickerTool) and Tool 2 (placerTool)
-	If Not (GTCheckTool(1) Or GTCheckTool(2)) Then
+	If Not (GTCheckTool(PICKER_TOOL) Or GTCheckTool(PLACER_TOOL)) Then
 		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTInitMagnetPoints: error in GTCheckTool!")
 		GTInitMagnetPoints = False
 		Exit Function

@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/05 07:58:03:108,DS:0000004413,CS:16972,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2015/11/11 11:58:12:937,DS:0000004719,CS:15738,MA:00-0C-29-BE-C0-E6,EI:           
+sActiveChild="GTCassetteUtilities.prg"
 bMdiMaximized=True
 nProgramFileCount=16
 ProgramFile1 {
@@ -82,7 +82,7 @@ ProgramFile7 {
 ProgramFile8 {
 	sName="GTCassetteUtilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -103,7 +103,7 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="GTNumericManipulations.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -178,7 +178,7 @@ ProgramFile16 {
 		nHeight=260
 	}
 }
-nIncludeFileCount=5
+nIncludeFileCount=7
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bOpened=True
@@ -234,6 +234,28 @@ IncludeFile5 {
 		nHeight=260
 	}
 }
+IncludeFile6 {
+	sName="GTSuperPuckdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+IncludeFile7 {
+	sName="GTGenericdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
@@ -248,7 +270,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=152
 		nTop=88
@@ -258,7 +280,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -305,7 +327,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=93
 		nTop=-4
