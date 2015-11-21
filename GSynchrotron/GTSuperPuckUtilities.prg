@@ -182,9 +182,11 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckInde
 	Real HorzDistancePuckCenterToSPEdge, VertDistancePuckCenterToSPEdge
 	spEdgeRadius = m_SP_Puck_Radius(puckIndex) + SP_EDGE_THICKNESS
 	portAnglefromPuckCenter = angleBetweenConsecutivePorts * portIndexInCircle + m_SP_Puck_RotationAngle(puckIndex)
+	''If probe should be on the edge inline with dial set HorzDistancePuckCenterToSPEdge = spEdgeRadius
 	HorzDistancePuckCenterToSPEdge = spEdgeRadius * Cos(DegToRad(portAnglefromPuckCenter))
 	VertDistancePuckCenterToSPEdge = spEdgeRadius * Sin(DegToRad(portAnglefromPuckCenter))
 
+	'' used in GTsetupAdaptorAngleCorrection
 	m_HorzDistancePuckCenterToSPEdge(puckIndex) = HorzDistancePuckCenterToSPEdge
 
 	'' Project to World Coordinates
@@ -291,8 +293,6 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 Fend
 
 Function GTsetupAdaptorAngleCorrection(cassette_position As Integer) As Boolean
-
-	
 	''because error is very small, for error_from_perfectPoint_in_mm < 0.8mm
 	''the error between accurate calculation and estimation is about 0.4%
 	''so we will go with estimation
@@ -304,14 +304,15 @@ Function GTsetupAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 	For puckIndex = 0 To NUM_PUCKS - 1
 		m_adaptorAngleError(cassette_position, puckIndex) = 0
 	
-		Real SPCenter_to_probePoint_length
-		SPCenter_to_probePoint_length = SP_CENTER_TO_PUCK_CENTER_LENGTH + Abs(m_HorzDistancePuckCenterToSPEdge(puckIndex))
+		'' Horizontal distance between Probe point and the vertical line through SuperPuck Center 
+		Real HorzDistSPCenterToProbePoint
+		HorzDistSPCenterToProbePoint = SP_CENTER_TO_PUCK_CENTER_LENGTH + Abs(m_HorzDistancePuckCenterToSPEdge(puckIndex))
 		If (m_error_from_perfectPoint_in_mm(puckIndex) >= 0) Then
 			'' magnet edge is pushing adaptor edge
-			adaptorAngleError = RadToDeg(-m_error_from_perfectPoint_in_mm(puckIndex) / (SPCenter_to_probePoint_length - MAGNET_HEAD_RADIUS))
+			adaptorAngleError = RadToDeg(-m_error_from_perfectPoint_in_mm(puckIndex) / (HorzDistSPCenterToProbePoint - MAGNET_HEAD_RADIUS))
 		Else
 			'' magnet center is pushing adaptor edge
-			adaptorAngleError = RadToDeg(-m_error_from_perfectPoint_in_mm(puckIndex) / SPCenter_to_probePoint_length)
+			adaptorAngleError = RadToDeg(-m_error_from_perfectPoint_in_mm(puckIndex) / HorzDistSPCenterToProbePoint)
 		EndIf
 			
 		'' Because PUCK_C and PUCK_D are probed from the opposite direction, the angle error is in the opposite direction
@@ -338,6 +339,7 @@ Function GTsetupAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 	GTUpdateClient(TASK_DONE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + " avg_adaptorAngleError=" + Str$(avg_adaptorAngleError) + "degrees")
 	GTsetupAdaptorAngleCorrection = True
 Fend
+
 
 Function GTsetSPPuckProbeStandbyPoint(cassette_position As Integer, puckIndex As Integer, standbyPointNum As Integer, ByRef scanDistance As Real)
 	Integer port4Index, port14Index

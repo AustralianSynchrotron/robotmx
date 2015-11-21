@@ -72,15 +72,18 @@ Function GTProbeAllPorts(cassette_position As Integer)
 		Case CALIBRATION_CASSETTE
 			For columnIndex = 0 To NUM_COLUMNS - 1
 				rowIndex = 0
+				g_RunResult$ = "progress GTProbeAllPorts->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
 				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
 
 				rowIndex = NUM_ROWS - 1
+				g_RunResult$ = "progress GTProbeAllPorts->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
 				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
 			Next
 			
 		Case NORMAL_CASSETTE
 			For columnIndex = 0 To NUM_COLUMNS - 1
 				For rowIndex = 0 To NUM_ROWS - 1
+					g_RunResult$ = "progress GTProbeAllPorts->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
 					GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
 				Next
 			Next
@@ -88,16 +91,19 @@ Function GTProbeAllPorts(cassette_position As Integer)
 		Case SUPERPUCK_CASSETTE
 			Integer puckIndex, portIndex
 			For puckIndex = 0 To NUM_PUCKS - 1
+				g_RunResult$ = "progress GTProbeAllPorts->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
 				GTprobeSPPuck(cassette_position, puckIndex)
 			
 				If g_PuckPresent(cassette_position, puckIndex) Then
 					For portIndex = 0 To NUM_PUCK_PORTS - 1
+						g_RunResult$ = "progress GTProbeAllPorts->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(portIndex) + ")"
 						GTprobeSPPort(cassette_position, puckIndex, portIndex)
 					Next
 				EndIf
 			Next
 			
 	Send
+	g_RunResult$ = "success GTProbeAllPorts(" + GTCassetteName$(cassette_position) + ")"
 Fend
 
 Function ResetPorts(cassette_position As Integer)
@@ -128,7 +134,6 @@ Function GTtestCassetteScan(cassette_position As Integer)
 	
 	GTInitialize
 	
-	g_RunResult$ = "progress GTtestCassetteScan->GTProbeOneCassette"
 	GTProbeOneCassette(cassette_position)
 	
 	GTProbeAllPorts(cassette_position)

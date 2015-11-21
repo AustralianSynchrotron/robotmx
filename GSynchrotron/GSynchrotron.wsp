@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/12 07:15:08:303,DS:0000004706,CS:06429,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Network.prg"
+ENVT0100,LM:2015/11/12 23:32:18:695,DS:0000004720,CS:25450,MA:00-0C-29-BE-C0-E6,EI:           
+sActiveChild="GTSuperPuckUtilities.prg"
 bMdiMaximized=True
 nProgramFileCount=16
 ProgramFile1 {
@@ -49,7 +49,7 @@ ProgramFile4 {
 ProgramFile5 {
 	sName="Network.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=34
 		nTop=122
@@ -159,7 +159,7 @@ ProgramFile14 {
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -270,20 +270,20 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=53
-		nTop=62
+		nLeft=152
+		nTop=88
 		nWidth=897
 		nHeight=406
 	}
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=281
-		nTop=31
+		nLeft=0
+		nTop=0
 		nWidth=674
 		nHeight=378
 	}
@@ -302,8 +302,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=842
-		nTop=212
+		nLeft=595
+		nTop=309
 		nWidth=470
 		nHeight=342
 	}
@@ -327,7 +327,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=93
 		nTop=-4
