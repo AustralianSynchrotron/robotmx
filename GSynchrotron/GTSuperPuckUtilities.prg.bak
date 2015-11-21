@@ -315,6 +315,7 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 
+	'' Initial Positioning move before every puck adaptor correction probe
 	GTSPpositioningMove(cassette_position, puckIndex)
 
 	Integer standbyPoint, perfectPoint, destinationPoint
@@ -415,7 +416,7 @@ Function GTsetSPPuckProbeStandbyPoint(cassette_position As Integer, puckIndex As
 	GTsetSPPortPoint(cassette_position, port4Index, puckIndex, PROBE_STANDBY_DISTANCE, temporaryPort4StandbyPoint)
 	GTsetSPPortPoint(cassette_position, port14Index, puckIndex, PROBE_STANDBY_DISTANCE, temporaryPort14StandbyPoint)
 	
-	P(temporaryPuckStandbyPoint) = (P(temporaryPort4StandbyPoint) + P(temporaryPort14StandbyPoint)) /2
+	P(temporaryPuckStandbyPoint) = P(temporaryPort4StandbyPoint) + P(temporaryPort14StandbyPoint)
 	
 	Real standbyX, standbyY, standbyZ, standbyU
 	standbyX = CX(P(temporaryPuckStandbyPoint)) / 2.0

@@ -26,7 +26,7 @@ Function GTInitialize() As Boolean
 	EndIf
 	
 
-	If IN_GRIP_CLOSE And (Not IN_GRIP_OPEN) Then
+	If Sw(IN_GRIP_CLOSE) = 1 And Sw(IN_GRIP_OPEN) = 0 Then
 		'' If Tong is closed, then assume magnet not in tong	
 		GTUpdateClient(TASK_MESSAGE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitialize:Assumed magnet is in tong because gripper is closed.")
 	Else

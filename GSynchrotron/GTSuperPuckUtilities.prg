@@ -135,86 +135,6 @@ Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer)
 Fend
 
 
-'' distanceFromPuckSurface > 0 is the offset away from the puck
-'' distanceFromPuckSurface < 0 is the offset into the puck (port)
-Function GTperfectSPPortOffset(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, ByRef dx As Real, ByRef dy As Real, ByRef dz As Real, ByRef u As Real)
-	'' Horizontal angle from Cassette Center to Puck Center
-	Real angle_to_puck_center
-	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex) + m_adaptorAngleError(cassette_position, puckIndex)
-	
-	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
-		u = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
-	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
-		u = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center + 90) - g_UForNormalStandby(cassette_position)))
-	EndIf
-	
-	Real puck_center_x, puck_center_y, puck_center_z
-	puck_center_x = m_SP_Puck_Radius(puckIndex) * Cos(DegToRad(angle_to_puck_center))
-	puck_center_y = m_SP_Puck_Radius(puckIndex) * Sin(DegToRad(angle_to_puck_center))
-	puck_center_z = m_SP_PuckCenter_Height(puckIndex)
-	
-	Real portCircleRadius, angleBetweenConsecutivePorts
-	Real portIndexInCircle
-	If portIndex < 5 Then
-		portCircleRadius = m_SP_Ports_1_5_Circle_Radius
-		angleBetweenConsecutivePorts = 360.0 / 5
-		portIndexInCircle = portIndex
-	Else
-		portCircleRadius = m_SP_Ports_6_16_Circle_Radius
-		angleBetweenConsecutivePorts = 360.0 / 11
-		portIndexInCircle = portIndex - 5
-	EndIf
-
-	'' Vertical angle from Puck Center to Sample Port Center
-	Real portAnglefromPuckCenter
-	Real HorzDistancePuckCenterToPort, VerticalDistancePuckCenterToPort
-	portAnglefromPuckCenter = angleBetweenConsecutivePorts * portIndexInCircle + m_SP_Puck_RotationAngle(puckIndex)
-	HorzDistancePuckCenterToPort = portCircleRadius * Cos(DegToRad(portAnglefromPuckCenter))
-	VerticalDistancePuckCenterToPort = portCircleRadius * Sin(DegToRad(portAnglefromPuckCenter))
-	
-	'' Project to World Coordinates
-	Real puckCenterToPortCenter_X, puckCenterToPortCenter_Y, puckCenterToPortCenter_Z
-	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
-		puckCenterToPortCenter_X = HorzDistancePuckCenterToPort * Cos(DegToRad(angle_to_puck_center + 180))
-		puckCenterToPortCenter_Y = HorzDistancePuckCenterToPort * Sin(DegToRad(angle_to_puck_center + 180))
-	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
-		puckCenterToPortCenter_X = HorzDistancePuckCenterToPort * Cos(DegToRad(angle_to_puck_center))
-		puckCenterToPortCenter_Y = HorzDistancePuckCenterToPort * Sin(DegToRad(angle_to_puck_center))
-	EndIf
-	puckCenterToPortCenter_Z = VerticalDistancePuckCenterToPort
-
-	Real offsetFromPortDeepEnd, offsetXfromPortDeepEnd, offsetYfromPortDeepEnd
-	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
-		offsetFromPortDeepEnd = m_SP_Puck_Thickness(puckIndex) + distanceFromPuckSurface
-	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
-		offsetFromPortDeepEnd = m_SP_Puck_Thickness(puckIndex) - distanceFromPuckSurface
-	EndIf
-	offsetXfromPortDeepEnd = offsetFromPortDeepEnd * Cos(DegToRad(angle_to_puck_center + 90))
-	offsetYfromPortDeepEnd = offsetFromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
-	
-	dx = puck_center_x + puckCenterToPortCenter_X + offsetXfromPortDeepEnd
-	dy = puck_center_y + puckCenterToPortCenter_Y + offsetYfromPortDeepEnd
-	dz = puck_center_z + puckCenterToPortCenter_Z
-Fend
-
-'' distanceFromPuckSurface > 0 is the offset away from the puck
-'' distanceFromPuckSurface < 0 is the offset into the puck (port)
-Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, pointNum As Integer)
-	Real U
-	Real PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom
-	Real AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust
-	
-	GTperfectSPPortOffset(cassette_position, portIndex, puckIndex, distanceFromPuckSurface, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
-
-	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom)
-	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
-	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + g_TiltOffsets(0)
-	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + g_TiltOffsets(1)
-	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + g_TiltOffsets(2)
-
-	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
-Fend
-
 
 
 Real m_HorzDistancePuckCenterToSPEdge(NUM_PUCKS)
@@ -406,6 +326,86 @@ Function GTsetupAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 Fend
 
 
+'' distanceFromPuckSurface > 0 is the offset away from the puck
+'' distanceFromPuckSurface < 0 is the offset into the puck (port)
+Function GTperfectSPPortOffset(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, ByRef dx As Real, ByRef dy As Real, ByRef dz As Real, ByRef u As Real)
+	'' Horizontal angle from Cassette Center to Puck Center
+	Real angle_to_puck_center
+	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex) + m_adaptorAngleError(cassette_position, puckIndex)
+	
+	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
+		u = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
+	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
+		u = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center + 90) - g_UForNormalStandby(cassette_position)))
+	EndIf
+	
+	Real puck_center_x, puck_center_y, puck_center_z
+	puck_center_x = m_SP_Puck_Radius(puckIndex) * Cos(DegToRad(angle_to_puck_center))
+	puck_center_y = m_SP_Puck_Radius(puckIndex) * Sin(DegToRad(angle_to_puck_center))
+	puck_center_z = m_SP_PuckCenter_Height(puckIndex)
+	
+	Real portCircleRadius, angleBetweenConsecutivePorts
+	Real portIndexInCircle
+	If portIndex < 5 Then
+		portCircleRadius = m_SP_Ports_1_5_Circle_Radius
+		angleBetweenConsecutivePorts = 360.0 / 5
+		portIndexInCircle = portIndex
+	Else
+		portCircleRadius = m_SP_Ports_6_16_Circle_Radius
+		angleBetweenConsecutivePorts = 360.0 / 11
+		portIndexInCircle = portIndex - 5
+	EndIf
+
+	'' Vertical angle from Puck Center to Sample Port Center
+	Real portAnglefromPuckCenter
+	Real HorzDistancePuckCenterToPort, VerticalDistancePuckCenterToPort
+	portAnglefromPuckCenter = angleBetweenConsecutivePorts * portIndexInCircle + m_SP_Puck_RotationAngle(puckIndex)
+	HorzDistancePuckCenterToPort = portCircleRadius * Cos(DegToRad(portAnglefromPuckCenter))
+	VerticalDistancePuckCenterToPort = portCircleRadius * Sin(DegToRad(portAnglefromPuckCenter))
+	
+	'' Project to World Coordinates
+	Real puckCenterToPortCenter_X, puckCenterToPortCenter_Y, puckCenterToPortCenter_Z
+	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
+		puckCenterToPortCenter_X = HorzDistancePuckCenterToPort * Cos(DegToRad(angle_to_puck_center + 180))
+		puckCenterToPortCenter_Y = HorzDistancePuckCenterToPort * Sin(DegToRad(angle_to_puck_center + 180))
+	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
+		puckCenterToPortCenter_X = HorzDistancePuckCenterToPort * Cos(DegToRad(angle_to_puck_center))
+		puckCenterToPortCenter_Y = HorzDistancePuckCenterToPort * Sin(DegToRad(angle_to_puck_center))
+	EndIf
+	puckCenterToPortCenter_Z = VerticalDistancePuckCenterToPort
+
+	Real offsetFromPortDeepEnd, offsetXfromPortDeepEnd, offsetYfromPortDeepEnd
+	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
+		offsetFromPortDeepEnd = m_SP_Puck_Thickness(puckIndex) + distanceFromPuckSurface
+	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
+		offsetFromPortDeepEnd = m_SP_Puck_Thickness(puckIndex) - distanceFromPuckSurface
+	EndIf
+	offsetXfromPortDeepEnd = offsetFromPortDeepEnd * Cos(DegToRad(angle_to_puck_center + 90))
+	offsetYfromPortDeepEnd = offsetFromPortDeepEnd * Sin(DegToRad(angle_to_puck_center + 90))
+	
+	dx = puck_center_x + puckCenterToPortCenter_X + offsetXfromPortDeepEnd
+	dy = puck_center_y + puckCenterToPortCenter_Y + offsetYfromPortDeepEnd
+	dz = puck_center_z + puckCenterToPortCenter_Z
+Fend
+
+'' distanceFromPuckSurface > 0 is the offset away from the puck
+'' distanceFromPuckSurface < 0 is the offset into the puck (port)
+Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, puckIndex As Integer, distanceFromPuckSurface As Real, pointNum As Integer)
+	Real U
+	Real PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom
+	Real AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust
+	
+	GTperfectSPPortOffset(cassette_position, portIndex, puckIndex, distanceFromPuckSurface, ByRef PerfectXoffsetFromCassetteCenter, ByRef PerfectYoffsetFromCassetteCenter, ByRef PerfectZoffsetFromBottom, ByRef U)
+
+	GTsetTiltOffsets(cassette_position, PerfectXoffsetFromCassetteCenter, PerfectYoffsetFromCassetteCenter, PerfectZoffsetFromBottom)
+	'' Set Absolute X,Y,Z Coordinates after GTsetTiltOffsets
+	AbsoluteXafterTiltAjdust = g_CenterX(cassette_position) + g_TiltOffsets(0)
+	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + g_TiltOffsets(1)
+	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + g_TiltOffsets(2)
+
+	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
+Fend
+
 Function GTsetSPPuckProbeStandbyPoint(cassette_position As Integer, puckIndex As Integer, standbyPointNum As Integer, ByRef scanDistance As Real)
 	Integer port4Index, port14Index
 	port4Index = 3;	port14Index = 13
@@ -416,7 +416,7 @@ Function GTsetSPPuckProbeStandbyPoint(cassette_position As Integer, puckIndex As
 	GTsetSPPortPoint(cassette_position, port4Index, puckIndex, PROBE_STANDBY_DISTANCE, temporaryPort4StandbyPoint)
 	GTsetSPPortPoint(cassette_position, port14Index, puckIndex, PROBE_STANDBY_DISTANCE, temporaryPort14StandbyPoint)
 	
-	P(temporaryPuckStandbyPoint) = (P(temporaryPort4StandbyPoint) + P(temporaryPort14StandbyPoint)) /2
+	P(temporaryPuckStandbyPoint) = P(temporaryPort4StandbyPoint) + P(temporaryPort14StandbyPoint)
 	
 	Real standbyX, standbyY, standbyZ, standbyU
 	standbyX = CX(P(temporaryPuckStandbyPoint)) / 2.0

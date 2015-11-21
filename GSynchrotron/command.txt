@@ -88,4 +88,27 @@ move p> 6
 -1
 > g_CassetteType(2)=3
 > 
+> jump p6
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> motor On
+> tool 0
+> jump p6
+> move p3
+> jump here :Z(-100)
+> jump p1
+> jump p0
+> Print IN_GRIP_CLOSE
+ 9
+> Print IN_GRIP_OPEN
+ 8
+> jump p1
+jump> jump p0
+> Print P0
+ X:  490.701 Y:  169.846 Z: -271.510 U:   38.215 V:    0.000 W:    0.000 /R /0
+> Print P1
+ X:  283.968 Y:  387.675 Z:   -9.544 U:   62.174 V:    0.000 W:    0.000 /R /0
+>P201 = (P0+P1)/2
+> Print P201
+ X:  774.668 Y:  557.521 Z: -281.054 U:  100.390 V:    0.000 W:    0.000 /R /2
 > 
