@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/10/30 04:15:14:609,DS:0000007811,CS:26901,MA:00-0C-29-BE-C0-E6,EI:           
+ENVT0100,LM:2015/11/02 00:29:14:017,DS:0000007757,CS:24408,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="10/30/2015 3:15:14 PM"
+	sLastModified="11/2/2015 11:29:13 AM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=True
@@ -62,7 +62,7 @@ ProgramFile6 {
 }
 ProgramFile7 {
 	sName="GTCassetteProbing.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile8 {
@@ -82,22 +82,22 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="GTSetupCassette.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile12 {
 	sName="GTSetupPoints.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile13 {
 	sName="GTReporter.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile14 {
 	sName="GTCassetteType.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile15 {
@@ -457,7 +457,4 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=1
-GuiBuilderFile1 {
-	sName="GSynchrotron.gui"
-}
+nGuiBuilderFileCount=0

@@ -1,1 +1,4 @@
+Function GTInitialize()
+	initSuperPuckConstants
+Fend
 

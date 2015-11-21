@@ -11,6 +11,7 @@ Function GTCheckPoint(pointNum As Integer) As Boolean
 		GTUpdateClient(TASK_FAILURE_REPORT, LOW_LEVEL_FUNCTION, "GTCheckPoint: P" + Str$(pointNum) + " has X or Y coordinate set to 0(zero)!")
 		GTCheckPoint = False
 	Else
+		Print "akfj"
 		GTUpdateClient(TASK_DONE_REPORT, LOW_LEVEL_FUNCTION, "GTCheckPoint: P" + Str$(pointNum) + " is Valid.")
 		GTCheckPoint = True
 	EndIf
@@ -147,7 +148,7 @@ Function GTInitCassettePoints() As Boolean
 		Exit Function
 	EndIf
 	
-	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitCassettePoints completed.")
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTInitCassettePoints completed.")
 	GTInitCassettePoints = True
 Fend
 

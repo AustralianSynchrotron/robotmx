@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/01 12:12:53:714,DS:0000004424,CS:07993,MA:00-0C-29-BE-C0-E6,EI:           
-sActiveChild="GTReporter.prg"
+ENVT0100,LM:2015/11/02 00:48:48:126,DS:0000004426,CS:27975,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="GTCassettedefs.inc"
 bMdiMaximized=True
 nProgramFileCount=16
 ProgramFile1 {
@@ -137,7 +137,7 @@ ProgramFile12 {
 ProgramFile13 {
 	sName="GTReporter.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -215,7 +215,7 @@ IncludeFile3 {
 IncludeFile4 {
 	sName="GTCassettedefs.inc"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -237,7 +237,7 @@ IncludeFile5 {
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -248,17 +248,17 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
-		nLeft=46
-		nTop=134
+		nLeft=152
+		nTop=88
 		nWidth=897
 		nHeight=406
 	}
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
@@ -305,7 +305,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=93
 		nTop=-4
