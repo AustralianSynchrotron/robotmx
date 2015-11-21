@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/11/19 00:00:48:062,DS:0000007957,CS:06421,MA:00-0C-29-BE-C0-E6,EI:           
+ENVT0100,LM:2015/11/19 12:13:35:139,DS:0000007908,CS:12590,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="11/19/2015 11:00:48 AM"
+	sLastModified="11/19/2015 11:13:35 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -465,7 +465,4 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=1
-GuiBuilderFile1 {
-	sName="GSynchrotron.gui"
-}
+nGuiBuilderFileCount=0

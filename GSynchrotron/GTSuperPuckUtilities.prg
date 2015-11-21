@@ -158,10 +158,10 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckInde
 	
 	Real angleBetweenConsecutivePorts
 	Real portIndex, portIndexInCircle
-	If puckIndex = PUCK_A Or puckIndex = PUCK_B Then
+	If puckIndex = PUCK_A Or puckIndex = PUCK_D Then
 		'' probe for adaptor angle correction inline with the line joining puck center to center of port12
 		portIndex = 11
-	Else ''If puckIndex = PUCK_C Or puckIndex = PUCK_D Then
+	Else ''If puckIndex = PUCK_B Or puckIndex = PUCK_C Then
 		'' probe for adaptor angle correction inline with the line joining puck center to center of port11
 		portIndex = 10
 	EndIf
