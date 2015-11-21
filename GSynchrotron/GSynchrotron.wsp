@@ -1,6 +1,6 @@
-ENVT0100,LM:2015/11/19 12:22:49:436,DS:0000004697,CS:13059,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
-bMdiMaximized=True
+ENVT0100,LM:2015/11/19 23:47:22:312,DS:0000004702,CS:26228,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Command"
+bMdiMaximized=False
 nProgramFileCount=16
 ProgramFile1 {
 	sName="magnet.prg"
@@ -270,17 +270,17 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
-		nLeft=152
-		nTop=88
+		nLeft=149
+		nTop=-16
 		nWidth=897
 		nHeight=406
 	}
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -302,8 +302,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=595
-		nTop=309
+		nLeft=33
+		nTop=87
 		nWidth=470
 		nHeight=342
 	}
@@ -327,7 +327,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=93
 		nTop=-4

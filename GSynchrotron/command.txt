@@ -111,4 +111,93 @@ jump> jump p0
 >P201 = (P0+P1)/2
 > Print P201
  X:  774.668 Y:  557.521 Z: -281.054 U:  100.390 V:    0.000 W:    0.000 /R /2
+> print placer_tool
+!!Error: 2513, Specified point label is not defined.
+> print here
+ X:  117.180 Y:  417.849 Z: -228.350 U:   90.345 V:    0.000 W:    0.000 /R /0
+> move p3
+> tool 0
+> move p3
+> print here
+ X:   92.361 Y:  404.874 Z: -222.505 U:   90.345 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.361 Y:  404.874 Z: -222.505 U:   90.345 V:    0.000 W:    0.000 /R /0
+> g_dumbbell_Perfect_cosValue
+!!Error: 3100, Syntax error.
+> print g_dumbbell_Perfect_cosValue
+ 6.12303E-017
+> print g_dumbbell_Perfect_sinValue
+ 1
+> p52 = P3 -Z(Z_FROM_CRADLE_TO_MAGNET / 2) +X(probeDistanceFromCradleCenter * g_dumbbell_Perfect_cosValue) +Y(probeDistanceFromCradleCenter * g_dumbbell_Perfect_sinValue)
+!!Error: 3100, Syntax error.
+> print here
+ X:  112.360 Y:  404.995 Z: -222.505 U:   90.345 V:    0.000 W:    0.000 /R /0
+> print p52
+ X:   92.361 Y:  417.699 Z: -228.350 U:   90.345 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.361 Y:  404.874 Z: -222.505 U:   90.345 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.361 Y:  404.874 Z: -222.505 U:   90.345 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  121.519 Y:  405.050 Z: -222.505 U:   90.345 V:    0.000 W:    0.000 /R /0
+> Print here
+ X:  120.599 Y:  392.219 Z: -234.195 U:   90.345 V:    0.000 W:    0.000 /R /0
+> print p52
+ X:   92.361 Y:  392.049 Z: -234.195 U:   90.345 V:    0.000 W:    0.000 /R /0
+> jump p6
+> Tool 0
+> jump p6
+> move p3
+> Tool 0
+> jump p3
+> move p6
+> jump p3
+> reset error
+> tool 0
+> jump p3
+> jump p6
+> move p3
+> move here :Z(100)
+!!Error: 4001, Arm reached the limit of motion range., Robot 1, Joint 3
+> move here :Z(0)
+> tool
+	   0
+> jump p3
+> Tool 1
+> jump p3
+> 
+> 
+> 
+> print here
+ X:   92.361 Y:  404.874 Z: -222.505 U:   90.345 V:    0.000 W:    0.000 /R /0
+> Tool 0
+> print Here
+ X:   75.622 Y:  387.624 Z: -222.505 U:   85.557 V:    0.000 W:    0.000 /R /0
+> CX(here) - CX(p3)
+!!Error: 3205, Point is not specified.
+> p3
+!!Error: 3100, Syntax error.
+> print P3
+ X:   92.361 Y:  404.874 Z: -222.505 U:   90.345 V:    0.000 W:    0.000 /R /0
+> CX(HERE)
+!!Error: 3205, Point is not specified.
+> print here
+ X:   75.622 Y:  387.624 Z: -222.505 U:   85.557 V:    0.000 W:    0.000 /R /0
+> CX(RealPos)
+!!Error: 3205, Point is not specified.
+> move p3
+> jump p6
+> move p3
+> move p3
+> motor On
+> jump p1
+> jump p0
+> Tool
+	   0
+> jump p6
+> 
+> move p3
+> jump p6
+> move p3
+> 
 > 

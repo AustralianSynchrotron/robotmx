@@ -4,7 +4,3 @@ Global Real g_dumbbell_Perfect_cosValue
 Global Real g_dumbbell_Perfect_sinValue
 
 
-
-
-
-
