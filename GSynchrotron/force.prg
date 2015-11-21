@@ -286,7 +286,7 @@ Function MinMax(value As Double, ByRef min As Double, ByRef max As Double)
 	EndIf
 Fend
 ''Use force sensor to detect LN2 boiling
-''Exit Function number of seconds waited before LN2 boiling stopped, or timeout
+''Return number of seconds waited before LN2 boiling stopped, or timeout
 Function WaitLN2BoilingStop(timeout As Integer, thresholdx As Double, thresholdy As Double) As Integer
 	''We keep an eye on the time
 	Long entryTime

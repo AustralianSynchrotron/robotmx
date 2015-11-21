@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/10/18 23:41:53:328,DS:0000003979,CS:10512,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Command"
+ENVT0100,LM:2015/10/22 04:33:23:026,DS:0000003995,CS:19204,MA:00-0C-29-BE-C0-E6,EI:           
+sActiveChild="GTCassetteProbing.prg"
 bMdiMaximized=True
 nProgramFileCount=13
 ProgramFile1 {
@@ -69,9 +69,9 @@ ProgramFile6 {
 	}
 }
 ProgramFile7 {
-	sName="GTSetupPoints.prg"
+	sName="GTCassetteProbing.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -80,7 +80,7 @@ ProgramFile7 {
 	}
 }
 ProgramFile8 {
-	sName="GTInsideDewarVars.prg"
+	sName="GTCassetteUtilities.prg"
 	bOpened=True
 	nWinState=0
 	Window {
@@ -91,7 +91,7 @@ ProgramFile8 {
 	}
 }
 ProgramFile9 {
-	sName="GTNumericManipulations.prg"
+	sName="GTInsideDewarVars.prg"
 	bOpened=True
 	nWinState=0
 	Window {
@@ -102,7 +102,7 @@ ProgramFile9 {
 	}
 }
 ProgramFile10 {
-	sName="GTSetupCassette.prg"
+	sName="GTNumericManipulations.prg"
 	bOpened=True
 	nWinState=0
 	Window {
@@ -113,7 +113,7 @@ ProgramFile10 {
 	}
 }
 ProgramFile11 {
-	sName="GTCassetteProbing.prg"
+	sName="GTSetupCassette.prg"
 	bOpened=True
 	nWinState=0
 	Window {
@@ -124,7 +124,7 @@ ProgramFile11 {
 	}
 }
 ProgramFile12 {
-	sName="GTCassetteUtilities.prg"
+	sName="GTSetupPoints.prg"
 	bOpened=True
 	nWinState=0
 	Window {
@@ -204,7 +204,7 @@ IncludeFile5 {
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -215,17 +215,17 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=228
-		nTop=57
+		nLeft=46
+		nTop=134
 		nWidth=897
 		nHeight=406
 	}
-	nWinState=2
+	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -256,8 +256,8 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=498
-		nTop=208
+		nLeft=250
+		nTop=130
 		nWidth=827
 		nHeight=530
 	}
@@ -272,7 +272,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=93
 		nTop=-4

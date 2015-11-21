@@ -46,7 +46,7 @@ Boolean foredonestatus
 Boolean tcpconnected
 ''for communication with external clients
 Global Preserve String g_RunArgs$ ''Parameters to called function
-Global Preserve String g_RunResult$ ''Exit Function results from function
+Global Preserve String g_RunResult$ ''Return results from function
 ''Abort process flag for use by external clients
 Global Preserve Boolean g_FlagAbort
 ''set by script, read by SPELCOM (C++)
@@ -346,7 +346,7 @@ Fend
 Function JobWorker
 	''Error mesg string
 	String err$
-	''Exit Function type specified in msg
+	''Return type specified in msg
 	Integer return_type
 	''if no error, force OK string to be sent back to host as default
 	err$ = "OK"
@@ -1008,7 +1008,7 @@ errHandler:
 		EResume SkipStates
 	EndIf
 Fend
-''Exit Function point number closest to robot current position
+''Return point number closest to robot current position
 Function GetClosestPoint(ByRef mindiff As Real) As Integer
 	Integer i
 	Real diff

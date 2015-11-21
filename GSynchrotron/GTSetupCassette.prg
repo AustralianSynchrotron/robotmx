@@ -1,5 +1,6 @@
 #include "mxrobotdefs.inc"
 #include "GTCassettedefs.inc"
+#include "GTReporterdefs.inc"
 
 '' Angles and U for Each Cassette
 Global Real g_AngleOfFirstColumn(NUM_CASSETTES)
@@ -40,12 +41,14 @@ Function GTSetupCoordinates(cassette_position As Integer, pointNum As Integer)
 	PLabel pointNum, GTCassetteName$(cassette_position)
 Fend
 
-Function GTSetupTilt(cassette_position As Integer, topPointNum As Integer, bottomPointNum As Integer, ByRef StatusStringToAppend$ As String) As Boolean
+Function GTSetupTilt(cassette_position As Integer, topPointNum As Integer, bottomPointNum As Integer) As Boolean
+	GTUpdateClient(TASK_ENTERED_REPORT, MID_LEVEL_FUNCTION, "GTSetupTilt entered with cassette_position=" + GTCassetteName$(cassette_position) + ", toppoint=P" + Str$(topPointNum) + ", bottompoint=P" + Str$(bottomPointNum))
+	
 	Real deltaZ
 	deltaZ = CZ(P(topPointNum)) - CZ(P(bottomPointNum))
 	
 	If (deltaZ < CASSETTE_HEIGHT / 2.0) Then
-		StatusStringToAppend$ = StatusStringToAppend$ + " GTSetupTilt:" + GTCassetteName$(cassette_position) + "'s deltaZ is less than half of Normal Cassette Height!"
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTSetupTilt failed: " + GTCassetteName$(cassette_position) + "'s deltaZ is less than half of Normal Cassette Height!")
 		GTSetupTilt = False
 		Exit Function
 	EndIf
@@ -60,7 +63,7 @@ Function GTSetupTilt(cassette_position As Integer, topPointNum As Integer, botto
 	
 	'' Check whether tiltAngle is less than 1 degree
 	If (tiltAngle > 1) Then
-		StatusStringToAppend$ = StatusStringToAppend$ + " GTSetupTilt:" + GTCassetteName$(cassette_position) + " has a tiltAngle of " + Str$(tiltAngle) + " degrees!"
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTSetupTilt failed: " + GTCassetteName$(cassette_position) + " has a tiltAngle of " + Str$(tiltAngle) + " degrees!")
 		GTSetupTilt = False
 		Exit Function
 	EndIf
@@ -71,10 +74,13 @@ Function GTSetupTilt(cassette_position As Integer, topPointNum As Integer, botto
 	g_CenterX(cassette_position) = CX(P(bottomPointNum)) + g_tiltDX(cassette_position) * (g_BottomZ(cassette_position) - CZ(P(bottomPointNum)))
 	g_CenterY(cassette_position) = CY(P(bottomPointNum)) + g_tiltDY(cassette_position) * (g_BottomZ(cassette_position) - CZ(P(bottomPointNum)))
 	
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTSetupTilt successfully completed.")
 	GTSetupTilt = True
 Fend
 
-Function GTSetupCassetteAllProperties(cassette_position As Integer, ByRef StatusStringToAppend$ As String) As Boolean
+Function GTSetupCassetteAllProperties(cassette_position As Integer) As Boolean
+	GTUpdateClient(TASK_ENTERED_REPORT, MID_LEVEL_FUNCTION, "GTSetupCassetteAllProperties entered with cassette_position=" + GTCassetteName$(cassette_position))
+
 	Real standbyU, secondaryStandbyU
 	Integer Cassette_CenterPoint, Cassette_TopPoint, Cassette_BottomPoint
 	Real column_A_Angle
@@ -107,14 +113,13 @@ Function GTSetupCassetteAllProperties(cassette_position As Integer, ByRef Status
 	GTSetupDirection cassette_position, column_A_Angle, standbyU, secondaryStandbyU
 	GTSetupCoordinates cassette_position, Cassette_CenterPoint
 	
-	String GTSetupTiltStatus$
-	If Not GTSetupTilt(cassette_position, Cassette_TopPoint, Cassette_BottomPoint, ByRef GTSetupTiltStatus$) Then
-		''StatusStringToAppend$ = StatusStringToAppend$ + " GTSetupCassetteAllProperties->" + GTSetupTiltStatus$
-		Print GTSetupTiltStatus$
+	If Not GTSetupTilt(cassette_position, Cassette_TopPoint, Cassette_BottomPoint) Then
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTSetupCassetteAllProperties failed: error in GTSetupTilt!")
 		GTSetupCassetteAllProperties = False
 		Exit Function
 	EndIf
 	
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTSetupCassetteAllProperties successfully completed.")
 	GTSetupCassetteAllProperties = True
 Fend
 

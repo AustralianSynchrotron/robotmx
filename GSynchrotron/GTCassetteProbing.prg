@@ -1,6 +1,7 @@
+#include "forcedefs.inc"
 #include "mxrobotdefs.inc"
 #include "GTCassettedefs.inc"
-#include "forcedefs.inc"
+#include "GTReporterdefs.inc"
 
 Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum As Integer, ByRef scanZdistance As Real)
 	Real radiusToCircleCassette, standbyPointU, standbyZoffsetFromCassetteBottom
@@ -21,12 +22,14 @@ Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum
 	scanZdistance = 30.0
 Fend
 
-Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Real, ByRef cassetteTopZvalue As Real, ByRef StatusStringToAppend$ As String) As Boolean
+Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Real, ByRef cassetteTopZvalue As Real) As Boolean
+	GTUpdateClient(TASK_ENTERED_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop entered with standbyPoint=P" + Str$(standbyPointNum) + ", maxZdistanceToScan=" + Str$(maxZdistanceToScan))
+	
 	LimZ g_Jump_LimZ_LN2
 	Jump P(standbyPointNum)
 	
 	If Not (ForceTouch(-FORCE_ZFORCE, maxZdistanceToScan, False)) Then
-		StatusStringToAppend$ = StatusStringToAppend$ + "GTScanCassetteTop: ForceTouch failed to detect Cassette!"
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop: ForceTouch failed to detect Cassette!")
 		GTScanCassetteTop = False
 		Exit Function
 	EndIf
@@ -36,41 +39,33 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	SetVerySlowSpeed
 	Move P(standbyPointNum)
 	
+	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop successfully completed. cassetteTopZvalue=" + Str$(cassetteTopZvalue))
 	GTScanCassetteTop = True
 Fend
 
-Function GTtestCassetteScan(cassette_position As Integer)
+Function GTtestCassetteScan()
 	Integer standbyPointNum
 	Real scanZdistance, cassetteHeight
-	String status$
 	
+	g_RunResult$ = "Progress GTtestCassetteScan->GTInitAllPoints"
 	GTInitAllPoints
 	
 	standbyPointNum = 52
 	
 	Tool 1
 	
-	GTSetScanCassetteTopStandbyPoint(cassette_position, standbyPointNum, ByRef scanZdistance)
+	g_RunResult$ = "Progress GTtestCassetteScan->GTSetScanCassetteTopStandbyPoint"
+	GTSetScanCassetteTopStandbyPoint(LEFT_CASSETTE, standbyPointNum, ByRef scanZdistance)
+	
 	InitForceConstants
 	''ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
-	If GTScanCassetteTop(standbyPointNum, scanZdistance, ByRef cassetteHeight, ByRef status$) Then
-		g_RunResult$ = "GTtestCassetteScan ran successfully. Detected Cassette Height = " + Str$(cassetteHeight)
+	g_RunResult$ = "Progress GTtestCassetteScan->GTScanCassetteTop"
+	If GTScanCassetteTop(standbyPointNum, scanZdistance, ByRef cassetteHeight) Then
+		GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTtestCassetteScan successfully completed. Detected Cassette Height = " + Str$(cassetteHeight))
+		g_RunResult$ = "Success GTScanCassetteTop"
 	Else
-		g_RunResult$ = status$
+		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTtestCassetteScan failed: error in GTScanCassetteTop!")
+		g_RunResult$ = "Error GTtestCassetteScan"
 	EndIf
-Fend
-
-Function AAATestGTFunction
-	GTExecute("GTtestCassetteScan", "RIGHT_CASSETTE")
-Fend
-
-Function GTExecute(function_to_call$ As String, func_args$ As String)
-	Integer errCode
-	String command$, result$
-	command$ = function_to_call$ + "(" + func_args$ + ")"
-	errCode = EVal("Jump P18")
-	Print command$
-	Print Str$(errCode)
-	Print result$
 Fend
 
