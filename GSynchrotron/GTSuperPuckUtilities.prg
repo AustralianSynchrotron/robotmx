@@ -196,9 +196,52 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer) As Boolean
 		Exit Function
 	EndIf
 
-
-
-	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection(" + GTCassetteName$(cassette_position) + ") completed with error=")
+	SetVerySlowSpeed
+	Move P(standbyPoint)
+	
+	Real error_from_perfectPoint_in_mm
+	error_from_perfectPoint_in_mm = Dist(Here, P(perfectPoint))
+	
+	'' Determine sign of error_from_perfectPoint_in_mm
+	'' If cassette is touched before reaching perfectPoint, then -(minus) sign
+	'' ElseIf cassette is touched only going further after perfectPoint, then +(plus) sign
+	Real distance_here_to_destination, distance_perfect_to_destination
+	distance_here_to_destination = Dist(Here, P(destinationPoint))
+	distance_perfect_to_destination = Dist(P(perfectPoint), P(destinationPoint))
+	If distance_here_to_destination > distance_perfect_to_destination Then
+		error_from_perfectPoint_in_mm = -error_from_perfectPoint_in_mm
+	EndIf
+	
+	GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection: error_from_perfectPoint_in_mm=" + Str$(error_from_perfectPoint_in_mm))
+	
+	If Not GTsetupAdaptorAngleCorrection(cassette_position, error_from_perfectPoint_in_mm) Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection failed: error in GTsetupAdaptorAngleCorrection!")
+		GTprobeAdaptorAngleCorrection = False
+		Exit Function
+	EndIf
+	
+	GTUpdateClient(TASK_DONE_REPORT, MID_LEVEL_FUNCTION, "GTprobeAdaptorAngleCorrection:(" + GTCassetteName$(cassette_position) + ") completed.")
 	GTprobeAdaptorAngleCorrection = True
+Fend
+
+Function GTsetupAdaptorAngleCorrection(cassette_position As Integer, error_from_perfectPoint_in_mm As Real) As Boolean
+	m_adaptorAngleError(cassette_position) = 0
+	
+	Real adaptorAngleError
+	If (error_from_perfectPoint_in_mm >= 0) Then
+		adaptorAngleError = RadToDeg(-error_from_perfectPoint_in_mm / (SUPERPUCK_WIDTH - MAGNET_HEAD_RADIUS))
+	Else
+		adaptorAngleError = RadToDeg(-error_from_perfectPoint_in_mm / SUPERPUCK_WIDTH)
+	EndIf
+		
+	If Abs(adaptorAngleError) > 1.02 Then
+		GTUpdateClient(TASK_FAILURE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + " adaptorAngleError=" + Str$(adaptorAngleError) + "> 1.02 degrees")
+		GTsetupAdaptorAngleCorrection = False
+		Exit Function
+	EndIf
+	
+	m_adaptorAngleError(cassette_position) = adaptorAngleError
+	GTUpdateClient(TASK_DONE_REPORT, LOW_LEVEL_FUNCTION, "GTsetupAdaptorAngleCorrection: For Superpuck " + GTCassetteName$(cassette_position) + " adaptorAngleError=" + Str$(adaptorAngleError))
+	GTsetupAdaptorAngleCorrection = True
 Fend
 

@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/03 01:27:55:500,DS:0000004450,CS:31564,MA:00-0C-29-BE-C0-E6,EI:           
-sActiveChild="GTSuperPuckUtilities.prg"
+ENVT0100,LM:2015/11/03 08:06:45:209,DS:0000004444,CS:23623,MA:00-0C-29-BE-C0-E6,EI:           
+sActiveChild="GTCassetteProbing.prg"
 bMdiMaximized=True
 nProgramFileCount=16
 ProgramFile1 {
@@ -71,7 +71,7 @@ ProgramFile6 {
 ProgramFile7 {
 	sName="GTCassetteProbing.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -136,7 +136,7 @@ ProgramFile12 {
 }
 ProgramFile13 {
 	sName="GTReporter.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -159,7 +159,7 @@ ProgramFile14 {
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -181,7 +181,7 @@ ProgramFile16 {
 nIncludeFileCount=5
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=3
@@ -225,7 +225,7 @@ IncludeFile4 {
 }
 IncludeFile5 {
 	sName="GTReporterdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0

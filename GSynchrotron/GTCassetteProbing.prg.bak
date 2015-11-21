@@ -21,7 +21,7 @@ Function GTProbeOneCassette(cassette_position As Integer)
 		GTUpdateClient(TASK_MESSAGE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop completed.  Detected Cassette Height = " + Str$(scanned_cassette_height))
 	Else
 		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTScanCassetteTop failed: error in GTScanCassetteTop!")
-		g_RunResult$ = "error GTScanCassetteTop"
+		g_RunResult$ = "error GTProbeOneCassette->GTScanCassetteTop"
 		Exit Function
 	EndIf
 
@@ -52,7 +52,11 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	
 	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 		g_RunResult$ = "progress GTProbeOneCassette->GTprobeAdaptorAngleCorrection"
-		GTprobeAdaptorAngleCorrection(cassette_position)
+		If Not GTprobeAdaptorAngleCorrection(cassette_position) Then
+			g_RunResult$ = "error GTProbeOneCassette->GTprobeAdaptorAngleCorrection!"
+			GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeOneCassette failed: error in GTfindAverageCassetteHeight!")
+			Exit Function
+		EndIf
 	EndIf
 	
 	SetVerySlowSpeed

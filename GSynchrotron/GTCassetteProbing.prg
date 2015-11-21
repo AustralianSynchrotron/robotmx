@@ -52,7 +52,11 @@ Function GTProbeOneCassette(cassette_position As Integer)
 	
 	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 		g_RunResult$ = "progress GTProbeOneCassette->GTprobeAdaptorAngleCorrection"
-		GTprobeAdaptorAngleCorrection(cassette_position)
+		If Not GTprobeAdaptorAngleCorrection(cassette_position) Then
+			g_RunResult$ = "error GTProbeOneCassette->GTprobeAdaptorAngleCorrection!"
+			GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTProbeOneCassette failed: error in GTprobeAdaptorAngleCorrection!")
+			Exit Function
+		EndIf
 	EndIf
 	
 	SetVerySlowSpeed

@@ -1,14 +1,14 @@
-ENVT0100,LM:2015/11/03 01:25:04:921,DS:0000007808,CS:22858,MA:00-0C-29-BE-C0-E6,EI:           
+ENVT0100,LM:2015/11/03 08:05:51:569,DS:0000007806,CS:11365,MA:00-0C-29-BE-C0-E6,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="11/3/2015 12:25:03 PM"
+	sLastModified="11/3/2015 7:05:51 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
-	bRebuildRequired=False
+	bRebuildRequired=True
 	bClearControllerProject=False
 	bClearGlobalPreserves=False
 }
@@ -62,7 +62,7 @@ ProgramFile6 {
 }
 ProgramFile7 {
 	sName="GTCassetteProbing.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile8 {
@@ -102,7 +102,7 @@ ProgramFile14 {
 }
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile16 {
