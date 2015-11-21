@@ -22,7 +22,8 @@
 '' Could be CASSETTE_SHRINK_IN_LN2
 #define CASSETTE_SHRINK_FACTOR 1.0
 
+#define PROBE_STANDBY_DISTANCE 5.0
 '' Acceptable error in cassette height in mm
-#define ACCPT_ERROR_IN_CASSETTE_HEIGHT 0.4
+#define ACCPT_ERROR_IN_CASSETTE_HEIGHT 0.1
 '' Retry Threshold for height in mm
 #define MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY 1.4

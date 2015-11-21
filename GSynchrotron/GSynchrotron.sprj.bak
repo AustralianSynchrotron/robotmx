@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/11/15 23:36:25:623,DS:0000007971,CS:07184,MA:00-0C-29-BE-C0-E6,EI:           
+ENVT0100,LM:2015/11/16 00:53:20:678,DS:0000007907,CS:18221,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="11/16/2015 10:36:25 AM"
+	sLastModified="11/16/2015 11:53:20 AM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=True
@@ -32,32 +32,32 @@ nRobotCount=1
 nProgramFileCount=16
 ProgramFile1 {
 	sName="magnet.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile5 {
 	sName="Network.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile6 {
 	sName="force.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile7 {
@@ -67,47 +67,47 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="GTCassetteUtilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile9 {
 	sName="GTInsideDewarVars.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile10 {
 	sName="GTNumericManipulations.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile11 {
 	sName="GTSetupCassette.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile12 {
 	sName="GTSetupPoints.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile13 {
 	sName="GTReporter.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile14 {
 	sName="GTCassetteType.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile16 {
 	sName="GTIntialization.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 nIncludeFileCount=7
@@ -465,7 +465,4 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=1
-GuiBuilderFile1 {
-	sName="GSynchrotron.gui"
-}
+nGuiBuilderFileCount=0

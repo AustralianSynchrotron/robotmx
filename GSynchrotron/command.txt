@@ -86,4 +86,6 @@ move p> 6
 -1
 > Print Str$(True)
 -1
+> g_CassetteType(2)=3
+> 
 > 

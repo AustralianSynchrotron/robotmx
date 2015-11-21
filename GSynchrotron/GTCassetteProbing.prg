@@ -87,7 +87,8 @@ Function GTProbeAllPorts(cassette_position As Integer) As Boolean
 		Case SUPERPUCK_CASSETTE
 			Integer puckIndex, portIndex
 			For puckIndex = 0 To NUM_PUCKS - 1
-
+				GTSPpositioningMove(cassette_position, puckIndex)
+				
 				g_RunResult$ = "progress GTProbeAllPorts->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
 				If Not GTprobePuckAngleCorrection(cassette_position, puckIndex) Then
 					g_RunResult$ = "error GTProbeAllPorts->GTprobePuckAngleCorrection!"
