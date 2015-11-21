@@ -1,12 +1,12 @@
-ENVT0100,LM:2015/11/16 00:53:31:131,DS:0000007906,CS:15421,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/11/16 01:31:53:936,DS:0000007958,CS:22569,MA:00-0C-29-BE-C0-E6,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="11/16/2015 11:53:20 AM"
-	bBuildComplete=True
+	sLastModified="11/16/2015 12:31:50 PM"
+	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
 	bClearControllerProject=False
@@ -62,7 +62,7 @@ ProgramFile6 {
 }
 ProgramFile7 {
 	sName="GTCassetteProbing.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile8 {
@@ -102,7 +102,7 @@ ProgramFile14 {
 }
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile16 {
@@ -465,4 +465,7 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=0
+nGuiBuilderFileCount=1
+GuiBuilderFile1 {
+	sName="GSynchrotron.gui"
+}
