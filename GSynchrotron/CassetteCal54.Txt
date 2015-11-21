@@ -1,0 +1,4 @@
+=======================================================
+Cassette calibration at 2015/10/22 17:15:23
+right cassetteinital calibration
+Center (Z= -284.231) XY position ( 33.1327,  334.858)
