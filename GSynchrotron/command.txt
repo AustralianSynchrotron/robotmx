@@ -200,4 +200,28 @@ jump> jump p0
 > jump p6
 > move p3
 > 
+> print g_runargs$
+lm
+> 
+lm 0
+> 
+!!Error: 3207, Formula is missing.
+> print g_runresult$
+progress GTInitialize: Grabbing Magnet from Cradle routine
+> 
+Bad argument in g_RunArgs$, string length is not [1-3]
+> 
+bad format of argument in g_RunArgs$. should be lmr, l, m or r
+> 
+bad format of argument in g_RunArgs$. should be lmr, l, m or r
+> g_runargs$="lm"
+> Print Mid$(g_runargs$, 2, 1)
+m
+> 
+> 
+m
+> 
+l
+> 
+l
 > 

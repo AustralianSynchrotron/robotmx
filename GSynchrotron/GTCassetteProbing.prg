@@ -104,19 +104,3 @@ Function ResetPorts(cassette_position As Integer)
 	EndIf
 Fend
 
-Function GTtestCassetteScan(cassette_position As Integer)
-	
-	''Remove after defining Gonio point
-	P21 = XY(0, 0, 0, 0)
-	
-	If Not GTInitialize Then
-		Exit Function
-	EndIf
-	
-	If Not GTProbeOneCassette(cassette_position) Then
-		Exit Function
-	EndIf
-	
-	GTProbeAllPorts(cassette_position)
-Fend
-

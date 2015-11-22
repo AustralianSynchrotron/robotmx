@@ -1,5 +1,3 @@
-#include "forcedefs.inc"
-#include "mxrobotdefs.inc"
 #include "GTGenericdefs.inc"
 #include "GTReporterdefs.inc"
 

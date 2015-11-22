@@ -1,7 +1,7 @@
-ENVT0100,LM:2015/11/20 09:29:54:406,DS:0000004716,CS:02381,MA:00-0C-29-BE-C0-E6,EI:           
-sActiveChild="GTSetupPoints.prg"
+ENVT0100,LM:2015/11/22 23:14:21:343,DS:0000004844,CS:14897,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Run"
 bMdiMaximized=True
-nProgramFileCount=16
+nProgramFileCount=17
 ProgramFile1 {
 	sName="magnet.prg"
 	bOpened=True
@@ -126,7 +126,7 @@ ProgramFile11 {
 ProgramFile12 {
 	sName="GTSetupPoints.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -169,6 +169,17 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="GTIntialization.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile17 {
+	sName="GTUserInterface.prg"
 	bOpened=True
 	nWinState=0
 	Window {
@@ -270,7 +281,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=149
 		nTop=-16
@@ -280,7 +291,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0

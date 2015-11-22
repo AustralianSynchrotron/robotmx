@@ -27,12 +27,12 @@ Function GTInitialize() As Boolean
 		Jump P1
 	EndIf
 	
-	If GTIsDumbbellInsideCassette Then
-		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitialize:GTIsDumbbellInsideCassette dectected dumbbell inside cassette")
-		g_RunResult$ = "error GTInitialize->GTIsDumbbellInsideCassette"
-		GTInitialize = False
-		Exit Function
-	EndIf
+''	If GTIsDumbbellInsideCassette Then
+''		GTUpdateClient(TASK_FAILURE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitialize:GTIsDumbbellInsideCassette dectected dumbbell inside cassette")
+''		g_RunResult$ = "error GTInitialize->GTIsDumbbellInsideCassette"
+''		GTInitialize = False
+''		Exit Function
+''	EndIf
 
 	If GTIsMagnetInTong Then
 		GTUpdateClient(TASK_MESSAGE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitialize:GTIsMagnetInTong found magnet on tong.")
