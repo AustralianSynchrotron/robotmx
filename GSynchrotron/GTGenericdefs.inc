@@ -1,4 +1,5 @@
 '' Cassette Position
+#define UNKNOWN_POSITION -1
 #define LEFT_CASSETTE 0
 #define MIDDLE_CASSETTE 1
 #define RIGHT_CASSETTE 2

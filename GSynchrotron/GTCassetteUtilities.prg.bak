@@ -17,6 +17,19 @@ Function GTCassetteName$(cassette_position As Integer) As String
 	EndIf
 Fend
 
+Function GTgetColumnIndex(columnChar$ As String, ByRef columnIndex As Integer) As Boolean
+	columnChar$ = UCase$(columnChar$)
+	columnIndex = Asc(columnChar$) - Asc("A")
+	
+	If (columnIndex < 0) Or (columnIndex > NUM_COLUMNS - 1) Then
+		columnIndex = UNKNOWN_POSITION
+		GTgetColumnIndex = False
+		Exit Function
+	EndIf
+
+	GTgetColumnIndex = True
+Fend
+
 Function GTapplyTiltToOffsets(cassette_position As Integer, PerfectXoffset As Real, PerfectYoffset As Real, PerfectZoffset As Real, ByRef Actualoffsets() As Real)
 	Actualoffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
 	Actualoffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
@@ -51,7 +64,7 @@ Function GTcolumnName$(columnIndex As Integer)
 	GTcolumnName$ = Chr$(Asc("A") + columnIndex)
 Fend
 
-Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer)
+Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer, jumpToStandbyPoint As Boolean)
 	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 	
@@ -74,8 +87,7 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	Real maxDistanceToScan
 	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_CAS + TOLERANCE_FROM_PIN_DEEP_IN_CAS
 	
-	'' Jump to a new column otherwise Move would make the tong hit the cassette
-	If rowIndex = 0 Then
+	If jumpToStandbyPoint Then
 		Jump P(standbyPoint)
 		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	Else
@@ -109,7 +121,8 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	EndIf
 	
 	Move P(standbyPoint)
-
+	
+	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
 	GTLoadPreviousRobotSpeedMode
 Fend
 
@@ -120,16 +133,19 @@ Function GTprobeAllPortsInColumn(cassette_position As Integer, columnIndex As In
 		Case CALIBRATION_CASSETTE
 			rowIndex = 0
 			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
-			GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
+			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, True)
 
 			rowIndex = NUM_ROWS - 1
 			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
-			GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
+			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, False)
 			
 		Case NORMAL_CASSETTE
-			For rowIndex = 0 To NUM_ROWS - 1
+			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, True)
+
+			For rowIndex = 1 To NUM_ROWS - 1
 				g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
-				GTprobeCassettePort(cassette_position, rowIndex, columnIndex)
+				GTprobeCassettePort(cassette_position, rowIndex, columnIndex, False)
 			Next
 	Send
 Fend

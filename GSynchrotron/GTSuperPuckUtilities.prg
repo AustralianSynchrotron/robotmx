@@ -65,6 +65,25 @@ Function GTpuckName$(puckIndex As Integer)
 	EndIf
 Fend
 
+Function GTgetPuckIndex(puckChar$ As String, ByRef puckIndex As Integer) As Boolean
+	puckChar$ = UCase$(puckChar$)
+	Select puckChar$
+		Case "A"
+			puckIndex = PUCK_A
+		Case "B"
+			puckIndex = PUCK_B
+		Case "C"
+			puckIndex = PUCK_C
+		Case "D"
+			puckIndex = PUCK_D
+		Default
+			puckIndex = UNKNOWN_POSITION
+			GTgetPuckIndex = False
+			Exit Function
+	Send
+	GTgetPuckIndex = True
+Fend
+
 Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer) As Boolean
 	Real angle_to_puck_center
 	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex)
@@ -211,10 +230,10 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckInde
 	'' Set perfect point	
 	Real ActualOffsets(3)
 	Real perfectX, perfectY, perfectZ
-	GTapplyTiltToOffsets(cassette_position, dx, dy, dz, ByRef Actualoffsets())
-	perfectX = g_CenterX(cassette_position) + Actualoffsets(0)
-	perfectY = g_CenterY(cassette_position) + Actualoffsets(1)
-	perfectZ = g_BottomZ(cassette_position) + Actualoffsets(2)
+	GTapplyTiltToOffsets(cassette_position, dx, dy, dz, ByRef ActualOffsets())
+	perfectX = g_CenterX(cassette_position) + ActualOffsets(0)
+	perfectY = g_CenterY(cassette_position) + ActualOffsets(1)
+	perfectZ = g_BottomZ(cassette_position) + ActualOffsets(2)
 	P(perfectPointNum) = XY(perfectX, perfectY, perfectZ, perfectU) /R
 
 
@@ -437,7 +456,7 @@ Function GTsetSPPuckProbeStandbyPoint(cassette_position As Integer, puckIndex As
 	scanDistance = PROBE_STANDBY_DISTANCE + OVERPRESS_DISTANCE_FOR_PUCK
 Fend
 
-Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer)
+Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpToStandbyPoint As Boolean)
 	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 	
@@ -448,7 +467,11 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer)
 
 	GTsetSPPuckProbeStandbyPoint(cassette_position, puckIndex, standbyPoint, ByRef maxDistanceToScan)
 	
-	Move P(standbyPoint)
+	If jumpToStandbyPoint Then
+		Jump P(standbyPoint)
+	Else
+		Move P(standbyPoint)
+	EndIf
 	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
@@ -473,7 +496,7 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer)
 	Move P(standbyPoint)
 Fend
 
-Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer)
+Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, jumpToStandbyPoint As Boolean)
 	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 
@@ -485,10 +508,11 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	Real maxDistanceToScan
 	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK
 	
-	Move P(standbyPoint)
-
-	If portIndex = 0 Then
+	If jumpToStandbyPoint Then
+		Jump P(standbyPoint)
 		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	Else
+		Move P(standbyPoint)
 	EndIf
 		
 	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
@@ -533,13 +557,13 @@ Function GTprobeAllPortsInPuck(cassette_position As Integer, puckIndex As Intege
 	EndIf
 
 	g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-	GTprobeSPPuck(cassette_position, puckIndex)
+	GTprobeSPPuck(cassette_position, puckIndex, False)
 
 	If g_PuckPresent(cassette_position, puckIndex) Then
 		Integer portIndex
 		For portIndex = 0 To NUM_PUCK_PORTS - 1
 			g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(portIndex) + ")"
-			GTprobeSPPort(cassette_position, puckIndex, portIndex)
+			GTprobeSPPort(cassette_position, puckIndex, portIndex, False)
 		Next
 	EndIf
 Fend
