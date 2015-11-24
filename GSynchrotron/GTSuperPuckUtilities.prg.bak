@@ -557,7 +557,7 @@ Function GTprobeAllPortsInPuck(cassette_position As Integer, puckIndex As Intege
 	EndIf
 
 	g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-	GTprobeSPPuck(cassette_position, puckIndex)
+	GTprobeSPPuck(cassette_position, puckIndex, False)
 
 	If g_PuckPresent(cassette_position, puckIndex) Then
 		Integer portIndex

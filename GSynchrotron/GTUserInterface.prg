@@ -12,15 +12,27 @@ Function GTProbeCassettes
     ''check argument
     GTProbeCassettesArgC = UBound(GTProbeCassettesTokens$) + 1
     If GTProbeCassettesArgC < 1 Or GTProbeCassettesArgC > 2 Then
-        g_RunResult$ = "bad format of argument in g_RunArgs$: should be in the format [lmr]{1,3} [0-1]"
+        g_RunResult$ = "error bad format of argument in g_RunArgs$: should be in the format [lmr]{1,3} [0-1]"
         Exit Function
     EndIf
 
 	If Not GTInitialize Then
+		g_RunResult$ = "error GTInitialize failed"
+		Exit Function
+	EndIf
+	
+	g_RunResult$ = "progress GTJumpHomeToCoolingPointAndWait"
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		g_RunResult$ = "error GTJumpHomeToCoolingPointAndWait failed"
 		Exit Function
 	EndIf
 
-
+	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
+	If Not GTCheckAndPickMagnet Then
+		g_RunResult$ = "error GTCheckAndPickMagnet: Grabbing Magnet failed"
+		Exit Function
+	EndIf
+	
     String cassettesString$
     Integer NumCassettesToProbe
     cassettesString$ = LTrim$(GTProbeCassettesTokens$(0))
@@ -28,7 +40,7 @@ Function GTProbeCassettes
     NumCassettesToProbe = Len(cassettesString$)
 
     If (NumCassettesToProbe < 1) Or (NumCassettesToProbe > NUM_CASSETTES) Then
-        g_RunResult$ = "Bad argument in g_RunArgs$, NumCassettesToProbe is not [1-3]"
+        g_RunResult$ = "error Bad argument in g_RunArgs$, NumCassettesToProbe is not [1-3]"
         Exit Function
     EndIf
 
@@ -54,6 +66,20 @@ Function GTProbeCassettes
 			Exit Function
 		EndIf
 	Next
+	
+	'' Return Magnet To Cradle
+	g_RunResult$ = "progress GTReturnMagnet: Putting Magnet back to Cradle"
+	If Not GTReturnMagnet Then
+		g_RunResult$ = "error GTReturnMagnet: Putting Magnet back to Cradle failed"
+		Exit Function
+	EndIf
+	
+	'' Return Home and Close Lid
+	Jump P1
+	Jump P0
+	Close_Lid
+	
+	g_RunResult$ = "success GTProbeCassettes"
 Fend
 
 Function GTProbePucks
@@ -71,9 +97,21 @@ Function GTProbePucks
     EndIf
 
 	If Not GTInitialize Then
+		g_RunResult$ = "error GTInitialize failed"
 		Exit Function
 	EndIf
-
+	
+	g_RunResult$ = "progress GTJumpHomeToCoolingPointAndWait"
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		g_RunResult$ = "error GTJumpHomeToCoolingPointAndWait failed"
+		Exit Function
+	EndIf
+	
+	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
+	If Not GTCheckAndPickMagnet Then
+		g_RunResult$ = "error GTCheckAndPickMagnet: Grabbing Magnet failed"
+		Exit Function
+	EndIf
 
     String cassettesString$
     Integer NumCassettesToProbe
@@ -123,6 +161,20 @@ Function GTProbePucks
 		
 		GTprobeAllPortsInPuck(cassette_position, puckIndex)
 	Next
+
+	'' Return Magnet To Cradle
+	g_RunResult$ = "progress GTReturnMagnet: Putting Magnet back to Cradle"
+	If Not GTReturnMagnet Then
+		g_RunResult$ = "error GTReturnMagnet: Putting Magnet back to Cradle failed"
+		Exit Function
+	EndIf
+	
+	'' Return Home and Close Lid
+	Jump P1
+	Jump P0
+	Close_Lid
+	
+	g_RunResult$ = "success GTProbePucks"
 Fend
 
 Function GTProbeColumns
@@ -140,9 +192,21 @@ Function GTProbeColumns
     EndIf
 
 	If Not GTInitialize Then
+		g_RunResult$ = "error GTInitialize failed"
+		Exit Function
+	EndIf
+	
+	g_RunResult$ = "progress GTJumpHomeToCoolingPointAndWait"
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		g_RunResult$ = "error GTJumpHomeToCoolingPointAndWait failed"
 		Exit Function
 	EndIf
 
+	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
+	If Not GTCheckAndPickMagnet Then
+		g_RunResult$ = "error GTCheckAndPickMagnet: Grabbing Magnet failed"
+		Exit Function
+	EndIf
 
     String cassettesString$
     Integer NumCassettesToProbe
@@ -192,5 +256,19 @@ Function GTProbeColumns
 		
 		GTprobeAllPortsInColumn(cassette_position, columnIndex)
 	Next
+
+	'' Return Magnet To Cradle
+	g_RunResult$ = "progress GTReturnMagnet: Putting Magnet back to Cradle"
+	If Not GTReturnMagnet Then
+		g_RunResult$ = "error GTReturnMagnet: Putting Magnet back to Cradle failed"
+		Exit Function
+	EndIf
+
+	'' Return Home and Close Lid
+	Jump P1
+	Jump P0
+	Close_Lid
+	
+	g_RunResult$ = "success GTProbeColumns"
 Fend
 

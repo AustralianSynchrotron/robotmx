@@ -184,6 +184,7 @@ Function GTInitAllPoints() As Boolean
 		Exit Function
 	EndIf
 	
+	SavePoints "robot1.pts"
 	g_RunResult$ = "Success GTInitAllPoints"
 	GTUpdateClient(TASK_DONE_REPORT, HIGH_LEVEL_FUNCTION, "GTInitAllPoints completed.")
 	GTInitAllPoints = True

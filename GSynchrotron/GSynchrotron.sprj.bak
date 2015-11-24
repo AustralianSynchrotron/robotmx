@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/11/23 11:02:29:828,DS:0000008021,CS:17928,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/11/24 07:28:55:953,DS:0000008004,CS:12356,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="11/23/2015 10:02:27 PM"
+	sLastModified="11/24/2015 6:28:52 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -32,42 +32,42 @@ nRobotCount=1
 nProgramFileCount=17
 ProgramFile1 {
 	sName="magnet.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile5 {
 	sName="Network.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile6 {
 	sName="force.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile7 {
 	sName="GTCassetteProbing.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile8 {
 	sName="GTCassetteUtilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile9 {
@@ -77,42 +77,42 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="GTNumericManipulations.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile11 {
 	sName="GTSetupCassette.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile12 {
 	sName="GTSetupPoints.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile13 {
 	sName="GTReporter.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile14 {
 	sName="GTCassetteType.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile15 {
 	sName="GTSuperPuckUtilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile16 {
 	sName="GTIntialization.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile17 {
 	sName="GTUserInterface.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 nIncludeFileCount=7

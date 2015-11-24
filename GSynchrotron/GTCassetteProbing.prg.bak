@@ -17,7 +17,7 @@ Function GTgetCassettePosition(cassetteChar$ As String, ByRef cassette_position 
 			GTgetCassettePosition = False
 			Exit Function
 	Send
-	GTgetCassetteIndex = True
+	GTgetCassettePosition = True
 Fend
 
 Function GTProbeCassetteType(cassette_position As Integer) As Boolean

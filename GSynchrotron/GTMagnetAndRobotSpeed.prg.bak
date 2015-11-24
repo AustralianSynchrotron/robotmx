@@ -4,11 +4,6 @@
 #include "GTSuperPuckdefs.inc"
 #include "GTReporterdefs.inc"
 
-'' Note: All angle values in GT domain are in degrees
-Global Real g_dumbbell_Perfect_Angle
-Global Real g_dumbbell_Perfect_cosValue
-Global Real g_dumbbell_Perfect_sinValue
-
 Integer m_previousAcceleration, m_previousDeceleration
 Real m_previousStraightAcceleration, m_previousStraightDeceleration
 Integer m_previousSpeedSetting
@@ -68,8 +63,6 @@ Fend
 Function GTIsMagnetInTong() As Boolean
 	GTIsMagnetInTong = False
 
-	Integer previousTool
-	previousTool = Tool()
 	Tool 0
 
 	'' Closing Gripper only matters because if Gripper is open we might loose magnet while hitting the cradle
@@ -78,7 +71,7 @@ Function GTIsMagnetInTong() As Boolean
 	Jump P3
 
 	Real probeDistanceFromCradleCenter
-	probeDistanceFromCradleCenter = (MAGNET_LENGTH /2) + (CRADLE_WIDTH /2) - (MAGNET_HEAD_THICKNESS /2)
+	probeDistanceFromCradleCenter = ((MAGNET_LENGTH /2) + (CRADLE_WIDTH /2) - (MAGNET_HEAD_THICKNESS /2)) * CASSETTE_SHRINK_FACTOR
 	Integer standbyPoint
 	standbyPoint = 52
 	P(standbyPoint) = P3 -X(probeDistanceFromCradleCenter * g_dumbbell_Perfect_cosValue) -Y(probeDistanceFromCradleCenter * g_dumbbell_Perfect_sinValue)
@@ -111,5 +104,76 @@ Function GTIsMagnetInTong() As Boolean
 	GTLoadPreviousRobotSpeedMode
 	
 	Move P(standbyPoint)
-	Tool previousTool
 Fend
+
+Function GTCheckAndPickMagnet As Boolean
+	GTCheckAndPickMagnet = False
+	
+	Tool 0
+	
+	If GTIsMagnetInTong Then
+		GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTCheckAndPickMagnet:GTIsMagnetInTong found magnet on tong.")
+	Else
+		Jump P3
+		If Not Open_Gripper Then
+			GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTCheckAndPickMagnet:Open_Gripper failed")
+			Exit Function
+		EndIf
+		Move P6
+		If Not Close_Gripper Then
+			GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTCheckAndPickMagnet:Close_Gripper failed")
+			Exit Function
+		EndIf
+		Jump P3
+	EndIf
+	
+	GTCheckAndPickMagnet = True
+Fend
+
+Function GTReturnMagnet As Boolean
+	GTReturnMagnet = False
+	
+	Tool 0
+	
+	Jump P6
+
+	If Not Open_Gripper Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnet:Open_Gripper failed")
+		Exit Function
+	EndIf
+
+	Move P3
+
+	If Not Close_Gripper Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnet:Close_Gripper failed")
+		Exit Function
+	EndIf
+	
+	GTReturnMagnet = True
+Fend
+
+#define CLOSE_DISTANCE 10
+
+Function GTJumpHomeToCoolingPointAndWait As Boolean
+	GTJumpHomeToCoolingPointAndWait = False
+
+	If Not Open_Lid Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTJumpHomeToCoolingPointAndWait:Open_Lid failed")
+        Exit Function
+    EndIf
+   
+	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
+	
+	Jump P3
+	
+	If g_LN2LevelHigh Then
+		GTUpdateClient(TASK_PROGRESS_REPORT, MID_LEVEL_FUNCTION, "GTJumpHomeToCoolingPointAndWait->WaitLN2BoilingStop initiated")
+		Real timeTakenToCoolTong
+		timeTakenToCoolTong = WaitLN2BoilingStop(SENSE_TIMEOUT, HIGH_SENSITIVITY, HIGH_SENSITIVITY)
+		GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTJumpHomeToCoolingPointAndWait: Cooled tong for " + Str$(timeTakenToCoolTong) + " seconds")
+	EndIf
+	
+	GTJumpHomeToCoolingPointAndWait = True
+Fend
+
+

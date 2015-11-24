@@ -238,9 +238,173 @@ m
 l
 > 
 l
->g_runargs$ = "r" 
+>g_runargs$ = "r a" 
+> motor On
+> jump p1
+!!Error: 4005, Current point position is above the specified LimZ value.
+> print LimZ
+ 0
+> jump p0
+> jump p1
+> Speed 5
+> Jump p6
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> tool 0
+> motor On
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> motor On
+> speed 1
+> jump p6
+> move p3
+> jump p1
+> speed 5
+> jump p0
+> g_RunArgs$="1 0"
+> jump p6
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error 
+> jump p3
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p3
+> jump p1
+> print g_LN2LevelHigh
+ 0
+> 
 > print g_GTInitialized
  0
 > print g_runargs$
+lmr
+> 
+r cb
+> 
 r
+> g_LN2LevelHigh = true
+> print g_LN2LevelHigh
+ -1
+> jump p1
+> jump p0
+> motor On
+> g_RunArgs$="lmr 0"
+> g_runArgs$="lmr"
+> print g_CassetteType(2)
+ 0
+> 
+ 0
+> 
+ 1
+> g_runArgs$ = "m 1"
+> 
+> print m_GTInitialized
+ -1
+> m_GTInitialized = 0
+> 
+> 
+> 
+> 
+> 
+> print g_BottomZ(2)
+ -306.312
+> 
+ -306.289
+> 
+ -306.114
+> jump p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> reset error
+> motor On
+> jump p6
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> tool
+	   2
+> tool 0
+> motor On
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> g_RunArgs$ = "r"
+> 
+> move p3
+> reset error
+> 
+> motor On
+> 
+> 
+> savepoints "robot1.pts"
+> Print P3
+ X:   91.346 Y:  404.678 Z: -223.155 U:   90.414 V:    0.000 W:    0.000 /R /0
+> print here
+ X: -101.607 Y:  316.205 Z: -194.985 U:  144.844 V:    0.000 W:    0.000 /R /0
+> jump p3
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> motor On
+> move Here :Z(-100)
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> motor On 
+> power High
+> jump p3
+>
+> 
+> 
+> 
+> g_runArgs$ = "r c"
+> Print CASSETTE_SHRINK_FACTOR
+!!Error: 2513, Specified point label is not defined.
+> Print g_LN2LevelHigh
+ 0
+> 
+ 0
+> 
+ -1
+> g_LN2LevelHigh = -1
+> 
+> 
+> 
+> 
+!!Error: 3100, Syntax error.
+> 
+> 
+> 
+> jump p6
+> 
+> tool
+	   1
+> tool 0
+> move p3
+> jump p1
+> jump p0
+> print m_GTInitialized
+ 0
+> print g_Jump_LimZ_LN2
+ -150
+> 
+ -100
+> 
+ 0
+> g_Jump_LimZ_LN2 = -150
+> 
+> LimZ g_Jump_LimZ_LN2
+> 
+> 
+> 
+> print g_RunArgs$
+lmr 1
+> 
+r c
+> g_RunArgs$ = "r bc"
+> 
+> reset error
+> motor On
+> move p3
+> print g_RunResult$
+error There is no superpuck Adaptor at Cassette Position in g_RunArgs$:r
+> reset error
+> motor On
+> jump p1
+> jump p0
 > 
