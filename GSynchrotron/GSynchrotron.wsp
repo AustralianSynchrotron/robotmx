@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/24 07:31:24:625,DS:0000004777,CS:07530,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="GTIntialization.prg"
+ENVT0100,LM:2015/11/25 06:19:19:167,DS:0000004778,CS:20488,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=17
 ProgramFile1 {
@@ -136,13 +136,13 @@ ProgramFile12 {
 }
 ProgramFile13 {
 	sName="GTReporter.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile14 {
@@ -170,7 +170,7 @@ ProgramFile15 {
 ProgramFile16 {
 	sName="GTIntialization.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -214,13 +214,13 @@ IncludeFile2 {
 }
 IncludeFile3 {
 	sName="forcedefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 IncludeFile4 {
@@ -236,13 +236,13 @@ IncludeFile4 {
 }
 IncludeFile5 {
 	sName="GTReporterdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 IncludeFile6 {
@@ -313,8 +313,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=176
-		nTop=109
+		nLeft=276
+		nTop=172
 		nWidth=470
 		nHeight=342
 	}
@@ -322,10 +322,10 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=0
-		nTop=0
-		nWidth=0
-		nHeight=0
+		nLeft=486
+		nTop=297
+		nWidth=470
+		nHeight=254
 	}
 }
 Macros {

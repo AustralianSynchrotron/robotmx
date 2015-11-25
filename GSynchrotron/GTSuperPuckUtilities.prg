@@ -519,7 +519,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 
 	g_SP_SamplePresent(cassette_position, puckIndex, portIndex) = SAMPLE_ABSENT
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
-	
+		
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		

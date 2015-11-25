@@ -143,14 +143,33 @@ Function GTReturnMagnet As Boolean
 	EndIf
 
 	Move P3
-
-	If Not Close_Gripper Then
-		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnet:Close_Gripper failed")
-		Exit Function
-	EndIf
+	
+	'' No need to close gripper
+	''If Not Close_Gripper Then
+	''	GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnet:Close_Gripper failed")
+	''	Exit Function
+	''EndIf
 	
 	GTReturnMagnet = True
 Fend
+
+Function GTReturnMagnetAndGoHome As Boolean
+	GTReturnMagnetAndGoHome = False
+
+	If Not GTReturnMagnet Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnetAndGoHome:GTReturnMagnet failed")
+		Exit Function
+	EndIf
+
+	'' Return Home and Close Lid
+	LimZ 0
+	Jump P1
+	Jump P0
+	Close_Lid
+	
+	GTReturnMagnetAndGoHome = True
+Fend
+
 
 #define CLOSE_DISTANCE 10
 
@@ -168,7 +187,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	
 	If g_LN2LevelHigh Then
 		GTUpdateClient(TASK_PROGRESS_REPORT, MID_LEVEL_FUNCTION, "GTJumpHomeToCoolingPointAndWait->WaitLN2BoilingStop initiated")
-		Real timeTakenToCoolTong
+		Integer timeTakenToCoolTong
 		timeTakenToCoolTong = WaitLN2BoilingStop(SENSE_TIMEOUT, HIGH_SENSITIVITY, HIGH_SENSITIVITY)
 		GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTJumpHomeToCoolingPointAndWait: Cooled tong for " + Str$(timeTakenToCoolTong) + " seconds")
 	EndIf

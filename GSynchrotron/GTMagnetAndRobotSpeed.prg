@@ -143,14 +143,33 @@ Function GTReturnMagnet As Boolean
 	EndIf
 
 	Move P3
-
-	If Not Close_Gripper Then
-		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnet:Close_Gripper failed")
-		Exit Function
-	EndIf
+	
+	'' No need to close gripper
+	''If Not Close_Gripper Then
+	''	GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnet:Close_Gripper failed")
+	''	Exit Function
+	''EndIf
 	
 	GTReturnMagnet = True
 Fend
+
+Function GTReturnMagnetAndGoHome As Boolean
+	GTReturnMagnetAndGoHome = False
+
+	If Not GTReturnMagnet Then
+		GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnetAndGoHome:GTReturnMagnet failed")
+		Exit Function
+	EndIf
+
+	'' Return Home and Close Lid
+	LimZ 0
+	Jump P1
+	Jump P0
+	Close_Lid
+	
+	GTReturnMagnetAndGoHome = True
+Fend
+
 
 #define CLOSE_DISTANCE 10
 
@@ -162,6 +181,10 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
         Exit Function
     EndIf
    
+   	Motor On
+	Tool 0
+	GTsetRobotSpeedMode(FAST_SPEED)
+
 	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
 	
 	Jump P3

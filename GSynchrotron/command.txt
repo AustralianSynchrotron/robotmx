@@ -407,4 +407,64 @@ error There is no superpuck Adaptor at Cassette Position in g_RunArgs$:r
 > motor On
 > jump p1
 > jump p0
+> print m_GTInitialized
+ 0
+> 
+ -1
+> print m_SP_Alpha(0)
+!!Error: 3809, Module variable cannot be used from the Command window.
+> Print g_ArmOrientation
+ 1
+> 
+ 0
+> print g_RunArgs$
+r bc
+> 
+r bc
+> reset error
+> Tool
+	   0
+> motor On
+> print g_RunResult$
+success GTProbeCassettes
+> 
+progress GTJumpHomeToCoolingPointAndWait
+> m_GTInitialized = 0
+> reset error
+> motor On
+> g_RunArgs$="lmr 1"
+> g_RunArgs$="r d"
+> print g_RunArgs$
+r d
+> g_RunArgs$="lmr 1"
+> reset error
+> g_RunArgs$="r c"
+> 
+> print g_RunArgs$
+r cd
+> g_RunArgs$="lmr 1"
+> reset error
+> motor On
+> print g_RunArgs$
+lmr 1
+> print g_RunResult$
+progress GTReturnMagnetAndGoHome
+> motor On
+> Jump p1
+> jump p0
+> print g_RunArgs$
+mr 1
+> g_RunArgs$="r 1"
+> g_RunArgs$="m 1"
+> 
+> 
+> 
+> print g_RunResult$
+error There is no superpuck Adaptor at Cassette Position in g_RunArgs$:r
+> print g_RunArgs$
+lmr 1
+> g_RunArgs$="mr 1"
+> tool 0
+> jump p1
+> jump p0
 > 
