@@ -4,6 +4,7 @@
 #include "GTReporterdefs.inc"
 
 Function GTProbeCassettes
+	Cls
     Print "GTProbeCassettes entered at ", Date$, " ", Time$
 
 	''init result
@@ -64,6 +65,8 @@ Function GTProbeCassettes
 	        GTUpdateClient(TASK_FAILURE_REPORT, USER_INTERFACE_FUNCTION, "Illegal Cassette Position given in g_RunArgs$:" + OneCassetteChar$)
 			Exit Function
 		EndIf
+
+		GTResetCassette(cassette_position)
 
 		If GTProbeCassetteType(cassette_position) Then
 			If GTProbeCassettesArgC = 2 Then
@@ -176,6 +179,7 @@ Function GTProbePucks
 			Exit Function
 		EndIf
 		
+		GTResetPuck(cassette_position, puckIndex)
 		GTprobeAllPortsInPuck(cassette_position, puckIndex)
 	Next
 
@@ -278,6 +282,7 @@ Function GTProbeColumns
 			Exit Function
 		EndIf
 		
+		GTResetColumn(cassette_position, columnIndex)
 		GTprobeAllPortsInColumn(cassette_position, columnIndex)
 	Next
 

@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/11/26 07:49:20:573,DS:0000008090,CS:10575,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/11/26 11:44:42:182,DS:0000008091,CS:04429,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="11/26/2015 6:49:16 PM"
+	sLastModified="11/26/2015 10:44:34 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -47,7 +47,7 @@ ProgramFile3 {
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile5 {
@@ -112,7 +112,7 @@ ProgramFile16 {
 }
 ProgramFile17 {
 	sName="GTUserInterface.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile18 {

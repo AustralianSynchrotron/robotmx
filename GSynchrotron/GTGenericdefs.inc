@@ -16,10 +16,11 @@
 #define PICKER_TOOL 1
 #define PLACER_TOOL 2
 
-'' PORT Properties
-#define SAMPLE_ABSENT False
-#define SAMPLE_PRESENT True
-
+'' PORT Status
+#define PORT_OCCUPIED -1
+#define PORT_UNKNOWN 0
+#define PORT_VACANT 1
+#define PORT_ERROR 2
 
 #define DISTANCE_P3_TO_P6 20.0 ''mm
 #define MAGNET_AXIS_TO_CRADLE_EDGE 2.8 'mm

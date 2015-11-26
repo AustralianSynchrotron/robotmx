@@ -1,10 +1,10 @@
-ENVT0100,LM:2015/11/26 08:00:14:135,DS:0000004922,CS:20267,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2015/11/26 11:44:55:432,DS:0000004958,CS:22617,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="GTUserInterface.prg"
 bMdiMaximized=True
 nProgramFileCount=18
 ProgramFile1 {
 	sName="magnet.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -15,7 +15,7 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -37,7 +37,7 @@ ProgramFile3 {
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -48,7 +48,7 @@ ProgramFile4 {
 }
 ProgramFile5 {
 	sName="Network.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -59,7 +59,7 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -70,7 +70,7 @@ ProgramFile6 {
 }
 ProgramFile7 {
 	sName="GTCassetteProbing.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -92,7 +92,7 @@ ProgramFile8 {
 }
 ProgramFile9 {
 	sName="GTRobotSpeed.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -103,7 +103,7 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="GTNumericManipulations.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -114,7 +114,7 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="GTSetupCassette.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -125,7 +125,7 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="GTSetupPoints.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -136,7 +136,7 @@ ProgramFile12 {
 }
 ProgramFile13 {
 	sName="GTReporter.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -147,7 +147,7 @@ ProgramFile13 {
 }
 ProgramFile14 {
 	sName="GTCassetteType.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -169,7 +169,7 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="GTIntialization.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -191,7 +191,7 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="GTMagnetManeuvers.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -203,7 +203,7 @@ ProgramFile18 {
 nIncludeFileCount=7
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -225,7 +225,7 @@ IncludeFile2 {
 }
 IncludeFile3 {
 	sName="forcedefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -236,7 +236,7 @@ IncludeFile3 {
 }
 IncludeFile4 {
 	sName="GTCassettedefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -247,7 +247,7 @@ IncludeFile4 {
 }
 IncludeFile5 {
 	sName="GTReporterdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -258,7 +258,7 @@ IncludeFile5 {
 }
 IncludeFile6 {
 	sName="GTSuperPuckdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -281,7 +281,7 @@ IncludeFile7 {
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0

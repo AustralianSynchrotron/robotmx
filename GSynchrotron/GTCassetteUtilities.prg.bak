@@ -5,7 +5,7 @@
 #include "GTReporterdefs.inc"
 
 Global Real g_SampleDistancefromCASSurface(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
-Global Boolean g_CAS_SamplePresent(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
+Global Integer g_CAS_PortStatus(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
 
 Function GTCassetteName$(cassette_position As Integer) As String
 	If cassette_position = LEFT_CASSETTE Then
@@ -34,6 +34,14 @@ Function GTapplyTiltToOffsets(cassette_position As Integer, PerfectXoffset As Re
 	Actualoffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
 	Actualoffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
 	Actualoffsets(2) = PerfectZoffset - (PerfectXoffset * g_tiltDX(cassette_position) + PerfectYoffset * g_tiltDY(cassette_position))
+Fend
+
+Function GTResetColumn(cassette_position As Integer, columnIndex As Integer)
+	Integer rowIndex
+	For rowIndex = 0 To NUM_ROWS - 1
+		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = 0.0
+		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
+	Next
 Fend
 
 '' To get a point on the circumference of the circle with radius taken from the cassette center [cassette's bottom center's (X,Y) location]
@@ -96,7 +104,6 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	
 	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
 	
-	g_CAS_SamplePresent(cassette_position, rowIndex, columnIndex) = SAMPLE_ABSENT
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 
 		Real distanceCASSurfacetoHere
@@ -109,16 +116,24 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		distErrorFromPerfectSamplePos = distanceCASSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_CAS
 		
 		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
+			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_ERROR
 			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface.")
 		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
-			g_CAS_SamplePresent(cassette_position, rowIndex, columnIndex) = SAMPLE_PRESENT
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_OCCUPIED
 			GTUpdateClient(TASK_MESSAGE_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch detected Sample at " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + ".")
 		Else
+			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
+			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
 			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface.")
 		EndIf
 		
-		GTTwistOffMagnet(cassette_position, distErrorFromPerfectSamplePos)
+		GTTwistOffMagnet
 	Else
+		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
+		''In reality g_SampleDistancefromCASSurface is greater than maxDistanceToScan because there is no sample (or ForceTouch failure)
+		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = maxDistanceToScan
 		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!")
 	EndIf
 	

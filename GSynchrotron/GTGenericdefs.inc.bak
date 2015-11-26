@@ -17,16 +17,17 @@
 #define PLACER_TOOL 2
 
 '' PORT Properties
-#define SAMPLE_ABSENT False
-#define SAMPLE_PRESENT True
-
+#define PORT_OCCUPIED -1
+#define PORT_UNKNOWN 0
+#define PORT_VACANT 1
+#define PORT_ERROR 2
 
 #define DISTANCE_P3_TO_P6 20.0 ''mm
 #define MAGNET_AXIS_TO_CRADLE_EDGE 2.8 'mm
 #define MAGNET_PROBE_DISTANCE_TOLERANCE (MAGNET_HEAD_RADIUS + 0.1)
 
 '' Could be CASSETTE_SHRINK_IN_LN2 (0.9961126827)
-#define CASSETTE_SHRINK_FACTOR 1.0 + g_LN2LevelHigh * (1.0 - CASSETTE_SHRINK_IN_LN2))
+#define CASSETTE_SHRINK_FACTOR (1.0 + g_LN2LevelHigh * (1.0 - CASSETTE_SHRINK_IN_LN2))
 
 #define PROBE_STANDBY_DISTANCE 5.0
 '' Acceptable error in cassette height in mm
