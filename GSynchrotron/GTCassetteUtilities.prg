@@ -116,6 +116,8 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		Else
 			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface.")
 		EndIf
+		
+		GTTwistOffMagnet(cassette_position, distErrorFromPerfectSamplePos)
 	Else
 		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeCassettePort: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!")
 	EndIf
@@ -132,20 +134,20 @@ Function GTprobeAllPortsInColumn(cassette_position As Integer, columnIndex As In
 	Select g_CassetteType(cassette_position)
 		Case CALIBRATION_CASSETTE
 			rowIndex = 0
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
 			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, True)
 
 			rowIndex = NUM_ROWS - 1
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
 			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, False)
 			
 		Case NORMAL_CASSETTE
 			rowIndex = 0
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
 			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, True)
 
 			For rowIndex = 1 To NUM_ROWS - 1
-				g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+				g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
 				GTprobeCassettePort(cassette_position, rowIndex, columnIndex, False)
 			Next
 	Send

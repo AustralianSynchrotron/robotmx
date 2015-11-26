@@ -1,7 +1,7 @@
-ENVT0100,LM:2015/11/25 06:19:19:167,DS:0000004778,CS:20488,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2015/11/26 03:41:59:859,DS:0000004937,CS:05748,MA:00-0C-29-BE-C0-E6,EI:           
+sActiveChild="GTUserInterface.prg"
 bMdiMaximized=True
-nProgramFileCount=17
+nProgramFileCount=18
 ProgramFile1 {
 	sName="magnet.prg"
 	bOpened=True
@@ -91,7 +91,7 @@ ProgramFile8 {
 	}
 }
 ProgramFile9 {
-	sName="GTMagnetAndRobotSpeed.prg"
+	sName="GTRobotSpeed.prg"
 	bOpened=True
 	nWinState=0
 	Window {
@@ -103,13 +103,13 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="GTNumericManipulations.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile11 {
@@ -180,6 +180,17 @@ ProgramFile16 {
 }
 ProgramFile17 {
 	sName="GTUserInterface.prg"
+	bOpened=True
+	nWinState=2
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile18 {
+	sName="GTMagnetManeuvers.prg"
 	bOpened=True
 	nWinState=0
 	Window {
@@ -281,7 +292,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -291,7 +302,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -338,7 +349,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0

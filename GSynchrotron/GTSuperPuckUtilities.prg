@@ -537,6 +537,8 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		Else
 			GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface.")
 		EndIf
+
+		GTTwistOffMagnet(cassette_position, distErrorFromPerfectSamplePos)
 	Else
 		GTUpdateClient(TASK_WARNING_REPORT, MID_LEVEL_FUNCTION, "GTprobeSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!")
 	EndIf
@@ -562,7 +564,7 @@ Function GTprobeAllPortsInPuck(cassette_position As Integer, puckIndex As Intege
 	If g_PuckPresent(cassette_position, puckIndex) Then
 		Integer portIndex
 		For portIndex = 0 To NUM_PUCK_PORTS - 1
-			g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPort(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(portIndex) + ")"
+			g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPort(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(portIndex + 1) + ")"
 			GTprobeSPPort(cassette_position, puckIndex, portIndex, False)
 		Next
 	EndIf

@@ -1,7 +1,7 @@
 #include "GTGenericdefs.inc"
 #include "GTReporterdefs.inc"
 
-Global Boolean m_GTInitialized
+Boolean m_GTInitialized
 
 Function GTInitialize() As Boolean
 	If m_GTInitialized Then

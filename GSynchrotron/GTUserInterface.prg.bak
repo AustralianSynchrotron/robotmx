@@ -4,8 +4,8 @@
 #include "GTReporterdefs.inc"
 
 Function GTProbeCassettes
-	Cls
-    Print "GTProbeCassettes at ", Date$, " ", Time$
+
+    Print "GTProbeCassettes entered at ", Date$, " ", Time$
 
 	''init result
     g_RunResult$ = ""
@@ -87,9 +87,11 @@ Function GTProbeCassettes
 	EndIf
 	
 	g_RunResult$ = "success GTProbeCassettes"
+    Print "GTProbeCassettes finished at ", Date$, " ", Time$
 Fend
 
 Function GTProbePucks
+    Print "GTProbePucks entered at ", Date$, " ", Time$
 	''init result
     g_RunResult$ = ""
     
@@ -142,7 +144,7 @@ Function GTProbePucks
 	If GTgetCassettePosition(OneCassetteChar$, ByRef cassette_position) Then
 		If g_CassetteType(cassette_position) <> SUPERPUCK_CASSETTE Then
 			g_RunResult$ = "error There is no superpuck Adaptor at Cassette Position in g_RunArgs$:" + OneCassetteChar$
-	        GTUpdateClient(TASK_FAILURE_REPORT, USER_INTERFACE_FUNCTION, "There is no superpuck Adaptor at Cassette Position in g_RunArgs$:" + OneCassetteChar$)
+	        GTUpdateClient(TASK_FAILURE_REPORT, USER_INTERFACE_FUNCTION, "There is no superpuck Adaptor at Cassette Position given in g_RunArgs$:" + OneCassetteChar$ + "! Run GTProbeCassettes then call GTProbePucks again.")
 			Exit Function
 		EndIf
 	Else
@@ -187,9 +189,11 @@ Function GTProbePucks
 	EndIf
 	
 	g_RunResult$ = "success GTProbePucks"
+	Print "GTProbePucks finished at ", Date$, " ", Time$
 Fend
 
 Function GTProbeColumns
+	Print "GTProbeColumns entered at ", Date$, " ", Time$
 	''init result
     g_RunResult$ = ""
     
@@ -242,7 +246,7 @@ Function GTProbeColumns
 	If GTgetCassettePosition(OneCassetteChar$, ByRef cassette_position) Then
 		If g_CassetteType(cassette_position) <> CALIBRATION_CASSETTE And g_CassetteType(cassette_position) <> NORMAL_CASSETTE Then
 			g_RunResult$ = "error There is no calibration or normal cassette at Cassette Position given in g_RunArgs$:" + OneCassetteChar$
-	        GTUpdateClient(TASK_FAILURE_REPORT, USER_INTERFACE_FUNCTION, "There is no calibration or normal cassette at Cassette Position given in g_RunArgs$:" + OneCassetteChar$)
+	        GTUpdateClient(TASK_FAILURE_REPORT, USER_INTERFACE_FUNCTION, "There is no calibration or normal cassette at Cassette Position given in g_RunArgs$:" + OneCassetteChar$ + "! Run GTProbeCassettes then call GTProbeColumns again.")
 			Exit Function
 		EndIf
 	Else
@@ -287,5 +291,6 @@ Function GTProbeColumns
 	EndIf
 	
 	g_RunResult$ = "success GTProbeColumns"
+	Print "GTProbeColumns finished at ", Date$, " ", Time$
 Fend
 

@@ -24,10 +24,6 @@ Function GTInitialize() As Boolean
 		Exit Function
 	EndIf
 	
-	Motor On
-	Tool 0
-	GTsetRobotSpeedMode(FAST_SPEED)
-	
 	GTInitialize = True
 	m_GTInitialized = True
 Fend

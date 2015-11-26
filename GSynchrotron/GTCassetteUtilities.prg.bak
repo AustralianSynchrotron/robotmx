@@ -132,19 +132,20 @@ Function GTprobeAllPortsInColumn(cassette_position As Integer, columnIndex As In
 	Select g_CassetteType(cassette_position)
 		Case CALIBRATION_CASSETTE
 			rowIndex = 0
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
 			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, True)
 
 			rowIndex = NUM_ROWS - 1
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
 			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, False)
 			
 		Case NORMAL_CASSETTE
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+			rowIndex = 0
+			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
 			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, True)
 
 			For rowIndex = 1 To NUM_ROWS - 1
-				g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex) + ",col=" + GTcolumnName$(columnIndex) + ")"
+				g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
 				GTprobeCassettePort(cassette_position, rowIndex, columnIndex, False)
 			Next
 	Send

@@ -1,14 +1,14 @@
-ENVT0100,LM:2015/11/25 04:51:20:542,DS:0000008004,CS:00378,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/11/26 01:14:28:828,DS:0000008140,CS:28716,MA:00-0C-29-BE-C0-E6,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="2bf14ca1-71fa-4980-ab29-5dd27eb7c89e"
 	sPath="C:\\EpsonRC60\\Projects\\GSynchrotron\\"
 	sCreated=""
-	sLastModified="11/25/2015 3:51:20 PM"
+	sLastModified="11/26/2015 12:14:28 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
-	bRebuildRequired=False
+	bRebuildRequired=True
 	bClearControllerProject=False
 	bClearGlobalPreserves=False
 }
@@ -29,7 +29,7 @@ UserErrorsFile {
 	nChecksum=0
 }
 nRobotCount=1
-nProgramFileCount=17
+nProgramFileCount=18
 ProgramFile1 {
 	sName="magnet.prg"
 	bCompiled=True
@@ -71,7 +71,7 @@ ProgramFile8 {
 	bStoreInController=True
 }
 ProgramFile9 {
-	sName="GTMagnetAndRobotSpeed.prg"
+	sName="GTRobotSpeed.prg"
 	bCompiled=True
 	bStoreInController=True
 }
@@ -107,11 +107,16 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="GTIntialization.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile17 {
 	sName="GTUserInterface.prg"
+	bCompiled=True
+	bStoreInController=True
+}
+ProgramFile18 {
+	sName="GTMagnetManeuvers.prg"
 	bCompiled=False
 	bStoreInController=True
 }
@@ -470,4 +475,7 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=0
+nGuiBuilderFileCount=1
+GuiBuilderFile1 {
+	sName="GSynchrotron.gui"
+}
