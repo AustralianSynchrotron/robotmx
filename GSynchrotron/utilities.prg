@@ -832,12 +832,12 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
        	''Trigger occured
     	''Read force that caused trigger
     	g_CurrentSingleF = g_FSTriggeredForces(Abs(forceName))
-    	Print "valid force=" + Str$(g_CurrentSingleF)
+    	''Print "valid force=" + Str$(g_CurrentSingleF)
     Else
     	''Trigger did not occur
     	''Read current force
     	g_CurrentSingleF = ReadForce(forceName)
-    	Print "invalid force=" + Str$(g_CurrentSingleF)
+    	''Print "invalid force=" + Str$(g_CurrentSingleF)
     EndIf
     
     ''Read position after moving till force

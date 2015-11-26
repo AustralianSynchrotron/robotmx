@@ -144,39 +144,37 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	GTJumpHomeToCoolingPointAndWait = True
 Fend
 
-'' errorFromPerfectSamplePosition is the distance between Actual sample position and Perfect sample position
-Function GTTwistOffMagnet(cassette_type As Integer, errorFromPerfectSamplePosition As Real)
+Function GTTwistOffMagnet
 	Real currentUAngle
 	currentUAngle = CU(RealPos)
 	
 	Integer currentTool
 	currentTool = Tool()
+		
+	Real twistOffAngle
+	twistOffAngle = 60 ''degrees
+
+	''Safe distance for magnet to twist (otherwise the magnet head would overpress the sample)
+	Real twistOffMagnetSafeDistance, twistOffMagnetSafeDistanceX, twistOffMagnetSafeDistanceY
+	twistOffMagnetSafeDistance = MAGNET_HEAD_RADIUS * Sin(DegToRad(twistOffAngle))
+	twistOffMagnetSafeDistanceX = -twistOffMagnetSafeDistance * Cos(DegToRad(currentUAngle))
+	twistOffMagnetSafeDistanceY = -twistOffMagnetSafeDistance * Sin(DegToRad(currentUAngle))
+
+	''Move safe distance before twistoff	
+	Move RealPos +X(twistOffMagnetSafeDistanceX) +Y(twistOffMagnetSafeDistanceY)
 	
-	'' perfectDistanceSampleToSurface is the distance to reach back to the cassette surface (or puck surface in case of superpuck)
-	Real perfectDistanceSampleToSurface
-	Select cassette_type
-		Case SUPERPUCK_CASSETTE
-			perfectDistanceSampleToSurface = SAMPLE_DIST_PIN_DEEP_IN_PUCK + errorFromPerfectSamplePosition
-		Default
-			perfectDistanceSampleToSurface = SAMPLE_DIST_PIN_DEEP_IN_CAS + errorFromPerfectSamplePosition
-	Send
-	
-	Real travelToSurfaceDistanceX, travelToSurfaceDistanceY
-	travelToSurfaceDistanceX = -perfectDistanceSampleToSurface * Cos(DegToRad(currentUAngle))
-	travelToSurfaceDistanceY = -perfectDistanceSampleToSurface * Sin(DegToRad(currentUAngle))
-	
+
 	Real AngleToArc
 	Select currentTool
 		Case PICKER_TOOL
-			AngleToArc = 60 ''degrees
+			AngleToArc = twistOffAngle ''degrees
 		Case PLACER_TOOL
-			AngleToArc = -60 ''degrees
+			AngleToArc = -twistOffAngle ''degrees
 		Default
 			Exit Function
 	Send
 	
-	'' Move half way inside the sample port and then turn U angle for the rest half distance to reach the cassette/puck surface
-	Move RealPos +X(travelToSurfaceDistanceX / 2) +Y(travelToSurfaceDistanceY / 2)
-	Go RealPos +X(travelToSurfaceDistanceX / 2) +Y(travelToSurfaceDistanceY / 2) +U(AngleToArc)
+	''Perform the twistoff, (If the following XY move added, then the back of the magnet head's backedge hits the port edge)
+	Move RealPos +X(MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))) +Y(+MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))) +U(AngleToArc)
 Fend
 
