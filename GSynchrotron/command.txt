@@ -1,67 +1,8 @@
-> jump p1
-> jump p0
 > print g_RunArgs$
 lmr 1
-> 
-lmr 1
-> 
-lmr 1
-> 
-lmr 1
-> 
-r cd
-> print g_CassetteType(2)
- 3
-> 
+> print G_LN2levelHigh
  0
-> 
- 0
-> 
- 0
-> g_runArgs$="lmr 1"
-> 
-> 
-> Print g_CAS_SamplePresent(1,6,2)
- -1
-> Print g_SampleDistancefromCASSurface(1,6,2)
- 3.57399
-> 
- 0
-> 
- 0
-> 
- 0
-> 
- 3.57399
-> 
-!!Error: 3100, Syntax error.
-> 
- 0
-> 
- -1
-> 
- -1
-> 
- 0
-> 
- 0
-> 
- -1
-> 
- 0
-> 
- -1
-> 
- 0
-> 
- 0
-> 
- 0
-> 
- 0
-> 
- 0
-> 
+> print g_CAS_PortStatus(0,0,4)
  -1
 > 
  0
@@ -72,8 +13,32 @@ r cd
 > 
  -1
 > 
+ 0print 
+> print g_SampleDistancefromCASSurface(0,0,4)
+ 3.70006
+> 
+ 0
+> 
+ 0
+> 
+ 0
+> 
+ 3.48399
+> 
+ 0
+> 
+ 3.49538
+> 
+ -l1
+> 
  -1
 > 
  0
-> jump p0
+> 
+ 0
+> 
+ 0
+> g_RunArgs$="r 1"
+> 
+> 
 > 

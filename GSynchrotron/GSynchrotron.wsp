@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/11/26 11:44:55:432,DS:0000004958,CS:22617,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="GTUserInterface.prg"
+ENVT0100,LM:2015/11/26 21:24:30:713,DS:0000004955,CS:17452,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="GTMagnetManeuvers.prg"
 bMdiMaximized=True
 nProgramFileCount=18
 ProgramFile1 {
@@ -70,7 +70,7 @@ ProgramFile6 {
 }
 ProgramFile7 {
 	sName="GTCassetteProbing.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -191,8 +191,8 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="GTMagnetManeuvers.prg"
-	bOpened=False
-	nWinState=0
+	bOpened=True
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -236,7 +236,7 @@ IncludeFile3 {
 }
 IncludeFile4 {
 	sName="GTCassettedefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -258,7 +258,7 @@ IncludeFile5 {
 }
 IncludeFile6 {
 	sName="GTSuperPuckdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -349,7 +349,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0

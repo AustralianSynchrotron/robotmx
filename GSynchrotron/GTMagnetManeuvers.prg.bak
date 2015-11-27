@@ -144,7 +144,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	GTJumpHomeToCoolingPointAndWait = True
 Fend
 
-Function GTTwistOffMagnet(cassette_type As Integer, errorFromPerfectSamplePosition As Real)
+Function GTTwistOffMagnet
 	Real currentUAngle
 	currentUAngle = CU(RealPos)
 	
@@ -154,27 +154,35 @@ Function GTTwistOffMagnet(cassette_type As Integer, errorFromPerfectSamplePositi
 	Real twistOffAngle
 	twistOffAngle = 60 ''degrees
 
-	''Safe distance for magnet to twist (otherwise the magnet head would overpress the sample)
-	Real twistOffMagnetSafeDistance, twistOffMagnetSafeDistanceX, twistOffMagnetSafeDistanceY
-	twistOffMagnetSafeDistance = MAGNET_HEAD_RADIUS * Sin(DegToRad(twistOffAngle))
-	twistOffMagnetSafeDistanceX = -twistOffMagnetSafeDistance * Cos(DegToRad(currentUAngle))
-	twistOffMagnetSafeDistanceY = -twistOffMagnetSafeDistance * Sin(DegToRad(currentUAngle))
+	''Safe distance for magnet to twist (otherwise the magnet head front edge would overpress the sample)
+	Real twistMagnetRadiusSafeDistance, twistMagnetRadiusSafeDistanceX, twistMagnetRadiusSafeDistanceY
+	twistMagnetRadiusSafeDistance = MAGNET_HEAD_RADIUS * Sin(DegToRad(twistOffAngle))
+	twistMagnetRadiusSafeDistanceX = -twistMagnetRadiusSafeDistance * Cos(DegToRad(currentUAngle))
+	twistMagnetRadiusSafeDistanceY = -twistMagnetRadiusSafeDistance * Sin(DegToRad(currentUAngle))
 
-	''Move safe distance before twistoff	
-	Move RealPos +X(twistOffMagnetSafeDistanceX) +Y(twistOffMagnetSafeDistanceY)
-	
+	''Safe distance for magnet to twist (otherwise the magnet head back edge would hit the port edge)
+	Real twistMagnetHeadSafeDistance, twistMagnetHeadSafeDistanceX, twistMagnetHeadSafeDistanceY
+	twistMagnetHeadSafeDistance = MAGNET_HEAD_THICKNESS
 
-	Real AngleToArc
+	Real twistAngleInGlobalCoordinates
 	Select currentTool
 		Case PICKER_TOOL
-			AngleToArc = twistOffAngle ''degrees
+			twistAngleInGlobalCoordinates = twistOffAngle ''degrees
+			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle + 90))
+			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle + 90))
 		Case PLACER_TOOL
-			AngleToArc = -twistOffAngle ''degrees
+			twistAngleInGlobalCoordinates = -twistOffAngle ''degrees
+			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))
+			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))
 		Default
+			''If other toolsets are used, do not perform twistoff moves (just return before moving)
 			Exit Function
 	Send
+		
+	''Move safe distance before twistoff so that there is no overpress of sample due to magnet radius
+	Move RealPos +X(twistMagnetRadiusSafeDistanceX) +Y(twistMagnetRadiusSafeDistanceY)
 	
 	''Perform the twistoff, (If the following XY move added, then the back of the magnet head's backedge hits the port edge)
-	Move RealPos +X(MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))) +Y(+MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))) +U(AngleToArc)
+	Move RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates)
 Fend
 
