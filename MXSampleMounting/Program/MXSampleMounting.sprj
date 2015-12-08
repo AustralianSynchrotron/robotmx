@@ -1,0 +1,402 @@
+ENVT0100,LM:2015/12/02 00:48:18:250,DS:0000006675,CS:04695,MA:00-80-4C-A4-84-A0,EI:           
+SystemProperties {
+	sRCVersion="6.2.3"
+	sRCRevision="R5"
+	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
+	sPath="C:\\EpsonRC60\\Projects\\MXSampleMounting\\"
+	sCreated=""
+	sLastModified="12/2/2015 11:48:18 AM"
+	bBuildComplete=False
+	bFirstBuildComplete=True
+	bRebuildRequired=False
+	bClearControllerProject=False
+	bClearGlobalPreserves=False
+}
+UserProperties {
+	sVersion=""
+	sDescription=""
+	sNotes=""
+	sParserEmulationVersion="6.2.4.x"
+	bStrictCompile=False
+	bGlobalsDeclaredEachFile=False
+}
+IOLabelFile {
+	sName="IOLabels.dat"
+	nChecksum=0
+}
+UserErrorsFile {
+	sName="UserErrors.dat"
+	nChecksum=0
+}
+nRobotCount=1
+nProgramFileCount=6
+ProgramFile1 {
+	sName="magnet.prg"
+	bCompiled=True
+	bStoreInController=True
+}
+ProgramFile2 {
+	sName="cassette.prg"
+	bCompiled=True
+	bStoreInController=True
+}
+ProgramFile3 {
+	sName="gonio.prg"
+	bCompiled=True
+	bStoreInController=True
+}
+ProgramFile4 {
+	sName="utilities.prg"
+	bCompiled=True
+	bStoreInController=True
+}
+ProgramFile5 {
+	sName="Network.prg"
+	bCompiled=False
+	bStoreInController=True
+}
+ProgramFile6 {
+	sName="force.prg"
+	bCompiled=True
+	bStoreInController=True
+}
+nIncludeFileCount=3
+IncludeFile1 {
+	sName="mxrobotdefs.inc"
+	bStoreInController=True
+}
+IncludeFile2 {
+	sName="networkdefs.inc"
+	bStoreInController=True
+}
+IncludeFile3 {
+	sName="forcedefs.inc"
+	bStoreInController=True
+}
+nPointFileCount=1
+PointFile1 {
+	sName="robot1.pts"
+	nRobot=1
+	bDefault=True
+}
+OperatorSettings {
+	OperatorWindow {
+		sTitle="Operator Window"
+		nWinState=0
+		sFontName="Courier New"
+		rFontSize=10
+		bFontBold=False
+		bRobotMgrButton=True
+		bPauseContButtons=True
+		bIOMonitorButton=True
+		bSystemHistoryButton=True
+		bDisplayVision=False
+		Program0 {
+			sName="Program"
+			bEnabled=True
+		}
+		Program1 {
+			sName="Program 1"
+			bEnabled=True
+		}
+		Program2 {
+			sName="Program 2"
+			bEnabled=True
+		}
+		Program3 {
+			sName="Program 3"
+			bEnabled=True
+		}
+		Program4 {
+			sName="Program 4"
+			bEnabled=True
+		}
+		Program5 {
+			sName="Program 5"
+			bEnabled=True
+		}
+		Program6 {
+			sName="Program 6"
+			bEnabled=True
+		}
+		Program7 {
+			sName="Program 7"
+			bEnabled=True
+		}
+		Program8 {
+			sName="Program 8"
+			bEnabled=True
+		}
+		Program9 {
+			sName="Program 9"
+			bEnabled=True
+		}
+		Program10 {
+			sName="Program 10"
+			bEnabled=True
+		}
+		Program11 {
+			sName="Program 11"
+			bEnabled=True
+		}
+		Program12 {
+			sName="Program 12"
+			bEnabled=True
+		}
+		Program13 {
+			sName="Program 13"
+			bEnabled=True
+		}
+		Program14 {
+			sName="Program 14"
+			bEnabled=True
+		}
+		Program15 {
+			sName="Program 15"
+			bEnabled=True
+		}
+		Program16 {
+			sName="Program 16"
+			bEnabled=True
+		}
+		Program17 {
+			sName="Program 17"
+			bEnabled=True
+		}
+		Program18 {
+			sName="Program 18"
+			bEnabled=True
+		}
+		Program19 {
+			sName="Program 19"
+			bEnabled=True
+		}
+		Program20 {
+			sName="Program 20"
+			bEnabled=True
+		}
+		Program21 {
+			sName="Program 21"
+			bEnabled=True
+		}
+		Program22 {
+			sName="Program 22"
+			bEnabled=True
+		}
+		Program23 {
+			sName="Program 23"
+			bEnabled=True
+		}
+		Program24 {
+			sName="Program 24"
+			bEnabled=True
+		}
+		Program25 {
+			sName="Program 25"
+			bEnabled=True
+		}
+		Program26 {
+			sName="Program 26"
+			bEnabled=True
+		}
+		Program27 {
+			sName="Program 27"
+			bEnabled=True
+		}
+		Program28 {
+			sName="Program 28"
+			bEnabled=True
+		}
+		Program29 {
+			sName="Program 29"
+			bEnabled=True
+		}
+		Program30 {
+			sName="Program 30"
+			bEnabled=True
+		}
+		Program31 {
+			sName="Program 31"
+			bEnabled=True
+		}
+		Program32 {
+			sName="Program 32"
+			bEnabled=True
+		}
+		Program33 {
+			sName="Program 33"
+			bEnabled=True
+		}
+		Program34 {
+			sName="Program 34"
+			bEnabled=True
+		}
+		Program35 {
+			sName="Program 35"
+			bEnabled=True
+		}
+		Program36 {
+			sName="Program 36"
+			bEnabled=True
+		}
+		Program37 {
+			sName="Program 37"
+			bEnabled=True
+		}
+		Program38 {
+			sName="Program 38"
+			bEnabled=True
+		}
+		Program39 {
+			sName="Program 39"
+			bEnabled=True
+		}
+		Program40 {
+			sName="Program 40"
+			bEnabled=True
+		}
+		Program41 {
+			sName="Program 41"
+			bEnabled=True
+		}
+		Program42 {
+			sName="Program 42"
+			bEnabled=True
+		}
+		Program43 {
+			sName="Program 43"
+			bEnabled=True
+		}
+		Program44 {
+			sName="Program 44"
+			bEnabled=True
+		}
+		Program45 {
+			sName="Program 45"
+			bEnabled=True
+		}
+		Program46 {
+			sName="Program 46"
+			bEnabled=True
+		}
+		Program47 {
+			sName="Program 47"
+			bEnabled=True
+		}
+		Program48 {
+			sName="Program 48"
+			bEnabled=True
+		}
+		Program49 {
+			sName="Program 49"
+			bEnabled=True
+		}
+		Program50 {
+			sName="Program 50"
+			bEnabled=True
+		}
+		Program51 {
+			sName="Program 51"
+			bEnabled=True
+		}
+		Program52 {
+			sName="Program 52"
+			bEnabled=True
+		}
+		Program53 {
+			sName="Program 53"
+			bEnabled=True
+		}
+		Program54 {
+			sName="Program 54"
+			bEnabled=True
+		}
+		Program55 {
+			sName="Program 55"
+			bEnabled=True
+		}
+		Program56 {
+			sName="Program 56"
+			bEnabled=True
+		}
+		Program57 {
+			sName="Program 57"
+			bEnabled=True
+		}
+		Program58 {
+			sName="Program 58"
+			bEnabled=True
+		}
+		Program59 {
+			sName="Program 59"
+			bEnabled=True
+		}
+		Program60 {
+			sName="Program 60"
+			bEnabled=True
+		}
+		Program61 {
+			sName="Program 61"
+			bEnabled=True
+		}
+		Program62 {
+			sName="Program 62"
+			bEnabled=True
+		}
+		Program63 {
+			sName="Program 63"
+			bEnabled=True
+		}
+	}
+	RobotManager {
+		bAllowReset=True
+		bAllowTeach=True
+		bAllowMotionCmds=True
+		bAllowDeletePoints=True
+		bAllowEditPoints=True
+		bAllowSFree=True
+		bAllowHome=True
+		bPromptNewPointInfo=True
+		bTeachDefinedOnly=True
+		bControlPanelTab=True
+		bJogTab=True
+		bPointsTab=True
+		bArchTab=False
+		bLocalsTab=False
+		bToolsTab=False
+		bArmsTab=False
+		bECPTab=False
+		bBoxesTab=False
+		bPlanesTab=False
+		bWeightTab=False
+		bInertiaTab=False
+		bXYZLimitsTab=False
+		bRangeTab=False
+		bHomeConfigTab=False
+		bMCalOrderTab=False
+	}
+	IOMonitor {
+		bStandardViewTab=True
+		bCustomView1Tab=True
+		bCustomView2Tab=False
+		bCustomView3Tab=False
+		bAllowChangeOutputs=False
+	}
+}
+IOCustomView1 {
+	sName=""
+	bVisible=True
+	nNumberOfRows=0
+}
+IOCustomView2 {
+	sName=""
+	bVisible=False
+	nNumberOfRows=0
+}
+IOCustomView3 {
+	sName=""
+	bVisible=False
+	nNumberOfRows=0
+}
+nVisFileCount=0
+nGuiBuilderFileCount=0

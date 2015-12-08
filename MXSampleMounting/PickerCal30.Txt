@@ -1,0 +1,4 @@
+picker calibration at 2015/06/03 16:03:49
+touched seat at ( 217.767,  371.244) and ( 218.462,  391.244)
+touched magnet head at ( 223.462,  403.277)
+touch magnet head at Z= -147.905
