@@ -3,7 +3,6 @@
 #include "mxrobotdefs.inc"
 #include "genericdefs.inc"
 #include "superpuckdefs.inc"
-#include "reporterdefs.inc"
 
 Real m_SP_Alpha(NUM_PUCKS)
 Real m_SP_Puck_Radius(NUM_PUCKS)
@@ -95,7 +94,7 @@ Function GTResetPuck(cassette_position As Integer, puckIndex As Integer)
 	Next
 Fend
 
-Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer) As Boolean
+Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer, jumpToStandbyPoint As Boolean) As Boolean
 	Real angle_to_puck_center
 	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex)
 	
@@ -151,18 +150,25 @@ Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer)
 	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 
-	Jump P(standbyPoint)
+	If jumpToStandbyPoint Then
+		Jump P(standbyPoint)
+	Else
+		Move P(standbyPoint)
+	EndIf
 	
 	Real scanDistance
 	scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
 	
+	GTsetRobotSpeedMode(PROBE_SPEED)
+		
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
 		UpdateClient(TASK_MSG, "GTSPpositioningMove failed: error in ForceTouch!", ERROR_LEVEL)
 		GTSPpositioningMove = False
 		Exit Function
 	EndIf
-
+	
+	GTLoadPreviousRobotSpeedMode
 	Move P(standbyPoint)
 	GTSPpositioningMove = True
 Fend
@@ -263,7 +269,7 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckInde
 	P(destinationPointNum) = XY(perfectX + destinationXoffset, perfectY + destinationYoffset, perfectZ, perfectU) /R
 Fend
 
-Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex As Integer) As Boolean
+Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex As Integer, jumpToStandbyPoint As Boolean) As Boolean
 	String msg$
 	
 	msg$ = "GTprobeAdaptorAngleCorrection(" + GTCassetteName$(cassette_position) + ":" + GTpuckName$(puckIndex) + ")"
@@ -273,7 +279,7 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 	LimZ g_Jump_LimZ_LN2
 
 	'' Initial Positioning move before every puck adaptor correction probe
-	GTSPpositioningMove(cassette_position, puckIndex)
+	GTSPpositioningMove(cassette_position, puckIndex, jumpToStandbyPoint)
 
 	Integer standbyPoint, perfectPoint, destinationPoint
 	perfectPoint = 102
@@ -288,7 +294,7 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 	Real scanDistance
 	scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
 	
-	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+	GTsetRobotSpeedMode(PROBE_SPEED)
 
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
@@ -493,6 +499,8 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpT
 		Move P(standbyPoint)
 	EndIf
 	
+	GTsetRobotSpeedMode(PROBE_SPEED)
+	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
 	g_PuckPresent(cassette_position, puckIndex) = PUCK_ABSENT
@@ -506,6 +514,7 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpT
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		ElseIf distErrorFromPerfectPuckSurface < OVERPRESS_DISTANCE_FOR_PUCK Then
 			g_PuckPresent(cassette_position, puckIndex) = PUCK_PRESENT
+			msg$ = "GTprobeSPPuck: ForceTouch dectected " + GTpuckName$(puckIndex) + " with distance error = " + Str$(distErrorFromPerfectPuckSurface) + "mm from theoretical puck surface."
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		Else
 			msg$ = "GTprobeSPPuck: ForceTouch (" + GTpuckName$(puckIndex) + ") moved " + Str$(distErrorFromPerfectPuckSurface) + "mm beyond theoretical puck surface."
@@ -517,6 +526,7 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpT
 	EndIf
 	
 	Move P(standbyPoint)
+	GTLoadPreviousRobotSpeedMode
 Fend
 
 Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, jumpToStandbyPoint As Boolean)
@@ -539,7 +549,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		Move P(standbyPoint)
 	EndIf
 		
-	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+	GTsetRobotSpeedMode(PROBE_SPEED)
 
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 		
@@ -576,27 +586,32 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = maxDistanceToScan
 		msg$ = "GTprobeSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+
+		Move P(standbyPoint)
 	EndIf
 	
-	Move P(standbyPoint)
+	'' The following code just realigns the twistoffmagnet so not required if sample present in port
+	''Move P(standbyPoint)
 
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
 	GTLoadPreviousRobotSpeedMode
 Fend
 
 Function GTprobeAllPortsInPuck(cassette_position As Integer, puckIndex As Integer)
-	g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-	If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex) Then
-		g_RunResult$ = "error GTprobeAllPortsInPuck->GTprobeAdaptorAngleCorrection!"
-		UpdateClient(TASK_MSG, "GTprobeAllPortsInPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
-		GTprobeAllPortsInPuck = False
-		Exit Function
-	EndIf
-
+			
 	g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-	GTprobeSPPuck(cassette_position, puckIndex, False)
+	GTprobeSPPuck(cassette_position, puckIndex, True)
 
 	If g_PuckPresent(cassette_position, puckIndex) Then
+		'' If probeAdaptorAngleCorrection was run here, there were incorrect puck absence in probeSPPuck above
+		g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
+		If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex, False) Then
+			g_RunResult$ = "error GTprobeAllPortsInPuck->GTprobeAdaptorAngleCorrection!"
+			UpdateClient(TASK_MSG, "GTprobeAllPortsInPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
+			GTprobeAllPortsInPuck = False
+			Exit Function
+		EndIf
+
 		Integer portIndex
 		For portIndex = 0 To NUM_PUCK_PORTS - 1
 			g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPort(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(portIndex + 1) + ")"

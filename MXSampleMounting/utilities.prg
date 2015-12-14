@@ -402,7 +402,7 @@ Function InitForceConstants
 	''	EndIf
 	''EndIf
 
-    UpdateClient(TASK_MSG, "InitForceConstants", INFO_LEVEL)
+    Print "InitForceConstants"
     If g_MagnetTransportAngle = 0 Then
         g_MagnetTransportAngle = g_Perfect_Cradle_Angle
     EndIf
@@ -464,7 +464,7 @@ Function InitForceConstants
     g_ZNumSteps = 20        ''step size is 0.025mm
     g_UNumSteps = 30        ''step size is 0.1 degree
 
-    GTCheckPoint 6
+    CheckPoint 6
     g_U4MagnetHolder = CU(P6)
     If g_U4MagnetHolder = 0 Then
         g_U4MagnetHolder = g_Perfect_U4Holder
@@ -755,9 +755,9 @@ Function ForceCross(forceName As Integer, threshold As Real, scanDistance As Rea
     FCDestPosition(4) = FCDestPosition(4) + CU(Here)
     
     msg$ = "ForceCross forceName: " + Str$(forceName) + ", threshold: " + Str$(threshold) + " distance: " + Str$(scanDistance)
-    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "destination P "
-    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     PrintPosition(ByRef FCDestPosition())
     
     ''call ForceScan
@@ -772,7 +772,7 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
 	Integer FTHThresHoldM
 	
 	msg$ = "+ForceTouch " + Str$(forceName) + ", " + Str$(scanDistance)
-    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	
     ForceTouch = False
     
@@ -814,7 +814,7 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
     If ForcePassedThreshold(forceName, g_CurrentSingleF, FTHThreshold) Then
     	''Force beyond requested threshold before moving
         msg$ = "ForceTouch: Force beyond threshold before moving.  Exiting ForceTouch"
-    	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+    	UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
         Exit Function
 	EndIf
     
@@ -850,14 +850,14 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
     ElseIf ForcePassedThreshold(forceName, g_CurrentSingleF, (FTHThreshold)) Then
        	''Force satisfies threshold, and is not too big
        	msg$ = "ForceTouch: Force satisfies threshold condition @ " + Str$(g_CurrentSingleF)
-        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         ForceTouchSatisfied = True
     Else
        	''Force does not satisfy threshold
        	msg$ = "ForceTouch: Force does not satisfy threshold condition @ " + Str$(g_CurrentSingleF)
-        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+        UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
         msg$ = "ForceTouch: Threshold is " + Str$(FTHThreshold)
-        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+        UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
     EndIf
     
     ''check to see if we need to step-scan to it if moving with force trigger not work
@@ -869,7 +869,7 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
         ''Try step scan only if num steps > 0
         If FTHNumSteps > 0 Then
            msg$ = "ForceTouch: Failed using move with trigger.  Trying step scan instead"
-           UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+           UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
            FTHThreshold = GetTouchThreshold(forceName)
            If Not ForceScan(forceName, FTHThreshold, ByRef FTHDestP(), FTHNumSteps, False) Then
          	  UpdateClient(TASK_MSG, "not touched within the range", WARNING_LEVEL)
@@ -880,7 +880,7 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
            EndIf
         Else
            msg$ = "ForceTouch: Arrived at destination and force did not satisfy threshold, exit"
-           UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+           UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
            Exit Function
         EndIf
     EndIf
@@ -905,7 +905,7 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
     GetCurrentPosition(ByRef g_CurrentP())
     g_CurrentSingleF = ReadForce(forceName)
 	
-	UpdateClient(TASK_MSG, "ForceTouched at P:", INFO_LEVEL)
+	UpdateClient(TASK_MSG, "ForceTouched at P:", DEBUG_LEVEL)
 	PrintPosition(ByRef g_CurrentP())
 	msg$ = " force :" + Str$(g_CurrentSingleF)
 	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
@@ -991,7 +991,7 @@ Fend
 Function ResetForceSensor As Boolean
 	ResetForceSensor = False
 
-    UpdateClient(TASK_MSG, "Resetting force sensor", INFO_LEVEL)
+    Print "Resetting force sensor"
     
     SetFastSpeed
     
@@ -1000,7 +1000,7 @@ Function ResetForceSensor As Boolean
     
     ''reset force sensor
     Wait TIME_WAIT_BEFORE_RESET
-    If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
+    If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then
 		Exit Function
     EndIf
 
@@ -1009,7 +1009,7 @@ Function ResetForceSensor As Boolean
     
     SetVerySlowSpeed
     Move Here -Z(2.0)
-    UpdateClient(TASK_MSG, "force sensor resetted", INFO_LEVEL)
+    Print "force sensor resetted"
     
     ResetForceSensor = True
 Fend
@@ -1097,6 +1097,7 @@ Function MoveTongHome
         If Not Open_Gripper Then
             g_RunResult$ = "MoveTongHome: Open_Gripper Failed, may hold magnet, need Reset"
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+            Print g_RunResult$
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
             g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
             Motor Off
@@ -1238,12 +1239,12 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
 	String msg$
 	
 	msg$ = "BinaryCross " + Str$(forceName) + ", " + Str$(threshold)
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
     ''check current condition
     If Abs(previousForce - threshold) < 0.01 Then
     	msg$ = "previousForce = threshold, exit"
-        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         GenericMove(ByRef previousPosition(), False)
         Exit Function
     EndIf
@@ -1252,7 +1253,7 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
     BCCurrentForce = ReadForce(forceName)
     If Abs(BCCurrentForce - threshold) < 0.01 Then
         msg$ = "BCCurrentForce = threshold, exit"
-        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Exit Function
     EndIf
 
@@ -1262,7 +1263,7 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
     
     If HypStepSize(ByRef BCStepSize()) < 0.001 Then
     	msg$ = "step size already very small < 0.001, exit"
-    	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Exit Function
     EndIf
 
@@ -1278,7 +1279,7 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
 
     If (previousForce - threshold) * (BCCurrentForce - threshold) > 0 Then
         msg$ = "threshold must be in between previous force and current force"
-        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
         Exit Function
     EndIf
 
@@ -1293,7 +1294,7 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
         Next
         If HypStepSize(ByRef BCStepSize()) < 0.0001 Then
             msg$ = "step size already very small < 0.0001, exit"
-            UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+            UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
             Exit Function
         EndIf
         StepMove(ByRef BCStepSize(), False)
@@ -1330,7 +1331,7 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
 
 #ifdef CROSS_LINEAR_INTERPOLATE
     ''linear interpolation
-    UpdateClient(TASK_MSG, "Linear interpolation")
+    UpdateClient(TASK_MSG, "Linear interpolation", DEBUG_LEVEL)
     msg$ = "new previous: Force=" + Str$(previousForce) + ", P="
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     PrintPosition(ByRef previousPosition())
@@ -1343,7 +1344,7 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
 	
     If Abs(previousForce - BCCurrentForce) < 0.0001 Then
     	msg$ = "too close , return middle"
-    	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         For tmp_PIndex = 1 To 4
             BCPerfectPosition(tmp_PIndex) = (previousPosition(tmp_PIndex) + BCCurrentPosition(tmp_PIndex)) / 2
         Next
@@ -1357,7 +1358,7 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
     PrintPosition(ByRef BCPerfectPosition())
 #else
     GenericMove(ByRef BCCurrentPosition(), False)
-    UpdateClient(TASK_MSG, "keep same direction as caller,we move to ", INFO_LEVEL)
+    UpdateClient(TASK_MSG, "keep same direction as caller,we move to ", DEBUG_LEVEL)
     PrintPosition(ByRef BCCurrentPosition())
 #endif
     g_CurrentSingleF = ReadForce(forceName)
@@ -1366,7 +1367,7 @@ Function BinaryCross(forceName As Integer, ByRef previousPosition() As Real, pre
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     ''check best
     If BCBestDF < BCTempDF Then
-    	UpdateClient(TASK_MSG, "best has small DF than perfect, so we go best", INFO_LEVEL)
+    	UpdateClient(TASK_MSG, "best has small DF than perfect, so we go best", DEBUG_LEVEL)
         GenericMove(ByRef BCBestPosition(), False)
         g_CurrentSingleF = ReadForce(forceName)
         UpdateClient(TASK_MSG, "best P at ", DEBUG_LEVEL)
@@ -1400,14 +1401,14 @@ Function ForceScan(forceName As Integer, threshold As Real, ByRef destPosition()
     PositionCopy(ByRef FSPrePosition(), ByRef FSOldPosition())
     FSPreForce = ReadForce(forceName)
     FSForce = FSPreForce
-    UpdateClient(TASK_MSG, "old P: ", INFO_LEVEL)
+    UpdateClient(TASK_MSG, "old P: ", DEBUG_LEVEL)
     PrintPosition(ByRef FSOldPosition())
     msg$ = "old Force: " + Str$(FSForce) + " Threshold: " + Str$(threshold)
-    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
     ''check current force
     If ForcePassedThreshold(forceName, FSPreForce, threshold) Then
-    	UpdateClient(TASK_MSG, "-ForceScan: Force satisfies threshold before step scan started", INFO_LEVEL)
+    	UpdateClient(TASK_MSG, "-ForceScan: Force satisfies threshold before step scan started", DEBUG_LEVEL)
         ForceScan = True
 #ifdef BINARY_CROSS
         If fineTune Then BinaryCross(forceName, ByRef FSPrePosition(), FSPreForce, threshold, g_BinaryCrossTimes)
@@ -1419,7 +1420,7 @@ Function ForceScan(forceName As Integer, threshold As Real, ByRef destPosition()
     If numSteps <= 0 Then numSteps = 10
     
     If HypDistance(ByRef destPosition(), ByRef FSOldPosition()) < 0.001 Then
-    	UpdateClient(TASK_MSG, "-ForceScan: At destination before step scan started", INFO_LEVEL)
+    	UpdateClient(TASK_MSG, "-ForceScan: At destination before step scan started", DEBUG_LEVEL)
         Exit Function
     EndIf
     
@@ -1466,11 +1467,11 @@ Function ForceScan(forceName As Integer, threshold As Real, ByRef destPosition()
         ''whether we crossed the threshold
         If ForcePassedThreshold(forceName, g_CurrentSingleF, threshold) Then
         	msg$ = "step=" + Str$(FSStepIndex) + ", P: "
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 			PrintPosition(ByRef g_CurrentP())
 			msg$ = "force: " + Str$(g_CurrentSingleF)
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-			UpdateClient(TASK_MSG, "we got it here", INFO_LEVEL)
+			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+			UpdateClient(TASK_MSG, "we got it here", DEBUG_LEVEL)
             ForceScan = True
             Exit For
         EndIf
@@ -1484,23 +1485,23 @@ Function ForceScan(forceName As Integer, threshold As Real, ByRef destPosition()
             ''re-whether we crossed the threshold
             g_CurrentSingleF = ReadForce(forceName)
             msg$ = "step=" + Str$(FSStepIndex) + ", NO TRIGGER P: "
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 			PrintPosition(ByRef g_CurrentP())
 						
 			msg$ = "force: " + Str$(g_CurrentSingleF)
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
             If ForcePassedThreshold(forceName, g_CurrentSingleF, threshold) Then
-            	UpdateClient(TASK_MSG, "we got it here", INFO_LEVEL)
+            	UpdateClient(TASK_MSG, "we got it here", DEBUG_LEVEL)
                 ForceScan = True
                 Exit For
             EndIf
         Else
         	msg$ = "step=" + Str$(FSStepIndex) + ", P: "
-        	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+        	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         	PrintPosition(ByRef g_CurrentP())
 			msg$ = "Force: " + Str$(g_CurrentSingleF)
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         EndIf
         PositionCopy(ByRef FSPrePosition(), ByRef g_CurrentP())
         FSPreForce = g_CurrentSingleF
@@ -1517,22 +1518,22 @@ Function PrintForces(ByRef forces() As Double)
 	String msg$
 	
 	msg$ = "FX: " + Str$(forces(1))
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	
 	msg$ = "FY: " + Str$(forces(2))
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	
 	msg$ = "FZ: " + Str$(forces(3))
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	
 	msg$ = "TX: " + Str$(forces(4))
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	
 	msg$ = "TY: " + Str$(forces(5))
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	
 	msg$ = "TZ: " + Str$(forces(6))
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 Fend
 
 Function LogForces(ByRef forces() As Double)
@@ -1587,10 +1588,10 @@ Function CutMiddleWithArguments(forceName As Integer, minForce As Real, threshol
     'Find out current Force situation
     'It maybe out of our +-g_ThresholdTZ, may be within
     CMInitForce = ReadForce(forceName)
-    UpdateClient(TASK_MSG, "Init position ", INFO_LEVEL)
+    UpdateClient(TASK_MSG, "Init position ", DEBUG_LEVEL)
     PrintPosition(ByRef CMInitP())
     msg$ = " force: " + Str$(CMInitForce)
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	
     'within min, ignore it'
     If Abs(CMInitForce) < CMMinForce Then
@@ -1765,13 +1766,13 @@ Function CutMiddleWithArguments(forceName As Integer, minForce As Real, threshol
 	Send
 	
 	msg$ = "CutMiddle " + Str$(forceName)
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-    UpdateClient(TASK_MSG, "position moved from", INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    UpdateClient(TASK_MSG, "position moved from", DEBUG_LEVEL)
     PrintPosition(ByRef CMInitP())
-    UpdateClient(TASK_MSG, " to ", INFO_LEVEL)
+    UpdateClient(TASK_MSG, " to ", DEBUG_LEVEL)
     PrintPosition(ByRef CMFinalP())
     msg$ = ", force changed from " + Str$(CMInitForce) + " to " + Str$(CMPlusForce)
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "CutMiddle ", forceName,
     Print #LOG_FILE_NO, "position moved from ",
     LogPosition(ByRef CMInitP())
@@ -1780,8 +1781,19 @@ Function CutMiddleWithArguments(forceName As Integer, minForce As Real, threshol
     Print #LOG_FILE_NO, ", force changed from ", CMInitForce, " to ", CMPlusForce
     
     msg$ = "Freedom: " + Str$(CutMiddleWithArguments)
-    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "Freedom: ", CutMiddleWithArguments
+Fend
+Function CheckPoint(Number As Integer)
+    Real x;
+    OnErr GoTo PointNotExist
+    x = CX(P(Number))
+    Exit Function
+PointNotExist:
+    ''EClr no longer necessary in version 6.2.0
+    Print "Point ", Number, " not exist, init to all 0"
+    P(Number) = XY(0, 0, 0, 0)
+    OnErr GoTo 0
 Fend
 Function CheckToolSet(Number As Integer)
     OnErr GoTo ToolSetNotExit
@@ -1873,7 +1885,8 @@ Function FromHomeToTakeMagnet As Boolean
         UpdateClient(TASK_MSG, "FromHomeToTakeMagnet: abort: close gripper failed at magnet", ERROR_LEVEL)
         Move P6
         If Not Open_Gripper Then
-            UpdateClient(TASK_MSG, "open gripper failed at aborting from magnet", ERROR_LEVEL)
+            Print "open gripper failed at aborting from magnet, need Reset"
+            UpdateClient(TASK_MSG, "open gripper failed at aborting from magnet, need Reset", ERROR_LEVEL)
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
             g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
             Motor Off
@@ -1919,8 +1932,9 @@ Function Recovery
         ''if we cannot open gripper, we will stop right here, not go home
         g_SafeToGoHome = False
         If Not Open_Gripper Then
-            g_RunResult$ = "Recovery: Open_Gripper Failed, holding magnet"
+            g_RunResult$ = "Recovery: Open_Gripper Failed, holding magnet, need Reset"
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+            Print g_RunResult$
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
             g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
             Motor Off
@@ -2099,14 +2113,17 @@ Function Check_Gripper As Boolean
     ''Check_Gripper
     If Not Close_Gripper Then
     	UpdateClient(TASK_MSG, "abort: failed to close gripper", ERROR_LEVEL)
+    	Print "Check gripper: Failed to close gripper"
         Exit Function
     EndIf
     If Not Open_Gripper Then
     	UpdateClient(TASK_MSG, "abort: failed to open gripper", ERROR_LEVEL)
+    	Print "Check gripper: Failed to open gripper"
         Exit Function
     EndIf
     If Not Close_Gripper Then
     	UpdateClient(TASK_MSG, "abort: failed to close gripper", ERROR_LEVEL)
+     	Print "Check gripper: Failed to close gripper2"
         Exit Function
     EndIf
     
@@ -2142,6 +2159,7 @@ Function ForceChangeCheck(forceName As Integer, distance As Real, prevForce As R
         g_RunResult$ = "force sensor reading bad, check cable"
         msg$ = "abort: force sensor bad: rate " + Str$(FCCRate) + " too big for" + Str$(forceName)
         UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+        Print g_RunResult$, " forcename=", forceName, " rate=", FCCRate, " exceed 10*", FCCStandord
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
         g_RobotStatus = g_RobotStatus Or FLAG_REASON_ABORT
         ''Motor Off
@@ -2153,6 +2171,7 @@ Function ForceChangeCheck(forceName As Integer, distance As Real, prevForce As R
     If Abs(prevForce) > 100 Or Abs(curForce) > 100 Then
         g_RunResult$ = "too strong force, check cable"
         UpdateClient(TASK_MSG, "abort: force too strong, may be cable broken", ERROR_LEVEL)
+        Print "too strong force, shutdown. prevF=", prevForce, " curF=", curForce
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
         g_RobotStatus = g_RobotStatus Or FLAG_REASON_ABORT
         ''Motor Off
@@ -2168,14 +2187,15 @@ Function CheckMagnet As Boolean
 	String msg$
 	CheckMagnet = False
 	
+	Print "+CheckMagnet"
+
 	CKMGripperClosed = Oport(OUT_GRIP)
 
     If CKMGripperClosed = 0 Then
 		If Not Close_Gripper Then
-			UpdateClient(TASK_MSG, "close gripper failed at checking magnet, aborting", ERROR_LEVEL)
-
+			UpdateClient(TASK_MSG, "CheckMagnet: close gripper failed", ERROR_LEVEL)
 			If Not Open_Gripper Then
-				UpdateClient(TASK_MSG, "open gripper failed at aborting from magnet", ERROR_LEVEL)
+				UpdateClient(TASK_MSG, "open gripper failed at aborting from magnet, need Reset", ERROR_LEVEL)
 				g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
 				g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
 				Motor Off
@@ -2192,7 +2212,7 @@ Function CheckMagnet As Boolean
 
     Wait TIME_WAIT_BEFORE_RESET
 	If ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
-		UpdateClient(TASK_MSG, "Force reset check done", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Force reset check done", ERROR_LEVEL)
 	    TongMove DIRECTION_MAGNET_TO_CAVITY, 0.5, False
 		CKMForce = ReadForce(FORCE_YTORQUE)
 	    TongMove DIRECTION_CAVITY_TO_MAGNET, 0.5, False
@@ -2213,7 +2233,7 @@ Function CheckMagnet As Boolean
 	
     If CKMGripperClosed = 0 Then
 		If Not Open_Gripper Then
-			UpdateClient(TASK_MSG, "open gripper failed at end of checking magnet", ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "open gripper failed at end of checking magnet, need Reset", ERROR_LEVEL)
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
 			g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
 			Motor Off
@@ -2223,7 +2243,7 @@ Function CheckMagnet As Boolean
 	
 	If Not CheckMagnet Then
 		If Not Open_Gripper Then
-			UpdateClient(TASK_MSG, "open gripper failed after check magnet failed", ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "open gripper failed after check magnet failed, need Reset", ERROR_LEVEL)
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
 			g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
 			Motor Off
@@ -2712,4 +2732,3 @@ Fend
 Function StringPoint$(point As Integer)
 	StringPoint$ = Str$(CX(P(point))) + ", " + Str$(CY(P(point))) + ", " + Str$(CZ(P(point))) + ", " + Str$(CU(P(point)))
 Fend
-

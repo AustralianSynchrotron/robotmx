@@ -2,7 +2,6 @@
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
-#include "reporterdefs.inc"
 
 Function GTgetCassettePosition(cassetteChar$ As String, ByRef cassette_position As Integer) As Boolean
 	cassetteChar$ = UCase$(cassetteChar$)

@@ -4,7 +4,6 @@
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
-#include "reporterdefs.inc"
 
 Global Integer g_CassetteType(NUM_CASSETTES)
 
@@ -54,7 +53,7 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	LimZ g_Jump_LimZ_LN2
 	Jump P(standbyPointNum)
 
-	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If Not (ForceTouch(-FORCE_ZFORCE, maxZdistanceToScan, False)) Then

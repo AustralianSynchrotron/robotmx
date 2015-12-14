@@ -3,7 +3,6 @@
 #include "mxrobotdefs.inc"
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
-#include "reporterdefs.inc"
 
 Global Real g_SampleDistancefromCASSurface(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
 Global Integer g_CAS_PortStatus(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
@@ -105,7 +104,7 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		Move P(standbyPoint)
 	EndIf
 	
-	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 

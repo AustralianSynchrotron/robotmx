@@ -205,7 +205,7 @@ Fend
 Function GTInitPrintLevel()
 	''This function is only for testing
 	''The g_PrintLevel variable should be set from python layers
-    g_PrintLevel = DEBUG_LEVEL + WARNING_LEVEL + ERROR_LEVEL
+    g_PrintLevel = DEBUG_LEVEL + INFO_LEVEL + WARNING_LEVEL + ERROR_LEVEL
 Fend
 ''Send message from user task to client
 ''This function is a wrapper for SendMessageWait, and SPELCOM_Event
@@ -1564,6 +1564,9 @@ Function BGMain
 	''initialize last WindowsState
 	last_WindowsState = 0
 	
+	''Initialize message print level
+	GTInitPrintLevel
+	
 	''Initialize Australian Synchrotron force sensing
 	ForceInit
 	''Exit if force sensing init failed
@@ -1586,7 +1589,7 @@ Function BGMain
 	Xqt ReceiveSendLoop, NoPause
 	
 	''Start the EPS loop as background task
-	''Xqt EPSLoop, NoPause
+	Xqt EPSLoop, NoPause
 	
 	''Calibrate the force sensor and check its readback health
 	If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then

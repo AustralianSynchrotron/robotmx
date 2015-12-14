@@ -2,7 +2,6 @@
 #include "mxrobotdefs.inc"
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
-#include "reporterdefs.inc"
 
 '' Angles and U for Each Cassette
 Global Real g_AngleOfFirstColumn(NUM_CASSETTES)

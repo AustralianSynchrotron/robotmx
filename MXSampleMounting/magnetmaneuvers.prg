@@ -4,7 +4,6 @@
 #include "genericdefs.inc"
 #include "superPuckdefs.inc"
 #include "cassettedefs.inc"
-#include "reporterdefs.inc"
 
 Function GTIsMagnetInTong() As Boolean
 	String msg$
@@ -14,8 +13,6 @@ Function GTIsMagnetInTong() As Boolean
 
 	'' Closing Gripper only matters because if Gripper is open we might loose magnet while hitting the cradle
 	Close_Gripper
-	
-	Jump P3
 
 	Real probeDistanceFromCradleCenter
 	probeDistanceFromCradleCenter = ((MAGNET_LENGTH /2) + (CRADLE_WIDTH /2) - (MAGNET_HEAD_THICKNESS /2)) * CASSETTE_SHRINK_FACTOR
@@ -23,12 +20,12 @@ Function GTIsMagnetInTong() As Boolean
 	standbyPoint = 52
 	P(standbyPoint) = P3 -X(probeDistanceFromCradleCenter * g_dumbbell_Perfect_cosValue) -Y(probeDistanceFromCradleCenter * g_dumbbell_Perfect_sinValue)
 
-	Move P(standbyPoint)
+	Jump P(standbyPoint)
 	
 	Real maxDistanceToScan
 	maxDistanceToScan = DISTANCE_P3_TO_P6 + MAGNET_PROBE_DISTANCE_TOLERANCE
 	
-	GTsetRobotSpeedMode(VERY_SLOW_SPEED)
+	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_TO_MAGNET, maxDistanceToScan, False) Then
@@ -114,6 +111,7 @@ Function GTReturnMagnetAndGoHome As Boolean
 
 	'' Return Home and Close Lid
 	LimZ 0
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	Jump P1
 	Jump P0
 	Close_Lid
@@ -136,11 +134,14 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
    
    	Motor On
 	Tool 0
-	GTsetRobotSpeedMode(FAST_SPEED)
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 
 	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
 	
 	Jump P3
+	
+	'' for testing only, should be put inside the below if statement
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
 	
 	If g_LN2LevelHigh Then
 		Integer timeTakenToCoolTong

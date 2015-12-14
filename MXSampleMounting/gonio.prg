@@ -47,7 +47,7 @@ Real GNDwnStrmRad
 Function CheckTongBigChange As Boolean
 	CheckTongBigChange = True
     ''check P76 to see if P16 was copied to P76 in previous run
-    GTCheckPoint 76
+    CheckPoint 76
     If CX(P76) = 0 Or CY(P76) = 0 Or CZ(P76) = 0 Then
         Exit Function
     EndIf
@@ -57,7 +57,7 @@ Function CheckTongBigChange As Boolean
     If Dist(P16, P76) > 5 Then
         CheckTongBigChange = False
         g_RunResult$ = "P76 and P16 too big difference.  Run Manual Gonio CAL"
-        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        Print g_RunResult$
         Exit Function
     EndIf
 Fend
@@ -80,7 +80,7 @@ Function GoHomeFromGonio
    	    UpdateClient(TASK_MSG, "gonio cal: Checking with force sensor whilst moving up and away from goniometer", INFO_LEVEL)
 	    If ForceTouch(FORCE_ZFORCE, 10, False) Then
 			g_SafeToGoHome = False
-			g_RunResult$ = "tong touched something on its way home from goniometer"
+			g_RunResult$ = "tong touched something on its way home from goniometer. Need reset"
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_GONIO
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
@@ -148,12 +148,12 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
     If Not Init Then
         g_SafeToGoHome = True
 
-        GTCheckPoint 20
+        CheckPoint 20
         GonioX = CX(P20)
         GonioY = CY(P20)
         If GonioX = 0 Or GonioY = 0 Then
             g_RunResult$ = "P20 not defined yet, run GonioCalibration with Init first"
-            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
             Close #LOG_FILE_NO
             ''SPELCom_Return 1
@@ -223,12 +223,9 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
         ''check current position
         If (Not isCloseToPoint(0)) And (Not isCloseToPoint(1)) Then
             g_RunResult$ = "must start from home"
-            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             g_SafeToGoHome = False
             Close #LOG_FILE_NO
-            msg$ = "gonio cal: failed" + g_RunResult$
-            UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
-            msg$ = "aborted " + g_RunResult$
+            msg$ = "gonio cal: failed " + g_RunResult$
             UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
             Exit Function
         EndIf
@@ -292,7 +289,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             UpdateClient(TASK_MSG, "gonio cal: user abort", ERROR_LEVEL)
             Exit Function
         EndIf
-		UpdateClient(TASK_MSG, "gonio cal: move tong to goniometer", ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "gonio cal: move tong to goniometer", INFO_LEVEL)
 		
         SetVeryFastSpeed
    #ifdef MIXED_ARM_ORIENTATION
@@ -307,6 +304,8 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_GONIO
 			g_RunResult$ = "force sensor reset failed at start of GonioCalibration"
+			Print g_RunResult$
+			''SPELCom_Return 1
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Close #LOG_FILE_NO
 			GoHomeFromGonio
@@ -339,6 +338,8 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_GONIO
 			g_RunResult$ = "something blocked tong move to goniometer while it is touching down"
+			Print g_RunResult$
+			''SPELCom_Return 1
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 	    EndIf
@@ -384,6 +385,8 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 				Case 3
 					g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_GONIO
 					g_RunResult$ = "something blocked tong move to goniometer while it is side stepping in"
+					Print g_RunResult$
+					''SPELCom_Return 1
 					UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		            Close #LOG_FILE_NO
 
@@ -406,6 +409,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 		P51 = Here
         If Not ForceTouch(DIRECTION_CAVITY_HEAD, 10, True) Then
             g_RunResult$ = "FAILED: calibrate goniometer cannot touch the head after side step in"
+            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
             ''SPELCom_Return 2
             Close #LOG_FILE_NO
@@ -448,8 +452,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	''	Go Here +U(tmp_Real1)
 	''EndIf
         
-    msg$ = "init position (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    Print "init position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
     Print #LOG_FILE_NO, "init position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
 
 	UpdateClient(TASK_MSG, "gonio cal: adjust position for cut middle", INFO_LEVEL)
@@ -461,9 +464,11 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
     If Abs(GNForce) >= Abs(GetTouchMin(DIRECTION_CAVITY_HEAD)) Then
         If Not ForceCross(DIRECTION_CAVITY_TAIL, GetTouchMin(DIRECTION_CAVITY_HEAD), 2, 4, False) Then
             g_RunResult$ = "too big force against goniometer"
+            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
             msg$ = "gonio cal:" + g_RunResult$
-            UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+            UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+            UpdateClient(TASK_MSG, g_RunResult$, INFO_LEVEL)
             Close #LOG_FILE_NO
             If Not Init Then
                 Move P24
@@ -503,6 +508,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	        If GNFreeHorz > ACCPT_THRHLD_GONIO_FREEDOM Then
 	            g_RunResult$ = "Cut middle failed for X, freedom too big to be true. abort"
 	        EndIf
+            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Close #LOG_FILE_NO
@@ -530,6 +536,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	        If GNFreeVert > ACCPT_THRHLD_GONIO_FREEDOM Then
 	            g_RunResult$ = "Cut middle failed for Z, freedom too big to be true. abort"
 	        EndIf
+            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Close #LOG_FILE_NO
@@ -556,6 +563,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	        If GNFreeHorz > ACCPT_THRHLD_GONIO_FREEDOM Then
 	            g_RunResult$ = "Cut middle failed for X after Z, freedom too big to be true. abort"
 	        EndIf
+            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             
@@ -608,8 +616,10 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 		P52 = Here
         If Not ForceTouch(DIRECTION_CAVITY_HEAD, 10, True) Then
             g_RunResult$ = "FAILED: calibrate goniometer failed at Y touch"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
+            ''SPELCom_Return 2
+            
             ''move tong back to position bebore finding Y
             Move P52
             Move P51
@@ -631,8 +641,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 		    TongMove DIRECTION_CAVITY_HEAD, (SAFE_BUFFER_FOR_GONIO_DETACH + GONIO_OVER_MAGNET_HEAD), False
 		    ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 		    UpdateClient(TASK_PROG, "99 of 100", INFO_LEVEL)
-            msg$ = "final (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
-            UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+            Print "final (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
             Print #LOG_FILE_NO, "final (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
             
             If Not Init Then
@@ -640,8 +649,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             EndIf
             P21 = Here
             P20 = P21 - XY(dx, dy, dz, du)
-            msg$ = "new P20 (" + Str$(CX(P20)) + ", " + Str$(CY(P20)) + ", " + Str$(CZ(P20)) + ", " + Str$(CU(P20)) + ")"
-            UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+            Print "new P20 (", CX(P20), ", ", CY(P20), ", ", CZ(P20), ", ", CU(P20), ")"
             Print #LOG_FILE_NO, "new P20 (", CX(P20), ", ", CY(P20), ", ", CZ(P20), ", ", CU(P20), ")"
             
             ''save current P16 for next time adjust
@@ -652,12 +660,12 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
             	
 #ifdef AUTO_SAVE_POINT
-            UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
+            Print "saving points to file.....",
             SavePoints "robot1.pts"
-            UpdateClient(TASK_MSG, "done!!", INFO_LEVEL)
+            Print "done!!"
 #endif
 		    g_RunResult$ = "normal " + Str$(CX(P21)) + " " + Str$(CY(P21)) + " " + Str$(CZ(P21)) + " " + Str$(CU(P21))
-			UpdateClient(TASK_MSG, g_RunResult$, INFO_LEVEL)
+		    ''SPELCom_Return 0
         EndIf
     EndIf
     Print #LOG_FILE_NO, "Goniometer calibration completed at ", Date$, " ", Time$
@@ -666,7 +674,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
     If Not g_FlagAbort Then
 	    UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
     Else
-    	UpdateClient(TASK_MSG, "gonio cal: user abort", INFO_LEVEL)
+    	UpdateClient(TASK_MSG, "gonio cal: user abort", ERROR_LEVEL)
     EndIf
 
     If Not Init Then
@@ -683,7 +691,6 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
     EndIf
     If g_FlagAbort Then
         g_RunResult$ = "user abort"
-        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
     Else
     	''Inform operator
    		msg$ = "Goniometer calibration completed successfully at " + Date$ + " " + Time$
@@ -722,14 +729,14 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
     LimZ 0
     If Not Init Then
         g_SafeToGoHome = True
-        GTCheckPoint 90
+        CheckPoint 90
         GonioX = CX(P90)
         GonioY = CY(P90)
         GonioZ = CZ(P90)
         GonioU = CU(P90)
         If GonioX = 0 Or GonioY = 0 Then
             g_RunResult$ = "P90 not defined yet, run BeamToolCalibration with Init first"
-            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
             ''SPELCom_Return 1
             Close #LOG_FILE_NO
@@ -745,19 +752,16 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
         ''check current position
         If (Not isCloseToPoint(0)) And (Not isCloseToPoint(1)) Then
             g_RunResult$ = "must start from home"
-            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+            Print g_RunResult$
             g_SafeToGoHome = False
             Close #LOG_FILE_NO
-            msg$ = "gonio cal: failed" + g_RunResult$
-            UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
-            msg$ = "aborted " + g_RunResult$
+            msg$ = "gonio cal: failed " + g_RunResult$
             UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
             Exit Function
         EndIf
         UpdateClient(TASK_MSG, "beamtool: move tong to beamtool", INFO_LEVEL)
         If Not Close_Gripper Then
-        	g_RunResult$ = "beamtool: close gripper failed at home"
-        	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        	UpdateClient(TASK_MSG, "beamtool: close gripper failed at home", ERROR_LEVEL)
             Close #LOG_FILE_NO
             ''not need recovery
             g_SafeToGoHome = False
@@ -770,6 +774,8 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
         Wait TIME_WAIT_BEFORE_RESET
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RunResult$ = "force sensor reset failed at beamtool"
+			Print g_RunResult$
+			''SPELCom_Return 1
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Close #LOG_FILE_NO
             Jump P0
@@ -813,8 +819,7 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
         Exit Function
     EndIf
     
-    msg$ = "init position (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    Print "init position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
     Print #LOG_FILE_NO, "init position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
 
     ''find X
@@ -830,6 +835,7 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
 	    If GNFreeHorz > ACCPT_THRHLD_GONIO_FREEDOM Then
 	        g_RunResult$ = "Cut middle failed for horz, freedom too big to be true. abort"
 	    EndIf
+        Print g_RunResult$
         Print #LOG_FILE_NO, g_RunResult$
         UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Close #LOG_FILE_NO
@@ -839,7 +845,7 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
     EndIf
         
     If g_FlagAbort Then
-    	UpdateClient(TASK_MSG, "beamtool: user abort", INFO_LEVEL)
+    	UpdateClient(TASK_MSG, "beamtool: user abort", ERROR_LEVEL)
         Close #LOG_FILE_NO
         TongMove DIRECTION_CAVITY_TAIL, 10, False
         Jump P0
@@ -860,6 +866,7 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
 	    If GNFreeHorz > ACCPT_THRHLD_GONIO_FREEDOM Then
 	        g_RunResult$ = "Cut middle failed for vert, freedom too big to be true. abort"
 	    EndIf
+        Print g_RunResult$
         Print #LOG_FILE_NO, g_RunResult$
         UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Close #LOG_FILE_NO
@@ -888,6 +895,7 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
 	    If GNFreeHorz > ACCPT_THRHLD_GONIO_FREEDOM Then
 	        g_RunResult$ = "Cut middle failed for 2nd horz, freedom too big to be true. abort"
 	    EndIf
+        Print g_RunResult$
         Print #LOG_FILE_NO, g_RunResult$
         UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Close #LOG_FILE_NO
@@ -896,7 +904,7 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
         Exit Function
     EndIf
     If g_FlagAbort Then
-    	UpdateClient(TASK_MSG, "beamtool: user abort", INFO_LEVEL)
+    	UpdateClient(TASK_MSG, "beamtool: user abort", ERROR_LEVEL)
         Close #LOG_FILE_NO
         TongMove DIRECTION_CAVITY_TAIL, 10, False
         Jump P0
@@ -917,8 +925,7 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
     g_SafeToGoHome = True
 
     If g_FlagAbort Then
-        g_RunArgs$ = "beamtool: user abort"
-    	UpdateClient(TASK_MSG, g_RunArgs$, ERROR_LEVEL)
+    	UpdateClient(TASK_MSG, "beamtool: user abort", ERROR_LEVEL)
         Close #LOG_FILE_NO
         Jump P0
         Exit Function
@@ -928,17 +935,19 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
     Wait TIME_WAIT_BEFORE_RESET
 	If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 		g_RunResult$ = "force sensor reset failed at beamtool before touching along axis"
-		Print #LOG_FILE_NO, g_RunResult$
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Close #LOG_FILE_NO
         Jump P0
 		Exit Function
 	EndIf
     If Not ForceTouch(DIRECTION_CAVITY_HEAD, 10, True) Then
+    
         TongMove DIRECTION_CAVITY_TAIL, 10, False
         g_RunResult$ = "FAILED: calibrate beamtool failed at along axis touch"
+        Print g_RunResult$
         Print #LOG_FILE_NO, g_RunResult$
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        ''SPELCom_Return 2
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Close #LOG_FILE_NO
         Jump P0
 		Exit Function
@@ -957,12 +966,10 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
     UpdateClient(TASK_PROG, "98 of 100", INFO_LEVEL)
     TongMove DIRECTION_CAVITY_HEAD, (2 + GONIO_OVER_MAGNET_HEAD), False
     UpdateClient(TASK_PROG, "99 of 100", INFO_LEVEL)
-    GTCheckPoint 90
-    msg$ = "old P90 (" + Str$(CX(P90)) + ", " + Str$(CY(P90)) + ", " + Str$(CZ(P90)) + ", " + Str$(CU(P90)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    CheckPoint 90
     Print #LOG_FILE_NO, "old P90 (", CX(P90), ", ", CY(P90), ", ", CZ(P90), ", ", CU(P90), ")"
     P90 = Here
-    msg$ = "new P90 (" + Str$(CX(P90)) + ", " + Str$(CY(P90)) + ", " + Str$(CZ(P90)) + ", " + Str$(CU(P90)) + ")"
+    Print "new P90 (", CX(P90), ", ", CY(P90), ", ", CZ(P90), ", ", CU(P90), ")"
     Print #LOG_FILE_NO, "new P90 (", CX(P90), ", ", CY(P90), ", ", CZ(P90), ", ", CU(P90), ")"
     SavePointHistory 90, g_FCntBeamTool
     msg$ = "new P90 (" + Str$(CX(P90)) + ", " + Str$(CY(P90)) + ", " + Str$(CZ(P90)) + ", " + Str$(CU(P90)) + ")"
@@ -976,9 +983,9 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
     P91 = P90 +X(BTStandbySteps(1)) +Y(BTStandbySteps(2))
 
 #ifdef AUTO_SAVE_POINT
-    UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
+    Print "saving points to file.....",
     SavePoints "robot1.pts"
-    UpdateClient(TASK_MSG, "done!!", INFO_LEVEL)
+    Print "done!!"
 #endif
     UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
     If Not Init Then
@@ -992,7 +999,7 @@ Function BeamToolCalibraion(Init As Boolean) As Boolean
     If Not g_FlagAbort Then
     	UpdateClient(TASK_MSG, "beamtool cal: done", INFO_LEVEL)
     Else
-    	UpdateClient(TASK_MSG, "beamtool cal: user abort: already done", INFO_LEVEL)
+    	UpdateClient(TASK_MSG, "beamtool cal: user abort: already done", ERROR_LEVEL)
     EndIf
     Close #LOG_FILE_NO
     g_RunResult$ = "normal OK"

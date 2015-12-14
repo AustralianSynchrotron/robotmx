@@ -695,19 +695,16 @@ P94  = XY(    95.024,  375.654, -222.659,   90.626 )  /R /0
 !!Error: 7007, Specified point number was not defined. Specify a teach point number.
 > Print p0
  X:  490.695 Y:  169.841 Z: -192.173 U:   38.079 V:    0.000 W:    0.000 /R /0
-> print g_PrintLevel
- 0
-> print g_PrintLevel
- 0
-> 			msg$ = "DEBUG " + msg$
-!!Error: 3100, Syntax error.
-> print g_PrintLevel
- 0
-> print g_PrintLevel
- 13
-> print g_PrintLevel
- 0
-> g_PrintLevel =13
-> print g_PrintLevel
- 13
+> print p3
+ X:   92.828 Y:  404.114 Z: -222.346 U:   91.690 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.828 Y:  404.114 Z: -222.346 U:   91.690 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.828 Y:  404.114 Z: -222.346 U:   91.690 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.828 Y:  404.114 Z: -222.346 U:   91.690 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  111.472 Y:  403.975 Z: -220.770 U:   91.690 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  111.667 Y:  404.359 Z: -217.464 U:   90.492 V:    0.000 W:    0.000 /R /0
 > 
