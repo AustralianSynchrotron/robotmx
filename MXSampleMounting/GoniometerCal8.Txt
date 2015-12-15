@@ -1,0 +1,5 @@
+=======================================================
+Goniometer calibration at 2015/12/11 12:57:47
+dx= 0dy= 0, dz= 0du= 0
+init position ( -333.477,  -369.588,  -140.079,  266.298)
+too big force against goniometer

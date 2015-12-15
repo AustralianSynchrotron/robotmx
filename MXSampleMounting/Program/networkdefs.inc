@@ -73,31 +73,21 @@
 ''Use unsolicited messaging of state changes
 #define NUM_STATES 200
 
-''UpdateClient Event numbers
-''Used by application to update network and vb guide clients via network server
-#define EVTNO_LID_OPEN 2002
-#define EVTNO_UPDATE 2003
-#define EVTNO_INPUT 2004
-#define EVTNO_OUTPUT 2005
-#define EVTNO_CAL_STEP 2101
-#define EVTNO_CAL_MSG 2102
-#define EVTNO_WARNING 2105
-#define EVTNO_LOG_NOTE 2110
-#define EVTNO_LOG_WARNING 2111
-#define EVTNO_LOG_ERROR 2112
-#define EVTNO_LOG_SEVERE 2113
-#define EVTNO_HARDWARE_LOG_WARNING 2114
-#define EVTNO_HARDWARE_LOG_ERROR 2115
-#define EVTNO_HARDWARE_LOG_SEVERE 2116
-
-''define added to support tcp ip server
-#define EVTNO_PRINT_EVENT 6
-
 ''Defines to support UpdateClient wrapper function
-''Events used soley by tcp server to update network clients only
-#define EVTNO_FOREGROUND_DONE 1
-#define EVTNO_FOREGROUND_ERR 2
-#define EVTNO_STATE_ERR 3
+''UpdateClient message types
+#define FOREGROUND_DONE 1
+#define FOREGROUND_ERR 2
+#define STATE_ERR 3
+#define TASK_MSG 4
+#define TASK_PROG 5
+#define CLIENT_UPDATE 6
+#define CLIENT_RESP 7
+
+''Message levels
+#define DEBUG_LEVEL &b000001
+#define INFO_LEVEL &b000010
+#define WARNING_LEVEL &b000100
+#define ERROR_LEVEL &b001000
 
 ''Memory bit map
 ''Bit 0, 1 (+/-) JogX

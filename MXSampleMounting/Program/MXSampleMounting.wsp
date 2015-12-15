@@ -1,7 +1,7 @@
-ENVT0100,LM:2015/12/02 00:50:25:203,DS:0000002654,CS:29535,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Network.prg"
+ENVT0100,LM:2015/12/15 11:47:20:556,DS:0000004796,CS:28533,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="magnetmaneuvers.prg"
 bMdiMaximized=True
-nProgramFileCount=6
+nProgramFileCount=18
 ProgramFile1 {
 	sName="magnet.prg"
 	bOpened=True
@@ -15,13 +15,13 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile3 {
@@ -47,9 +47,9 @@ ProgramFile4 {
 	}
 }
 ProgramFile5 {
-	sName="Network.prg"
+	sName="network.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -68,7 +68,139 @@ ProgramFile6 {
 		nHeight=260
 	}
 }
-nIncludeFileCount=3
+ProgramFile7 {
+	sName="appnetwork.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile8 {
+	sName="cassetteprobing.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile9 {
+	sName="setupcassette.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile10 {
+	sName="cassettetype.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile11 {
+	sName="cassetteutilities.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile12 {
+	sName="superpuckutilities.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile13 {
+	sName="setuppoints.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile14 {
+	sName="numericmanipulations.prg"
+	bOpened=False
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=0
+		nHeight=0
+	}
+}
+ProgramFile15 {
+	sName="robotspeed.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile16 {
+	sName="magnetmaneuvers.prg"
+	bOpened=True
+	nWinState=2
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile17 {
+	sName="initialization.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile18 {
+	sName="pythoninterface.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+nIncludeFileCount=6
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bOpened=True
@@ -102,6 +234,39 @@ IncludeFile3 {
 		nHeight=260
 	}
 }
+IncludeFile4 {
+	sName="genericdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+IncludeFile5 {
+	sName="cassettedefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+IncludeFile6 {
+	sName="superpuckdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
@@ -116,10 +281,10 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
-		nLeft=149
-		nTop=-16
+		nLeft=33
+		nTop=130
 		nWidth=897
 		nHeight=406
 	}
@@ -148,8 +313,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=288
-		nTop=243
+		nLeft=838
+		nTop=100
 		nWidth=470
 		nHeight=349
 	}
@@ -157,8 +322,8 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=404
-		nTop=63
+		nLeft=426
+		nTop=58
 		nWidth=827
 		nHeight=530
 	}

@@ -111,9 +111,13 @@ Boolean stored_ErrorOn
 Boolean stored_AtHome
 Integer stored_closestPoint
 Long stored_RobotStatus
+String stored_Time$
 ''Run statuses
 String stored_RunResult$
 String stored_RunArgs$
+
+''Print level
+Global Byte g_PrintLevel
 
 ''Signals
 ''See network.inc
@@ -199,48 +203,57 @@ Function SendMessage(ByRef netmsg$ As String, lock As Integer, sig As Integer, c
 		Signal sig
 	EndIf
 Fend
+Function GTInitPrintLevel()
+	''This function is only for testing
+	''The g_PrintLevel variable should be set from python layers
+    g_PrintLevel = DEBUG_LEVEL + INFO_LEVEL + WARNING_LEVEL + ERROR_LEVEL
+Fend
 ''Send message from user task to client
 ''This function is a wrapper for SendMessageWait, and SPELCOM_Event
 ''Do not call from ReceiveSendLoop, it must be separate thread
-Function UpdateClient(receiver As Integer, msg$ As String)
-	''first we send to vb clients, if message not tcp server specific
-	Select receiver
-		''these cases are not for vb clients, unless they have contents/code/actions in the case
-		Case EVTNO_FOREGROUND_DONE
-		Case EVTNO_FOREGROUND_ERR
-		Case EVTNO_STATE_ERR
-		Case EVTNO_PRINT_EVENT
-			''printing the message causes the vb event specified
-			Print msg$
-		Default
-			''send message to vb client
-			SPELCom_Event receiver, msg$
-	Send
+Function UpdateClient(receiver As Integer, msg$ As String, level As Integer)
+	''Print message locally if within specified g_PrintLevel
+	If (receiver = TASK_MSG And (g_PrintLevel And level > 0)) Then
+		Print msg$
+	EndIf
+	If receiver = TASK_MSG Then
+		Select level
+			Case DEBUG_LEVEL
+				msg$ = "DEBUG " + msg$
+			Case INFO_LEVEL
+				msg$ = "INFO " + msg$
+			Case WARNING_LEVEL
+				msg$ = "WARNING " + msg$
+			Case ERROR_LEVEL
+				msg$ = "ERROR " + msg$
+	    Send
+    EndIf
 	''send message to network client only if connected
 	''which means that ReceiveSendLoop is looping and can actually send the message
 	If tcpconnected Then
 		Select receiver
-			Case EVTNO_CAL_MSG
+			Case TASK_MSG
 				''send task general message via TCPIP_SERVER to EPICS host
 				SendMessageWait(msg$, "Task Msg:", ByRef taskmesg$, TASK_MSG_LOCK, TASK_MSG_SENT, True)
-			Case EVTNO_CAL_STEP
+			Case CLIENT_UPDATE
+				''send client update message via TCPIP_SERVER to EPICS host
+				SendMessageWait(msg$, "Client Update:", ByRef taskmesg$, TASK_MSG_LOCK, TASK_MSG_SENT, True)
+			Case CLIENT_RESP
+				''send client response message via TCPIP_SERVER to EPICS host
+				SendMessageWait(msg$, "Client Resp:", ByRef taskmesg$, TASK_MSG_LOCK, TASK_MSG_SENT, True)
+			Case TASK_PROG
 				''send task progress message via TCPIP_SERVER to EPICS host
                 SendMessageWait(msg$, "Task Prog:", ByRef taskmesg$, TASK_MSG_LOCK, TASK_MSG_SENT, True)
-			Case EVTNO_FOREGROUND_DONE
+			Case FOREGROUND_DONE
 				''Send foreground done message via TCPIP_SERVER to EPICS host
 				SendMessageWait(msg$, "FDone:", ByRef foredone$, FDONE_MSG_LOCK, FDONE_MSG_SENT, False)
-			Case EVTNO_FOREGROUND_ERR
+			Case FOREGROUND_ERR
 				''send the foreground error message
 				SendMessageWait(msg$, "Fore:", ByRef foreerr$, FORE_EMSG_LOCK, FORE_EMSG_SENT, False)
-			Case EVTNO_STATE_ERR
+			Case STATE_ERR
 				''send the StateChangeWatcher stateerr$ error message
 				SendMessageWait(msg$, "State:", ByRef stateerr$, SERR_MSG_LOCK, SERR_MSG_SENT, False)
 		Send
-		''log messages
-		If receiver = EVTNO_PRINT_EVENT Or receiver = EVTNO_UPDATE Or receiver = EVTNO_INPUT Or receiver = EVTNO_OUTPUT Or receiver = EVTNO_WARNING Or receiver = EVTNO_LOG_NOTE Or receiver = EVTNO_LOG_WARNING Or receiver = EVTNO_LOG_ERROR Or receiver = EVTNO_LOG_SEVERE Or receiver = EVTNO_HARDWARE_LOG_WARNING Or receiver = EVTNO_HARDWARE_LOG_ERROR Or receiver = EVTNO_HARDWARE_LOG_SEVERE Then
-		    ''send task progress message via TCPIP_SERVER to EPICS host
-			SendMessageWait(msg$, "Task Log:", ByRef taskmesg$, TASK_MSG_LOCK, TASK_MSG_SENT, True)
-		EndIf
 	EndIf
 Fend
 ''some tasks are not suited to using Eval
@@ -278,7 +291,7 @@ SkipTask:
 	Exit Function
 	
 errHandler:
-	UpdateClient(EVTNO_FOREGROUND_ERR, "IsUseEval !!Error:" + " " + Str$(Err) + " " + ErrMsg$(Err) + " " + "Line: " + Str$(Erl))
+	UpdateClient(FOREGROUND_ERR, "IsUseEval !!Error:" + " " + Str$(Err) + " " + ErrMsg$(Err) + " " + "Line: " + Str$(Erl), ERROR_LEVEL)
 	EResume SkipTask
 Fend
 ''Called by JobWorker, and IsCmdBackground
@@ -374,7 +387,7 @@ Function JobWorker
 			''now clear g_JobSolverReply$
 			g_JobSolverReply$ = ""
 			''Send error message to client
-			UpdateClient(EVTNO_FOREGROUND_ERR, err$)
+			UpdateClient(FOREGROUND_ERR, err$, INFO_LEVEL)
 		EndIf
 	Else
 		''User trying to call SPEL task
@@ -395,7 +408,7 @@ Function JobWorker
 errHandler:
 	err$ = "JobWorker !!Error: " + Str$(Err) + " " + ErrMsg$(Err) + "Line:" + Str$(Erl)
 	''Send message to client
-	UpdateClient(EVTNO_FOREGROUND_ERR, err$)
+	UpdateClient(FOREGROUND_ERR, err$, INFO_LEVEL)
 	''try instruction after the one that caused error
 	EResume Next
 Fend
@@ -409,13 +422,13 @@ Function JobDispatcher
 		''Job is assumed to be slow, start JobWorker to handle it
 		If Not PauseOn And Not SafetyOn And Not ErrorOn Then
 			''Inform client that foreground now busy
-			UpdateClient(EVTNO_FOREGROUND_DONE, "0")
+			UpdateClient(FOREGROUND_DONE, "0", INFO_LEVEL)
 			foredonestatus = False
 			Xqt 9, JobWorker, NoPause
 			TaskWait JobWorker
 			''Inform client that foreground now available
 			foredonestatus = True
-			UpdateClient(EVTNO_FOREGROUND_DONE, "1")
+			UpdateClient(FOREGROUND_DONE, "1", INFO_LEVEL)
 		EndIf
 	Loop
 Fend
@@ -473,7 +486,7 @@ errHandler:
 	''construct the message
 	err$ = "Jog " + Str$(RobotJoint) + " !!Error " + Str$(Err) + " " + ErrMsg$(Err) + "Line:" + Str$(Erl)
 	''Send message to client
-	UpdateClient(EVTNO_FOREGROUND_ERR, err$)
+	UpdateClient(FOREGROUND_ERR, err$, ERROR_LEVEL)
 	''try instruction after the one that caused error
 	EResume Next
 Fend
@@ -637,6 +650,9 @@ Function IsCmdBackground As Boolean
 			TmReset BACK_TIMER
 			''Try to process recv cmd using Eval 
 			backretval = EVal(cmd$, backreply$)
+			If toks$(0) = "g_ProbeRequestString$" Then
+				Print cmd$
+			EndIf
 			If backretval = 0 Then
 				''cmd success
 				IsCmdBackground = True
@@ -817,6 +833,9 @@ SkipPoint:
 			''check RobotModel$ change of state
 			stored_RobotModel$ = check_string_state$(RobotModel$, stored_RobotModel$, "RobotModel$:")
 			
+			''check Time$ change of state
+			stored_Time$ = check_string_state$(Time$, stored_Time$, "Time$:")
+			
 			''Check RobotType change of state
 		    stored_RobotType = check_integer_state(RobotType, stored_RobotType, "RobotType:")
 				
@@ -967,7 +986,7 @@ SkipStates:
 				If stored_err$ <> err$ Then
 					stored_err$ = err$
 					''wait for transmission of error string
-					UpdateClient(EVTNO_STATE_ERR, err$)
+					UpdateClient(STATE_ERR, err$, ERROR_LEVEL)
 				EndIf
 			EndIf
 			
@@ -992,7 +1011,7 @@ errHandler:
 	If stored_err$ <> err$ Then
 		stored_err$ = err$
 		''wait for transmission of error string
-		UpdateClient(EVTNO_STATE_ERR, err$)
+		UpdateClient(STATE_ERR, err$, ERROR_LEVEL)
 	EndIf
 	''force over threshold error
 	If Err = 7955 Then
@@ -1319,7 +1338,7 @@ Function IsSafetyOn(ByRef QuitAllForeTasksDone As Boolean)
 			foredonestatus = False
 			''tell client foreground busy whilst safetyOn
 			If tcpconnected Then
-				UpdateClient(EVTNO_FOREGROUND_DONE, "0")
+				UpdateClient(FOREGROUND_DONE, "0", INFO_LEVEL)
 			EndIf
 		EndIf
 	EndIf
@@ -1449,7 +1468,7 @@ Function Main
 	''System configuration option for SPEL controller
 	''clear globals on mainXX start must be set to off
 	If tcpconnected Then
-		UpdateClient(EVTNO_FOREGROUND_DONE, "1")
+		UpdateClient(FOREGROUND_DONE, "1", INFO_LEVEL)
 	EndIf
 	
 	''Wait for ReceiveSendLoop termination before exit
@@ -1465,45 +1484,45 @@ Function task1
 	String error$
    	Do While 1
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 1 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of this")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing this")
+		UpdateClient(TASK_PROG, "Step 1 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 2 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of that")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing that")
+		UpdateClient(TASK_PROG, "Step 2 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 3 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of this")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing this")
+		UpdateClient(TASK_PROG, "Step 3 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 4 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of that")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing that")
+		UpdateClient(TASK_PROG, "Step 4 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 5 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of this")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing this")
+		UpdateClient(TASK_PROG, "Step 5 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 6 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of that")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing that")
+		UpdateClient(TASK_PROG, "Step 6 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 7 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of this")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing this")
+		UpdateClient(TASK_PROG, "Step 7 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 8 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of that")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing that")
+		UpdateClient(TASK_PROG, "Step 8 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 9 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of this")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing this")
+		UpdateClient(TASK_PROG, "Step 9 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(EVTNO_CAL_STEP, "Step 10 of 10")
-		UpdateClient(EVTNO_CAL_MSG, "Doing bit of that")
-		UpdateClient(EVTNO_PRINT_EVENT, "log i am doing that")
+		UpdateClient(TASK_PROG, "Step 10 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 	Loop
 Fend
 
@@ -1551,6 +1570,9 @@ Function BGMain
 	QuitAllForeTasksDone = False
 	''initialize last WindowsState
 	last_WindowsState = 0
+		
+	''Initialize message print level
+	GTInitPrintLevel
 	
 	''Initialize Australian Synchrotron force sensing
 	ForceInit
@@ -1572,7 +1594,7 @@ Function BGMain
 	
 	''Calibrate the force sensor and check its readback health
 	If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then
-		UpdateClient(EVTNO_PRINT_EVENT, "Stopping all tasks..")
+		UpdateClient(TASK_MSG, "Force sensor calibration and check failed, stopping all tasks..", ERROR_LEVEL)
 		''problem with force sensor so exit
 		Exit Function
 	EndIf
@@ -1580,7 +1602,8 @@ Function BGMain
 	''Start ReceiveSendLoop as background task
 	Xqt ReceiveSendLoop, NoPause
 	
-	Xqt EPSLoop, NoPause
+	''Start the EPS loop as background task
+	''Xqt EPSLoop, NoPause
 	
 	''Wait for ReceiveSendLoop termination before exit
 	Do While TaskState(ReceiveSendLoop) <> 0
@@ -1605,7 +1628,7 @@ Function BGMain
 			foredonestatus = False
 			''tell client foreground busy whilst rc+ down
 			If tcpconnected Then
-				UpdateClient(EVTNO_FOREGROUND_DONE, "0")
+				UpdateClient(FOREGROUND_DONE, "0", INFO_LEVEL)
 			EndIf
 		EndIf
 		''react to safety on

@@ -111,6 +111,7 @@ Boolean stored_ErrorOn
 Boolean stored_AtHome
 Integer stored_closestPoint
 Long stored_RobotStatus
+String stored_Time$
 ''Run statuses
 String stored_RunResult$
 String stored_RunArgs$
@@ -202,10 +203,10 @@ Function SendMessage(ByRef netmsg$ As String, lock As Integer, sig As Integer, c
 		Signal sig
 	EndIf
 Fend
-Function GTInitLogLevel()
+Function GTInitPrintLevel()
 	''This function is only for testing
-	''The g_LogLevel variable should be set from python layers
-    g_LogLevel = DEBUG_LEVEL + WARNING_LEVEL + ERROR_LEVEL
+	''The g_PrintLevel variable should be set from python layers
+    g_PrintLevel = DEBUG_LEVEL + INFO_LEVEL + WARNING_LEVEL + ERROR_LEVEL
 Fend
 ''Send message from user task to client
 ''This function is a wrapper for SendMessageWait, and SPELCOM_Event
@@ -290,7 +291,7 @@ SkipTask:
 	Exit Function
 	
 errHandler:
-	UpdateClient(FOREGROUND_ERR, "IsUseEval !!Error:" + " " + Str$(Err) + " " + ErrMsg$(Err) + " " + "Line: " + Str$(Erl), 0)
+	UpdateClient(FOREGROUND_ERR, "IsUseEval !!Error:" + " " + Str$(Err) + " " + ErrMsg$(Err) + " " + "Line: " + Str$(Erl), ERROR_LEVEL)
 	EResume SkipTask
 Fend
 ''Called by JobWorker, and IsCmdBackground
@@ -386,7 +387,7 @@ Function JobWorker
 			''now clear g_JobSolverReply$
 			g_JobSolverReply$ = ""
 			''Send error message to client
-			UpdateClient(FOREGROUND_ERR, err$, 0)
+			UpdateClient(FOREGROUND_ERR, err$, INFO_LEVEL)
 		EndIf
 	Else
 		''User trying to call SPEL task
@@ -407,7 +408,7 @@ Function JobWorker
 errHandler:
 	err$ = "JobWorker !!Error: " + Str$(Err) + " " + ErrMsg$(Err) + "Line:" + Str$(Erl)
 	''Send message to client
-	UpdateClient(FOREGROUND_ERR, err$, 0)
+	UpdateClient(FOREGROUND_ERR, err$, INFO_LEVEL)
 	''try instruction after the one that caused error
 	EResume Next
 Fend
@@ -421,13 +422,13 @@ Function JobDispatcher
 		''Job is assumed to be slow, start JobWorker to handle it
 		If Not PauseOn And Not SafetyOn And Not ErrorOn Then
 			''Inform client that foreground now busy
-			UpdateClient(FOREGROUND_DONE, "0", 0)
+			UpdateClient(FOREGROUND_DONE, "0", INFO_LEVEL)
 			foredonestatus = False
 			Xqt 9, JobWorker, NoPause
 			TaskWait JobWorker
 			''Inform client that foreground now available
 			foredonestatus = True
-			UpdateClient(FOREGROUND_DONE, "1", 0)
+			UpdateClient(FOREGROUND_DONE, "1", INFO_LEVEL)
 		EndIf
 	Loop
 Fend
@@ -485,7 +486,7 @@ errHandler:
 	''construct the message
 	err$ = "Jog " + Str$(RobotJoint) + " !!Error " + Str$(Err) + " " + ErrMsg$(Err) + "Line:" + Str$(Erl)
 	''Send message to client
-	UpdateClient(FOREGROUND_ERR, err$, 0)
+	UpdateClient(FOREGROUND_ERR, err$, ERROR_LEVEL)
 	''try instruction after the one that caused error
 	EResume Next
 Fend
@@ -649,6 +650,9 @@ Function IsCmdBackground As Boolean
 			TmReset BACK_TIMER
 			''Try to process recv cmd using Eval 
 			backretval = EVal(cmd$, backreply$)
+			If toks$(0) = "g_ProbeRequestString$" Then
+				Print cmd$
+			EndIf
 			If backretval = 0 Then
 				''cmd success
 				IsCmdBackground = True
@@ -829,6 +833,9 @@ SkipPoint:
 			''check RobotModel$ change of state
 			stored_RobotModel$ = check_string_state$(RobotModel$, stored_RobotModel$, "RobotModel$:")
 			
+			''check Time$ change of state
+			stored_Time$ = check_string_state$(Time$, stored_Time$, "Time$:")
+			
 			''Check RobotType change of state
 		    stored_RobotType = check_integer_state(RobotType, stored_RobotType, "RobotType:")
 				
@@ -979,7 +986,7 @@ SkipStates:
 				If stored_err$ <> err$ Then
 					stored_err$ = err$
 					''wait for transmission of error string
-					UpdateClient(STATE_ERR, err$, 0)
+					UpdateClient(STATE_ERR, err$, 0, ERROR_LEVEL)
 				EndIf
 			EndIf
 			
@@ -1004,7 +1011,7 @@ errHandler:
 	If stored_err$ <> err$ Then
 		stored_err$ = err$
 		''wait for transmission of error string
-		UpdateClient(STATE_ERR, err$, 0)
+		UpdateClient(STATE_ERR, err$, ERROR_LEVEL)
 	EndIf
 	''force over threshold error
 	If Err = 7955 Then
@@ -1331,7 +1338,7 @@ Function IsSafetyOn(ByRef QuitAllForeTasksDone As Boolean)
 			foredonestatus = False
 			''tell client foreground busy whilst safetyOn
 			If tcpconnected Then
-				UpdateClient(FOREGROUND_DONE, "0", 0)
+				UpdateClient(FOREGROUND_DONE, "0", INFO_LEVEL)
 			EndIf
 		EndIf
 	EndIf
@@ -1461,7 +1468,7 @@ Function Main
 	''System configuration option for SPEL controller
 	''clear globals on mainXX start must be set to off
 	If tcpconnected Then
-		UpdateClient(FOREGROUND_DONE, "1", 0)
+		UpdateClient(FOREGROUND_DONE, "1", INFO_LEVEL)
 	EndIf
 	
 	''Wait for ReceiveSendLoop termination before exit
@@ -1477,45 +1484,45 @@ Function task1
 	String error$
    	Do While 1
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 1 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of this", 0)
-		UpdateClient(TASK_MSG, "log i am doing this", 0)
+		UpdateClient(TASK_PROG, "Step 1 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 2 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of that", 0)
-		UpdateClient(TASK_MSG, "log i am doing that", 0)
+		UpdateClient(TASK_PROG, "Step 2 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 3 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of this", 0)
-		UpdateClient(TASK_MSG, "log i am doing this", 0)
+		UpdateClient(TASK_PROG, "Step 3 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 4 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of that", 0)
-		UpdateClient(TASK_MSG, "log i am doing that", 0)
+		UpdateClient(TASK_PROG, "Step 4 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 5 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of this", 0)
-		UpdateClient(TASK_MSG, "log i am doing this", 0)
+		UpdateClient(TASK_PROG, "Step 5 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 6 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of that", 0)
-		UpdateClient(TASK_MSG, "log i am doing that", 0)
+		UpdateClient(TASK_PROG, "Step 6 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 7 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of this", 0)
-		UpdateClient(TASK_MSG, "log i am doing this", 0)
+		UpdateClient(TASK_PROG, "Step 7 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 8 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of that", 0)
-		UpdateClient(TASK_MSG, "log i am doing that", 0)
+		UpdateClient(TASK_PROG, "Step 8 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 9 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of this", 0)
-		UpdateClient(TASK_MSG, "log i am doing this", 0)
+		UpdateClient(TASK_PROG, "Step 9 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of this", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing this", INFO_LEVEL)
 		Wait 1
-		UpdateClient(TASK_PROG, "Step 10 of 10", 0)
-		UpdateClient(TASK_MSG, "Doing bit of that", 0)
-		UpdateClient(TASK_MSG, "log i am doing that", 0)
+		UpdateClient(TASK_PROG, "Step 10 of 10", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Doing bit of that", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 	Loop
 Fend
 
@@ -1563,6 +1570,9 @@ Function BGMain
 	QuitAllForeTasksDone = False
 	''initialize last WindowsState
 	last_WindowsState = 0
+		
+	''Initialize message print level
+	GTInitPrintLevel
 	
 	''Initialize Australian Synchrotron force sensing
 	ForceInit
@@ -1582,18 +1592,18 @@ Function BGMain
 	''Start ForceMeasureLoop as background task so we can call ReadForce and ReadForces
 	Xqt ForceMeasureLoop, NoPause
 	
-	''Start ReceiveSendLoop as background task
-	Xqt ReceiveSendLoop, NoPause
-	
-	''Start the EPS loop as background task
-	Xqt EPSLoop, NoPause
-	
 	''Calibrate the force sensor and check its readback health
 	If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then
 		UpdateClient(TASK_MSG, "Force sensor calibration and check failed, stopping all tasks..", ERROR_LEVEL)
 		''problem with force sensor so exit
 		Exit Function
 	EndIf
+	
+	''Start ReceiveSendLoop as background task
+	Xqt ReceiveSendLoop, NoPause
+	
+	''Start the EPS loop as background task
+	''Xqt EPSLoop, NoPause
 	
 	''Wait for ReceiveSendLoop termination before exit
 	Do While TaskState(ReceiveSendLoop) <> 0

@@ -249,35 +249,27 @@ Function MagnetCalibration As Boolean
     g_HoldMagnet = False
     
     ''send message
-    UpdateClient(EVTNO_CAL_MSG, "toolset calibration")
-    UpdateClient(EVTNO_CAL_STEP, "0 of 100")
+    UpdateClient(TASK_MSG, "toolset calibration", INFO_LEVEL)
+    UpdateClient(TASK_PROG, "0 of 100", INFO_LEVEL)
 
     If g_IncludeFindMagnet Then
-    	UpdateClient(EVTNO_CAL_MSG, "find magnet")
+    	UpdateClient(TASK_MSG, "find magnet", INFO_LEVEL)
         ''find magnet
         g_CurrentSteps = 0
         g_Steps = 20
         If Not FindMagnet() Then
-            Print "Find magnet failed"
             g_RunResult$ = "Find magnet failed " + g_RunResult$
-            ''SPELCom_Return 1
-            UpdateClient(EVTNO_CAL_MSG, "find magnet failed")
-            UpdateClient(EVTNO_LOG_SEVERE, g_RunResult$)
-            UpdateClient(EVTNO_CAL_STEP, "100 of 100")
+            UpdateClient(TASK_MSG, "find magnet failed", ERROR_LEVEL)
+            UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
             Exit Function
         EndIf
         SetFastSpeed
         Move Here +Z(20)
         If Not Close_Gripper Then
-            Print "close gripper failed at holding magnet after finding it, aborting"
-            UpdateClient(EVTNO_CAL_MSG, "close gripper failed after find magnet")
-            UpdateClient(EVTNO_HARDWARE_LOG_ERROR, "close gripper failed at magnet after finding it")
-            
+            UpdateClient(TASK_MSG, "close gripper failed at magnet after finding it", ERROR_LEVEL)
             Move P6
             If Not Open_Gripper Then
-                Print "open gripper failed at aborting from magnet after finding manget, NEED Reset"
-                UpdateClient(EVTNO_CAL_MSG, "open gripper failed in aborting")
-                UpdateClient(EVTNO_HARDWARE_LOG_SEVERE, "open gripper failed at aborting from magnet, NEED Reset")
+                UpdateClient(TASK_MSG, "open gripper failed at aborting from magnet, NEED Reset", ERROR_LEVEL)
                 g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
                 g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
                 Motor Off
@@ -295,13 +287,11 @@ Function MagnetCalibration As Boolean
         EndIf
         g_HoldMagnet = True
     Else
-    	UpdateClient(EVTNO_CAL_MSG, "go to dumbbell post")
+    	UpdateClient(TASK_MSG, "go to dumbbell post", INFO_LEVEL)
         If Not FromHomeToTakeMagnet Then
             g_RunResult$ = "FromHomeToTakeMagnet failed " + g_RunResult$
-            Print g_RunResult$
-            ''SPELCom_Return 1
-            UpdateClient(EVTNO_CAL_MSG, "failed in FromHomeToTakeMagnet")
-            UpdateClient(EVTNO_CAL_STEP, "100 of 100")
+            UpdateClient(TASK_MSG, "failed in FromHomeToTakeMagnet", ERROR_LEVEL)
+            UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
             Exit Function
         EndIf
     EndIf
@@ -313,9 +303,7 @@ Function MagnetCalibration As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     Move Here -Z(15)
@@ -323,23 +311,20 @@ Function MagnetCalibration As Boolean
     Move Here -Z(3)
     
     ''continue with calibration    
-    UpdateClient(EVTNO_CAL_MSG, "dumbbell calibration")
+    UpdateClient(TASK_MSG, "dumbbell calibration", INFO_LEVEL)
     If g_IncludeFindMagnet Then
-    	UpdateClient(EVTNO_CAL_STEP, "20 of 100")
+    	UpdateClient(TASK_PROG, "20 of 100", INFO_LEVEL)
         g_CurrentSteps = 20
         g_Steps = 30
     Else
-        UpdateClient(EVTNO_CAL_STEP, "10 of 100")
+        UpdateClient(TASK_PROG, "10 of 100", INFO_LEVEL)
         g_CurrentSteps = 10
         g_Steps = 33
     EndIf
     If Not PostCalibration() Then
         g_RunResult$ = "magnet holder calibration failed"
-        Print g_RunResult$
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        UpdateClient(EVTNO_CAL_MSG, "dumbbell cal failed")
-        UpdateClient(EVTNO_CAL_STEP, "100 of 100")
-        ''SPELCom_Return 2
+        UpdateClient(TASK_MSG, "dumbbell cal failed", ERROR_LEVEL)
+        UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
         Exit Function
     EndIf
     
@@ -350,105 +335,91 @@ Function MagnetCalibration As Boolean
             MagnetCalibration = True
             g_RunResult$ = "normal OK quick"
             ''SPELCom_Return 0
-            UpdateClient(EVTNO_CAL_STEP, "100 of 100")
-            UpdateClient(EVTNO_CAL_MSG, "toolset cal done with quick option")
+            UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
+            UpdateClient(TASK_MSG, "toolset cal done with quick option", INFO_LEVEL)
             Exit Function
         EndIf
     EndIf
     
     ''picker calibration    
     If g_IncludeFindMagnet Then
-    	UpdateClient(EVTNO_CAL_STEP, "50 of 100")
+    	UpdateClient(TASK_PROG, "50 of 100", INFO_LEVEL)
         g_CurrentSteps = 50
         g_Steps = 15
     Else
-    	UpdateClient(EVTNO_CAL_STEP, "43 of 100")
+    	UpdateClient(TASK_PROG, "43 of 100", INFO_LEVEL)
         g_CurrentSteps = 43
         g_Steps = 18
     EndIf
-    UpdateClient(EVTNO_CAL_MSG, "picker calibration")
+    UpdateClient(TASK_MSG, "picker calibration", INFO_LEVEL)
     If Not PickerCalibration() Then
         g_RunResult$ = "picker calibration failed"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 3
-        UpdateClient(EVTNO_CAL_MSG, "picker cal failed")
-        UpdateClient(EVTNO_LOG_ERROR, "picker cal failed")
-        UpdateClient(EVTNO_CAL_STEP, "100 of 100")
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
         Exit Function
     EndIf
     If g_IncludeFindMagnet Then
-    	UpdateClient(EVTNO_CAL_STEP, "65 of 100")
+    	UpdateClient(TASK_PROG, "65 of 100", INFO_LEVEL)
         g_CurrentSteps = 65
         g_Steps = 12
     Else
-    	UpdateClient(EVTNO_CAL_STEP, "6 of 100")
+    	UpdateClient(TASK_PROG, "6 of 100", INFO_LEVEL)
         g_CurrentSteps = 43
         g_Steps = 14
     EndIf
 
-	UpdateClient(EVTNO_CAL_MSG, "placer calibration")
+	UpdateClient(TASK_MSG, "placer calibration", INFO_LEVEL)
     If Not PlacerCalibration() Then
         g_RunResult$ = "placer calibration failed"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 4
-        UpdateClient(EVTNO_CAL_MSG, "placer cal failed")
-        UpdateClient(EVTNO_LOG_ERROR, "placer cal failed")
-        UpdateClient(EVTNO_CAL_STEP, "100 of 100")
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
         Exit Function
     EndIf
 
     If Not CalculateToolset() Then
         g_RunResult$ = "toolset failed"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        UpdateClient(EVTNO_CAL_MSG, "toolset rough cal failed")
-        ''SPELCom_Return 5
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
     EndIf
 
     If g_IncludeFindMagnet Then
-    	UpdateClient(EVTNO_CAL_STEP, "77 of 100")
+    	UpdateClient(TASK_PROG, "77 of 100", INFO_LEVEL)
         g_CurrentSteps = 77
         g_Steps = 18
     Else
-    	UpdateClient(EVTNO_CAL_STEP, "75 of 100")
+    	UpdateClient(TASK_PROG, "75 of 100", INFO_LEVEL)
         g_CurrentSteps = 75
         g_Steps = 20
     EndIf
-    UpdateClient(EVTNO_CAL_MSG, "fine tune toolset")
+    UpdateClient(TASK_MSG, "fine tune toolset", INFO_LEVEL)
     If Not FineTuneToolSet() Then
         g_RunResult$ = "fine tune toolset failed"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 6
-        UpdateClient(EVTNO_CAL_MSG, "toolset cal failed")
-        UpdateClient(EVTNO_LOG_ERROR, "toolset cal failed")
-        UpdateClient(EVTNO_CAL_STEP, "100 of 100")
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
         Exit Function
     EndIf
 
     If g_IncludeStrip Then
-    	UpdateClient(EVTNO_CAL_STEP, "95 of 100")
+    	UpdateClient(TASK_PROG, "95 of 100", INFO_LEVEL)
 	    g_CurrentSteps = 95
 	    g_Steps = 5
-	    UpdateClient(EVTNO_CAL_MSG, "strip calibration")
+	    UpdateClient(TASK_MSG, "strip calibration", INFO_LEVEL)
 	    If Not StripCalibration() Then
 	        g_RunResult$ = "strip calibration failed"
-	        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-	        ''SPELCom_Return 7
-	        UpdateClient(EVTNO_CAL_MSG, "strip cal failed")
-    	    UpdateClient(EVTNO_LOG_ERROR, "strip cal failed")
-	        UpdateClient(EVTNO_CAL_STEP, "100 of 100")
+	        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	        UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
 	        Exit Function
 	    EndIf
 	EndIf
 
-	UpdateClient(EVTNO_CAL_MSG, "moving home")
-	UpdateClient(EVTNO_CAL_STEP, "100 of 100")
+	UpdateClient(TASK_MSG, "moving home", INFO_LEVEL)
+	UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
     MoveTongHome
     
     MagnetCalibration = True
     g_RunResult$ = "normal OK"
 	g_TS_Toolset$ = Date$ + " " + Time$
     ''SPELCom_Return 0
-    UpdateClient(EVTNO_CAL_MSG, "toolset cal done ")
+    UpdateClient(TASK_MSG, "toolset cal done ", INFO_LEVEL)
 
 Fend
 
@@ -464,7 +435,7 @@ Function PostCalibration As Boolean
     PostCalibration = False
     
     msg$ = "Post calibration at " + Date$ + " " + Time$
-	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
     
     PCStepStart = g_CurrentSteps
     PCStepTotal = g_Steps
@@ -517,9 +488,9 @@ Function PostCalibration As Boolean
         ReadForces(ByRef PCCurrentForces())
         
         msg$ = "step " + Str$(PCRepeatIndex)
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         msg$ = " current forces: "
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
         PrintForces(ByRef PCCurrentForces())
         
@@ -531,9 +502,7 @@ Function PostCalibration As Boolean
         If g_FlagAbort Then
             If Not Open_Gripper Then
                 g_RunResult$ = "Post Cal: aborting: Open_Gripper Failed, holding magnet, need Reset"
-                UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-                UpdateClient(EVTNO_HARDWARE_LOG_SEVERE, g_RunResult$)
-                UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
+                UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
                 g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
                 g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
                 Motor Off
@@ -554,13 +523,13 @@ Function PostCalibration As Boolean
 
         If g_AtLeastOnce And forceToReduce = 0 And PCCalledTimes(0) <> 0 Then
             If PCCalledTimes(FORCE_XTORQUE) = 0 Then
-            	UpdateClient(EVTNO_PRINT_EVENT, "ADD call for XTorque")
+            	UpdateClient(TASK_MSG, "ADD call for XTorque", DEBUG_LEVEL)
                 forceToReduce = FORCE_XTORQUE
             ElseIf PCCalledTimes(FORCE_YTORQUE) = 0 Then
-            	UpdateClient(EVTNO_PRINT_EVENT, "ADD call for YTorque")
+            	UpdateClient(TASK_MSG, "ADD call for YTorque", DEBUG_LEVEL)
                 forceToReduce = FORCE_YTORQUE
             ElseIf PCCalledTimes(FORCE_ZTORQUE) = 0 Then
-            	UpdateClient(EVTNO_PRINT_EVENT, "ADD call for ZTorque")
+            	UpdateClient(TASK_MSG, "ADD call for ZTorque", DEBUG_LEVEL)
                 forceToReduce = FORCE_ZTORQUE
             EndIf
         EndIf
@@ -577,7 +546,7 @@ Function PostCalibration As Boolean
                 PCCntPreFTR = PCCntPreFTR + 1
                 If PCCntPreFTR > 1 Then
                 	msg$ = "failed, try to reduce " + Str$(forceToReduce) + " in a row"
-                	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+                	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
                     Print #LOG_FILE_NO, "failed, try to reduce ", forceToReduce, " in a row"
                     Close #LOG_FILE_NO
                     Exit Function
@@ -595,40 +564,33 @@ Function PostCalibration As Boolean
                         
         Select forceToReduce
         Case 0
-        	UpdateClient(EVTNO_CAL_MSG, "dumbbell: find Z")
             PCCalledTimes(0) = PCCalledTimes(0) + 1
-            UpdateClient(EVTNO_PRINT_EVENT, "Find Z Position")
+            UpdateClient(TASK_MSG, "Find Z Position", INFO_LEVEL)
             Print #LOG_FILE_NO, "Find Z Position"
             PCCBottomTouched = FindZPosition()
         Case FORCE_ZFORCE
-        	UpdateClient(EVTNO_CAL_MSG, "dumbbell: reduce FZ")
+        	UpdateClient(TASK_MSG, "dumbbell: reduce FZ", INFO_LEVEL)
             PCCalledTimes(FORCE_ZFORCE) = PCCalledTimes(FORCE_ZFORCE) + 1
-            UpdateClient(EVTNO_PRINT_EVENT, "reduce FZ")
             Print #LOG_FILE_NO, "reduce FZ"
             ReduceFZ
         Case FORCE_XTORQUE
-        	UpdateClient(EVTNO_CAL_MSG, "dumbbell: cut middle XTORQUE")
+        	UpdateClient(TASK_MSG, "dumbbell: reduce Tx", INFO_LEVEL)
             PCCalledTimes(FORCE_XTORQUE) = PCCalledTimes(FORCE_XTORQUE) + 1
-            UpdateClient(EVTNO_PRINT_EVENT, "reduce TX")
             Print #LOG_FILE_NO, "reduce TX"
             g_Dumbbell_Free_Y = Abs(ForcedCutMiddle(FORCE_XTORQUE))
             If g_Dumbbell_Free_Y > ACCPT_THRHLD_MAGNET_FREE_Y Then
             	msg$ = "dumbbell has too big Y freedom in cradle " + Str$(g_Dumbbell_Free_Y)
-				UpdateClient(EVTNO_PRINT_EVENT, msg$)
-				Print #LOG_FILE_NO, "dumbbell has too big Y freedom in cradle ", g_Dumbbell_Free_Y
-				msg$ = "dumbbell has too big Y freedom in cradle " + Str$(g_Dumbbell_Free_Y)
-				UpdateClient(EVTNO_HARDWARE_LOG_ERROR, msg$)
+				UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+				Print #LOG_FILE_NO, msg$
             EndIf
         Case FORCE_YTORQUE
-        	UpdateClient(EVTNO_CAL_MSG, "dumbbell: cut middle YTORQUE")
+        	UpdateClient(TASK_MSG, "dumbbell: reduce Ty", INFO_LEVEL)
             PCCalledTimes(FORCE_YTORQUE) = PCCalledTimes(FORCE_YTORQUE) + 1
-            UpdateClient(EVTNO_PRINT_EVENT, "reduce TY")
             Print #LOG_FILE_NO, "reduce TY"
             ForcedCutMiddle FORCE_YTORQUE
         Case FORCE_ZTORQUE
-        	UpdateClient(EVTNO_CAL_MSG, "dumbbell: cut middle ZTORQUE")
+        	UpdateClient(TASK_MSG, "dumbbell: reduce Tz", INFO_LEVEL)
             PCCalledTimes(FORCE_ZTORQUE) = PCCalledTimes(FORCE_ZTORQUE) + 1
-            UpdateClient(EVTNO_PRINT_EVENT, "reduce TZ")
             Print #LOG_FILE_NO, "reduce TZ"
             Tool 3
             ForcedCutMiddle FORCE_ZTORQUE
@@ -636,56 +598,56 @@ Function PostCalibration As Boolean
         Send
         g_CurrentSteps = PCStepStart + PCRepeatIndex * PCStepTotal / MAX_POST_CAL_STEP
         msg$ = Str$(g_CurrentSteps) + " of 100"
-        UpdateClient(EVTNO_CAL_STEP, msg$)
+        UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         PCRepeatIndex = PCRepeatIndex + 1
     Loop Until PCRepeatIndex > MAX_POST_CAL_STEP
     If PCRepeatIndex > 12 Then
-        UpdateClient(EVTNO_PRINT_EVENT, "FAILED: reached max retry before got the result")
+        UpdateClient(TASK_MSG, "FAILED: reached max retry before got the result", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: reached max retry before got the result"
     EndIf
  
-    UpdateClient(EVTNO_PRINT_EVENT, "reduce functions called times:")
+    UpdateClient(TASK_MSG, "reduce functions called times:", DEBUG_LEVEL)
     msg$ = "FZ: " + Str$(PCCalledTimes(FORCE_ZFORCE))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     msg$ = "TX: " + Str$(PCCalledTimes(FORCE_XTORQUE))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     msg$ = "TY: " + Str$(PCCalledTimes(FORCE_YTORQUE))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     msg$ = "TZ: " + Str$(PCCalledTimes(FORCE_ZTORQUE))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     msg$ = "Find Z Postion called " + Str$(PCCalledTimes(0))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
     ReadForces(ByRef PCCurrentForces())
-    UpdateClient(EVTNO_PRINT_EVENT, "===================================================================")
-    UpdateClient(EVTNO_PRINT_EVENT, "Forces changes:")
+    UpdateClient(TASK_MSG, "===================================================================", DEBUG_LEVEL)
+    UpdateClient(TASK_MSG, "Forces changes:", DEBUG_LEVEL)
     msg$ = "FX: " + Str$(PCOldForces(1)) + " to " + Str$(PCCurrentForces(1))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "FY: " + Str$(PCOldForces(2)) + " to " + Str$(PCCurrentForces(2))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "FZ: " + Str$(PCOldForces(3)) + " to " + Str$(PCCurrentForces(3))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "TX: " + Str$(PCOldForces(4)) + " to " + Str$(PCCurrentForces(4))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "TY: " + Str$(PCOldForces(5)) + " to " + Str$(PCCurrentForces(5))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "TZ: " + Str$(PCOldForces(6)) + " to " + Str$(PCCurrentForces(6))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
-    UpdateClient(EVTNO_PRINT_EVENT, "===================================================================")
-    UpdateClient(EVTNO_PRINT_EVENT, "Position changes:")
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    UpdateClient(TASK_MSG, "===================================================================", DEBUG_LEVEL)
+    UpdateClient(TASK_MSG, "Position changes:", DEBUG_LEVEL)
     msg$ = "FX: " + Str$(PCOldPosition(1)) + " to " + Str$(CX(Here))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "FY: " + Str$(PCOldPosition(2)) + " to " + Str$(CY(Here))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "FZ: " + Str$(PCOldPosition(3)) + " to " + Str$(CZ(Here))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     msg$ = "TX: " + Str$(PCOldPosition(4)) + " to " + Str$(CU(Here))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
-    UpdateClient(EVTNO_PRINT_EVENT, "===================================================================")
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    UpdateClient(TASK_MSG, "===================================================================", DEBUG_LEVEL)
 
     Print #LOG_FILE_NO, "PostCalibration end at ", Date$, " ", Time$
     Print #LOG_FILE_NO, "reduce functions called times:"
@@ -711,23 +673,22 @@ Function PostCalibration As Boolean
     Print #LOG_FILE_NO, "==================================================================="
 
     ''save the result
-    CheckPoint 6
     If PostCalibration Then
         P86 = P6
         P6 = Here
         msg$ = "P6 moved from (" + Str$(CX(P86)) + ", " + Str$(CY(P86)) + ", " + Str$(CZ(P86)) + ", " + Str$(CU(P86)) + ") "
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 		msg$ = "to (" + Str$(CX(P6)) + ", " + Str$(CY(P6)) + ", " + Str$(CZ(P6)) + ", " + Str$(CU(P6)) + ") "
-		UpdateClient(EVTNO_PRINT_EVENT, msg$)
+		UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
         Print #LOG_FILE_NO, "P6 moved from (", CX(P86), ", ", CY(P86), ", ", CZ(P86), ", ", CU(P86), ") ",
         Print #LOG_FILE_NO, "to (", CX(P6), ", ", CY(P6), ", ", CZ(P6), ", ", CU(P6), ") "
         
         msg$ = "Old P6 (" + Str$(CX(P86)) + ", " + Str$(CY(P86)) + ", " + Str$(CZ(P86)) + ", " + Str$(CU(P86)) + ")"
-        UpdateClient(EVTNO_UPDATE, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         
         msg$ = "New P6 (" + Str$(CX(P6)) + ", " + Str$(CY(P6)) + ", " + Str$(CZ(P6)) + ", " + Str$(CU(P6)) + ")"
-        UpdateClient(EVTNO_UPDATE, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         
         
         ''P3 is 20 mm from P6: cooling point
@@ -746,21 +707,22 @@ Function PostCalibration As Boolean
         PCPushX = CX(Here)
         PCPushY = CY(Here)
         If Not ForceTouch(DIRECTION_CAVITY_TAIL, 1, True) Then
-            UpdateClient(EVTNO_PRINT_EVENT, "Failed in push magnet aside to reduce freedom in operation")
+            UpdateClient(TASK_MSG, "Failed in push magnet aside to reduce freedom in operation", WARNING_LEVEL)
             Print #LOG_FILE_NO, "Failed in push magnet aside to reduce freedom in operation"
         EndIf
     
     	msg$ = "Push Magnet to one side, X, Y moved from (" + Str$(PCPushX) + ", " + Str$(PCPushY) + ") to (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
-    	UpdateClient(EVTNO_UPDATE, msg$)
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print #LOG_FILE_NO, "Push Magnet to one side, X, Y moved from (", PCPushX, ", ", PCPushY, ") to (", CX(Here), ", ", CY(Here), ")"
 
-        CheckPoint 7
-        msg$ = "P7 moved from (" + Str$(CX(P7)) + ", " + Str$(CY(P7)) + ", " + Str$(CZ(P7)) + ", " + Str$(CU(P7)) + ") "
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
-        Print #LOG_FILE_NO, "P7 moved from (", CX(P7), ", ", CY(P7), ", ", CZ(P7), ", ", CU(P7), ") ",
+        If (GTCheckPoint(7)) Then
+	        msg$ = "P7 moved from (" + Str$(CX(P7)) + ", " + Str$(CY(P7)) + ", " + Str$(CZ(P7)) + ", " + Str$(CU(P7)) + ") "
+    	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+        	Print #LOG_FILE_NO, "P7 moved from (", CX(P7), ", ", CY(P7), ", ", CZ(P7), ", ", CU(P7), ") ",
+        EndIf
         P7 = Here
         msg$ = "to (" + Str$(CX(P7)) + ", " + Str$(CY(P7)) + ", " + Str$(CZ(P7)) + ", " + Str$(CU(P7)) + ") "
-        UpdateClient(EVTNO_UPDATE, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print #LOG_FILE_NO, "to (", CX(P7), ", ", CY(P7), ", ", CZ(P7), ", ", CU(P7), ") "
         
         Move P6
@@ -770,9 +732,9 @@ Function PostCalibration As Boolean
 
 #ifdef AUTO_SAVE_POINT
     If PostCalibration Then
-    	UpdateClient(EVTNO_UPDATE, "saving points to file.....")
+    	UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
         SavePoints "robot1.pts"
-        UpdateClient(EVTNO_UPDATE, "Done!!")
+        UpdateClient(TASK_MSG, "Done!!", INFO_LEVEL)
         SavePointHistory 6, g_FCntPost
     EndIf
 #endif
@@ -781,9 +743,7 @@ Function PostCalibration As Boolean
     If g_FlagAbort Then
         If Not Open_Gripper Then
             g_RunResult$ = "after Post Cal: user abort: Open_Gripper Failed, holding magnet, need Reset"
-            UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-            UpdateClient(EVTNO_LOG_SEVERE, g_RunResult$)
-            UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
+            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
             g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
             Motor Off
@@ -867,11 +827,12 @@ Function ReduceFZ
 
     'Find out current FZ situation'
     RFZOldFZ = ReadForce(FORCE_ZFORCE)
-    Print "Reduce FZ"
-    Print "old Z", RFZOldZ, " oldFZ ", RFZOldFZ
+    UpdateClient(TASK_MSG, "Reduce FZ", INFO_LEVEL)
+    msg$ = "old Z" + Str$(RFZOldZ) + " oldFZ " + Str$(RFZOldFZ)
+    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 
     If RFZOldFZ <= 0 And RFZOldFZ > -g_MinFZ Then
-        Print "no need to reduce FZ, already < -g_MinFZ"
+        UpdateClient(TASK_MSG, "no need to reduce FZ, already < -g_MinFZ", INFO_LEVEL)
         Print #LOG_FILE_NO, "no need to reduce FZ, already > -g_MinFZ"
         Exit Function
     EndIf
@@ -881,11 +842,13 @@ Function ReduceFZ
         RFZNewZ = CZ(Here)
         RFZNewFZ = ReadForce(FORCE_ZFORCE)
         m_IgnoreFZForNow = True ''we will deal with it in FindZPosition when all other forces are reduced.
-        Print "force sensor need reset, ignore FZ for now"
+        UpdateClient(TASK_MSG, "force sensor need reset, ignore FZ for now", INFO_LEVEL)
         Print #LOG_FILE_NO, "force sensor need reset, ignore FZ for now"
-        Print "FZRisingCross ", -g_ThresholdFZ, "failed"
+        msg$ = "FZRisingCross " + Str$(-g_ThresholdFZ) + " failed"
+        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
         Print #LOG_FILE_NO, "FZRisingCross ", -g_ThresholdFZ, "failed"
-        Print "ReduceFZ, Z moved from ", RFZOldZ, " to ", RFZNewZ, ", FZ from ", RFZOldFZ, " to ", RFZNewFZ
+        msg$ = "ReduceFZ, Z moved from " + Str$(RFZOldZ) + " to " + Str$(RFZNewZ) + ", FZ from " + Str$(RFZOldFZ) + " to " + Str$(RFZNewFZ)
+        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
         Print #LOG_FILE_NO, "ReduceFZ, Z moved from ", RFZOldZ, " to ", RFZNewZ, ", FZ from ", RFZOldFZ, " to ", RFZNewFZ
         Exit Function
     EndIf
@@ -899,7 +862,8 @@ Function ReduceFZ
     RFZNewZ = CZ(Here)
     RFZNewFZ = ReadForce(FORCE_ZFORCE)
 
-    Print "ReduceFZ, Z moved from ", RFZOldZ, " to ", RFZNewZ, ", FZ from ", RFZOldFZ, " to ", RFZNewFZ
+    msg$ = "ReduceFZ, Z moved from " + Str$(RFZOldZ) + " to " + Str$(RFZNewZ) + ", FZ from " + Str$(RFZOldFZ) + " to " + Str$(RFZNewFZ)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "ReduceFZ, Z moved from ", RFZOldZ, " to ", RFZNewZ, ", FZ from ", RFZOldFZ, " to ", RFZNewFZ
 Fend
 
@@ -916,22 +880,23 @@ Function FindZPosition As Boolean
 
     'Find out current FZ situation'
     FZPOldFZ = ReadForce(FORCE_ZFORCE)
-    Print "FindZPosition: old Z", FZPOldZ, " FZPOldFZ ", FZPOldFZ
+    msg$ = "FindZPosition: old Z" + Str$(FZPOldZ) + " FZPOldFZ " + Str$(FZPOldFZ)
+    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 
     ''reset force sensor
     m_IgnoreFZForNow = False
     Move Here +Z(2)
-    UpdateClient(EVTNO_CAL_MSG, "dumbbell: resetting force sensor")
+    UpdateClient(TASK_MSG, "dumbbell: resetting force sensor", INFO_LEVEL)
     ResetForceSensor    ''this will move up 10mm more and back
     g_Steps = FZPStepTotal /2
     g_CurrentSteps = FZPStepStart + g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "dumbbell: touching bottom")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "dumbbell: touching bottom", INFO_LEVEL)
     ''force down to TZTouchMin
     FindZPosition = ForceTouch(-FORCE_ZFORCE, 10, True)
     If Not FindZPosition Then
-        Print "not bottomed this time, try next time"
+        UpdateClient(TASK_MSG, "not bottomed this time, try next time", INFO_LEVEL)
         Print #LOG_FILE_NO, "not bottomed this time, try next time"
     Else
         Move Here +Z(0.05)
@@ -954,10 +919,8 @@ Function PickerTouchSeat As Boolean
     ''move from P6 to the init point
     ''open gripper
     If Not Open_Gripper Then
-        g_RunResult$ = "OPen_Gripper failed in picker touch seat, need Reset"
-        Print g_RunResult$
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_HARDWARE_LOG_SEVERE, g_RunResult$)
+        g_RunResult$ = "Open_Gripper failed in picker touch seat, need Reset"
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
         g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
         Motor Off
@@ -973,9 +936,7 @@ Function PickerTouchSeat As Boolean
 
     If Not Close_Gripper Then
         g_RunResult$ = "Close_Gripper failed in picker touch seat, aborting"
-        Print g_RunResult$
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_HARDWARE_LOG_ERROR, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         MoveTongHome
         ''not need recovery
         g_SafeToGoHome = False
@@ -986,9 +947,7 @@ Function PickerTouchSeat As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at pickerTouchingSeat"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
 
@@ -1019,9 +978,10 @@ Function PickerTouchSeat As Boolean
     g_Steps = PKTSStepTotal /2
     g_CurrentSteps = PKTSStepStart + g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
 
-    Print "cavity touched placer side of seat at (", CX(Here), ", ", CY(Here), ")"
+    msg$ = "cavity touched placer side of seat at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+    UpdateClient(TASK_PROG, msg$, DEBUG_LEVEL)
 
     PKTSX1 = CX(Here)
     PKTSY1 = CY(Here)
@@ -1035,9 +995,7 @@ Function PickerTouchSeat As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at pickerTouchingSeat other end"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     ''Move P* +Y(20)
@@ -1055,30 +1013,30 @@ Function PickerTouchSeat As Boolean
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
 			g_RunResult$ = "force sensor reset failed at pickerTouchingSeat picker side"
-			Print g_RunResult$
-			''SPELCom_Return 1
-			UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
         TongMove DIRECTION_CAVITY_HEAD, DISTANCE_BETWEEN_TWO_TOUCH / 2, False
         ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
     	If Not ForceTouch(DIRECTION_MAGNET_TO_CAVITY, PKTSRange, True) Then
-	    	Print "failed to touch seat at picker side"
+    		g_RunResult$ = "failed to touch seat at picker side"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 	    	Print #LOG_FILE_NO, "failed to touch seat at picker side"
     	    Exit Function
     	EndIf
     EndIf
 
     PickerTouchSeat = True
-    Print "picker cavity touched seat at (", CX(Here), ", ", CY(Here), ")"
-
+    msg$ = "picker cavity touched seat at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+			
     PKTSX2 = CX(Here)
     PKTSY2 = CY(Here)
     
     Print #LOG_FILE_NO, "touched seat at (", PKTSX1, ", ", PKTSY1, ") and (", PKTSX2, ", ", PKTSY2, ")"
     ''recheck
     If Abs(PKTSX1 - PKTSX2) > 2 Then
-    	UpdateClient(EVTNO_CAL_MSG, "touching seat for picker may failed, please check")
+    	UpdateClient(TASK_MSG, "touching seat for picker may failed, please check", INFO_LEVEL)
         If PKTSX2 > PKTSX1 Then
             PKTSX2 = PKTSX1
             Move Here :X(PKTSX1)
@@ -1102,12 +1060,12 @@ Function PickerCalibration As Boolean
     WOpen "PickerCal" + Str$(g_FCntPicker) + ".Txt" As #LOG_FILE_NO
     Print #LOG_FILE_NO, "picker calibration at ", Date$, " ", Time$
     msg$ = "Picker calibration at " + Date$ + " " + Time$
-	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     PickerCalibration = False
 
     ''safety check
     If Not isCloseToPoint(6) Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "PickerCalibration: Fail! Must start from P6 position")
+    	UpdateClient(TASK_MSG, "PickerCalibration: Fail! Must start from P6 position", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: It must start from P6 position"
         Close #LOG_FILE_NO
         Exit Function
@@ -1132,9 +1090,9 @@ Function PickerCalibration As Boolean
 
     ''find X by touching the seat using cavity
     g_Steps = PKCStepTotal /3
-    UpdateClient(EVTNO_CAL_MSG, "picker cal: touching seat for X")
+    UpdateClient(TASK_MSG, "picker cal: touching seat for X", INFO_LEVEL)
     If Not PickerTouchSeat Then
-	    UpdateClient(EVTNO_PRINT_EVENT, "picker cal: Fail!  did not touch the holder seat")
+	    UpdateClient(TASK_MSG, "picker cal: Fail!  did not touch the holder seat", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: did not touch the holder seat"
         Close #LOG_FILE_NO
         Exit Function
@@ -1143,8 +1101,8 @@ Function PickerCalibration As Boolean
     g_Steps = PKCStepTotal /6
     g_CurrentSteps = PKCStepStart + 2 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "picker cal: touching head for Y")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "picker cal: touching head for Y", INFO_LEVEL)
     ''move cavity to touch magnet head: X will be finalX minus cavity Radius
 
     SetFastSpeed
@@ -1168,13 +1126,11 @@ Function PickerCalibration As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at pickerCalibration"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     If Not ForceTouch(DIRECTION_CAVITY_HEAD, PKCRange, True) Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "picker cal: calibrate picker failed at touch magnet head")
+    	UpdateClient(TASK_MSG, "picker cal: calibrate picker failed at touch magnet head", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: calibrate picker failed at touch magnet head"
         Close #LOG_FILE_NO
         Exit Function
@@ -1183,8 +1139,8 @@ Function PickerCalibration As Boolean
     g_Steps = PKCStepTotal /6
     g_CurrentSteps = PKCStepStart + 3 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "picker cal: touching head for Z")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "picker cal: touching head for Z", INFO_LEVEL)
 
     ''now we have roughly X, Y, we can go above to find Z first
     ''move to above to touch Z
@@ -1205,13 +1161,11 @@ Function PickerCalibration As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at pickerCalibration before z"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     If Not ForceTouch(-FORCE_ZFORCE, SAFE_BUFFER_FOR_Z_TOUCH + 10, True) Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "FAILED: did not touch magnet head when lower the cavity for picker")
+    	UpdateClient(TASK_MSG, "FAILED: did not touch magnet head when lower the cavity for picker", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: did not touch magnet head when lower the cavity for picker"
         Close #LOG_FILE_NO
         Exit Function
@@ -1225,8 +1179,8 @@ Function PickerCalibration As Boolean
     g_Steps = PKCStepTotal /6
     g_CurrentSteps = PKCStepStart + 4 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "picker cal: touching head for more accurate X")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "picker cal: touching head for more accurate X", INFO_LEVEL)
 
     SetFastSpeed
     Move Here +Z(SAFE_BUFFER_FOR_DETACH)
@@ -1237,7 +1191,7 @@ Function PickerCalibration As Boolean
     m_MAPAStartY = CY(Here)
     SetVerySlowSpeed
     If Not ForceTouch(DIRECTION_MAGNET_TO_CAVITY, HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, True) Then
-        UpdateClient(EVTNO_PRINT_EVENT, "Failed for accurate post angle: touching picker head")
+        UpdateClient(TASK_MSG, "Failed for accurate post angle: touching picker head", ERROR_LEVEL)
         Print #LOG_FILE_NO, "Failed for accurate post angle: touching picker head"
         g_PickerWallToHead = 0
         
@@ -1251,8 +1205,7 @@ Function PickerCalibration As Boolean
         m_MAPAStartY = m_MAPAStartY - CY(Here)
         g_PickerWallToHead = Sqr(m_MAPAStartX * m_MAPAStartX + m_MAPAStartY * m_MAPAStartY) - SAFE_BUFFER_FOR_DETACH
         msg$ = "g_PickerWallToHead=" + Str$(g_PickerWallToHead)
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
-        Print "g_PickerWallToHead=", g_PickerWallToHead
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print #LOG_FILE_NO, "g_PickerWallToHead=", g_PickerWallToHead
         
         ''move to ready position for next step
@@ -1264,17 +1217,15 @@ Function PickerCalibration As Boolean
     g_Steps = PKCStepTotal /6
     g_CurrentSteps = PKCStepStart + 5 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "picker cal: move in")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "picker cal: move in", INFO_LEVEL)
 #ifdef FINE_TUNE_PICKER
     ''fine tune Y
     Wait TIME_WAIT_BEFORE_RESET
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at pickerCalibration find tune"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     ''move back to where we hit the magnet head
@@ -1287,8 +1238,7 @@ Function PickerCalibration As Boolean
     
     ''head thickness is 3.55, with 1mm freedom, so 10 is enough to cover that
     If Not ForceTouch(DIRECTION_CAVITY_HEAD, 10, False) Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "failed to touch magnet in Y direction")
-        Print "failed to touch magnet in Y direction"
+    	UpdateClient(TASK_MSG, "failed to touch magnet in Y direction", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: to touch magnet in Y direction"
         Close #LOG_FILE_NO
         
@@ -1311,28 +1261,29 @@ Function PickerCalibration As Boolean
 
 #endif
 	msg$ = "SUCCESS: Picker position (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
-	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "SUCCESS: Picker position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
     Print #LOG_FILE_NO, "picker calibration end at ", Date$, " ", Time$
 
-    CheckPoint 16
-    msg$ = "P16 moved from (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ") "
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
-    Print #LOG_FILE_NO, "P16 moved from (", CX(P16), ", ", CY(P16), ", ", CZ(P16), ", ", CU(P16), ") ",
-    msg$ = "Old P16 (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ")"
-    UpdateClient(EVTNO_UPDATE, msg$)
+    If (GTCheckPoint(16)) Then
+	    msg$ = "P16 moved from (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ") "
+	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	    Print #LOG_FILE_NO, "P16 moved from (", CX(P16), ", ", CY(P16), ", ", CZ(P16), ", ", CU(P16), ") ",
+	    msg$ = "Old P16 (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ")"
+	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	EndIf
     P16 = Here
     msg$ = "to (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ") "
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "to (", CX(P16), ", ", CY(P16), ", ", CZ(P16), ", ", CU(P16), ") "
 	msg$ = "New P16 (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ")"
-	UpdateClient(EVTNO_UPDATE, msg$)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
 #ifdef AUTO_SAVE_POINT
-	UpdateClient(EVTNO_PRINT_EVENT, "saving points to file.....")
+	UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
     SavePoints "robot1.pts"
     SavePointHistory 16, g_FCntPicker
-   	UpdateClient(EVTNO_PRINT_EVENT, "Done!!")
+   	UpdateClient(TASK_MSG, "Done!!", INFO_LEVEL)
 #endif
     SetFastSpeed
     TongMove DIRECTION_CAVITY_TAIL, STANDBY_DISTANCE, False
@@ -1357,7 +1308,7 @@ Function PlacerCalibration As Boolean
     Print #LOG_FILE_NO, "placer calibration at ", Date$, " ", Time$
     
     msg$ = "Placer calibration at " + Date$ + " " + Time$
-	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
     InitForceConstants
     
@@ -1367,14 +1318,14 @@ Function PlacerCalibration As Boolean
 
     ''pre-condition: current position: cavity should be Picker's place +Y(10)'
     If Not isGoodForPlacerCal Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "not a good place to start placer calibration,  It should be P16 +Y(10)")
+    	UpdateClient(TASK_MSG, "not a good place to start placer calibration,  It should be P16 +Y(10)", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: not a good place to start placer calibration,  It should be P16 +Y(10)"
         Close #LOG_FILE_NO
         
         Exit Function
     EndIf
 
-	UpdateClient(EVTNO_CAL_MSG, "placer cal: arc to placer side")
+	UpdateClient(TASK_MSG, "placer cal: arc to placer side", INFO_LEVEL)
 
     CPCInitX = CX(Here)
     CPCInitY = CY(Here)
@@ -1415,7 +1366,7 @@ Function PlacerCalibration As Boolean
 	Hand P52, Hand(P6)
 	
 	msg$ = "init (" + Str$(CPCInitX) + ", " + Str$(CPCInitY) + ") final (" + Str$(CPCFinalX) + ", " + Str$(CPCFinalY) + ")"
-	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 
     SetFastSpeed
     Arc P51, P52
@@ -1424,20 +1375,18 @@ Function PlacerCalibration As Boolean
     g_Steps = CPCStepTotal /5
     g_CurrentSteps = CPCStepStart + g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "placer cal: touching head for Y")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "placer cal: touching head for Y", INFO_LEVEL)
 
     Wait TIME_WAIT_BEFORE_RESET
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at placerCalibration"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
 	If Not ForceTouch(DIRECTION_CAVITY_HEAD, DISTANCE_PLACER_FROM_MAGNET, True) Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "FAILED: calibrate placer failed at touch magnet head")
+    	UpdateClient(TASK_MSG, "FAILED: calibrate placer failed at touch magnet head", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: calibrate placer failed at touch magnet head"
         Close #LOG_FILE_NO
         Exit Function
@@ -1448,8 +1397,8 @@ Function PlacerCalibration As Boolean
     g_Steps = CPCStepTotal /5
     g_CurrentSteps = CPCStepStart + 2 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-	UpdateClient(EVTNO_CAL_MSG, "placer cal: touching seat for X")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, "placer cal: touching seat for X", INFO_LEVEL)
 
     ''try to touch seat for X with cavity.
     ''the free space here is very limited.
@@ -1470,13 +1419,11 @@ Function PlacerCalibration As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at placerCalibration before touching seat wall"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, HALF_OF_SEAT_THICKNESS * 2, True) Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "FAILED: to touch seat wall for placer")
+    	UpdateClient(TASK_MSG, "FAILED: to touch seat wall for placer", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: to touch seat wall for placer"
         Close #LOG_FILE_NO
         TongMove DIRECTION_CAVITY_TAIL, DISTANCE_TOUCH_ARM + SAFE_BUFFER_FOR_DETACH, False
@@ -1485,14 +1432,14 @@ Function PlacerCalibration As Boolean
     
     ''we touched the holder arm:
     msg$ = "cavity touched holder arm at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "cavity touched holder arm at (", CX(Here), ", ", CY(Here), ")"
 
     g_Steps = CPCStepTotal /5
     g_CurrentSteps = CPCStepStart + 3 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "placer cal: touching head for Z")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "placer cal: touching head for Z", INFO_LEVEL)
     
     ''now we have roughly X, Y, we can go above to find Z first
     ''move to above to touch Z
@@ -1509,13 +1456,11 @@ Function PlacerCalibration As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at placerCalibration before touching z"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
 	If Not ForceTouch(-FORCE_ZFORCE, SAFE_BUFFER_FOR_Z_TOUCH + 10, True) Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "FAILED: did not touch magnet head when lower the cavity for picker")
+    	UpdateClient(TASK_MSG, "FAILED: did not touch magnet head when lower the cavity for picker", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: did not touch magnet head when lower the cavity for placer"
         Close #LOG_FILE_NO
         Exit Function
@@ -1527,19 +1472,19 @@ Function PlacerCalibration As Boolean
     g_Steps = CPCStepTotal /5
     g_CurrentSteps = CPCStepStart + 4 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "placer cal: touching head for more accurate X")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "placer cal: touching head for more accurate X", INFO_LEVEL)
 
     SetFastSpeed
     Move Here +Z(SAFE_BUFFER_FOR_DETACH)
-	UpdateClient(EVTNO_PRINT_EVENT, "touch head in X direction to get more accurate position")
+	UpdateClient(TASK_MSG, "touch head in X direction to get more accurate position", INFO_LEVEL)
     TongMove DIRECTION_MAGNET_TO_CAVITY, CAVITY_RADIUS + HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, False
     Move Here -Z(SAFE_BUFFER_FOR_DETACH + CAVITY_RADIUS + MAGNET_HEAD_RADIUS)
     m_MAPAStartX = CX(Here)
     m_MAPAStartY = CY(Here)
     SetVerySlowSpeed
     If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, True) Then
-        UpdateClient(EVTNO_PRINT_EVENT, "Failed for accurate post angle: touching picker head")
+        UpdateClient(TASK_MSG, "Failed for accurate post angle: touching picker head", ERROR_LEVEL)
         Print #LOG_FILE_NO, "Failed for accurate post angle: touching picker head"
         g_PlacerWallToHead = 0
         
@@ -1553,7 +1498,7 @@ Function PlacerCalibration As Boolean
         m_MAPAStartY = m_MAPAStartY - CY(Here)
         g_PlacerWallToHead = Sqr(m_MAPAStartX * m_MAPAStartX + m_MAPAStartY * m_MAPAStartY) - SAFE_BUFFER_FOR_DETACH
         msg$ = "g_PlacerWallToHead=" + Str$(g_PlacerWallToHead)
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print #LOG_FILE_NO, "g_PlacerWallToHead=", g_PlacerWallToHead
         
         ''move to ready position for next step
@@ -1569,9 +1514,8 @@ Function PlacerCalibration As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at placerCalibration fine tune"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        UpdateClient(TASK_MSG, g_RunResult$)
         Exit Function
     EndIf
     
@@ -1583,7 +1527,7 @@ Function PlacerCalibration As Boolean
     SetVerySlowSpeed
 
     If Not ForceTouch(DIRECTION_CAVITY_HEAD, 10, False) Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "failed to touch magnet in Y direction")
+    	UpdateClient(TASK_MSG, "failed to touch magnet in Y direction", ERROR_LEVEL)
         Print #LOG_FILE_NO, "FAILED: to touch magnet in Y direction"
         Close #LOG_FILE_NO
         
@@ -1605,29 +1549,27 @@ Function PlacerCalibration As Boolean
 #endif
 
 	msg$ = "SUCCESS: Placer position (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
-	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "SUCCESS: Placer position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
     Print #LOG_FILE_NO, "placer calibration end at ", Date$, " ", Time$
 
-    CheckPoint 26
-    msg$ = "P26 moved from (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ") "
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
-    Print #LOG_FILE_NO, "P26 moved from (", CX(P26), ", ", CY(P26), ", ", CZ(P26), ", ", CU(P26), ") ",
-    msg$ = "Old P26 (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ")"
-    UpdateClient(EVTNO_UPDATE, msg$)
+    If (GTCheckPoint(26)) Then
+	    msg$ = "P26 moved from (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ") "
+		UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+		Print #LOG_FILE_NO, "P26 moved from (", CX(P26), ", ", CY(P26), ", ", CZ(P26), ", ", CU(P26), ") ",
+	    msg$ = "Old P26 (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ")"
+    	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    EndIf
     P26 = Here
     msg$ = "to (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ") "
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "to (", CX(P26), ", ", CY(P26), ", ", CZ(P26), ", ", CU(P26), ") "
-    
-    msg$ = "New P26 (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ")"
-    UpdateClient(EVTNO_UPDATE, msg$)
 
 #ifdef AUTO_SAVE_POINT
-	UpdateClient(EVTNO_PRINT_EVENT, "saving points to file.....")
+	UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
     SavePoints "robot1.pts"
     SavePointHistory 26, g_FCntPlacer
-   	UpdateClient(EVTNO_PRINT_EVENT, "Done!!")
+   	UpdateClient(TASK_MSG, "Done!!", INFO_LEVEL)
 #endif
     SetFastSpeed
     TongMove DIRECTION_CAVITY_TAIL, STANDBY_DISTANCE, False
@@ -1635,14 +1577,13 @@ Function PlacerCalibration As Boolean
     ''check post level error
     PostLevelError = Abs(CZ(P16) - CZ(P26))
     msg$ = "post level error: " + Str$(PostLevelError) + "mm"
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "post   level error: ", PostLevelError, "mm"
     If PostLevelError >= ACCPT_THRHLD_POST_LEVEL Then
         msg$ = "Warning: post level error exceeded threshold (" + Str$(ACCPT_THRHLD_POST_LEVEL) + "mm)"
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
+        UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+        UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
         Print #LOG_FILE_NO, "Warning: post level error exceeded threshold (", ACCPT_THRHLD_POST_LEVEL, "mm)"
-        Magnet_Warning$ = Magnet_Warning$ + "Post Level Error Exceed Threshold "
-        UpdateClient(EVTNO_WARNING, Magnet_Warning$)
     EndIf
 
     Close #LOG_FILE_NO
@@ -1653,6 +1594,7 @@ Function PlacerCalibration As Boolean
 Fend
 
 Function ABCThetaToToolSets(a As Real, b As Real, c As Real, theta As Real)
+	String msg$
     TSU = NarrowAngle(theta)
 #ifdef USE_OLD_TOOLSET_DIRECTION
     TSU = TSU - 90
@@ -1668,26 +1610,31 @@ Function ABCThetaToToolSets(a As Real, b As Real, c As Real, theta As Real)
 
     TSZ = 0
 
-    Print "Toolset picker: (", TSX, ", ", TSY, ", ", TSZ, ", ", TSU, ")"
+    msg$ = "Toolset picker: (" + Str$(TSX) + ", " + Str$(TSY) + ", " + Str$(TSZ) + ", " + Str$(TSU) + ")"
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "Toolset picker: (", TSX, ", ", TSY, ", ", TSZ, ", ", TSU, ")"
     
     P10 = XY(TSTWX, TSTWY, TSZ, TSU)
-    Print "picker twist off toolset: (", TSTWX, ", ", TSTWY, ", ", TSZ, ", ", TSU, ")"
+    msg$ = "picker twist off toolset: (" + Str$(TSTWX) + ", " + Str$(TSTWY) + ", " + Str$(TSZ) + ", " + Str$(TSU) + ")"
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "picker twist off toolset: (", TSTWX, ", ", TSTWY, ", ", TSZ, ", ", TSU, ")"
 #ifdef AUTO_SAVE_POINT
     CheckToolSet 1
-    P51 = TLSet(1)
-    Print "old picker: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
-    Print #LOG_FILE_NO, "old picker: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
-    Print "saving new picker.....",
+   	P51 = TLSet(1)
+   	msg$ = "old picker: (" + Str$(CX(P51)) + ", " + Str$(CY(P51)) + ", " + Str$(CZ(P51)) + ", " + Str$(CU(P51)) + ")"
+   	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+   	Print #LOG_FILE_NO, "old picker: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+    
+    UpdateClient(TASK_MSG, "saving new picker...", INFO_LEVEL)
     TLSet 1, XY(TSX, TSY, TSZ, TSU)
-    Print "done!"
+    UpdateClient(TASK_MSG, "done!", INFO_LEVEL)
 #endif
+
 
     ''for placer
     CheckToolSet 2
     P51 = TLSet(2)
-    
+   
     TSU = TSU + 180
     TSX = a * Sin(theta) - c * Cos(theta)
     TSY = -a * Cos(theta) - c * Sin(theta)
@@ -1697,22 +1644,28 @@ Function ABCThetaToToolSets(a As Real, b As Real, c As Real, theta As Real)
     TSTWX = (a + MAGNET_HEAD_RADIUS) * Sin(theta) - (c - SAMPLE_PIN_DEPTH) * Cos(theta)
     TSTWY = (-a - MAGNET_HEAD_RADIUS) * Cos(theta) - (c - SAMPLE_PIN_DEPTH) * Sin(theta)
     P11 = XY(TSTWX, TSTWY, TSZ, TSU)
-    Print "placer twist off toolset: (", TSTWX, ", ", TSTWY, ", ", TSZ, ", ", TSU, ")"
+    msg$ = "placer twist off toolset: (" + Str$(TSTWX) + ", " + Str$(TSTWY) + ", " + Str$(TSZ) + ", " + Str$(TSU) + ")"
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "placer twist off toolset: (", TSTWX, ", ", TSTWY, ", ", TSZ, ", ", TSU, ")"
 
-    Print "Toolset placer: (", TSX, ", ", TSY, ", ", TSZ, ", ", TSU, ")"
+    msg$ = "Toolset placer: (" + Str$(TSX) + ", " + Str$(TSY) + ", " + Str$(TSZ) + ", " + Str$(TSU) + ")"
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "Toolset placer: (", TSX, ", ", TSY, ", ", TSZ, ", ", TSU, ")"
 #ifdef AUTO_SAVE_POINT
-    Print "old placer: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
-    Print #LOG_FILE_NO, "old placer: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
-    Print "saving new placerr.....",
+	P51 = TLSet(2)
+    msg$ = "old placer: (" + Str$(CX(P51)) + ", " + Str$(CY(P51)) + ", " + Str$(CZ(P51)) + ", " + Str$(CU(P51)) + ")"
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	Print #LOG_FILE_NO, "old placer: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+
+    UpdateClient(TASK_MSG, "saving new placerr.....", INFO_LEVEL)
     TLSet 2, XY(TSX, TSY, TSZ, TSU)
     SavePoints "robot1.pts"
-    Print "done!"
+    UpdateClient(TASK_MSG, "done!", INFO_LEVEL)
 #endif
 Fend
 
 Function CalCavityTwistOff(a As Real, b As Real, theta As Real)
+	String msg$
     TSU = theta
 #ifdef USE_OLD_TOOLSET_DIRECTION
     TSU = TSU - 90
@@ -1723,14 +1676,16 @@ Function CalCavityTwistOff(a As Real, b As Real, theta As Real)
     TSTWY = (a - CAVITY_RADIUS) * Cos(theta) + b * Sin(theta)
     P12 = P6
     P12 = XY(TSTWX, TSTWY, 0, TSU)
-    Print "cavity twist off toolset: (", TSTWX, ", ", TSTWY, "0, ", TSU, ")"
+    msg$ = "cavity twist off toolset: (" + Str$(TSTWX) + ", " + Str$(TSTWY) + "0, " + Str$(TSU) + ")"
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL);
     Print #LOG_FILE_NO, "cavity twist off toolset: (", TSTWX, ", ", TSTWY, "0, ", TSU, ")"
 
     TSTWX = (-a - CAVITY_RADIUS) * Sin(theta) + b * Cos(theta)
     TSTWY = (a + CAVITY_RADIUS) * Cos(theta) + b * Sin(theta)
     P13 = P6
     P13 = XY(TSTWX, TSTWY, 0, TSU)
-    Print "cavity twist off toolset for left hand: (", TSTWX, ", ", TSTWY, "0, ", TSU, ")"
+    msg$ = "cavity twist off toolset for left hand: (" + Str$(TSTWX) + ", " + Str$(TSTWY) + "0, " + Str$(TSU) + ")"
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL);
     Print #LOG_FILE_NO, "cavity twist off toolset for left hand: (", TSTWX, ", ", TSTWY, "0, ", TSU, ")"
 Fend
 
@@ -1754,10 +1709,10 @@ Function CalculateToolset As Boolean
     ''print out old toolset
     P51 = TLSet(1)
     msg$ = "Old TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(EVTNO_UPDATE, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     P51 = TLSet(2)
     msg$ = "Old TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(EVTNO_UPDATE, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     ''adjust because the the direction we move is not exactly X or Y
     ''this is rough calculation, we ignore second order error
@@ -1772,7 +1727,8 @@ Function CalculateToolset As Boolean
 	    TSa = TSa - CY(P6)
 	    TSa = TSa / TSAdjust
 	    Print #LOG_FILE_NO, "center to hold: ", TSa
-	    Print "center to hold: ", TSa
+	    msg$ = "center to hold: " + Str$(TSa)
+	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	    
 	    TSb = MAGNET_LENGTH /2.0 + TSa
 	    TSc = MAGNET_LENGTH /2.0 - TSa
@@ -1790,7 +1746,8 @@ Function CalculateToolset As Boolean
 	    TSa = TSa - CX(P6)
 	    TSa = TSa / TSAdjust
 	    Print #LOG_FILE_NO, "center to hold: ", TSa
-	    Print "center to hold: ", TSa
+	    msg$ = "center to hold: " + Str$(TSa)
+   	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	    
 	    TSb = MAGNET_LENGTH /2.0 + TSa
 	    TSc = MAGNET_LENGTH /2.0 - TSa
@@ -1805,14 +1762,14 @@ Function CalculateToolset As Boolean
 	TSa = TSX - CVa
 	TStheta = g_MagnetTransportAngle - g_U4MagnetHolder
        
-    Print "a=", TSa, ", b=", TSb, ", c=", TSc, ", theta=", TStheta
+    msg$ = "a=" + Str$(TSa) + ", b=" + Str$(TSb) + ", c=" + Str$(TSc) + ", theta=" + Str$(TStheta)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "a=", TSa, ", b=", TSb, ", c=", TSc, ", theta=", TStheta
 
     ''save info
-    Print "Old toolset A:", g_ToolSet_A, ", B:", g_ToolSet_B, ", C:", g_ToolSet_C, ", Theta:", g_ToolSet_Theta
     Print #LOG_FILE_NO, "Old toolset A:", g_ToolSet_A, ", B:", g_ToolSet_B, ", C:", g_ToolSet_C, ", Theta:", g_ToolSet_Theta
 	msg$ = "Old Toolset A:" + Str$(g_ToolSet_A) + ", B:" + Str$(g_ToolSet_B) + ", C:" + Str$(g_ToolSet_C) + ", Theta:" + Str$(g_ToolSet_Theta)
-	UpdateClient(EVTNO_UPDATE, msg$)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
     g_ToolSet_A = TSa
     g_ToolSet_B = TSb
@@ -1876,7 +1833,8 @@ Function ParallelGripperAndCradle As Boolean
 
     PGCOldU = CU(Here)
     PGCOldForce = ReadForce(DIRECTION_CAVITY_TO_MAGNET)
-    Print "ParallelGripperAndCradle: old U=", PGCOldU, ", old force=", PGCOldForce
+    msg$ = "ParallelGripperAndCradle: old U=" + Str$(PGCOldU) + ", old force=" + Str$(PGCOldForce)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     PGCGoodU = PGCOldU
     PGCGoodForce = Abs(PGCOldForce)
@@ -1922,16 +1880,17 @@ Function ParallelGripperAndCradle As Boolean
                 Exit Function
             EndIf
             msg$ = Str$(g_CurrentSteps + (PGCScanIndex * 2 + PGCDirection - 2) * g_Steps / 4) + " of 100"
-            UpdateClient(EVTNO_CAL_STEP, msg$)
+            UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         Next ''For PGCDirection = 1 To 2
         Go Here :U(PGCGoodU)
     Next ''For PGCScanIndex = 1 to 2
     
     ParallelGripperAndCradle = True
-
-    Print "U moved from ", PGCOldU, " to ", PGCGoodU, ", force reduced from ", PGCOldForce, " to ", PGCGoodForce
+    msg$ = "U moved from " + Str$(PGCOldU) + " to " + Str$(PGCGoodU) + ", force reduced from " + Str$(PGCOldForce) + " to " + Str$(PGCGoodForce)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 Fend
 Function PullOutZ As Boolean
+	String msg$
     PullOutZ = False
     
     POZOldX = CX(Here)
@@ -1945,7 +1904,8 @@ Function PullOutZ As Boolean
             Move Here +Z(POZ_STEPSIZE) ''one more step for safety
             If Not g_FlagAbort Then
                 PullOutZ = True
-                Print "got Z at ", CZ(Here)
+                msg$ = "got Z at " + Str$(CZ(Here))
+                UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
             Else
                 TongMove DIRECTION_MAGNET_TO_CAVITY, 20, False
             EndIf
@@ -1954,7 +1914,7 @@ Function PullOutZ As Boolean
           Move Here :X(POZOldX) :Y(POZOldY)
     Next
     
-    Print "not got top of cradle"
+    UpdateClient(TASK_MSG, "not got top of cradle", INFO_LEVEL)
 Fend
 
 ''09/02/03 Jinhu:
@@ -1973,9 +1933,9 @@ Function FindMagnet As Boolean
 	EndIf
 	
     msg$ = "Findmagnet calibration at " + Date$ + " " + Time$
-	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	
-	UpdateClient(EVTNO_CAL_MSG, "find magnet: move tong to dewar")
+	UpdateClient(TASK_MSG, "find magnet: move tong to dewar", INFO_LEVEL)
 
     Tool 0
 
@@ -2002,38 +1962,35 @@ Function FindMagnet As Boolean
     ''check current position
     If (Not isCloseToPoint(0)) And (Not isCloseToPoint(1)) Then
         g_RunResult$ = "must start from home"
-        Print g_RunResult$
         g_SafeToGoHome = False
         msg$ = "aborted " + g_RunResult$
-        UpdateClient(EVTNO_CAL_MSG, msg$)
-        UpdateClient(EVTNO_LOG_ERROR, msg$)
+        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
         Exit Function
     EndIf
     
     ''Calibrate the force sensor and check its readback health
 	If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then
-		UpdateClient(EVTNO_PRINT_EVENT, "Stopping FindMagnet..")
+		UpdateClient(TASK_MSG + TASK_MSG, "Force sensor calibration failed, stopping FindMagnet..", ERROR_LEVEL)
 		''problem with force sensor so exit
 		Exit Function
 	EndIf
 
     If Not Check_Gripper Then
-    	UpdateClient(EVTNO_CAL_MSG, "find magnet: abort: check gripper failed")
+    	UpdateClient(TASK_MSG + TASK_MSG, "find magnet: abort: check gripper failed", ERROR_LEVEL)
         ''not need recovery
         g_SafeToGoHome = False
         Exit Function
     EndIf
     If Not Close_Gripper Then
-    	UpdateClient(EVTNO_CAL_MSG, "find magnet: abort: failed to close gripper")
-    	UpdateClient(EVTNO_HARDWARE_LOG_ERROR, "find magnet: abort: failed to close gripper")
+    	UpdateClient(TASK_MSG + TASK_MSG, "find magnet: abort: failed to close gripper", ERROR_LEVEL)
         ''not need recovery
         g_SafeToGoHome = False
         Exit Function
     EndIf
 
     If Not Open_Lid Then
-    	UpdateClient(EVTNO_CAL_MSG, "find magnet: abort: failed to open Dewar lid")
-    	UpdateClient(EVTNO_HARDWARE_LOG_ERROR, "find magnet: abort: failed to open Dewar lid")
+    	UpdateClient(TASK_MSG + TASK_MSG, "find magnet: abort: failed to open Dewar lid", ERROR_LEVEL)
         ''not need recovery
         g_SafeToGoHome = False
         Exit Function
@@ -2061,11 +2018,9 @@ Function FindMagnet As Boolean
     SetVerySlowSpeed
 
     If g_LN2LevelHigh Then
-    	UpdateClient(EVTNO_CAL_MSG, "find magnet cooling tongs until LN2 boiling becomes undetectable")
-    	UpdateClient(EVTNO_PRINT_EVENT, "find magnet cooling tongs until LN2 boiling becomes undetectable")
+    	UpdateClient(TASK_MSG, "find magnet cooling tongs until LN2 boiling becomes undetectable", INFO_LEVEL)
         msg$ = "Cooled tong for " + Str$(WaitLN2BoilingStop(SENSE_TIMEOUT, HIGH_SENSITIVITY, HIGH_SENSITIVITY)) + " seconds"
-        UpdateClient(EVTNO_CAL_MSG, msg$)
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         ''MagLevelError used here as relative depth
         MagLevelError = CZ(P6) - STRIP_PLACER_Z_OFFSET - CZ(Here)
         If g_IncludeStrip Then
@@ -2080,53 +2035,48 @@ Function FindMagnet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at findMagnet before touching seat"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
+        UpdateClient(TASK_MSG + TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     
     ''try to touch the cradle using the gripper
-    UpdateClient(EVTNO_CAL_MSG, "find magnet: touching seat")
+    UpdateClient(TASK_MSG, "find magnet: touching seat", INFO_LEVEL)
     g_Steps = FMStepTotal /10
     If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, 50, False) Then
         TongMove DIRECTION_MAGNET_TO_CAVITY, 2, False
         Print "Not find the cradle in 10 cm, give up"
-        UpdateClient(EVTNO_PRINT_EVENT, "Not find the cradle in 10 cm, give up")
+        UpdateClient(TASK_MSG, "Not find the cradle in 10 cm, give up", ERROR_LEVEL)
         Exit Function
     Else
-    	UpdateClient(EVTNO_PRINT_EVENT, "Touched seat with gripper OK")
+    	UpdateClient(TASK_MSG, "Touched seat with gripper OK", INFO_LEVEL)
     EndIf
     g_CurrentSteps = FMStepStart + FMStepTotal /10
     g_Steps = FMStepTotal /5
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-	UpdateClient(EVTNO_CAL_MSG, "find magnet: parallel gripper with cradle")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+	UpdateClient(TASK_MSG, "find magnet: parallel gripper with cradle", INFO_LEVEL)
     ''press it against the wall strongly
     TongMove DIRECTION_CAVITY_TO_MAGNET, 2, False
     ''try to get gripper parallel with cradle
     If Not ParallelGripperAndCradle Then
         g_RunResult$ = "ParallelGripperAndCradle failed"
-        Print g_RunResult$
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_LOG_ERROR, g_RunResult$)
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, WARNING_LEVEL)
     Else
-    	UpdateClient(EVTNO_PRINT_EVENT, "ParrallelGripperAndCradle success")
+    	UpdateClient(TASK_MSG, "ParrallelGripperAndCradle success", INFO_LEVEL)
     EndIf
     g_CurrentSteps = FMStepStart + 3 * FMStepTotal / 10
     g_Steps = FMStepTotal /10
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
 
     ''try to get the position of cradle
     TongMove DIRECTION_MAGNET_TO_CAVITY, 5, False
     If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, 7, True) Then
         TongMove DIRECTION_MAGNET_TO_CAVITY, 10, False
-        UpdateClient(EVTNO_PRINT_EVENT, "Strange, not touched the cradle after we detach it")
+        UpdateClient(TASK_MSG, "Strange, not touched the cradle after we detach it", ERROR_LEVEL)
         Exit Function
     Else
-    	UpdateClient(EVTNO_PRINT_EVENT, "Got position of cradle OK")
+    	UpdateClient(TASK_MSG, "Got position of cradle OK", INFO_LEVEL)
     EndIf
         
     ''try to find the horizontal edges of cradle
@@ -2137,8 +2087,8 @@ Function FindMagnet As Boolean
     g_CurrentSteps = FMStepStart + 2 * FMStepTotal / 5
     g_Steps = FMStepTotal /10
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "find magnet: touching left side")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "find magnet: touching left side", INFO_LEVEL)
 
     ''move along cradle to one end
     TongMove DIRECTION_CAVITY_HEAD, CRADLE_WIDTH + SAFE_BUFFER_FOR_DETACH, False
@@ -2151,20 +2101,17 @@ Function FindMagnet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at findMagnet before touching left side"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     
     ''Try touching left end of cradle
     If Not ForceTouch(DIRECTION_CAVITY_TAIL, CRADLE_WIDTH, True) Then
         TongMove DIRECTION_CAVITY_HEAD, 10, False
-        UpdateClient(EVTNO_PRINT_EVENT, "failed to touch left end")
+        UpdateClient(TASK_MSG, "failed to touch left end", ERROR_LEVEL)
         Exit Function
     Else
-    	UpdateClient(EVTNO_PRINT_EVENT, "Touched left end OK")
+    	UpdateClient(TASK_MSG, "Touched left end OK", INFO_LEVEL)
     EndIf
     
     FMLeftX = CX(Here)
@@ -2174,9 +2121,9 @@ Function FindMagnet As Boolean
     g_CurrentSteps = FMStepStart + FMStepTotal /2
     g_Steps = FMStepTotal /10
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
     
-	UpdateClient(EVTNO_CAL_MSG, "find magnet: touching right side")
+	UpdateClient(TASK_MSG, "find magnet: touching right side", INFO_LEVEL)
 	
     SetFastSpeed
     TongMove DIRECTION_CAVITY_HEAD, SAFE_BUFFER_FOR_DETACH, False
@@ -2190,17 +2137,15 @@ Function FindMagnet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at findMagnet before touching right side"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     If Not ForceTouch(DIRECTION_CAVITY_HEAD, CRADLE_WIDTH, True) Then
         TongMove DIRECTION_CAVITY_TAIL, 10, False
-        UpdateClient(EVTNO_PRINT_EVENT, "failed to touch right end")
+        UpdateClient(TASK_MSG, "failed to touch right end", ERROR_LEVEL)
         Exit Function
     Else
-    	UpdateClient(EVTNO_PRINT_EVENT, "Touched right end OK")
+    	UpdateClient(TASK_MSG, "Touched right end OK", INFO_LEVEL)
     EndIf
     FMRightX = CX(Here)
     FMRightY = CY(Here)
@@ -2212,9 +2157,9 @@ Function FindMagnet As Boolean
     g_CurrentSteps = FMStepStart + 3 * FMStepTotal / 5
     g_Steps = FMStepTotal /5
     msg$ = Str$(g_CurrentSteps)
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
     
-    UpdateClient(EVTNO_CAL_MSG, "find magnet: pull out Z")
+    UpdateClient(TASK_MSG, "find magnet: pull out Z", INFO_LEVEL)
     
     SetFastSpeed
     TongMove DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_DETACH, False
@@ -2228,17 +2173,15 @@ Function FindMagnet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at findMagnet before pulling out"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
-	UpdateClient(EVTNO_PRINT_EVENT, "Pull up until force disappear")
+	UpdateClient(TASK_MSG, "Pull up until force disappear", INFO_LEVEL)
     If Not PullOutZ Then
-    	UpdateClient(EVTNO_PRINT_EVENT, "Pull up failed")
+    	UpdateClient(TASK_MSG, "Pull up failed", ERROR_LEVEL)
         Exit Function
     Else
-    	UpdateClient(EVTNO_PRINT_EVENT, "Pull up Z OK")
+    	UpdateClient(TASK_MSG, "Pull up Z OK", INFO_LEVEL)
     EndIf
     
     FMFinalX = (FMLeftX + FMRightX) /2
@@ -2250,21 +2193,22 @@ Function FindMagnet As Boolean
     g_CurrentSteps = FMStepStart + 4 * FMStepTotal / 5
     g_Steps = FMStepTotal /10
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "find magnet: touching top")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "find magnet: touching top", INFO_LEVEL)
     Wait 2
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at findMagnet before touching top"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
+    Wait 20
     If Not ForceTouch(-FORCE_ZFORCE, 10, True) Then
         TongMove DIRECTION_MAGNET_TO_CAVITY, 20, False
-        UpdateClient(EVTNO_PRINT_EVENT, "Failed to Z touch the cradle")
+        UpdateClient(TASK_MSG, "Failed to Z touch the cradle", ERROR_LEVEL)
         Exit Function
+    Else
+    	UpdateClient(TASK_MSG, "Z touch the cradle OK", ERROR_LEVEL)
     EndIf
     
     FMFinalZ = CZ(Here)
@@ -2274,9 +2218,9 @@ Function FindMagnet As Boolean
     g_CurrentSteps = FMStepStart + 9 * FMStepTotal / 10
     g_Steps = FMStepTotal /10
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
     
-    UpdateClient(EVTNO_CAL_MSG, "find magnet: found it, move in")
+    UpdateClient(TASK_MSG, "find magnet: found it, move in", INFO_LEVEL)
     SetFastSpeed
     Move Here +Z(SAFE_BUFFER_FOR_DETACH)
     TongMove DIRECTION_MAGNET_TO_CAVITY, OVERLAP_GRAPPER_CRADLE + SAFE_BUFFER_FOR_DETACH, False
@@ -2285,9 +2229,7 @@ Function FindMagnet As Boolean
     
     If Not Open_Gripper Then
         g_RunResult$ = "After find magnet, Open_Gripper Failed"
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_HARDWARE_LOG_ERROR, g_RunResult$)
-        Print g_RunResult$
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     
@@ -2341,15 +2283,13 @@ Function FineTuneToolSet As Boolean
     EndIf
 
     ''==================get the magnet=================
-    UpdateClient(EVTNO_CAL_MSG, "fine tune toolset: take magnet")
+    UpdateClient(TASK_MSG, "fine tune toolset: take magnet", INFO_LEVEL)
 
     SetFastSpeed
     Jump P3
     If Not Open_Gripper Then
         g_RunResult$ = "fine tune ToolSet: Open_Gripper Failed at beginning"
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_HARDWARE_LOG_ERROR, g_RunResult$)
-        Print g_RunResult$
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Close #LOG_FILE_NO
         Exit Function
@@ -2366,15 +2306,10 @@ Function FineTuneToolSet As Boolean
     Move Here +Z(20)
 
     If Not Close_Gripper Then
-        Print "close gripper failed at holding magnet for toolset aborting"
-        UpdateClient(EVTNO_CAL_MSG, "fine tune toolset: close gripper failed")
-        UpdateClient(EVTNO_HARDWARE_LOG_ERROR, "TlSetFineTone: abort: close gripper failed at magnet")
-        
+        UpdateClient(TASK_MSG, "fine tune toolset: close gripper failed", ERROR_LEVEL)
         Move P6
         If Not Open_Gripper Then
-            Print "open gripper failed at aborting from magnet, need Reset"
-            UpdateClient(EVTNO_CAL_MSG, "open gripper failed in aborting")
-            UpdateClient(EVTNO_HARDWARE_LOG_SEVERE, "open gripper failed at aborting from magnet, need Reset")
+            UpdateClient(TASK_MSG, "open gripper failed at aborting from magnet", ERROR_LEVEL)
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
             g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
             Print #LOG_FILE_NO, "need reset in tlsetfinetune"
@@ -2419,8 +2354,8 @@ Function FineTuneToolSet As Boolean
     g_Steps = FTTStepTotal /8
     g_CurrentSteps = FTTStepStart + g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "fine tune toolset: touching for angle")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "fine tune toolset: touching for angle", INFO_LEVEL)
     ''===================== get theta first ========================
     ''this is fine tune, so theta almost there.
     ''we will try to see how much off by touch the dest point
@@ -2434,15 +2369,14 @@ Function FineTuneToolSet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at fineTuneToolset before theta"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     SetVerySlowSpeed
     Tool 0
     If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, (2 * SAFE_BUFFER_FOR_DETACH), True) Then
-        Print "placer failed to touch dest in theta"
+    	g_RunResult$ = "placer failed to touch dest in theta"
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, "placer failed to touch dest in theta"
         Close #LOG_FILE_NO
         Exit Function
@@ -2450,7 +2384,7 @@ Function FineTuneToolSet As Boolean
     g_Steps = FTTStepTotal /8
     g_CurrentSteps = FTTStepStart + 2 * FTTStepTotal / 8
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
     
     FTTSX(1) = CX(Here)
     FTTSY(1) = CY(Here)
@@ -2478,14 +2412,13 @@ Function FineTuneToolSet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at fineTuneToolset during touching for theta"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     SetVerySlowSpeed
     If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, (2 * SAFE_BUFFER_FOR_DETACH), True) Then
-        Print "picker failed to touch dest in theta"
+        g_RunResult$ = "picker failed to touch dest in theta"
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, "picker failed to touch dest in theta"
         Close #LOG_FILE_NO
         Exit Function
@@ -2524,7 +2457,7 @@ Function FineTuneToolSet As Boolean
 	''    FTTSDeltaU = (FTTSX(2) - FTTSX(1)) / (MAGNET_LENGTH - MAGNET_HEAD_THICKNESS)
     ''Else
     ''    g_RunResult$ = "Cradle must be along one of axes"
-    ''    SPELCom_Event EVTNO_CAL_MSG, g_RunResult$
+    ''    SPELCom_Event TASK_MSG, g_RunResult$
     ''    SPELCom_Event EVTNO_HARDWARE_LOG_SEVERE, g_RunResult$
     ''    Print g_RunResult$
     ''    Print #LOG_FILE_NO, g_RunResult$
@@ -2536,22 +2469,24 @@ Function FineTuneToolSet As Boolean
     FTTSAdjust = Cos(FTTSDeltaU)
     FTTSDeltaU = RadToDeg(FTTSDeltaU)
     
-    Print "theta off: ", FTTSDeltaU, " degree"
+    msg$ = "theta off: " + Str$(FTTSDeltaU) + " degree"
+    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
     
     FTTSTheta = g_Perfect_Cradle_Angle - FTTSDeltaU  ''now theta is the magnet angle
     
     FTTSTheta = FTTSTheta - CU(Here)
-    ''adjust global varialbe
-    Print "Old g_MagnetTransportAngle =", g_MagnetTransportAngle
+    ''adjust global variable
+    msg$ = "Old g_MagnetTransportAngle =" + Str$(g_MagnetTransportAngle)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "Old g_MagnetTransportAngle =", g_MagnetTransportAngle
     g_MagnetTransportAngle = FTTSTheta + g_U4MagnetHolder
     g_MagnetTransportAngle = NarrowAngle(g_MagnetTransportAngle)
-    
-    Print "new g_MagnetTransportAngle=", g_MagnetTransportAngle
+    msg$ = "new g_MagnetTransportAngle=" + Str$(g_MagnetTransportAngle)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "new g_MagnetTransportAngle=", g_MagnetTransportAngle
     
     ''================get b, c====================
-    UpdateClient(EVTNO_CAL_MSG, "fine tune toolset: touching for b-c")
+    UpdateClient(TASK_MSG, "fine tune toolset: touching for b-c", INFO_LEVEL)
 
     tmp_Real = DegToRad(g_Perfect_Cradle_Angle + 90)
     tmp_DX = (SAFE_BUFFER_FOR_DETACH + HALF_OF_SEAT_THICKNESS) * Cos(tmp_Real)
@@ -2564,7 +2499,7 @@ Function FineTuneToolSet As Boolean
         g_Steps = FTTStepTotal /8
         g_CurrentSteps = FTTStepStart + (2 + FTTSIndex) * FTTStepTotal / 8
         msg$ = Str$(g_CurrentSteps) + " of 100"
-		UpdateClient(EVTNO_CAL_STEP, msg$)
+		UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
 
         Tool FTTSIndex
         Jump P51
@@ -2574,16 +2509,15 @@ Function FineTuneToolSet As Boolean
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
 			g_RunResult$ = "force sensor reset failed at fineTuneToolset during touching for b c"
-			Print g_RunResult$
-			''SPELCom_Return 1
-			UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
         SetVerySlowSpeed
         Select FTTSIndex
             Case 1
             	If Not ForceTouch(DIRECTION_CAVITY_HEAD, (SAFE_BUFFER_FOR_DETACH * 2), True) Then
-                    Print "tool[", FTTSIndex, "] failed to touch dest"
+                    msg$ = "tool[" + Str$(FTTSIndex) + "] failed to touch dest"
+                    UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
                     Print #LOG_FILE_NO, "tool[", FTTSIndex, "] failed to touch dest"
                     Close #LOG_FILE_NO
                     Exit Function
@@ -2596,7 +2530,8 @@ Function FineTuneToolSet As Boolean
                 g_TQScale_Picker = FTTScaleF2 - FTTScaleF1
             Case 2
             	If Not ForceTouch(DIRECTION_CAVITY_TAIL, (SAFE_BUFFER_FOR_DETACH * 2), True) Then
-                    Print "tool[", FTTSIndex, "] failed to touch dest"
+            		msg$ = "tool[" + Str$(FTTSIndex) + "] failed to touch dest"
+            		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
                     Print #LOG_FILE_NO, "tool[", FTTSIndex, "] failed to touch dest"
                     Close #LOG_FILE_NO
                     Exit Function
@@ -2628,7 +2563,7 @@ Function FineTuneToolSet As Boolean
 	''    FTTSBMC = FTTSX(1) - FTTSX(2)
     ''Else
     ''    g_RunResult$ = "Cradle must be along one of axes"
-    ''    SPELCom_Event EVTNO_CAL_MSG, g_RunResult$
+    ''    SPELCom_Event TASK_MSG, g_RunResult$
     ''    SPELCom_Event EVTNO_HARDWARE_LOG_SEVERE, g_RunResult$
     ''    Print g_RunResult$
     ''    Print #LOG_FILE_NO, g_RunResult$
@@ -2643,8 +2578,8 @@ Function FineTuneToolSet As Boolean
     g_Steps = FTTStepTotal /8
     g_CurrentSteps = FTTStepStart + 5 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "fine tune toolset: touching for a")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "fine tune toolset: touching for a", INFO_LEVEL)
 
     Tool 0
     ''we use improved b, c, and theta with old a to get better toolset first
@@ -2659,9 +2594,7 @@ Function FineTuneToolSet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at fineTuneToolset before touching for a"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     Move P6 +Z(2)    ''the 2mm here is because both cradle and the magnet hold by tong may not level
@@ -2669,7 +2602,8 @@ Function FineTuneToolSet As Boolean
     
     SetVerySlowSpeed
     If Not ForceTouch(DIRECTION_MAGNET_TO_CAVITY, 2, True) Then
-        Print "failed to touch in cradle for a in P6"
+        g_RunResult$ = "failed to touch in cradle for a in P6"
+        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
         Print #LOG_FILE_NO, "failed to touch in cradle for a in P6"
         Close #LOG_FILE_NO
         Exit Function
@@ -2680,7 +2614,7 @@ Function FineTuneToolSet As Boolean
     g_Steps = FTTStepTotal /8
     g_CurrentSteps = FTTStepStart + 6 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
     ''you can calculate the position, but with toolset, you can easily let robot do that for you:
     ''you just want picker and placer switch places.
     SetFastSpeed
@@ -2694,9 +2628,7 @@ Function FineTuneToolSet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at fineTuneToolset during touching for a"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     Tool 0
@@ -2705,7 +2637,8 @@ Function FineTuneToolSet As Boolean
     
     SetVerySlowSpeed
     If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, 2, True) Then
-        Print "failed to touch in cradle for a in P51"
+        msg$ = "failed to touch in cradle for a in P51"
+        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
         Print #LOG_FILE_NO, "failed to touch in cradle for a in P51"
         Close #LOG_FILE_NO
         Exit Function
@@ -2718,7 +2651,8 @@ Function FineTuneToolSet As Boolean
 	tmp_Real3 = FTTSY(2) - FTTSY(1)
 	tmp_Real = tmp_Real2 * tmp_Real2 + tmp_Real3 * tmp_Real3 - FTTSBMC * FTTSBMC
 	If tmp_Real < 0 Then
-        Print "square of A less then 0 ", tmp_Real
+        msg$ = "square of A less then 0 " + Str$(tmp_Real)
+        UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
         Print #LOG_FILE_NO, "square of A less then 0 ", tmp_Real
         tmp_Real = 0
 	EndIf
@@ -2729,13 +2663,15 @@ Function FineTuneToolSet As Boolean
 	FTTSA = ((FTTSX(2) - FTTSX(1)) * tmp_Real3 - (FTTSY(2) - FTTSY(1)) * tmp_Real2) / 2.0
     ''double check
     If Abs(FTTSA * FTTSA - tmp_Real * tmp_Real) > 0.001 Then
-        Print "A not match: from square: ", tmp_Real, ", from individual case: ", FTTSA
+        msg$ = "A not match: from square: " + Str$(tmp_Real) + ", from individual case: " + Str$(FTTSA)
+        UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
         Print #LOG_FILE_NO, "A not match: from square: ", tmp_Real, ", from individual case: ", FTTSA
-        UpdateClient(EVTNO_HARDWARE_LOG_WARNING, "A not match, look at log file detail")
     EndIf
 
-    Print "new a:", FTTSA, ", b:", FTTSB, ", c:", FTTSC, ", theta:", FTTSTheta
-    Print "old a:", g_ToolSet_A, ", b:", g_ToolSet_B, ", c:", g_ToolSet_C, ", theta:", g_ToolSet_Theta
+    msg$ = "new a:" + Str$(FTTSA) + ", b:" + Str$(FTTSB) + ", c:" + Str$(FTTSC) + ", theta:" + Str$(FTTSTheta)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    msg$ = "old a:" + Str$(g_ToolSet_A) + ", b:" + Str$(g_ToolSet_B) + ", c:" + Str$(g_ToolSet_C) + ", theta:" + Str$(g_ToolSet_Theta)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
     Print #LOG_FILE_NO, "new a:", FTTSA, ", b:", FTTSB, ", c:", FTTSC, ", theta:", FTTSTheta
     Print #LOG_FILE_NO, "old a:", g_ToolSet_A, ", b:", g_ToolSet_B, ", c:", g_ToolSet_C, ", theta:", g_ToolSet_Theta
@@ -2743,24 +2679,24 @@ Function FineTuneToolSet As Boolean
 	''give warning if changes are too big to be true.
 	If g_ToolSet_A <> 0 And g_ToolSet_B <> 0 And g_ToolSet_C <> 0 Then
 		If Abs(g_ToolSet_A - FTTSA) > 2 Then
-			Print "Toolset A changes too big to be true"
+			msg$ = "Toolset A changes too big to be true"
+			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 			Print #LOG_FILE_NO, "Toolset A changes too big to be true"
-			UpdateClient(EVTNO_HARDWARE_LOG_ERROR, "Toolset A changes too big to be true")
 		EndIf
 		If Abs(g_ToolSet_B - FTTSB) > 2 Then
-			Print "Toolset B changes too big to be true"
+			msg$ = "Toolset B changes too big to be true"
+			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 			Print #LOG_FILE_NO, "Toolset B changes too big to be true"
-			UpdateClient(EVTNO_HARDWARE_LOG_ERROR, "Toolset B changes too big to be true")
 		EndIf
 		If Abs(g_ToolSet_C - FTTSC) > 2 Then
-			Print "Toolset C changes too big to be true"
+			msg$ = "Toolset C changes too big to be true"
+			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 			Print #LOG_FILE_NO, "Toolset C changes too big to be true"
-			UpdateClient(EVTNO_HARDWARE_LOG_ERROR, "Toolset C changes too big to be true")
 		EndIf
 		If Abs(NarrowAngle(g_ToolSet_Theta - FTTSTheta)) > 10 Then
-			Print "Toolset Theta changes too big to be true"
+			msg$ = "Toolset Theta changes too big to be true"
+			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 			Print #LOG_FILE_NO, "Toolset Theta changes too big to be true"
-			UpdateClient(EVTNO_HARDWARE_LOG_ERROR, "Toolset Theta changes too big to be true")
 		EndIf
 	EndIf
 
@@ -2769,7 +2705,7 @@ Function FineTuneToolSet As Boolean
     g_ToolSet_C = FTTSC
     g_ToolSet_Theta = FTTSTheta
     msg$ = "New Toolset A:" + Str$(g_ToolSet_A) + ", B:" + Str$(g_ToolSet_B) + ", C:" + Str$(g_ToolSet_C) + ", Theta:" + Str$(g_ToolSet_Theta)
-	UpdateClient(EVTNO_UPDATE, msg$)
+	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     ''========================== calculate ========================
     ABCThetaToToolSets FTTSA, FTTSB, FTTSC, FTTSTheta
     
@@ -2777,20 +2713,24 @@ Function FineTuneToolSet As Boolean
     g_Steps = FTTStepTotal /8
     g_CurrentSteps = FTTStepStart + 7 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
-    UpdateClient(EVTNO_CAL_MSG, "fine tune toolset: Touching Z for Toolset 2")
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
+    UpdateClient(TASK_MSG, "fine tune toolset: Touching Z for Toolset 2", INFO_LEVEL)
 
     Tool 0
     SetFastSpeed
     Jump P6
 
     ''save absolute position of magnet so we can decide whether deware moved or tong bended
-    CheckPoint 56
-    Print "old (absolute magnet position) P56,", CX(P56), ",", CY(P56), ",", CZ(P56), ",", CU(P56)
-    Print #LOG_FILE_NO, "old (absolute magnet position) P56,", CX(P56), ",", CY(P56), ",", CZ(P56), ",", CU(P56)
+    If (GTCheckPoint(56)) Then
+    	msg$ = "old (absolute magnet position) P56," + Str$(CX(P56)) + "," + Str$(CY(P56)) + "," + Str$(CZ(P56)) + "," + Str$(CU(P56))
+	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    	Print #LOG_FILE_NO, "old (absolute magnet position) P56,", CX(P56), ",", CY(P56), ",", CZ(P56), ",", CU(P56)
+    EndIf
+    
     Tool 1
     P56 = Here
-    Print "new P56,", CX(P56), ",", CY(P56), ",", CZ(P56), ",", CU(P56), " ", Date$, " ", Time$
+    msg$ = "new P56," + Str$(CX(P56)) + "," + Str$(CY(P56)) + "," + Str$(CZ(P56)) + "," + Str$(CU(P56)) + " " + Date$ + " " + Time$
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "new P56,", CX(P56), ",", CY(P56), ",", CZ(P56), ",", CU(P56), " ", Date$, " ", Time$
 
     ''==============================Z offset for placer==========================
@@ -2815,23 +2755,21 @@ Function FineTuneToolSet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at fineTuneToolset before touching picker Z"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     SetVerySlowSpeed
     If Not ForceTouch(-FORCE_ZFORCE, 20, True) Then
-        Print "failed to touch cradle for Z by picker"
-        Print #LOG_FILE_NO, "failed to touch cradle for Z by picker"
+        UpdateClient(TASK_MSG, "failed to touch cradle for Z by picker", ERROR_LEVEL)
         Close #LOG_FILE_NO
         Exit Function
     EndIf
     FTTSZ = CZ(Here) ''save picker's Z
-    Print "picker touched cradle at Z=", CZ(Here)
+    msg$ = "picker touched cradle at Z=" + Str$(CZ(Here))
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     If Not CheckRigidness Then
-        Print "Gripper finger loose at picker side"
+        UpdateClient(TASK_MSG, "Gripper finger loose at picker side", ERROR_LEVEL)
         Print #LOG_FILE_NO, "Gripper finger loose at picker side"
         Close #LOG_FILE_NO
         Exit Function
@@ -2846,23 +2784,22 @@ Function FineTuneToolSet As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at fineTuneToolset before touching placer Z"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     SetVerySlowSpeed
     If Not ForceTouch(-FORCE_ZFORCE, 20, True) Then
-        Print "failed to touch cradle for Z by placer"
+        UpdateClient(TASK_MSG, "failed to touch cradle for Z by placer", ERROR_LEVEL)
         Print #LOG_FILE_NO, "failed to touch cradle for Z by placer"
         Close #LOG_FILE_NO
         Exit Function
     EndIf
-    Print "placer touched cradle at Z=", CZ(Here)
+    msg$ = "placer touched cradle at Z=" + Str$(CZ(Here))
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     FTTSZ = FTTSZ - CZ(Here)
 
     If Not CheckRigidness Then
-        Print "Gripper finger loose at place side"
+        UpdateClient(TASK_MSG, "Gripper finger loose at place side", ERROR_LEVEL)
         Print #LOG_FILE_NO, "Gripper finger loose at placer side"
         Close #LOG_FILE_NO
         Exit Function
@@ -2872,36 +2809,33 @@ Function FineTuneToolSet As Boolean
     Jump P6
 
     ''save Zoffset for placer toolset    
-    Print "placer ZOffset: ", FTTSZ
     P51 = TLSet(2)
     TLSet 2, P51 :Z(FTTSZ)
 
     ''print out old toolset
     P51 = TLSet(1)
     msg$ = "New TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(EVTNO_UPDATE, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     P51 = TLSet(2)
     msg$ = "New TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(EVTNO_UPDATE, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
 #ifdef AUTO_SAVE_POINT
-    Print "saving points to file.....",
+    UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
     SavePoints "robot1.pts"
     SaveToolSetHistory 1, g_FCntToolFine
     SaveToolSetHistory 2, g_FCntToolFine
     SavePointHistory 10, g_FCntToolFine
     SavePointHistory 11, g_FCntToolFine
     SavePointHistory 56, g_FCntToolFine
-    Print "done!!"
+    UpdateClient(TASK_MSG, "done!!", INFO_LEVEL)
     msg$ = "new P56: (" + Str$(CX(P56)) + ", " + Str$(CY(P56)) + ", " + Str$(CZ(P56)) + ", " + Str$(CU(P56)) + ")"
-    UpdateClient(EVTNO_UPDATE, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 #endif
 
     If Not Open_Gripper Then
         g_RunResult$ = "fine tune toolset: Open_Gripper Failed, holding magnet, need Reset"
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_HARDWARE_LOG_SEVERE, g_RunResult$)
-        Print g_RunResult$
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Close #LOG_FILE_NO
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
@@ -2915,15 +2849,13 @@ Function FineTuneToolSet As Boolean
 
     ''check magnet level error
     MagLevelError = Abs(FTTSZ)
-    Print "magnet level error: ", MagLevelError, "mm"
     Print #LOG_FILE_NO, "magnet level error: ", MagLevelError, "mm"
     msg$ = "level errors: magnet " + Str$(MagLevelError) + "mm, post " + Str$(PostLevelError) + "mm"
-    UpdateClient(EVTNO_UPDATE, msg$)
+    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
     If MagLevelError >= ACCPT_THRHLD_MAGNET_LEVEL Then
-        Print "Warning: magnet level error exceeded threshold (", ACCPT_THRHLD_MAGNET_LEVEL, "mm)"
+        msg$ = "Warning: magnet level error exceeded threshold (" + Str$(ACCPT_THRHLD_MAGNET_LEVEL) + "mm)"
+        UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
         Print #LOG_FILE_NO, "Warning: magnet level error exceeded threshold (", ACCPT_THRHLD_MAGNET_LEVEL, "mm)"
-        Magnet_Warning$ = Magnet_Warning$ + "Magnet Level Error Exceed Threshold"
-        UpdateClient(EVTNO_WARNING, Magnet_Warning$)
     EndIf
     
     Close_Gripper
@@ -2943,7 +2875,6 @@ Function RunABCTheta
     Close #LOG_FILE_NO
     
 Fend
-
 Function SetupTSForMagnetCal
     CheckToolSet 1
     CheckToolSet 2
@@ -2955,6 +2886,15 @@ Function SetupTSForMagnetCal
            TLSet 3, XY(-2, -15.75, 0, (g_MagnetTransportAngle - g_U4MagnetHolder))
        EndIf
 Fend
+''Function SetupTSForMagnetCal
+''	If GTCheckTool(1) And GTCheckTool(2) Then
+''		P51 = TLSet(1)
+''		P52 = TLSet(2)
+''		TLSet 3, XY(((CX(P51) + CX(P52)) / 2), ((CY(P51) + CY(P52)) / 2), ((CZ(P51) + CZ(P52)) / 2), CU(P51))
+''	Else
+''		TLSet 3, XY(-2, -15.75, 0, (g_MagnetTransportAngle - g_U4MagnetHolder))
+''	EndIf
+''Fend
 
 Function DiffPickerPlacer As Real
 	String msg$
@@ -2979,9 +2919,7 @@ Function DiffPickerPlacer As Real
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at DiffPickerPlacer"
-        UpdateClient(EVTNO_PRINT_EVENT, g_RunResult$)
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
 
@@ -2992,14 +2930,14 @@ Function DiffPickerPlacer As Real
         Tool 0
         SetVerySlowSpeed
         If Not ForceTouch(-FORCE_ZFORCE, 20, True) Then
-        	UpdateClient(EVTNO_PRINT_EVENT, "failed to touch a bottom in 20 mm")
+        	UpdateClient(TASK_MSG, "failed to touch a bottom in 20 mm", ERROR_LEVEL)
             Exit Function
         EndIf
         DPPPickerZ = CZ(Here)
         SetFastSpeed
         Move Here +Z(5)
         msg$ = "picker touched at " + Str$(DPPPickerZ)
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     EndIf
 
     ''touch using placer
@@ -3011,29 +2949,29 @@ Function DiffPickerPlacer As Real
         Tool 0
         SetVerySlowSpeed
         If Not ForceTouch(-FORCE_ZFORCE, 20, True) Then
-        	UpdateClient(EVTNO_PRINT_EVENT, "failed to touch a bottom in 20 mm")
+        	UpdateClient(TASK_MSG, "failed to touch a bottom in 20 mm", ERROR_LEVEL)
             Exit Function
         EndIf
         DPPPlacerZ = CZ(Here)
         SetFastSpeed
         Move Here +Z(5)
         msg$ = "placer touched at " + Str$(DPPPlacerZ)
-        UpdateClient(EVTNO_PRINT_EVENT, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     EndIf
     
     ''calculate
     DiffPickerPlacer = DPPPickerZ - DPPPlacerZ
     If DiffPickerPlacer < 0 Then
     	msg$ = "Picker is higher than Placer by " + Str$(-DiffPickerPlacer) + "mm"
-    	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Else
     	msg$ = "Picker is lower than Placer by " + Str$(DiffPickerPlacer) + "mm"
-	   	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	   	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     EndIf
 
     P52 = TLSet(2)
     msg$ = "old Z for Toolset 2: " + Str$(CZ(P52))
-    UpdateClient(EVTNO_PRINT_EVENT, msg$)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
     ''go back to original place
     If Not g_FlagAbort Then
@@ -3120,15 +3058,13 @@ Function StripCalibration As Boolean
     g_HoldMagnet = False
     ''take magnet
     ''==================get the magnet=================
-    UpdateClient(EVTNO_CAL_MSG, "strip cal: take magnet")
+    UpdateClient(TASK_MSG, "strip cal: take magnet", INFO_LEVEL)
 
     SetFastSpeed
     Go P3
     If Not Open_Gripper Then
         g_RunResult$ = "strip cal: Open_Gripper Failed at beginning"
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_HARDWARE_LOG_ERROR, g_RunResult$)
-        Print g_RunResult$
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Close #LOG_FILE_NO
         Exit Function
@@ -3145,14 +3081,11 @@ Function StripCalibration As Boolean
     Move Here +Z(20)
 
     If Not Close_Gripper Then
-        Print "close gripper failed at holding magnet for toolset aborting"
-        UpdateClient(EVTNO_CAL_MSG, "strip cal: abort: close gripper failed at magnet")
-        UpdateClient(EVTNO_LOG_ERROR, "Strip Cal: abort: close gripper failed at magnet")
+        UpdateClient(TASK_MSG, "strip cal: abort: close gripper failed at magnet", ERROR_LEVEL)
         Move P6
         If Not Open_Gripper Then
-            Print "open gripper failed at aborting from magnet, need Reset"
-            UpdateClient(EVTNO_CAL_MSG, "open gripper failed at aborting")
-            UpdateClient(EVTNO_HARDWARE_LOG_SEVERE, "open gripper failed at aborting from magnet, need Reset")
+            msg$ = "open gripper failed at aborting from magnet"
+            UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
             g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
             Print #LOG_FILE_NO, "need reset in tlsetfinetune"
@@ -3177,7 +3110,7 @@ Function StripCalibration As Boolean
     
     g_CurrentSteps = CPCStepStart + CPCStepTotal /5
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
 
 	''==================calculate the position first===============
 	''move away from cradle STRIP_PLACER_X_OFFSET
@@ -3209,17 +3142,16 @@ Function StripCalibration As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at StripCalibration"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     If Not g_FlagAbort Then
-    	UpdateClient(EVTNO_CAL_MSG, "strip cal: touching for X")
+    	UpdateClient(TASK_MSG, "strip cal: touching for X", INFO_LEVEL)
 	    g_SafeToGoHome = False
         SetVerySlowSpeed
         If Not ForceTouch(DIRECTION_CAVITY_TAIL, 14, True) Then
-			Print "failed to touch the strip X"
+			msg$ = "failed to touch the strip X"
+			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 			Print #LOG_FILE_NO, "failed to touch strip X"
 			Close #LOG_FILE_NO
 			
@@ -3241,14 +3173,14 @@ Function StripCalibration As Boolean
 
     g_CurrentSteps = CPCStepStart + 2 * CPCStepTotal / 5
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
     
     ''=========touch out Z===========
     ''try to move in first, if failed, scan it
     If Not g_FlagAbort Then
-    	UpdateClient(EVTNO_CAL_MSG, "strip cal: touching for Z")
+    	UpdateClient(TASK_MSG, "strip cal: touching for Z", INFO_LEVEL)
         If ForceTouch(DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_DETACH + 3, False) Then
-			Print "need to scan Z for strip position"
+			UpdateClient(TASK_MSG, "need to scan Z for strip position", INFO_LEVEL)
 			Print #LOG_FILE_NO, "scan Z for strip position"
 			Move P81
 			Move Here -Z(STRIP_PULL_OUT_Z_RANGE / 2.0)
@@ -3256,13 +3188,11 @@ Function StripCalibration As Boolean
 			If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 				g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
 				g_RunResult$ = "force sensor reset failed at StripCalibration during touch out z"
-				Print g_RunResult$
-				''SPELCom_Return 1
-				UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 			If Not FindZForStripper Then
-				Print "failed to scan strip Z"
+				UpdateClient(TASK_MSG, "failed to scan strip Z", ERROR_LEVEL)
 				Print #LOG_FILE_NO, "failed to scan strip Z"
 
 				Move P80
@@ -3276,12 +3206,13 @@ Function StripCalibration As Boolean
 
     g_CurrentSteps = CPCStepStart + 3 * CPCStepTotal / 5
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
 
     ''fine tune Z
     If Not g_FlagAbort Then
-    	UpdateClient(EVTNO_CAL_MSG, "strip cal: fine tune for Z")
-		Print "moved in Z=", CPCInitZ, "and fine tune Z"
+    	UpdateClient(TASK_MSG, "strip cal: fine tune for Z", INFO_LEVEL)
+    	msg$ = "moved in Z=" + Str$(CPCInitZ) + "and fine tune Z"
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 		Print #LOG_FILE_NO, "moved in at Z=", CPCInitZ, "fine tune Z"
 		Move Here :X(CPCInitX)
 		TongMove DIRECTION_CAVITY_TAIL, MAGNET_HEAD_THICKNESS / 2, False
@@ -3291,7 +3222,7 @@ Function StripCalibration As Boolean
 
     g_CurrentSteps = CPCStepStart + 4 * CPCStepTotal / 5
     msg$ = Str$(g_CurrentSteps) + " of 100"
-    UpdateClient(EVTNO_CAL_STEP, msg$)
+    UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
     
     ''OK
     If Not g_FlagAbort Then
@@ -3301,11 +3232,12 @@ Function StripCalibration As Boolean
 
 	    SavePointHistory 8, g_FCntStrip
 		StripCalibration = True
-		Print "done, new P8=", P8
+		msg$ = "done, new P8=" + StringPoint$(8)
+		UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 		Print #LOG_FILE_NO, "moved in at Z=", CPCInitZ, "fine tune Z"
 
 		TongMove DIRECTION_CAVITY_HEAD, SAFE_BUFFER_FOR_DETACH, False
-		UpdateClient(EVTNO_CAL_MSG, "strip cal: done")
+		UpdateClient(TASK_MSG, "strip cal: done", INFO_LEVEL)
     EndIf
 
     If Not StripCalibration Then
@@ -3325,9 +3257,7 @@ Function StripCalibration As Boolean
 
     If Not Open_Gripper Then
         g_RunResult$ = "Open_Gripper Failed, holding magnet, need Reset"
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        UpdateClient(EVTNO_HARDWARE_LOG_SEVERE, g_RunResult$)
-        Print g_RunResult$
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Close #LOG_FILE_NO
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
@@ -3343,7 +3273,8 @@ Fend
 
 ''modified from PullOutZ
 Function FindZForStripper As Boolean
-	UpdateClient(EVTNO_CAL_MSG, "strip cal: pull out Z")
+	String msg$
+	UpdateClient(TASK_MSG, "strip cal: pull out Z", INFO_LEVEL)
     FindZForStripper = False
     
     POZOldX = CX(Here)
@@ -3358,7 +3289,8 @@ Function FindZForStripper As Boolean
         If Not ForceTouch(DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_DETACH + 3, False) Then
             If Not g_FlagAbort Then
                 FindZForStripper = True
-                Print "got Z at ", CZ(Here)
+                msg$ = "got Z at " + Str$(CZ(Here))
+                UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
             Else
                 TongMove DIRECTION_CAVITY_HEAD, 20, False
             EndIf
@@ -3367,7 +3299,6 @@ Function FindZForStripper As Boolean
         Move Here :X(POZOldX) :Y(POZOldY)
     Next
     
-    Print "not got Z for strip position"
 Fend
 
 Function CheckRigidness As Boolean
@@ -3381,9 +3312,8 @@ Function CheckRigidness As Boolean
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at CheckRigidness"
-        Print g_RunResult$
         ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     
@@ -3403,6 +3333,7 @@ Function CheckRigidness As Boolean
 Fend
 
 Function TestRigid
+	String msg$
 	Real dimension(4)
 	
     InitForceConstants
@@ -3423,9 +3354,7 @@ Function TestRigid
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at TestRidid"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
 
@@ -3436,16 +3365,17 @@ Function TestRigid
         Tool 0
         SetVerySlowSpeed
         If Not ForceTouch(-FORCE_ZFORCE, 20, True) Then
-            Print "failed to touch a bottom in 20 mm"
+            UpdateClient(TASK_MSG, "failed to touch a bottom in 20 mm", ERROR_LEVEL)
             Exit Function
         EndIf
         DPPPickerZ = CZ(Here)
         If Not CheckRigidness Then
-        	Print "check rigidness failed"
+        	UpdateClient(TASK_MSG, "failed to touch a bottom in 20 mm", WARNING_LEVEL)
         EndIf
         SetFastSpeed
         Move Here +Z(5)
-        Print "picker touched at ", DPPPickerZ
+        msg$ = "picker touched at " + Str$(DPPPickerZ)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     EndIf
 
     ''touch using placer
@@ -3453,9 +3383,7 @@ Function TestRigid
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at testRigid for placer"
-        Print g_RunResult$
-        ''SPELCom_Return 1
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
     If Not g_FlagAbort Then

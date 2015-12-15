@@ -695,16 +695,585 @@ P94  = XY(    95.024,  375.654, -222.659,   90.626 )  /R /0
 !!Error: 7007, Specified point number was not defined. Specify a teach point number.
 > Print p0
  X:  490.695 Y:  169.841 Z: -192.173 U:   38.079 V:    0.000 W:    0.000 /R /0
-> print p3
- X:   92.828 Y:  404.114 Z: -222.346 U:   91.690 V:    0.000 W:    0.000 /R /0
+> print g_PrintLevel
+ 0
+> print g_PrintLevel
+ 0
+> 			msg$ = "DEBUG " + msg$
+!!Error: 3100, Syntax error.
+> print g_PrintLevel
+ 0
+> print g_PrintLevel
+ 13
+> print g_PrintLevel
+ 0
+> g_PrintLevel =13
+> print g_PrintLevel
+ 13
+> print g_RunArgs$
+r 1
+> 
+r 1
+> jump p1
+jum> jump p3
+> jump p6
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> 
+> move p3
+> jump p3
+> tool 0
+> move p3
+!!Error: 4035, Only the tool orientation was attempted to be changed by the CP statement.
+> jump p3
+> move p6
+> limz 0
+> tool 1
+> 
+> 
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> 
+> 
+> motor On
+> 
+> 
+> tool 0
+> 
+> move p3
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> 
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> m_adaptorangleerror(2,1)=-0.768304
+> 
+> reset error
+> motor On
+> 
+> 
+> 
+!!Error: 3100, Syntax error.
+> print g_RunArgs$
+r 1
+> print g_RunArgs$
+r 1
 > print p6
- X:  112.828 Y:  404.114 Z: -222.346 U:   91.690 V:    0.000 W:    0.000 /R /0
-> print p3
- X:   92.828 Y:  404.114 Z: -222.346 U:   91.690 V:    0.000 W:    0.000 /R /0
+ X:  112.305 Y:  405.602 Z: -216.049 U:   84.364 V:    0.000 W:    0.000 /R /0
+> print hereprint 
+!!Error: 2513, Specified point label is not defined.
+> 
+> print g_U4MagnetHolder
+ 84.3639
+> g_U4MagnetHolder = 89.8
+> print g_U4MagnetHolder
+ 89.8
+> 
+ X:  111.531 Y:  432.676 Z: -242.740 U:   89.864 V:    0.000 W:    0.000 /R /0
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 89.8print p6
+!!Error: 3100, Syntax error.
 > print p6
- X:  112.828 Y:  404.114 Z: -222.346 U:   91.690 V:    0.000 W:    0.000 /R /0
+ X:  112.305 Y:  405.602 Z: -216.049 U:   84.364 V:    0.000 W:    0.000 /R /0
+> print g_U4MagnetHolder
+ 89.8
+> print g_U4MagnetHolder
+ 84.3639
+> 
+> move p3
+> jump p1
+> jump p0
+> 
+> 
+> jump p1
+> jump p3
+> move p6
+> 
+> print p6
+ X:  112.305 Y:  405.602 Z: -216.049 U:   84.364 V:    0.000 W:    0.000 /R /0
+> print Using P6
+!!Error: 3100, Syntax error.
+> print g_U4MagnetHolder
+ 84.3639
+> move p3
+> move p6
+> 
+> 
+> move p6
+> 
+ 89.8
+> print g_U4MagnetHolder
+ 84.3639
+> 
+> reset error
+> motor On
+> move p3
+> move p6
+> move p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p6
+> print p3
+ X:   92.305 Y:  405.602 Z: -216.049 U:   84.364 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.305 Y:  405.602 Z: -216.049 U:   84.364 V:    0.000 W:    0.000 /R /0
 > print here
- X:  111.472 Y:  403.975 Z: -220.770 U:   91.690 V:    0.000 W:    0.000 /R /0
+ X:  112.305 Y:  405.602 Z: -216.049 U:   84.364 V:    0.000 W:    0.000 /R /0
+!!Error: 3100, Syntax error.
+> 
+> 
+> 
+> print p6
+ X:  112.371 Y:  405.668 Z: -216.128 U:   84.593 V:    0.000 W:    0.000 /R /0
+> p6 = p6 - Z(8)
+> print p6
+ X:  112.371 Y:  405.668 Z: -224.128 U:   84.593 V:    0.000 W:    0.000 /R /0
+> 
+> p6 = p6 + Z(2)
+> print p6
+ X:  112.371 Y:  405.668 Z: -222.128 U:   84.593 V:    0.000 W:    0.000 /R /0
+> p3=p6 -X(20)
+> print p6
+ X:  112.371 Y:  405.668 Z: -222.128 U:   84.593 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.371 Y:  405.668 Z: -222.128 U:   84.593 V:    0.000 W:    0.000 /R /0
+> savepoints "robot1.pts"
+> print p3
+ X:   92.371 Y:  405.668 Z: -222.128 U:   84.593 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.371 Y:  405.668 Z: -222.128 U:   84.593 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> jump p1
+> Jump p3
+> move p6
+> print p6
+ X:  112.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> jump p1
+> jump p3
+> move p6
+> jump p1
+> 
+> 
+> 
+> 
 > print here
- X:  111.667 Y:  404.359 Z: -217.464 U:   90.492 V:    0.000 W:    0.000 /R /0
+ X:  109.794 Y:  404.604 Z: -222.858 U:   91.188 V:    0.000 W:    0.000 /R /0
+> p6 = Here
+> savepoints "robot1.pts"
+> p3 = P6 - X(20)
+> savepoints "robot1.pts"
+> print p3
+ X:   89.794 Y:  404.604 Z: -222.858 U:   91.188 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  109.794 Y:  404.604 Z: -222.858 U:   91.188 V:    0.000 W:    0.000 /R /0
+> move p3
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p3
+> jump p1
+> jump p0
+> print p6
+ X:  109.794 Y:  404.604 Z: -222.858 U:   91.188 V:    0.000 W:    0.000 /R /0
+> motor On
+> print g_RunArgs$
+1 0
+> g_RunArgs$ = "r 1"
+> motor On
+> move here +Y(10)
+> print g_ProbeRequestString$(1)
+1111111111111111000000000000000000000000000000000000000000000000
+> print RealPos
+ X:  490.695 Y:  169.841 Z: -192.173 U:   38.079 V:    0.000 W:    0.000 /R /0
+> 
+0000000000000000111111111111111100000000000000000000000000000000
+> 
+1111111111111111000000000000000000000000000000000000000000000000
+> 
+0000000000000000000000000000000000000000000000001111111111111111
+> move Here :Z(-150)
+> 
+> 
+111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+> 
+> print g_ProbeRequestString$(1)
+> print g_ProbeRequestString$(0)
+> g_ProbeRequestString$(0) = "Hello"
+> print g_ProbeRequestString$(0)
+Hello
+> print g_ProbeRequestString$(0)
+Hello
+> print g_ProbeRequestString$(0)
+> print g_ProbeRequestString$(0)
+left
+> print g_ProbeRequestString$(0)
+left
+> print g_ProbeRequestString$(0)
+left
+> print g_ProbeRequestString$(0)
+left
+> print g_ProbeRequestString$(0)
+left
+> print g_ProbeRequestString$(0)
+left
+> print g_ProbeRequestString$(0)
+left
+> print g_ProbeRequestString$(0)
+left
+> print g_ProbeRequestString$(1)
+middle
+> print g_ProbeRequestString$(2)
+right
+> print time$
+10:49:40
+> print time$
+10:49:47
+> print time$
+10:49:48
+> print time$
+10:49:48
+> print time$
+10:49:49
+> print time$
+10:49:49
+> print time$
+10:49:50
+> print time$
+10:49:50
+> print time$
+10:49:50
+> print time$
+10:49:51
+> print time$
+10:49:51
+> print time$
+10:49:51
+> print time$
+10:49:52
+> print time$
+10:49:52
+> print time$
+10:49:53
+> print time$
+10:49:53
+> print time$
+10:49:53
+> print Homeset(0)
+ 1
+> print Homeset(1)
+ 46244
+> print Homeset(2)
+ 703815
+> print Homeset(3)
+ -1055194
+> print Homeset(4)
+ -11822
+> print Time$
+10:59:33
+> print p6
+ X:  112.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.233 Y:  404.885 Z: -217.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> p6 = p6 - Z(4)
+> print p6
+ X:  112.233 Y:  404.885 Z: -221.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> p6 = p6 - Z(1)
+> p3 =p3 - Z(5)
+> print p3
+ X:   92.233 Y:  404.885 Z: -222.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.233 Y:  404.885 Z: -222.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> savepoints "robot1.pts"
+> print p3
+ X:   92.233 Y:  404.885 Z: -222.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.233 Y:  404.885 Z: -222.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.233 Y:  404.885 Z: -222.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.233 Y:  404.885 Z: -222.766 U:   87.094 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p
+!!Error: 2513, Specified point label is not defined.
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> print g_PrintLevel
+ 15
+> 
+> 
+> print p3
+ X:   92.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p56
+ X:  127.970 Y:  423.554 Z: -222.586 U:   94.147 V:    0.000 W:    0.000 /R /0
+> print p16
+ X:  129.128 Y:  436.268 Z: -222.550 U:  -89.406 V:    0.000 W:    0.000 /R /0
+> print p26
+ X:  129.759 Y:  375.154 Z: -222.603 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p16
+ X:  129.128 Y:  436.268 Z: -222.550 U:  -89.406 V:    0.000 W:    0.000 /R /0
+> print p26
+ X:  129.759 Y:  375.154 Z: -222.603 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p56
+ X:  127.970 Y:  423.554 Z: -222.586 U:   94.147 V:    0.000 W:    0.000 /R /0
+> 
+> print p3
+ X:   92.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.223 Y:  403.898 Z: -220.50p9 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.223 Y:  403.898 Z: -220.509 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  111.662 Y:  404.422 Z: -220.785 U:   90.293 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.182 Y:  404.052 Z: -222.583 U:   90.293 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.185 Y:  403.871 Z: -220.361 U:   90.593 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  111.640 Y:  404.325 Z: -218.104 U:   90.593 V:    0.000 W:    0.000 /R /0
+> 
+> print here
+ X:  111.637 Y:  404.337 Z: -217.448 U:   90.593 V:    0.000 W:    0.000 /R /0
+> 
+> 
+> 
+> print p3
+ X:   92.474 Y:  405.670 Z: -216.101 U:   84.593 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.474 Y:  405.670 Z: -216.101 U:   84.593 V:    0.000 W:    0.000 /R /0
+> p3 = p3 - Z(6)
+> p6 = p6 - Z(6)
+> print p3
+ X:   92.474 Y:  405.670 Z: -222.101 U:   84.593 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.474 Y:  405.670 Z: -222.101 U:   84.593 V:    0.000 W:    0.000 /R /0
+> savepoints "robot1.pts"
+> print p3
+ X:   92.474 Y:  405.670 Z: -222.101 U:   84.593 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.474 Y:  405.670 Z: -222.101 U:   84.593 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  111.667 Y:  404.577 Z: -220.764 U:   89.793 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.474 Y:  405.670 Z: -222.101 U:   84.593 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.474 Y:  405.670 Z: -222.101 U:   84.593 V:    0.000 W:    0.000 /R /0
+> 
+> 
+> print p3
+ X:   92.462 Y:  405.715 Z: -216.089 U:   84.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.462 Y:  405.715 Z: -216.089 U:   84.494 V:    0.000 W:    0.000 /R /0
+> print p56
+ X:  128.003 Y:  423.535 Z: -220.509 U:   94.046 V:    0.000 W:    0.000 /R /0
+> p56 = p56 - Z(2)
+> print p56
+ X:  128.003 Y:  423.535 Z: -222.509 U:   94.046 V:    0.000 W:    0.000 /R /0
+> p3 = p3 - Z(5)
+> p6 = p6 - Z(5)
+> savepoints "robot1.pts"
+> print p3
+ X:   92.462 Y:  405.715 Z: -221.089 U:   84.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.462 Y:  405.715 Z: -221.089 U:   84.494 V:    0.000 W:    0.000 /R /0
+> p3 = p3 - Z(1)
+> p6 = p6 - Z(1)
+> savepoints "Robot1.pts"
+> print p3
+ X:   92.462 Y:  405.715 Z: -222.089 U:   84.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.462 Y:  405.715 Z: -222.089 U:   84.494 V:    0.000 W:    0.000 /R /0
+> print pp56
+!!Error: 2513, Specified point label is not defined.
+> print p56
+ X:  128.003 Y:  423.535 Z: -222.509 U:   94.046 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  111.652 Y:  404.426 Z: -220.785 U:   90.293 V:    0.000 W:    0.000 /R /0
+> 
+> print here
+ X:  490.695 Y:  169.841 Z: -192.173 U:   38.079 V:    0.000 W:    0.000 /R /0
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+ 15
+> print p
+!!Error: 2513, Specified point label is not defined.
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print g_PrintLevel
+ 15
+> print p3
+ X:   92.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   92.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.164 Y:  403.870 Z: -222.586 U:   90.594 V:    0.000 W:    0.000 /R /0
+> 
+> 
+> 
+> 
+> 
+> 
+> print here
+ X:  490.695 Y:  169.841 Z: -192.173 U:   38.079 V:    0.000 W:    0.000 /R /0
+> print p*
+ X:  490.695 Y:  169.841 Z: -192.173 U:   38.079 V:    0.000 W:    0.000 /R /0
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> print p3
+ X:   92.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  112.253 Y:  403.947 Z: -222.542 U:   90.494 V:    0.000 W:    0.000 /R /0
+> print g_ProbeRequestString$
+!!Error: 3116, Array number of dimensions does not match the declaration.
+> print g_ProbeRequestString$(1)
+> g_ProbeRequestString$(1)="111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+> print g_ProbeRequestString$(1)
+111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+> g_ProbeRequestString$(1)="111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+> 
+> g_ProbeRequestString$(1)="000000000000000000000000000000000000000000000000111111111111111111111111111111111111111111111111"
+> reset error
+> print motoron
+!!Error: 2513, Specified point label is not defined.
+> print motor
+ 1
+> print power
+ 0
+> power High
+> print power
+ 1
+> motor On
+> print power
+ 0
+> motor On
+> power High
+> print motor
+ 1
+> print power
+ 1
+> motor On
+> print power
+ 0
 > 

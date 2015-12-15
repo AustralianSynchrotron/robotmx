@@ -89,9 +89,12 @@ Function CassetteXY() As Boolean
     CXYStepTotal = g_Steps
 
     ''touch the cassette from all 4 direction
-    Print "CentreX = ", CenterX
-    Print "CentreY = ", CenterY
-    Print "DesiredZ = ", desiredZ
+    msg$ = "CentreX = " + Str$(CenterX)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    msg$ = "CentreY = " + Str$(CenterY)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    msg$ = "DesiredZ = " + Str$(desiredZ)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
 
     ''use picker head
@@ -109,9 +112,12 @@ Function CassetteXY() As Boolean
     
     ''ensure LimZ high enough to clear the cassette
     If (BottomZ + 142) > g_Jump_LimZ_LN2 Then
-    	Print "g_Jump_LimZ_LN2 is set lower than cassette top height.  Please increase g_Jump_LimZ_LN2"
-    	Print "g_Jump_LimZ_LN2 is:", g_Jump_LimZ_LN2
-    	Print "Cassette Top is:", BottomZ + 142
+        msg$ = "g_Jump_LimZ_LN2 is set lower than cassette top height.  Please increase g_Jump_LimZ_LN2"
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    	msg$ = "g_Jump_LimZ_LN2 is:" + Str$(g_Jump_LimZ_LN2)
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    	msg$ = "Cassette Top is:" + Str$(BottomZ + 142)
+     	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     	Exit Function
     EndIf
     
@@ -127,7 +133,7 @@ Function CassetteXY() As Boolean
         If CXYIndex > 1 Then
         	''update interested clients
         	msg$ = Str$(g_CurrentSteps) + " of 100"
-        	UpdateClient(EVTNO_CAL_STEP, msg$)
+        	UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         EndIf
         
         SetVerySlowSpeed
@@ -135,15 +141,12 @@ Function CassetteXY() As Boolean
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_CASSETTE
 			g_RunResult$ = "force sensor reset failed at CassetteXY"
-			Print g_RunResult$
-			''update interested clients
-			UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-			''SPELCom_Return 1
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
         If Not ForceTouch(CXYTouchDirection, CASSETTE_STANDBY_DISTANCE / 2, True) Then
-            Print "Failed to touch cassette in XY"
-            Print "Maybe there is no cassette"
+        	g_RunResult$ = "failed to touch cassette in XY"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Exit Function
         EndIf
         CXYTouch(CXYIndex, 1) = CX(Here)
@@ -178,7 +181,9 @@ Function CassetteXY() As Boolean
     CXYNewX = (CXYTouch(1, 1) + CXYTouch(3, 1)) /2
     CXYNewY = (CXYTouch(2, 2) + CXYTouch(4, 2)) /2
     
-    Print "center moved from (", CenterX, ", ", CenterY, ") to (", CXYNewX, ", ", CXYNewY, ")"
+    msg$ = "center moved from (" + Str$(CenterX) + ", " + Str$(CenterY) + ") to (" + Str$(CXYNewX) + ", " + Str$(CXYNewY) + ")"
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    
     CenterX = CXYNewX
     CenterY = CXYNewY
     
@@ -192,13 +197,10 @@ Function CassetteXY() As Boolean
         CXYNewX = CXYTouch(CXYIndex, 1) - CenterX
         CXYNewY = CXYTouch(CXYIndex, 2) - CenterY
         CXYNewX = Sqr(CXYNewX * CXYNewX + CXYNewY * CXYNewY)
-        Print "touch point[", CXYIndex, "] to center distance=", CXYNewX
+        ''Print "touch point[", CXYIndex, "] to center distance=", CXYNewX
         If Abs(CXYNewX - CXYRadius) > 1 Then
             g_RunResult$ = "cassette cal: failed, toolset calibration is way too off"
-            ''update client
-            UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-            UpdateClient(EVTNO_LOG_ERROR, g_RunResult$)
-            Print g_RunResult$
+            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
             g_RobotStatus = g_RobotStatus Or FLAG_REASON_TOLERANCE
             CassetteXY = False
@@ -223,7 +225,7 @@ Function CassetteZ() As Boolean
         g_Steps = CCZStepTotal /4
         If CCZIndex > 1 Then
         	msg$ = Str$(g_CurrentSteps) + " of 100"
-        	UpdateClient(EVTNO_CAL_STEP, msg$)
+        	UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         EndIf
         
         ''define where we will go
@@ -254,25 +256,25 @@ Function CassetteZ() As Boolean
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_CASSETTE
 			g_RunResult$ = "force sensor reset failed at CassetteZ"
-			Print g_RunResult$
-
-			UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-			''SPELCom_Return 1
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
 
         If Not ForceTouch(-FORCE_ZFORCE, CASSETTE_HEIGHT / 2 + MAGNET_HEAD_RADIUS + 20, True) Then
-            Print "Failed to touch cassette top by picker at i =", CCZIndex
+        	g_RunResult$ = "Failed to touch cassette top by picker at i =" + Str$(CCZIndex)
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Exit Function
         EndIf
         
         CCZTouch(CCZIndex) = CZ(Here)
-        Print "picker touch at Z=", CZ(Here)
+        msg$ = "picker touch at Z=" + Str$(CZ(Here))
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print #LOG_FILE_NO, "picker touched at (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ")"
     Next
     CassetteZ = True
     
-    Print "Z touched at ", CCZTouch(1), ", ", CCZTouch(2), ", ", CCZTouch(3), ", ", CCZTouch(4)
+    msg$ = "Z touched at " + Str$(CCZTouch(1)) + ", " + Str$(CCZTouch(2)) + ", " + Str$(CCZTouch(3)) + ", " + Str$(CCZTouch(4))
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "Z touched at ", CCZTouch(1), ", ", CCZTouch(2), ", ", CCZTouch(3), ", ", CCZTouch(4)
 
     ''check whether this is a calibration cassette
@@ -292,7 +294,8 @@ Function CassetteZ() As Boolean
         Print #LOG_FILE_NO, "normal cassette"
     EndIf
     Print #LOG_FILE_NO, "average=", BottomZ
-    Print "average=", BottomZ
+    msg$ = "average=" + Str$(BottomZ)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     If g_LN2LevelHigh Then
         BottomZ = BottomZ - CASSETTE_SHRINK_IN_LN2 * CCZCassetteHeight - MAGNET_HEAD_RADIUS
@@ -315,7 +318,7 @@ Function CalCassetteAngle(ByVal cutOutZ As Real) As Boolean
         g_Steps = CCAStepTotal /4
         If CCAIndex > 1 Then
         	msg$ = Str$(g_CurrentSteps) + " of 100"
-        	UpdateClient(EVTNO_CAL_STEP, msg$)
+        	UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         EndIf
 
         ''move to standby point
@@ -388,17 +391,18 @@ Function CalCassetteAngle(ByVal cutOutZ As Real) As Boolean
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_CASSETTE
 			g_RunResult$ = "force sensor reset failed at CassetteAngle"
-			Print g_RunResult$
-			UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
 
         If Not ForceTouch(DIRECTION_CAVITY_HEAD, 20, True) Then
-            Print "failed to touch edge at ", CCAIndex
+        	g_RunResult$ = "failed to touch edge at " + Str$(CCAIndex)
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Exit Function
         EndIf
         
-        Print "Touched edge at (", CX(Here), ", ", CY(Here), ")"
+        msg$ = "Touched edge at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print #LOG_FILE_NO, "Touched edge at (", CX(Here), ", ", CY(Here), ")"
         CCATouch(CCAIndex, 1) = CX(Here)
         CCATouch(CCAIndex, 2) = CY(Here)
@@ -429,21 +433,23 @@ Function CalCassetteAngle(ByVal cutOutZ As Real) As Boolean
     	AFromXEdge = RadToDeg(AFromXEdge)
     Else
         g_RunResult$ = "cassette cal: failed, cassette must be along one of axes"
-        UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-        Print g_RunResult$
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Close #LOG_FILE_NO
         Quit All
     EndIf
         
-    Print "angle from horizontal edge =", AFromYEdge
-    Print "angle from vertical edge =", AFromXEdge
+    msg$ = "angle from horizontal edge =" + Str$(AFromYEdge)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    msg$ = "angle from vertical edge =" + Str$(AFromXEdge)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "angle from horizontal edge =", AFromYEdge
     Print #LOG_FILE_NO, "angle from vertical edge =", AFromXEdge
 
     Angle = (AFromXEdge + AFromYEdge) /2
-    Print "final Angle =", angle
-    Print #LOG_FILE_NO, "final Angle =", angle
+    msg$ = "final Angle =" + Str$(Angle)
+    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    Print #LOG_FILE_NO, "final Angle =", Angle
 Fend
 
 ''normal cassette used in calibration, we will probe port A1 to find the angle
@@ -455,7 +461,7 @@ Function NorCassetteAngle(ByVal XCenter As Real, ByVal YCentre As Real) As Boole
 
     NorCassetteAngle = False
     ''got standby position for port A1
-    CCAInDeg = g_Perfect_Cassette_Angle + angle
+    CCAInDeg = g_Perfect_Cassette_Angle + Angle
     CCAInRad = DegToRad(CCAInDeg)
     CCACos = Cos(CCAInRad)
     CCASin = Sin(CCAInRad)
@@ -480,7 +486,7 @@ Function NorCassetteAngle(ByVal XCenter As Real, ByVal YCentre As Real) As Boole
         g_Steps = CCAStepTotal /2
         If CCAIndex > 1 Then
         	msg$ = Str$(g_CurrentSteps) + " of 100"
-        	UpdateClient(EVTNO_CAL_STEP, msg$)
+        	UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         EndIf
 
         SetFastSpeed
@@ -491,10 +497,7 @@ Function NorCassetteAngle(ByVal XCenter As Real, ByVal YCentre As Real) As Boole
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_CASSETTE
 			g_RunResult$ = "force sensor reset failed at normal Cassette Angle"
-			Print g_RunResult$
-			UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-			
-			''SPELCom_Return 1
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
         Move P53
@@ -539,8 +542,8 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
     
     g_OnlyAlongAxis = True
 	
-	msg$ = "Cassette calibration at " + Date$ + " " + Time$
-	UpdateClient(EVTNO_PRINT_EVENT, msg$)
+	msg$ = "Cassette calibration start at " + Date$ + " " + Time$
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	
     ''log file
     g_FCntCassette = g_FCntCassette + 1
@@ -554,7 +557,7 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
 
     If (CCTotalCAS < 1) Or (CCTotalCAS > 3) Then
         g_RunResult$ = "Bad first arg, string length is not [1-3]"
-        Print g_RunResult$
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Print #LOG_FILE_NO, "arg[1]=[", cassettes$, "]"
         Close #LOG_FILE_NO
@@ -565,7 +568,7 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
 
     If (CCTotalCAS > 1) And Init Then
         g_RunResult$ = "Bad input, Init=true only apply with 1 cassette"
-        Print g_RunResult$
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Close #LOG_FILE_NO
         
@@ -591,17 +594,15 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
 #endif
 			Default
 				g_RunResult$ = "Bad input for one cassette, should be one of rlm"
-				Print g_RunResult$
+        		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Print #LOG_FILE_NO, g_RunResult$
 				Print #LOG_FILE_NO, "index=", CSTIndex, ", cassette letter=", OneCassette$
 				Close #LOG_FILE_NO
-	            
-				''SPELCom_Return 3
 				Exit Function
         Send
     Next
     
-    UpdateClient(EVTNO_CAL_STEP, "0 of 100")
+    UpdateClient(TASK_PROG, "0 of 100", INFO_LEVEL)
     
     If Motor = Off Then
         Motor On
@@ -613,12 +614,11 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
 
     ''do it
     If Not Init Then
-        UpdateClient(EVTNO_CAL_MSG, "cassette cal: take magnet")
+        UpdateClient(TASK_MSG, "cassette cal: take magnet", INFO_LEVEL)
         g_SafeToGoHome = True
         If Not FromHomeToTakeMagnet Then
-        
             g_RunResult$ = "FromHomeToTakeMagnet failed " + g_RunResult$
-            Print g_RunResult$
+            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Print #LOG_FILE_NO, g_RunResult$
             Close #LOG_FILE_NO
             
@@ -627,13 +627,10 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         EndIf
 
         If g_FlagAbort Then
-            UpdateClient(EVTNO_CAL_MSG, "cassette cal: user abort")
+            UpdateClient(TASK_MSG, "cassette cal: user abort", ERROR_LEVEL)
             g_RunResult$ = "user abort"
-            Print g_RunResult$
             Print #LOG_FILE_NO, g_RunResult$
             Close #LOG_FILE_NO
-            
-            ''SPELCom_Return 4
             Exit Function
         EndIf
     Else
@@ -643,7 +640,7 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         CenterX = CX(Here)
         CenterY = CY(Here)
         BottomZ = CZ(Here) - 142
-        angle = 0
+        Angle = 0
     EndIf
 
     LimZ -100
@@ -675,7 +672,7 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
             
             Exit Function
         EndIf
-            
+                  
         Select OneCassette$
         Case "l"
             BottomPoint = 41
@@ -697,32 +694,34 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         If Not Init Then
             Select OneCassette$
             Case "l"
-                CheckPoint 34
-                CheckPoint 41
-                CheckPoint 44
-                
+            	If (Not GTCheckPoint(34) Or Not GTCheckPoint(41) Or Not GTCheckPoint(44)) Then
+	            	UpdateClient(TASK_MSG, "Left cassette points not defined", ERROR_LEVEL)
+	            	Exit Function
+            	EndIf
                 CenterX = CX(P34)
                 CenterY = CY(P34)
                 BottomZ = CZ(P34)
-                angle = CU(P34)
+                Angle = CU(P34)
                 CassetteOrientation = Hand(P34)
             Case "m"
-                CheckPoint 35
-                CheckPoint 42
-                CheckPoint 45
+            	If (Not GTCheckPoint(35) Or Not GTCheckPoint(42) Or Not GTCheckPoint(45)) Then
+	            	UpdateClient(TASK_MSG, "Middle cassette points not defined", ERROR_LEVEL)
+	            	Exit Function
+            	EndIf
                 CenterX = CX(P35)
                 CenterY = CY(P35)
                 BottomZ = CZ(P35)
-                angle = CU(P35)
+                Angle = CU(P35)
                 CassetteOrientation = Hand(P35)
             Case "r"
-                CheckPoint 36
-                CheckPoint 43
-                CheckPoint 46
+            	If (Not GTCheckPoint(36) Or Not GTCheckPoint(43) Or Not GTCheckPoint(46)) Then
+	            	UpdateClient(TASK_MSG, "Right cassette points not defined", ERROR_LEVEL)
+	            	Exit Function
+            	EndIf
                 CenterX = CX(P36)
                 CenterY = CY(P36)
                 BottomZ = CZ(P36)
-                angle = CU(P36)
+                Angle = CU(P36)
                 CassetteOrientation = Hand(P36)
             Default
                 Close #LOG_FILE_NO
@@ -731,13 +730,14 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
                 Exit Function
             Send
 
-            Print "Old position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", angle, ")"
-            Print #LOG_FILE_NO, "Old position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", angle, ")"
+            Print #LOG_FILE_NO, "Old position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", Angle, ")"
 
-			msg$ = "Old position (" + Str$(CenterX) + ", " + Str$(CenterY) + ", " + Str$(BottomZ) + ", " + Str$(angle) + ")"
-			UpdateClient(EVTNO_UPDATE, msg$)
-            Print "old Bottom (", CX(P(BottomPoint)), ", ", CY(P(BottomPoint)), ", ", CZ(P(BottomPoint)), ")"
-            Print "old Top (", CX(P(TopPoint)), ", ", CY(P(TopPoint)), ", ", CZ(P(TopPoint)), ")"
+			msg$ = "Old position (" + Str$(CenterX) + ", " + Str$(CenterY) + ", " + Str$(BottomZ) + ", " + Str$(Angle) + ")"
+			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+            msg$ = "old Bottom (" + Str$(CX(P(BottomPoint))) + ", " + Str$(CY(P(BottomPoint))) + ", " + Str$(CZ(P(BottomPoint))) + ")"
+  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+            msg$ = "old Top (" + Str$(CX(P(TopPoint))) + ", " + Str$(CY(P(TopPoint))) + ", " + Str$(CZ(P(TopPoint))) + ")"
+   			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
             Print #LOG_FILE_NO, "Old Bottom (", CX(P(BottomPoint)), ", ", CY(P(BottomPoint)), ", ", CZ(P(BottomPoint)), ")"
             Print #LOG_FILE_NO, "old Top (", CX(P(TopPoint)), ", ", CY(P(TopPoint)), ", ", CZ(P(TopPoint)), ")"
         EndIf
@@ -746,83 +746,80 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         g_Steps = 60 / CCTotalCAS
         g_CurrentSteps = (100 * CSTIndex - 100) / CCTotalCAS
         msg$ = Str$(g_CurrentSteps) + " of 100"
-        UpdateClient(EVTNO_CAL_STEP, msg$)
+        UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         For CCXYIndex = 1 To 3
             g_Steps = 20 / CCTotalCAS
             g_CurrentSteps = (100 * CSTIndex + CCXYIndex * 20 - 120) / CCTotalCAS
             msg$ = Str$(g_CurrentSteps) + " of 100"
-            UpdateClient(EVTNO_CAL_STEP, msg$)
+            UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
             Select CCXYIndex
                 Case 1
                     msg$ = "cassette cal: touch bottom center of " + CCName$
-                    UpdateClient(EVTNO_CAL_MSG, msg$)
+                    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
                     desiredZ = BottomZ + 12 + 15 / 2
                     Tool 2
                 Case 2
                     msg$ = "cassette cal: touch top center of " + CCName$
-                    UpdateClient(EVTNO_CAL_MSG, msg$)
+                    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
                     desiredZ = BottomZ + CASSETTE_A1_HEIGHT + 15 / 2
                     Tool 2
                 Case 3
                     msg$ = "cassette cal: touch middle center of " + CCName$
-                    UpdateClient(EVTNO_CAL_MSG, msg$)
+                    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
                     desiredZ = BottomZ + CASSETTE_HEIGHT /2
                     Tool 2
             Send
             If Not CassetteXY() Then
                 g_RunResult$ = "Failed: maybe there is no cassette"
-                Print g_RunResult$
+                UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
                 Print #LOG_FILE_NO, g_RunResult$
                 Close #LOG_FILE_NO
-                
-                ''SPELCom_Return 4
                 Exit Function
             EndIf
             CCTempX(CCXYIndex) = CenterX
             CCTempY(CCXYIndex) = CenterY
-            Print "Center (Z=", desiredZ, ") XY position (", CenterX, ", ", CenterY, ")"
             Print #LOG_FILE_NO, "Center (Z=", desiredZ, ") XY position (", CenterX, ", ", CenterY, ")"
             msg$ = "Center (Z=" + Str$(desiredZ) + ") XY position (" + Str$(CenterX) + ", " + Str$(CenterY) + ")"
-            UpdateClient(EVTNO_UPDATE, msg$)
+            UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
             Select CCXYIndex
                 Case 1
                     If BottomPoint > 0 Then
                         P(BottomPoint) = XY(CenterX, CenterY, desiredZ, 0)
-                        Print "CassetteCal BottomPoint"
-                        Print "CentreX=", CenterX
-                        Print "CentreY=", CenterY
-                        Print "desiredZ=", desiredZ
-                        Print P(BottomPoint)
-                        Print "Tool=", Tool
+                        UpdateClient(TASK_MSG, "CassetteCal BottomPoint", INFO_LEVEL)
+                        msg$ = "CentreX=" + Str$(CenterX)
+                        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+                        msg$ = "CentreY=" + Str$(CenterY)
+                        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+                        msg$ = "desiredZ=" + Str$(desiredZ)
+                        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
                         SavePointHistory BottomPoint, g_FCntCassette
                     EndIf
                 Case 2
                     If TopPoint > 0 Then
                         P(TopPoint) = XY(CenterX, CenterY, desiredZ, 0)
-                        Print "CassetteCal TopPoint"
-                        Print "CentreX=", CenterX
-                        Print "CentreY=", CenterY
-                        Print "desiredZ=", desiredZ
-                        Print P(TopPoint)
-                        Print "Tool=", Tool
+                        UpdateClient(TASK_MSG, "CassetteCal TopPoint", INFO_LEVEL)
+                        msg$ = "CentreX=" + Str$(CenterX)
+                        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+                        msg$ = "CentreY=" + Str$(CenterY)
+                        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+                        msg$ = "desiredZ=" + Str$(desiredZ)
+                        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
                         SavePointHistory TopPoint, g_FCntCassette
                     EndIf
                     ''calculate the distance between bottom center and top center
                     CCTempX(1) = CCTempX(1) - CCTempX(2)
                     CCTempY(1) = CCTempY(1) - CCTempY(2)
                     CCDeltaCenter = Sqr(CCTempX(1) * CCTempX(1) + CCTempY(1) * CCTempY(1))
-                    Print "distance between center of top row and bottomt row: ", CCDeltaCenter
                     Print #LOG_FILE_NO, "distance between center of top row and bottomt row: ", CCDeltaCenter
                     msg$ = "distance between center of top row and bottomt row: " + Str$(CCDeltaCenter)
-                    UpdateClient(EVTNO_UPDATE, msg$)
+                    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
                     CCTilt = CCDeltaCenter /(CASSETTE_A1_HEIGHT - 12)
                     CCTilt = Atan(CCTilt)
                     CCTilt = RadToDeg(CCTilt)
                     If CCTilt >= ACCPT_THRHLD_CASSETTE_TILT Then
-                        Print "casstte ", OneCassette$, " tilt ", Str$(CCTilt), " exceed threshold ", ACCPT_THRHLD_CASSETTE_TILT, "degree"
+                        msg$ = "casstte " + OneCassette$ + " tilt " + Str$(CCTilt) + " exceed threshold " + Str$(ACCPT_THRHLD_CASSETTE_TILT) + "degree"
                         Print #LOG_FILE_NO, "casstte ", OneCassette$, " tilt exceed threshold ", ACCPT_THRHLD_CASSETTE_TILT, "degree"
-                        Cassette_Warning$ = Cassette_Warning$ + "cassette " + OneCassette$ + " exceeded tilt threshold "
-                        UpdateClient(EVTNO_WARNING, Cassette_Warning$)
+                        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
                     EndIf
             Send
         Next
@@ -830,13 +827,13 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         g_Steps = 20 / CCTotalCAS
         g_CurrentSteps = (100 * CSTIndex - 40) / CCTotalCAS
         msg$ = Str$(g_CurrentSteps) + " of 100"
-        UpdateClient(EVTNO_CAL_STEP, msg$)
+        UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         msg$ = "cassette cal: touching Z of" + CCName$
-        UpdateClient(EVTNO_CAL_MSG, msg$)
+        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
         
         If Not CassetteZ() Then
             g_RunResult$ = "Z failed"
-            Print g_RunResult$
+            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Print #LOG_FILE_NO, g_RunResult$
             Close #LOG_FILE_NO
             
@@ -844,17 +841,16 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
             Exit Function
         EndIf
         
-        Print "BottomZ = ", BottomZ
         Print #LOG_FILE_NO, "BottomZ = ", BottomZ
         msg$ = "BottomZ = " + Str$(BottomZ)
-        UpdateClient(EVTNO_UPDATE, msg$)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 
         g_Steps = 20 / CCTotalCAS
         g_CurrentSteps = (100 * CSTIndex - 20) / CCTotalCAS
         msg$ = Str$(g_CurrentSteps) + " of 100"
-        UpdateClient(EVTNO_CAL_STEP, msg$)
+        UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         msg$ = "cassette cal: touching angle offset of" + CCName$
-        UpdateClient(EVTNO_CAL_MSG, msg$)
+        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
         
         If m_IsCalibrationCassette Then
         	''Get angle correction using calibration cassette
@@ -866,7 +862,7 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         
         If Not AngleResult Then
             g_RunResult$ = "angle failed"
-            Print g_RunResult$
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Print #LOG_FILE_NO, g_RunResult$
             Close #LOG_FILE_NO
             
@@ -874,49 +870,47 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
             Exit Function
         EndIf
 
-        Print "new position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", angle, ")"
-        Print #LOG_FILE_NO, "new position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", angle, ")"
-        msg$ = "new position (" + Str$(CenterX) + ", " + Str$(CenterY) + ", " + Str$(BottomZ) + ", " + Str$(angle) + ")"
-        UpdateClient(EVTNO_UPDATE, msg$)
+        Print #LOG_FILE_NO, "new position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", Angle, ")"
+        msg$ = "new position (" + Str$(CenterX) + ", " + Str$(CenterY) + ", " + Str$(BottomZ) + ", " + Str$(Angle) + ")"
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         ''save data
         Select OneCassette$
         Case "l"
-            P34 = XY(CenterX, CenterY, BottomZ, angle)
+            P34 = XY(CenterX, CenterY, BottomZ, Angle)
 			Hand P34, Hand(P6)
             SavePointHistory 34, g_FCntCassette
-			Print "saving points to file.....",
+            UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
 			SavePoints "robot1.pts"
 			g_TS_Left_Cassette$ = Date$ + " " + Time$
         Case "m"
-            P35 = XY(CenterX, CenterY, BottomZ, angle)
+            P35 = XY(CenterX, CenterY, BottomZ, Angle)
 			Hand P35, Hand(P6)
             SavePointHistory 35, g_FCntCassette
-			Print "saving points to file.....",
+			UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
 			SavePoints "robot1.pts"
 			g_TS_Middle_Cassette$ = Date$ + " " + Time$
         Case "r"
-            P36 = XY(CenterX, CenterY, BottomZ, angle)
+            P36 = XY(CenterX, CenterY, BottomZ, Angle)
 			Hand P36, Hand(P6)
             SavePointHistory 36, g_FCntCassette
-			Print "saving points to file.....",
+			UpdateClient(TASK_MSG, "saving points to file.....", INFO_LEVEL)
 			SavePoints "robot1.pts"
 			g_TS_Right_Cassette$ = Date$ + " " + Time$
         Send
     Next
     
-    Print "done!!"
-
     CassetteCalibration = True
     
-    Print "Cassette calibration OK at ", Date$, " ", Time$
-    Print #LOG_FILE_NO, "Cassette calibration OK at ", Date$, " ", Time$
+    msg$ = "Cassette calibration finished OK at " + Date$ + " " + Time$
+    UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+    Print #LOG_FILE_NO, "Cassette calibration finished OK at ", Date$, " ", Time$
     
     Close #LOG_FILE_NO
-    UpdateClient(EVTNO_CAL_STEP, "100 of 100")
+    UpdateClient(TASK_PROG, "100 of 100", INFO_LEVEL)
 
     If Not Init Then
         ''put back magnet
-        UpdateClient(EVTNO_CAL_MSG, "cassette cal: put back magnet and go home")
+        UpdateClient(TASK_MSG, "cassette cal: put back magnet and go home", INFO_LEVEL)
         
         Tool 0
         LimZ g_Jump_LimZ_LN2
@@ -924,9 +918,7 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         
         If Not Open_Gripper Then
             g_RunResult$ = "cassette cal: Open_Gripper Failed, holding magnet, need Reset"
-            UpdateClient(EVTNO_CAL_MSG, g_RunResult$)
-            UpdateClient(EVTNO_HARDWARE_LOG_SEVERE, g_RunResult$)
-            Print g_RunResult$
+            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_RESET
             g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
             Motor Off
@@ -940,10 +932,9 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         MoveTongHome
     EndIf
     
-    UpdateClient(EVTNO_CAL_MSG, "cassette cal: Done")
+    UpdateClient(TASK_MSG, "cassette cal: Done", INFO_LEVEL)
 	
     g_RunResult$ = "normal OK"
-    ''SPELCom_Return 0
     Tool 0
 Fend
 Function VB_CassetteCal

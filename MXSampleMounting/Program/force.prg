@@ -246,7 +246,7 @@ Function ForceCalibrateAndCheck(thresholdx As Double, thresholdy As Double) As B
 	Double minx, maxx
 	Double miny, maxy
 	''inform user what is going on
-	UpdateClient(EVTNO_PRINT_EVENT, "Calibrating force sensor, and checking peak noise")
+	UpdateClient(TASK_MSG, "Calibrating force sensor, and checking peak noise", INFO_LEVEL)
 	''Defaults
     done = False
 	ForceCalibrateAndCheck = False
@@ -280,20 +280,20 @@ Function ForceCalibrateAndCheck(thresholdx As Double, thresholdy As Double) As B
 		If (diffx < thresholdx And diffy < thresholdy) Then
 				done = True
 				msg$ = "After " + Str$(i) + " calibration attempts"
-				UpdateClient(EVTNO_PRINT_EVENT, msg$)
-                UpdateClient(EVTNO_PRINT_EVENT, "Force sensor noise level OK")
+				UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+                UpdateClient(TASK_MSG, "Force sensor noise level OK", INFO_LEVEL)
 				ForceCalibrateAndCheck = True
 		EndIf
 		''Only attempt 10 times
 		i = i + 1
 		If (i > 9) Then
  			msg$ = "After " + Str$(i) + " calibration attempts"
-			UpdateClient(EVTNO_PRINT_EVENT, msg$)
-			UpdateClient(EVTNO_PRINT_EVENT, "Force sensor noise level too high")
+			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "Force sensor noise level too high", ERROR_LEVEL)
 			msg$ = "ForceX p-p " + Str$(diffx)
-			UpdateClient(EVTNO_PRINT_EVENT, msg$)
+			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 			msg$ = "ForceY p-p " + Str$(diffy)
-			UpdateClient(EVTNO_PRINT_EVENT, msg$)
+			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 			''Fail to good
 			ForceCalibrateAndCheck = True
 			Exit Function

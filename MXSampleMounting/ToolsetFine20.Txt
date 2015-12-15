@@ -1,0 +1,24 @@
+=======================================================
+toolset FineTune 2015/12/11 17:18:58
+sideScale for placer  1.2198921665549
+sideScale for picker  1.2033507823944
+Old g_MagnetTransportAngle = 94.0375
+new g_MagnetTransportAngle= 92.4033
+Toolset picker: ( 19.516,  -15.4681,  0,  5.30925)
+picker twist off toolset: ( 17.9613,  -20.3529,  0,  5.30925)
+old picker: ( 20.6674,  -14.8178,  0,  6.94346)
+placer twist off toolset: ( -13.5031,  -23.2769,  0,  185.309)
+Toolset placer: ( -15.9312,  -18.7622,  0,  185.309)
+old placer: ( -14.6715,  -19.1215,  0,  186.943)
+force too small, ignore
+new a: 17.1763, b: 18.001, c: 17.599, theta: 5.30925
+old a: 17.2076, b: 18.7245, c: 16.8755, theta: 6.94346
+Toolset picker: ( 19.5131,  -15.437,  0,  5.30925)
+picker twist off toolset: ( 17.9585,  -20.3218,  0,  5.30925)
+old picker: ( 19.516,  -15.4681,  0,  5.30925)
+placer twist off toolset: ( -13.506,  -23.2458,  0,  185.309)
+Toolset placer: ( -15.9341,  -18.7311,  0,  185.309)
+old placer: ( -15.9312,  -18.7622,  0,  185.309)
+old (absolute magnet position) P56, 127.959, 423.597, -220.425, 94.0375
+new P56, 128.64, 423.591, -217.766, 92.4033 2015/12/11 17:21:03
+magnet level error:  0.0288086mm

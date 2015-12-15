@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/12/14 23:24:03:532,DS:0000008066,CS:17178,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/12/15 12:17:34:556,DS:0000007993,CS:18781,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="12/15/2015 10:24:00 AM"
+	sLastModified="12/15/2015 6:07:21 PM"
 	bBuildComplete=True
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -111,16 +111,16 @@ ProgramFile16 {
 	bStoreInController=True
 }
 ProgramFile17 {
-	sName="pythoninterface.prg"
-	bCompiled=True
-	bStoreInController=True
-}
-ProgramFile18 {
 	sName="initialization.prg"
 	bCompiled=True
 	bStoreInController=True
 }
-nIncludeFileCount=7
+ProgramFile18 {
+	sName="pythoninterface.prg"
+	bCompiled=True
+	bStoreInController=True
+}
+nIncludeFileCount=6
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bStoreInController=True
@@ -142,10 +142,6 @@ IncludeFile5 {
 	bStoreInController=True
 }
 IncludeFile6 {
-	sName="reporterdefs.inc"
-	bStoreInController=True
-}
-IncludeFile7 {
 	sName="superpuckdefs.inc"
 	bStoreInController=True
 }

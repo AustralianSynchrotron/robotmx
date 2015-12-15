@@ -1,0 +1,13 @@
+=======================================================
+toolset FineTune 2015/12/09 13:13:21
+sideScale for placer  1.2079189419746
+sideScale for picker  1.1974692866206
+Old g_MagnetTransportAngle = 93.8873
+new g_MagnetTransportAngle= 90.8448
+Toolset picker: ( 19.5323,  -14.9871,  0,  6.48093)
+picker twist off toolset: ( 18.0778,  -19.9026,  0,  6.48093)
+old picker: ( 20.7571,  -13.8526,  0,  9.52345)
+placer twist off toolset: ( -13.3202,  -23.4694,  0,  186.481)
+Toolset placer: ( -15.8402,  -19.0053,  0,  186.481)
+old placer: ( -14.3523,  -19.7426,  0,  189.523)
+failed to touch in cradle for a in P6
