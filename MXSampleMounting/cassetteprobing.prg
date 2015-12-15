@@ -20,6 +20,20 @@ Function GTgetCassettePosition(cassetteChar$ As String, ByRef cassette_position 
 	GTgetCassettePosition = True
 Fend
 
+'' GTResetSpecificPorts can be called independent of cassette_type
+Function GTResetSpecificPorts(cassette_position As Integer)
+	'' For each cassette_position, two arrays needs to be reset (the superpuck array and the cassette array)
+
+	'' if this function (GTResetSpecificPorts) is called after probing cassettetype and 
+	'' if the casettetype is SuperPuck, Cassette Array is completely reset (and vice versa)
+
+	'' Reset the superpuck array, corresponding to cassette_position
+	GTResetSpecificPortsInSuperPuck(cassette_position)
+	
+	'' Reset the cassette array, corresponding to cassette_position
+	GTResetSpecificPortsInCassette(cassette_position)
+Fend
+
 Function GTProbeCassetteType(cassette_position As Integer) As Boolean
 	Integer standbyPointNum
 	Real scanZdistance
@@ -74,39 +88,29 @@ Function GTProbeCassetteType(cassette_position As Integer) As Boolean
 	GTProbeCassetteType = True
 Fend
 
-Function GTProbeAllPorts(cassette_position As Integer) As Boolean
-	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		Integer puckIndex
-		For puckIndex = 0 To NUM_PUCKS - 1
-			g_RunResult$ = "progress GTProbeAllPorts->GTprobeAllPortsInPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-			GTprobeAllPortsInPuck(cassette_position, puckIndex)
-		Next
-	ElseIf (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Or (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Then
-		Integer columnIndex
-		For columnIndex = 0 To NUM_COLUMNS - 1
-			g_RunResult$ = "progress GTProbeAllPorts->GTprobeAllPortsInColumn(" + GTCassetteName$(cassette_position) + ",col=" + GTcolumnName$(columnIndex) + ")"
-			GTprobeAllPortsInColumn(cassette_position, columnIndex)
-		Next
-	Else
-		g_RunResult$ = "error GTProbeAllPorts: " + GTCassetteName$(cassette_position) + " type is unknown/absent!"
-		GTProbeAllPorts = False
-		Exit Function
-	EndIf
+'' This function is called independent of cassette_type after probing
+Function GTProbeSpecificPorts(cassette_position As Integer) As Boolean
+	GTProbeSpecificPorts = False '' If the function breaks before finishing completely, return false
 
-	g_RunResult$ = "success GTProbeAllPorts(" + GTCassetteName$(cassette_position) + ")"
-	GTProbeAllPorts = True
+	'' Based on the type of cassette, call the corresponding function to probe according to that cassette's geometry
+    	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+			If Not GTProbeSpecificPortsInSuperPuck(cassette_position) Then
+				g_RunResult$ = "GTProbeSpecificPortsInSuperPuck failed"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+		ElseIf (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+			If Not GTProbeSpecificPortsInCassette(cassette_position) Then
+				g_RunResult$ = "GTProbeSpecificPortsInCassette failed"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+		Else
+			g_RunResult$ = "No " + GTCassetteName$(cassette_position) + " found"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		EndIf
+	
+	GTProbeSpecificPorts = True
 Fend
 
-Function GTResetCassette(cassette_position As Integer)
-	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		Integer puckIndex
-		For puckIndex = 0 To NUM_PUCKS - 1
-			GTResetPuck(cassette_position, puckIndex)
-		Next
-	Else
-		Integer columnIndex
-		For columnIndex = 0 To NUM_COLUMNS - 1
-			GTResetColumn(cassette_position, columnIndex)
-		Next
-	EndIf
-Fend
+

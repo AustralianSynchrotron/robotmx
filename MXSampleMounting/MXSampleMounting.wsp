@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/12/15 13:55:37:603,DS:0000004798,CS:08507,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="magnetmaneuvers.prg"
+ENVT0100,LM:2015/12/15 14:12:21:757,DS:0000004801,CS:20532,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="superpuckutilities.prg"
 bMdiMaximized=True
 nProgramFileCount=18
 ProgramFile1 {
@@ -126,7 +126,7 @@ ProgramFile11 {
 ProgramFile12 {
 	sName="superpuckutilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -170,7 +170,7 @@ ProgramFile15 {
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0

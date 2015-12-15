@@ -131,12 +131,11 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 		UpdateClient(TASK_MSG, "GTJumpHomeToCoolingPointAndWait:Open_Lid failed", ERROR_LEVEL)
         Exit Function
     EndIf
-      
+   
    	Motor On
 	Tool 0
-	
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
-	
+
 	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
 	
 	Jump P3

@@ -12,8 +12,11 @@
 
 #define NUM_PUCK_PORTS 16
 
-#define PUCK_ABSENT False
-#define PUCK_PRESENT True
+'' Puck Status
+#define PUCK_PRESENT -1
+#define PUCK_UNKNOWN 0
+#define PUCK_ABSENT 1
+#define PUCK_JAM 2
 
 #define PROBE_ADAPTOR_DISTANCE 3.0
 

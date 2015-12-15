@@ -149,28 +149,104 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	GTLoadPreviousRobotSpeedMode
 Fend
 
-Function GTprobeAllPortsInColumn(cassette_position As Integer, columnIndex As Integer)
-	Integer rowIndex
-	
+Function GTProbeSpecificPortsInCassette(cassette_position As Integer) As Boolean
+	Integer columnIndex, rowIndex
+	Integer probeStringLengthToCheck
+	Integer rowsToStep
+	String PortProbeRequestChar$
+	Boolean probeThisColumn
+	Boolean jumpToStandbyPoint
+
+	'' Check whether it is really a normal cassette OR calibration cassette
+	'' This also sets rowsToStep for the following "for" loops in this function
 	Select g_CassetteType(cassette_position)
-		Case CALIBRATION_CASSETTE
-			rowIndex = 0
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
-			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, True)
-
-			rowIndex = NUM_ROWS - 1
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
-			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, False)
-			
 		Case NORMAL_CASSETTE
-			rowIndex = 0
-			g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
-			GTprobeCassettePort(cassette_position, rowIndex, columnIndex, True)
-
-			For rowIndex = 1 To NUM_ROWS - 1
-				g_RunResult$ = "progress GTprobeAllPortsInColumn->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")"
-				GTprobeCassettePort(cassette_position, rowIndex, columnIndex, False)
-			Next
+			rowsToStep = 1
+		Case CALIBRATION_CASSETTE
+			rowsToStep = NUM_ROWS - 1
+		Default
+			UpdateClient(TASK_MSG, "GTProbeSpecificPortsInCassette failed: " + GTCassetteName$(cassette_position) + " is not a Normal Cassette!", ERROR_LEVEL)
+			GTProbeSpecificPortsInCassette = False
+			Exit Function
 	Send
+
+	For columnIndex = 0 To NUM_COLUMNS - 1
+		'' probeStringLengthToCheck is also the number of ports in this column to check
+		probeStringLengthToCheck = Len(g_PortsRequestString$(cassette_position)) - columnIndex * NUM_ROWS
+		If NUM_ROWS < probeStringLengthToCheck Then probeStringLengthToCheck = NUM_ROWS
+
+		'' Initial check through probe request string to check whether there is a request by user, to probe any port in this column
+		probeThisColumn = False
+		For rowIndex = 0 To probeStringLengthToCheck - 1 Step rowsToStep
+			PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), columnIndex * NUM_ROWS + rowIndex + 1, 1)
+			If PortProbeRequestChar$ = "1" Then
+				probeThisColumn = True
+				'' If a port is requested to probe, we don't have to check further, just exit for this for loop and start probing
+				Exit For
+			EndIf
+		Next
+		
+		'' If there is a request to probe a port in this column
+		If probeThisColumn Then
+			'' jump to standy point when probing the first time in a column
+			jumpToStandbyPoint = True
+			
+			For rowIndex = 0 To probeStringLengthToCheck - 1 Step rowsToStep
+				PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), columnIndex * NUM_ROWS + rowIndex + 1, 1)
+				If PortProbeRequestChar$ = "1" Then
+					''UpdateClient(TASK_MSG, "GTProbeSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
+					GTprobeCassettePort(cassette_position, rowIndex, columnIndex, jumpToStandbyPoint)
+					'' Once jumped to a column, no more jumps are required for probing ports in the same column
+					jumpToStandbyPoint = False
+				EndIf
+			Next
+		EndIf
+	Next
+	
+	GTProbeSpecificPortsInCassette = True
+Fend
+
+Function GTResetSpecificPortsInCassette(cassette_position As Integer)
+	Integer columnIndex, rowIndex
+	Integer resetStringLengthToCheck
+	String PortResetRequestChar$
+
+	For columnIndex = 0 To NUM_COLUMNS - 1
+		'' resetStringLengthToCheck is also the number of ports in this column to reset
+		resetStringLengthToCheck = Len(g_PortsRequestString$(cassette_position)) - columnIndex * NUM_ROWS
+		If NUM_ROWS < resetStringLengthToCheck Then resetStringLengthToCheck = NUM_ROWS
+		
+		For rowIndex = 0 To resetStringLengthToCheck - 1
+			'' Reset the cassette ports corresponding to 1's in probeRequestString
+			PortResetRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), columnIndex * NUM_ROWS + rowIndex + 1, 1)
+			If (PortResetRequestChar$ = "1") Then
+				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
+				g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = 0.0
+				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+			EndIf
+		Next
+	Next
+	
+	If g_CassetteType(cassette_position) = CALIBRATION_CASSETTE Then
+		For columnIndex = 0 To NUM_COLUMNS - 1
+			'' Reset the cassette ports corresponding to the rows 2 to 7, because these ports don't exist in calibration cassette
+			For rowIndex = 1 To NUM_ROWS - 2
+				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
+				g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = 0.0
+				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+			Next
+		Next
+	ElseIf g_CassetteType(cassette_position) <> NORMAL_CASSETTE Then
+		'' This condition is reached only if the cassette is nether a normal cassette nor a calibration cassette
+		'' Or this function (GTResetSpecificPortsInCassette) is called before probing CassetteType
+		'' So reset all the ports to unknown
+		For columnIndex = 0 To NUM_COLUMNS - 1
+			For rowIndex = 0 To NUM_ROWS - 1
+				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
+				g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = 0.0
+				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+			Next
+		Next
+	EndIf
 Fend
 
