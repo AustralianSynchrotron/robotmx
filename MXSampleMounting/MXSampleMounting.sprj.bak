@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/12/15 16:04:24:790,DS:0000007996,CS:15189,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/12/16 02:00:35:531,DS:0000008048,CS:17745,MA:00-0C-29-B8-F2-20,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
-	sPath="c:\\EPSONRC60\\projects\\MXSampleMounting\\"
+	sPath="C:\\EpsonRC60\\Projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="12/16/2015 3:04:24 AM"
+	sLastModified="12/16/2015 1:00:35 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -82,7 +82,7 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile12 {
@@ -471,4 +471,7 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=0
+nGuiBuilderFileCount=1
+GuiBuilderFile1 {
+	sName="MXSampleMounting.gui"
+}

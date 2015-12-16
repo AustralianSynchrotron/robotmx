@@ -129,6 +129,9 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 		UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 	EndIf
 	
+	'' Client Update after probing decision has been made
+	msg$ = "{'set':'cassette_type', 'position':" + Str$(cassette_position) + ", 'min_height_error':" + Str$(min_height_error) + ", 'value':" + Str$(g_CassetteType(cassette_position)) + "}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 Fend
 
 Function GTsetfindAvgHeightStandbyPoint(cassette_position As Integer, pointNum As Integer, index As Integer, guessedCassetteType As Integer, ByRef scanZdistance As Real)

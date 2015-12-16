@@ -518,6 +518,10 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpT
 		UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 	EndIf
 	
+	'' Client Update after probing decision has been made
+	msg$ = "{'set':'adaptor_puck_status', 'position':'" + Str$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'value':" + Str$(g_PuckStatus(cassette_position, puckIndex)) + "}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	
 	Move P(standbyPoint)
 	GTLoadPreviousRobotSpeedMode
 Fend
@@ -544,13 +548,14 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		
 	GTsetRobotSpeedMode(PROBE_SPEED)
 
+	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 		
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		
 		g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = distancePuckSurfacetoHere
-		msg$ = "{\set\:\g_SampleDistance\, \position\:\" + Str$(cassette_position) + "\, \puck\:\" + GTpuckName$(puckIndex) + "\, \port\:\" + Str$(portIndex + 1) + "\, \value\:\" + Str$(distancePuckSurfacetoHere) + "\}"
+		msg$ = "{'set':'adaptor_sample_distance', 'position':'" + Str$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':" + Str$(distancePuckSurfacetoHere) + "}"
 		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 
 		'' Distance error from perfect sample position
@@ -584,6 +589,10 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 
 		Move P(standbyPoint)
 	EndIf
+	
+	'' Client Update after probing decision has been made
+	msg$ = "{'set':'adaptor_port_status', 'position':'" + Str$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + "}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
 	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
