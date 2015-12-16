@@ -197,7 +197,8 @@ Function CassetteXY() As Boolean
         CXYNewX = CXYTouch(CXYIndex, 1) - CenterX
         CXYNewY = CXYTouch(CXYIndex, 2) - CenterY
         CXYNewX = Sqr(CXYNewX * CXYNewX + CXYNewY * CXYNewY)
-        ''Print "touch point[", CXYIndex, "] to center distance=", CXYNewX
+        msg$ = "touch point[" + Str$(CXYIndex) + "]" + "to center distance=" + Str$(CXYNewX)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         If Abs(CXYNewX - CXYRadius) > 1 Then
             g_RunResult$ = "cassette cal: failed, toolset calibration is way too off"
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
@@ -561,8 +562,6 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         Print #LOG_FILE_NO, g_RunResult$
         Print #LOG_FILE_NO, "arg[1]=[", cassettes$, "]"
         Close #LOG_FILE_NO
-        
-        ''SPELCom_Return 1
         Exit Function
     EndIf
 
@@ -571,8 +570,6 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Close #LOG_FILE_NO
-        
-        ''SPELCom_Return 2
         Exit Function
     EndIf
     
@@ -662,17 +659,17 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         Else
 	        Print #LOG_FILE_NO, CCName$, "calibration"
         EndIf
-    
-        CheckToolSet 1
-        P51 = TLSet(1)
-        If CX(P51) = 0 Or CY(P51) = 0 Then
-            Print "Must calibrate toolset before cassette calibration"
-            Print #LOG_FILE_NO, "Must calibrate toolset before cassette calibration"
+          
+        If Not GTCheckTool(1) Then
+        	g_RunResult$ = "Must calibrate toolset before cassette calibration"
+        	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        	Print #LOG_FILE_NO, "Must calibrate toolset before cassette calibration"
             Close #LOG_FILE_NO
-            
             Exit Function
+        Else
+        	P51 = TLSet(1)
         EndIf
-                  
+              
         Select OneCassette$
         Case "l"
             BottomPoint = 41

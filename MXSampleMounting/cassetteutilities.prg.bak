@@ -106,14 +106,13 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
-	g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 
 		Real distanceCASSurfacetoHere
 		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		
 		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = distanceCASSurfacetoHere
-		msg$ = "{'set':'adaptor_sample_distance', 'position':" + Str$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + Str$(distanceCASSurfacetoHere) + "}"
+		msg$ = "{set:g_SampleDistance, position:" + Str$(cassette_position) + ", row:" + Str$(rowIndex + 1) + ", col:" + GTcolumnName$(columnIndex) + ", value:" + Str$(distanceCASSurfacetoHere) + "}"
 		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 			
 		'' Distance error from perfect sample position
@@ -147,9 +146,6 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		Move P(standbyPoint)
 	EndIf
 	
-	msg$ = "{'set':'cassette_port_status', 'position':" + Str$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "}"
-	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-		
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
 	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
 	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called

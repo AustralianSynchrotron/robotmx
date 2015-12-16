@@ -21,10 +21,9 @@ Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Intege
 	Next
 
 	puckIndex = puckIndexToProbe
-	For puckPortIndex = 0 To NUM_PUCK_PORTS - 2
-		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
+	For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 	Next
-	g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 
 	For puckIndex = puckIndexToProbe + 1 To PUCK_D
 		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1

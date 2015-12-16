@@ -44,30 +44,30 @@
 #define OUTSIDE_LN2_SPEED 2
 
 '' Go speed settings for Probing (Same as very slow speed)
-#define PROBE_GO_ACCEL 30
-#define PROBE_GO_DEACCEL 30
-#define PROBE_GO_SPEED 60
+#define PROBE_GO_ACCEL 24
+#define PROBE_GO_DEACCEL 24
+#define PROBE_GO_SPEED 36
 '' Move speed settings for Probing (Same as very slow speed)
-#define PROBE_MOVE_ACCEL 30
-#define PROBE_MOVE_DEACCEL 30
-#define PROBE_MOVE_SPEED 60
+#define PROBE_MOVE_ACCEL 24
+#define PROBE_MOVE_DEACCEL 24
+#define PROBE_MOVE_SPEED 36
 
 '' Go speed settings for INSIDE_LN2
-#define INSIDE_LN2_GO_ACCEL 60
-#define INSIDE_LN2_GO_DEACCEL 60
-#define INSIDE_LN2_GO_SPEED 90
+#define INSIDE_LN2_GO_ACCEL 36
+#define INSIDE_LN2_GO_DEACCEL 36
+#define INSIDE_LN2_GO_SPEED 48
 '' Move speed settings for INSIDE_LN2
-#define INSIDE_LN2_MOVE_ACCEL 45
-#define INSIDE_LN2_MOVE_DEACCEL 45
-#define INSIDE_LN2_MOVE_SPEED 90
+#define INSIDE_LN2_MOVE_ACCEL 36
+#define INSIDE_LN2_MOVE_DEACCEL 36
+#define INSIDE_LN2_MOVE_SPEED 48
 
 '' Go speed settings for OUTSIDE_LN2
-#define OUTSIDE_LN2_GO_ACCEL 40
-#define OUTSIDE_LN2_GO_DEACCEL 40
-#define OUTSIDE_LN2_GO_SPEED 80
+#define OUTSIDE_LN2_GO_ACCEL 60
+#define OUTSIDE_LN2_GO_DEACCEL 60
+#define OUTSIDE_LN2_GO_SPEED 72
 '' Move speed settings for OUTSIDE_LN2
-#define OUTSIDE_LN2_MOVE_ACCEL 40
-#define OUTSIDE_LN2_MOVE_DEACCEL 40
-#define OUTSIDE_LN2_MOVE_SPEED 80
+#define OUTSIDE_LN2_MOVE_ACCEL 60
+#define OUTSIDE_LN2_MOVE_DEACCEL 60
+#define OUTSIDE_LN2_MOVE_SPEED 72
 
 

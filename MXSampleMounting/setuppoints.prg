@@ -27,20 +27,35 @@ Function GTCheckPoint(pointNum As Integer) As Boolean
 		GTCheckPoint = True
 	EndIf
 Fend
-
 Function GTCheckTool(toolNum As Integer) As Boolean
+	''Messaging variable
 	String msg$
+	''Default return value
+	GTCheckTool = False
+	''Setup error handler
+    OnErr GoTo ToolSetError
 	
+	''Check specified tool
 	P51 = TLSet(toolNum)
 	If CX(P51) = 0 Or CY(P51) = 0 Or CU(P51) = 0 Then
 		msg$ = "GTCheckTool: Tool(" + Str$(toolNum) + ") is not defined yet!"
 		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
-		GTCheckTool = False
 	Else
 		msg$ = "GTCheckTool: Tool(" + Str$(toolNum) + ") is Valid."
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		GTCheckTool = True
 	EndIf
+	Exit Function
+
+''Error handler
+ToolSetError:
+	''inform the client
+	msg$ = "GTCheckTool: Tool(" + Str$(toolNum) + ") is not defined yet!"
+	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+	''Clear the error
+	OnErr GoTo 0
+	''Exit function
+	Exit Function
 Fend
 
 Function GTInitBasicPoints() As Boolean

@@ -133,6 +133,8 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
     EndIf
    
    	Motor On
+   	Power High
+   	
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 

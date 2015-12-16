@@ -1619,26 +1619,27 @@ Function ABCThetaToToolSets(a As Real, b As Real, c As Real, theta As Real)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "picker twist off toolset: (", TSTWX, ", ", TSTWY, ", ", TSZ, ", ", TSU, ")"
 #ifdef AUTO_SAVE_POINT
-    CheckToolSet 1
-   	P51 = TLSet(1)
-   	msg$ = "old picker: (" + Str$(CX(P51)) + ", " + Str$(CY(P51)) + ", " + Str$(CZ(P51)) + ", " + Str$(CU(P51)) + ")"
-   	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-   	Print #LOG_FILE_NO, "old picker: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
-    
+    If GTCheckTool(1) Then
+    	   	P51 = TLSet(1)
+		   	msg$ = "old picker: (" + Str$(CX(P51)) + ", " + Str$(CY(P51)) + ", " + Str$(CZ(P51)) + ", " + Str$(CU(P51)) + ")"
+  		 	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+ 		  	Print #LOG_FILE_NO, "old picker: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+    EndIf
+
     UpdateClient(TASK_MSG, "saving new picker...", INFO_LEVEL)
     TLSet 1, XY(TSX, TSY, TSZ, TSU)
     UpdateClient(TASK_MSG, "done!", INFO_LEVEL)
 #endif
-
-
-    ''for placer
-    CheckToolSet 2
-    P51 = TLSet(2)
-   
+  
     TSU = TSU + 180
     TSX = a * Sin(theta) - c * Cos(theta)
     TSY = -a * Cos(theta) - c * Sin(theta)
-    TSZ = CZ(P51) ''keep the old Z offset.
+    If GTCheckTool(2) Then
+    	P51 = TLSet(2)
+    	TSZ = CZ(P51) ''keep the old Z offset from last FineTineToolSet
+    Else
+    	TSZ = 0 ''Initial value
+    EndIf
 
     ''twist off toolset
     TSTWX = (a + MAGNET_HEAD_RADIUS) * Sin(theta) - (c - SAMPLE_PIN_DEPTH) * Cos(theta)
@@ -1652,10 +1653,12 @@ Function ABCThetaToToolSets(a As Real, b As Real, c As Real, theta As Real)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "Toolset placer: (", TSX, ", ", TSY, ", ", TSZ, ", ", TSU, ")"
 #ifdef AUTO_SAVE_POINT
-	P51 = TLSet(2)
-    msg$ = "old placer: (" + Str$(CX(P51)) + ", " + Str$(CY(P51)) + ", " + Str$(CZ(P51)) + ", " + Str$(CU(P51)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-	Print #LOG_FILE_NO, "old placer: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+    If (GTCheckTool(2)) Then
+    	P51 = TLSet(2)
+    	msg$ = "old placer: (" + Str$(CX(P51)) + ", " + Str$(CY(P51)) + ", " + Str$(CZ(P51)) + ", " + Str$(CU(P51)) + ")"
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+		Print #LOG_FILE_NO, "old placer: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+    EndIf
 
     UpdateClient(TASK_MSG, "saving new placerr.....", INFO_LEVEL)
     TLSet 2, XY(TSX, TSY, TSZ, TSU)
@@ -1707,12 +1710,17 @@ Function CalculateToolset As Boolean
     Print #LOG_FILE_NO, "toolset calibration at ", Date$, " ", Time$
 
     ''print out old toolset
-    P51 = TLSet(1)
-    msg$ = "Old TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    P51 = TLSet(2)
-    msg$ = "Old TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    If GTCheckTool(1) Then
+        P51 = TLSet(1)
+    	msg$ = "Old TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    EndIf
+    
+    If GTCheckTool(2) Then
+        P51 = TLSet(2)
+	    msg$ = "Old TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    EndIf
     
     ''adjust because the the direction we move is not exactly X or Y
     ''this is rough calculation, we ignore second order error
@@ -2876,25 +2884,14 @@ Function RunABCTheta
     
 Fend
 Function SetupTSForMagnetCal
-    CheckToolSet 1
-    CheckToolSet 2
-       P51 = TLSet(1)
-       P52 = TLSet(2)
-       If CX(P51) <> 0 And CY(P51) <> 0 And CX(P52) <> 0 And CY(P52) <> 0 Then
-           TLSet 3, XY(((CX(P51) + CX(P52)) / 2), ((CY(P51) + CY(P52)) / 2), ((CZ(P51) + CZ(P52)) / 2), CU(P51))
-       Else
-           TLSet 3, XY(-2, -15.75, 0, (g_MagnetTransportAngle - g_U4MagnetHolder))
-       EndIf
+	If GTCheckTool(1) And GTCheckTool(2) Then
+		P51 = TLSet(1)
+		P52 = TLSet(2)
+		TLSet 3, XY(((CX(P51) + CX(P52)) / 2), ((CY(P51) + CY(P52)) / 2), ((CZ(P51) + CZ(P52)) / 2), CU(P51))
+	Else
+		TLSet 3, XY(-2, -15.75, 0, (g_MagnetTransportAngle - g_U4MagnetHolder))
+	EndIf
 Fend
-''Function SetupTSForMagnetCal
-''	If GTCheckTool(1) And GTCheckTool(2) Then
-''		P51 = TLSet(1)
-''		P52 = TLSet(2)
-''		TLSet 3, XY(((CX(P51) + CX(P52)) / 2), ((CY(P51) + CY(P52)) / 2), ((CZ(P51) + CZ(P52)) / 2), CU(P51))
-''	Else
-''		TLSet 3, XY(-2, -15.75, 0, (g_MagnetTransportAngle - g_U4MagnetHolder))
-''	EndIf
-''Fend
 
 Function DiffPickerPlacer As Real
 	String msg$

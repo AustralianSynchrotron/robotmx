@@ -1555,16 +1555,6 @@ PointNotExist:
     P(Number) = XY(0, 0, 0, 0)
     OnErr GoTo 0
 Fend
-Function CheckToolSet(Number As Integer)
-    OnErr GoTo ToolSetNotExit
-    P51 = TLSet(Number)
-    Exit Function
-ToolSetNotExit:
-    ''EClr no longer necessary in version 6.2.0
-    TLSet Number, XY(0, 0, 0, 0)
-    OnErr GoTo 0
-    Exit Function
-Fend
 Function CutMiddle(ByVal forceName As Integer) As Real
     forceName = Abs(forceName)
     

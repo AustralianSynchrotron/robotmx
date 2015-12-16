@@ -17,7 +17,7 @@ Real m_SP_Ports_6_16_Circle_Radius
 '' adaptor angle error is with respect to PUCK_A
 Global Real m_adaptorAngleError(NUM_CASSETTES, NUM_PUCKS)
 
-Global Boolean g_PuckPresent(NUM_CASSETTES, NUM_PUCKS)
+Global Integer g_PuckStatus(NUM_CASSETTES, NUM_PUCKS)
 Global Real g_SampleDistancefromPuckSurface(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
 Global Integer g_SP_PortStatus(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
 
@@ -82,16 +82,6 @@ Function GTgetPuckIndex(puckChar$ As String, ByRef puckIndex As Integer) As Bool
 			Exit Function
 	Send
 	GTgetPuckIndex = True
-Fend
-
-Function GTResetPuck(cassette_position As Integer, puckIndex As Integer)
-	g_PuckPresent(cassette_position, puckIndex) = False
-	
-	Integer portIndex
-	For portIndex = 0 To NUM_PUCK_PORTS - 1
-		g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = 0.0
-		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
-	Next
 Fend
 
 Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer, jumpToStandbyPoint As Boolean) As Boolean
@@ -503,24 +493,27 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpT
 	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	
-	g_PuckPresent(cassette_position, puckIndex) = PUCK_ABSENT
+	g_PuckStatus(cassette_position, puckIndex) = PUCK_UNKNOWN
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 		'' Distance error from perfect sample position
 		Real distErrorFromPerfectPuckSurface
 		distErrorFromPerfectPuckSurface = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		
 		If distErrorFromPerfectPuckSurface < UNDERPRESS_DISTANCE_FOR_PUCK Then
+			g_PuckStatus(cassette_position, puckIndex) = PUCK_JAM
 			msg$ = "GTprobeSPPuck: ForceTouch (" + GTpuckName$(puckIndex) + ") stopped " + Str$(distErrorFromPerfectPuckSurface) + "mm before reaching theoretical puck surface."
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		ElseIf distErrorFromPerfectPuckSurface < OVERPRESS_DISTANCE_FOR_PUCK Then
-			g_PuckPresent(cassette_position, puckIndex) = PUCK_PRESENT
+			g_PuckStatus(cassette_position, puckIndex) = PUCK_PRESENT
 			msg$ = "GTprobeSPPuck: ForceTouch dectected " + GTpuckName$(puckIndex) + " with distance error = " + Str$(distErrorFromPerfectPuckSurface) + "mm from theoretical puck surface."
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		Else
+			g_PuckStatus(cassette_position, puckIndex) = PUCK_ABSENT
 			msg$ = "GTprobeSPPuck: ForceTouch (" + GTpuckName$(puckIndex) + ") moved " + Str$(distErrorFromPerfectPuckSurface) + "mm beyond theoretical puck surface."
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		EndIf
 	Else
+		g_PuckStatus(cassette_position, puckIndex) = PUCK_ABSENT
 		msg$ = "GTprobeSPPuck: ForceTouch failed to detect " + GTpuckName$(puckIndex) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 	EndIf
@@ -538,7 +531,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	standbyPoint = 52
 	
 	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, PROBE_STANDBY_DISTANCE, standbyPoint)
-	
+
 	Real maxDistanceToScan
 	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK
 	
@@ -557,7 +550,9 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		
 		g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = distancePuckSurfacetoHere
-		
+		msg$ = "{\set\:\g_SampleDistance\, \position\:\" + Str$(cassette_position) + "\, \puck\:\" + GTpuckName$(puckIndex) + "\, \port\:\" + Str$(portIndex + 1) + "\, \value\:\" + Str$(distancePuckSurfacetoHere) + "\}"
+		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+
 		'' Distance error from perfect sample position
 		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distancePuckSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_PUCK
@@ -590,32 +585,105 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		Move P(standbyPoint)
 	EndIf
 	
-	'' The following code just realigns the twistoffmagnet so not required if sample present in port
-	''Move P(standbyPoint)
+	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
+	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
+	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
 
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
 	GTLoadPreviousRobotSpeedMode
 Fend
 
-Function GTprobeAllPortsInPuck(cassette_position As Integer, puckIndex As Integer)
+Function GTProbeSpecificPortsInSuperPuck(cassette_position As Integer) As Boolean
+	'' Check whether it is really a superpuck adaptor
+	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		Integer probeStringLengthToCheck
+		Integer puckIndex, puckPortIndex
+		String PortProbeRequestChar$
+		Boolean probeThisPuck
+		For puckIndex = 0 To NUM_PUCKS - 1
+			'' probeStringLengthToCheck is also the number of ports in this puck to check
+			probeStringLengthToCheck = Len(g_PortsRequestString$(cassette_position)) - puckIndex * NUM_PUCK_PORTS
+			If NUM_PUCK_PORTS < probeStringLengthToCheck Then probeStringLengthToCheck = NUM_PUCK_PORTS
+
+			'' Initial check through probe request string to check whether there is a request by user, to probe any port in this puck
+			probeThisPuck = False
+			For puckPortIndex = 0 To probeStringLengthToCheck - 1
+				PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), puckIndex * NUM_PUCK_PORTS + puckPortIndex + 1, 1)
+				If PortProbeRequestChar$ = "1" Then
+					probeThisPuck = True
+					'' If a port is requested to probe, we don't have to check further, just exit for this for loop and start probing
+					Exit For
+				EndIf
+			Next
 			
-	g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-	GTprobeSPPuck(cassette_position, puckIndex, True)
+			'' If there is a request to probe a port in this puck
+			If probeThisPuck Then
+				UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")", INFO_LEVEL)
+				GTprobeSPPuck(cassette_position, puckIndex, True)
+			
+				If g_PuckStatus(cassette_position, puckIndex) = PUCK_PRESENT Then
+					''Run adaptor angle correction for this puck only if puck is present, this reduces time to finish probing
+					UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")", INFO_LEVEL)
+					If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex, False) Then
+						g_RunResult$ = "error GTProbeSpecificPortsInSuperPuck->GTprobeAdaptorAngleCorrection!"
+						UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
+						GTProbeSpecificPortsInSuperPuck = False
+						Exit Function
+					EndIf
+			
+					For puckPortIndex = 0 To probeStringLengthToCheck - 1
+						'' Probe the superpuck ports corresponding to 1's in probeRequestString
+						PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), puckIndex * NUM_PUCK_PORTS + puckPortIndex + 1, 1)
+						If PortProbeRequestChar$ = "1" Then
+							''UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck->GTprobeSPPort(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(puckPortIndex + 1) + ")", INFO_LEVEL)
+							GTprobeSPPort(cassette_position, puckIndex, puckPortIndex, False)
+						EndIf
+					Next
+					'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
+					Move P52 '' P52 is used as standbyPoint throughout GT domain
+					
+				EndIf
+			EndIf
+		Next
+	Else
+		UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck failed: " + GTCassetteName$(cassette_position) + " is not SuperPuck Adaptor!", ERROR_LEVEL)
+		GTProbeSpecificPortsInSuperPuck = False
+		Exit Function
+	EndIf
 
-	If g_PuckPresent(cassette_position, puckIndex) Then
-		'' If probeAdaptorAngleCorrection was run here, there were incorrect puck absence in probeSPPuck above
-		g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")"
-		If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex, False) Then
-			g_RunResult$ = "error GTprobeAllPortsInPuck->GTprobeAdaptorAngleCorrection!"
-			UpdateClient(TASK_MSG, "GTprobeAllPortsInPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
-			GTprobeAllPortsInPuck = False
-			Exit Function
-		EndIf
+	GTProbeSpecificPortsInSuperPuck = True
+Fend
 
-		Integer portIndex
-		For portIndex = 0 To NUM_PUCK_PORTS - 1
-			g_RunResult$ = "progress GTprobeAllPortsInPuck->GTprobeSPPort(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(portIndex + 1) + ")"
-			GTprobeSPPort(cassette_position, puckIndex, portIndex, False)
+Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
+	Integer resetStringLengthToCheck
+	Integer puckIndex, puckPortIndex
+	String PortResetRequestChar$
+
+	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		For puckIndex = 0 To NUM_PUCKS - 1
+			'' resetStringLengthToCheck is also the number of ports in this puck to reset
+			resetStringLengthToCheck = Len(g_PortsRequestString$(cassette_position)) - puckIndex * NUM_PUCK_PORTS
+			If NUM_PUCK_PORTS < resetStringLengthToCheck Then resetStringLengthToCheck = NUM_PUCK_PORTS
+			
+			For puckPortIndex = 0 To resetStringLengthToCheck - 1
+				'' Reset the superpuck ports corresponding to 1's in probeRequestString
+				PortResetRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), puckIndex * NUM_PUCK_PORTS + puckPortIndex + 1, 1)
+				If PortResetRequestChar$ = "1" Then
+					g_SampleDistancefromPuckSurface(cassette_position, puckIndex, puckPortIndex) = 0.0
+					g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
+				EndIf
+			Next
+		Next
+	Else
+		'' This condition is reached only if the cassette is not a superpuck cassette
+		'' Or this function (GTResetSpecificPortsInSuperPuck) is called before probing CassetteType
+		'' So reset all the ports to unknown
+		For puckIndex = 0 To NUM_PUCKS - 1
+			g_PuckStatus(cassette_position, puckIndex) = PUCK_UNKNOWN
+			For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+				g_SampleDistancefromPuckSurface(cassette_position, puckIndex, puckPortIndex) = 0.0
+				g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
+			Next
 		Next
 	EndIf
 Fend

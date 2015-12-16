@@ -16,7 +16,7 @@ Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Intege
 	
 	For puckIndex = PUCK_A To puckIndexToProbe - 1
 		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
+			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 		Next
 	Next
 
@@ -27,7 +27,7 @@ Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Intege
 
 	For puckIndex = puckIndexToProbe + 1 To PUCK_D
 		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
+			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 		Next
 	Next
 	

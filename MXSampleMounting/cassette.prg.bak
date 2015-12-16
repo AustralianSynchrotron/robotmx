@@ -197,7 +197,8 @@ Function CassetteXY() As Boolean
         CXYNewX = CXYTouch(CXYIndex, 1) - CenterX
         CXYNewY = CXYTouch(CXYIndex, 2) - CenterY
         CXYNewX = Sqr(CXYNewX * CXYNewX + CXYNewY * CXYNewY)
-        ''Print "touch point[", CXYIndex, "] to center distance=", CXYNewX
+        msg$ = "touch point[" + Str$(CXYIndex) + "]" + "to center distance=" + Str$(CXYNewX)
+        UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         If Abs(CXYNewX - CXYRadius) > 1 Then
             g_RunResult$ = "cassette cal: failed, toolset calibration is way too off"
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
@@ -561,8 +562,6 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         Print #LOG_FILE_NO, g_RunResult$
         Print #LOG_FILE_NO, "arg[1]=[", cassettes$, "]"
         Close #LOG_FILE_NO
-        
-        ''SPELCom_Return 1
         Exit Function
     EndIf
 
@@ -571,8 +570,6 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Print #LOG_FILE_NO, g_RunResult$
         Close #LOG_FILE_NO
-        
-        ''SPELCom_Return 2
         Exit Function
     EndIf
     
@@ -662,17 +659,17 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         Else
 	        Print #LOG_FILE_NO, CCName$, "calibration"
         EndIf
-    
+          
         If Not GTCheckTool(1) Then
-	        g_RunResult$ = "Must calibrate toolset before cassette calibration"
-            Print #LOG_FILE_NO, "Must calibrate toolset before cassette calibration"
+        	g_RunResult$ = "Must calibrate toolset before cassette calibration"
+        	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+        	Print #LOG_FILE_NO, "Must calibrate toolset before cassette calibration"
             Close #LOG_FILE_NO
-            UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Exit Function
         Else
         	P51 = TLSet(1)
         EndIf
-                  
+              
         Select OneCassette$
         Case "l"
             BottomPoint = 41
@@ -694,8 +691,8 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         If Not Init Then
             Select OneCassette$
             Case "l"
-            	If (Not GTCheckPoint(34) Or Not GTCheckPoint(41) Or Not GTCheckPoint(44)) Then
-	            	UpdateClient(TASK_MSG, "Left cassette points not defined", ERROR_LEVEL)
+            	If Not GTCheckPoint(34) Then
+	            	UpdateClient(TASK_MSG, "Left cassette XY centre not defined", ERROR_LEVEL)
 	            	Exit Function
             	EndIf
                 CenterX = CX(P34)
@@ -704,8 +701,8 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
                 Angle = CU(P34)
                 CassetteOrientation = Hand(P34)
             Case "m"
-            	If (Not GTCheckPoint(35) Or Not GTCheckPoint(42) Or Not GTCheckPoint(45)) Then
-	            	UpdateClient(TASK_MSG, "Middle cassette points not defined", ERROR_LEVEL)
+            	If Not GTCheckPoint(35) Then
+	            	UpdateClient(TASK_MSG, "Middle cassette XY centre not defined", ERROR_LEVEL)
 	            	Exit Function
             	EndIf
                 CenterX = CX(P35)
@@ -714,8 +711,8 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
                 Angle = CU(P35)
                 CassetteOrientation = Hand(P35)
             Case "r"
-            	If (Not GTCheckPoint(36) Or Not GTCheckPoint(43) Or Not GTCheckPoint(46)) Then
-	            	UpdateClient(TASK_MSG, "Right cassette points not defined", ERROR_LEVEL)
+            	If Not GTCheckPoint(36) Then
+	            	UpdateClient(TASK_MSG, "Right cassette XY centre not defined", ERROR_LEVEL)
 	            	Exit Function
             	EndIf
                 CenterX = CX(P36)
@@ -730,19 +727,30 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
                 Exit Function
             Send
 
-            Print #LOG_FILE_NO, "Old position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", Angle, ")"
-
 			msg$ = "Old position (" + Str$(CenterX) + ", " + Str$(CenterY) + ", " + Str$(BottomZ) + ", " + Str$(Angle) + ")"
 			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-            msg$ = "old Bottom (" + Str$(CX(P(BottomPoint))) + ", " + Str$(CY(P(BottomPoint))) + ", " + Str$(CZ(P(BottomPoint))) + ")"
-  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-            msg$ = "old Top (" + Str$(CX(P(TopPoint))) + ", " + Str$(CY(P(TopPoint))) + ", " + Str$(CZ(P(TopPoint))) + ")"
-   			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-            Print #LOG_FILE_NO, "Old Bottom (", CX(P(BottomPoint)), ", ", CY(P(BottomPoint)), ", ", CZ(P(BottomPoint)), ")"
-            Print #LOG_FILE_NO, "old Top (", CX(P(TopPoint)), ", ", CY(P(TopPoint)), ", ", CZ(P(TopPoint)), ")"
+            Print #LOG_FILE_NO, "Old position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", Angle, ")"
+            
+            Print "BottomPoint="
+            Print BottomPoint
+
+
+            Print "TopPoint="
+            Print TopPoint
+            
+			If PDef(P(BottomPoint)) Then
+	            msg$ = "old Bottom (" + Str$(CX(P(BottomPoint))) + ", " + Str$(CY(P(BottomPoint))) + ", " + Str$(CZ(P(BottomPoint))) + ")"
+	  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	            Print #LOG_FILE_NO, "Old Bottom (", CX(P(BottomPoint)), ", ", CY(P(BottomPoint)), ", ", CZ(P(BottomPoint)), ")"
+			EndIf
+			
+			If PDef(P(TopPoint)) Then
+				msg$ = "old Top (" + Str$(CX(P(TopPoint))) + ", " + Str$(CY(P(TopPoint))) + ", " + Str$(CZ(P(TopPoint))) + ")"
+	  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	  			Print #LOG_FILE_NO, "old Top (", CX(P(TopPoint)), ", ", CY(P(TopPoint)), ", ", CZ(P(TopPoint)), ")"
+			EndIf
         EndIf
-
-
+        
         g_Steps = 60 / CCTotalCAS
         g_CurrentSteps = (100 * CSTIndex - 100) / CCTotalCAS
         msg$ = Str$(g_CurrentSteps) + " of 100"

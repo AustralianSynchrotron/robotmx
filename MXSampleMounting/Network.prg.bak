@@ -213,7 +213,7 @@ Fend
 ''Do not call from ReceiveSendLoop, it must be separate thread
 Function UpdateClient(receiver As Integer, msg$ As String, level As Integer)
 	''Print message locally if within specified g_PrintLevel
-	If (receiver = TASK_MSG And (g_PrintLevel And level > 0)) Then
+	If ((receiver = TASK_MSG) And (g_PrintLevel And level > 0)) Then
 		Print msg$
 	EndIf
 	If receiver = TASK_MSG Then
@@ -986,7 +986,7 @@ SkipStates:
 				If stored_err$ <> err$ Then
 					stored_err$ = err$
 					''wait for transmission of error string
-					UpdateClient(STATE_ERR, err$, 0, ERROR_LEVEL)
+					UpdateClient(STATE_ERR, err$, ERROR_LEVEL)
 				EndIf
 			EndIf
 			

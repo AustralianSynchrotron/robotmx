@@ -206,14 +206,14 @@ Fend
 Function GTInitPrintLevel()
 	''This function is only for testing
 	''The g_PrintLevel variable should be set from python layers
-    g_PrintLevel = DEBUG_LEVEL + INFO_LEVEL + WARNING_LEVEL + ERROR_LEVEL
+    g_PrintLevel = INFO_LEVEL + WARNING_LEVEL + ERROR_LEVEL ''DEBUG_LEVEL + 
 Fend
 ''Send message from user task to client
 ''This function is a wrapper for SendMessageWait, and SPELCOM_Event
 ''Do not call from ReceiveSendLoop, it must be separate thread
 Function UpdateClient(receiver As Integer, msg$ As String, level As Integer)
 	''Print message locally if within specified g_PrintLevel
-	If (receiver = TASK_MSG And (g_PrintLevel And level > 0)) Then
+	If ((receiver = TASK_MSG) And (g_PrintLevel And level > 0)) Then
 		Print msg$
 	EndIf
 	If receiver = TASK_MSG Then

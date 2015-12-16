@@ -21,6 +21,11 @@ Function GTCassetteType$(cassetteType As Integer) As String
 Fend
 
 
+Function GTResetCassette(cassette_position As Integer)
+	'' Reset Cassette Type to Unknown Cassette
+	g_CassetteType(cassette_position) = UNKNOWN_CASSETTE
+Fend
+
 Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum As Integer, uOffset As Real, ByRef scanZdistance As Real)
 	Real radiusToCircleCassette, standbyPointU, standbyZoffsetFromCassetteBottom
 	

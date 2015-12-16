@@ -4,6 +4,7 @@
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
+#include "reporterdefs.inc"
 
 Global Integer g_CassetteType(NUM_CASSETTES)
 
@@ -20,11 +21,6 @@ Function GTCassetteType$(cassetteType As Integer) As String
 	EndIf
 Fend
 
-
-Function GTResetCassette(cassette_position As Integer)
-	'' Reset Cassette Type to Unknown Cassette
-	g_CassetteType(cassette_position) = UNKNOWN_CASSETTE
-Fend
 
 Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum As Integer, uOffset As Real, ByRef scanZdistance As Real)
 	Real radiusToCircleCassette, standbyPointU, standbyZoffsetFromCassetteBottom
@@ -129,9 +125,6 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 		UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 	EndIf
 	
-	'' Client Update after probing decision has been made
-	msg$ = "{'set':'cassette_type', 'position':" + Str$(cassette_position) + ", 'value':" + Str$(g_CassetteType(cassette_position)) + "}"
-	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 Fend
 
 Function GTsetfindAvgHeightStandbyPoint(cassette_position As Integer, pointNum As Integer, index As Integer, guessedCassetteType As Integer, ByRef scanZdistance As Real)

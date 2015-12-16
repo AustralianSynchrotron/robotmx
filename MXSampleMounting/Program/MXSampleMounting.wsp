@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/12/15 11:47:20:556,DS:0000004796,CS:28533,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="magnetmaneuvers.prg"
+ENVT0100,LM:2015/12/16 00:22:05:415,DS:0000004780,CS:15699,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=18
 ProgramFile1 {
@@ -170,7 +170,7 @@ ProgramFile15 {
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
