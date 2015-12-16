@@ -112,7 +112,9 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		
 		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = distanceCASSurfacetoHere
-		
+		msg$ = "{\set\:\g_SampleDistance\, \position\:\" + Str$(cassette_position) + "\, \row\:\" + Str$(rowIndex + 1) + "\, \col\:\" + GTcolumnName$(columnIndex) + "\, \value\:\" + Str$(distanceCASSurfacetoHere) + "\}"
+		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+			
 		'' Distance error from perfect sample position
 		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distanceCASSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_CAS
@@ -141,9 +143,12 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = maxDistanceToScan
 		msg$ = "GTprobeCassettePort: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		Move P(standbyPoint)
 	EndIf
 	
-	Move P(standbyPoint)
+	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
+	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
+	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
 	
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
 	GTLoadPreviousRobotSpeedMode
@@ -200,6 +205,9 @@ Function GTProbeSpecificPortsInCassette(cassette_position As Integer) As Boolean
 					jumpToStandbyPoint = False
 				EndIf
 			Next
+			
+			'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
+			Move P52 '' P52 is used as standbyPoint throughout GT domain
 		EndIf
 	Next
 	

@@ -1,12 +1,12 @@
-ENVT0100,LM:2015/12/15 07:07:22:853,DS:0000007993,CS:18781,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/12/15 16:04:24:790,DS:0000007996,CS:15189,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="12/15/2015 6:07:21 PM"
-	bBuildComplete=True
+	sLastModified="12/16/2015 3:04:24 AM"
+	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
 	bClearControllerProject=False
@@ -82,12 +82,12 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile13 {

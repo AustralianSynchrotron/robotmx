@@ -1276,4 +1276,8 @@ right
 > motor On
 > print power
  0
+> Print Chr$(34)
+"
+> 
+!!Error: 3100, Syntax error.
 > 

@@ -531,7 +531,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	standbyPoint = 52
 	
 	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, PROBE_STANDBY_DISTANCE, standbyPoint)
-	
+
 	Real maxDistanceToScan
 	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK
 	
@@ -550,7 +550,9 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		
 		g_SampleDistancefromPuckSurface(cassette_position, puckIndex, portIndex) = distancePuckSurfacetoHere
-		
+		msg$ = "{\set\:\g_SampleDistance\, \position\:\" + Str$(cassette_position) + "\, \puck\:\" + GTpuckName$(puckIndex) + "\, \port\:\" + Str$(portIndex + 1) + "\, \value\:\" + Str$(distancePuckSurfacetoHere) + "\}"
+		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+
 		'' Distance error from perfect sample position
 		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distancePuckSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_PUCK
@@ -583,8 +585,9 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		Move P(standbyPoint)
 	EndIf
 	
-	'' The following code just realigns the twistoffmagnet so not required if sample present in port
-	''Move P(standbyPoint)
+	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
+	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
+	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
 
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
 	GTLoadPreviousRobotSpeedMode
@@ -636,6 +639,9 @@ Function GTProbeSpecificPortsInSuperPuck(cassette_position As Integer) As Boolea
 							GTprobeSPPort(cassette_position, puckIndex, puckPortIndex, False)
 						EndIf
 					Next
+					'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
+					Move P52 '' P52 is used as standbyPoint throughout GT domain
+					
 				EndIf
 			EndIf
 		Next
