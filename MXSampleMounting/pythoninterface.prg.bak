@@ -180,49 +180,45 @@ Function GTRetrievePortsProperty
 					cassette_position = UNKNOWN_CASSETTE
 			Send
 
-			Select g_CassetteType(cassette_position)
-				Case NORMAL_CASSETTE ''For Calibration Cassette Same
-					portsPerJSONPacket = 24
-					numJSONPackets = (NUM_ROWS * NUM_COLUMNS) / portsPerJSONPacket
+			If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+				portsPerJSONPacket = 24
+				numJSONPackets = (NUM_ROWS * NUM_COLUMNS) / portsPerJSONPacket
+				
+				For responseJSONPacketIndex = 0 To numJSONPackets - 1
+					startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
+					endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 					
-					For responseJSONPacketIndex = 0 To numJSONPackets - 1
-						startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
-						endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
+					JSONResponse$ = "{'set':'sample_distance_error','type':" + Str$(g_CassetteType(cassette_position)) + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
+					For portIndex = startPortIndex To endPortIndex
+						ColumnIndex = portIndex / NUM_ROWS
+						rowIndex = portIndex - (ColumnIndex * NUM_ROWS)
 						
-						JSONResponse$ = "{set:'sample_distance_error',start:" + Str$(startPortIndex) + ",end:" + Str$(endPortIndex) + ",value:["
-						For portIndex = startPortIndex To endPortIndex
-							columnIndex = portIndex / NUM_ROWS
-							rowIndex = portIndex - (columnIndex * NUM_ROWS)
-							
-							JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ","
-						Next
-						JSONResponse$ = JSONResponse$ + "]}"
-						Print JSONResponse$
-						UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
+						JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex), "0.000") + ","
 					Next
+					JSONResponse$ = JSONResponse$ + "]}"
 
-				Case SUPERPUCK_CASSETTE
-					portsPerJSONPacket = 16 '' One packet for each puck
-					numJSONPackets = NUM_PUCKS
-					
-					For responseJSONPacketIndex = 0 To numJSONPackets - 1
-						startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
-						endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
-						
-						JSONResponse$ = "{set:'sample_distance_error',start:" + Str$(startPortIndex) + ",end:" + Str$(endPortIndex) + ",value:["
-						puckIndex = responseJSONPacketIndex
-						For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-							JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.000") + ","
-						Next
-						JSONResponse$ = JSONResponse$ + "]}"
-						Print JSONResponse$
-						UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
-					Next
-				Default
-					JSONResponse$ = "{set:'sample_distance_error',start:0,end:0,value:[]}"
-					Print JSONResponse$
 					UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
-			Send
+				Next
+
+			ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+				portsPerJSONPacket = 16 '' One packet for each puck
+				numJSONPackets = NUM_PUCKS
+				
+				For responseJSONPacketIndex = 0 To numJSONPackets - 1
+					startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
+					endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
+					
+					JSONResponse$ = "{'set':'sample_distance_error','type':" + Str$(g_CassetteType(cassette_position))
+					JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
+					puckIndex = responseJSONPacketIndex
+					For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+						JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.000") + ","
+					Next
+					JSONResponse$ = JSONResponse$ + "]}"
+
+					UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
+				Next
+			EndIf
 		Next
     EndIf
 Fend

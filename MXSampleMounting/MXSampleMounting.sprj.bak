@@ -1,11 +1,11 @@
-ENVT0100,LM:2015/12/17 03:43:08:353,DS:0000007996,CS:16197,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2015/12/17 06:52:52:103,DS:0000007995,CS:22080,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="12/17/2015 2:43:00 PM"
+	sLastModified="12/17/2015 5:42:01 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -82,12 +82,12 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile13 {
@@ -117,7 +117,7 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 nIncludeFileCount=6

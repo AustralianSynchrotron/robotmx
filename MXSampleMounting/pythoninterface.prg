@@ -188,7 +188,8 @@ Function GTRetrievePortsProperty
 					startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
 					endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 					
-					JSONResponse$ = "{set:'sample_distance_error',start:" + Str$(startPortIndex) + ",end:" + Str$(endPortIndex) + ",value:["
+					JSONResponse$ = "{'set':'sample_distance_error','type':" + Str$(g_CassetteType(cassette_position))
+					JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
 					For portIndex = startPortIndex To endPortIndex
 						columnIndex = portIndex / NUM_ROWS
 						rowIndex = portIndex - (columnIndex * NUM_ROWS)
@@ -196,7 +197,7 @@ Function GTRetrievePortsProperty
 						JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ","
 					Next
 					JSONResponse$ = JSONResponse$ + "]}"
-					Print JSONResponse$
+
 					UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
 				Next
 
@@ -208,19 +209,16 @@ Function GTRetrievePortsProperty
 					startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
 					endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 					
-					JSONResponse$ = "{set:'sample_distance_error',start:" + Str$(startPortIndex) + ",end:" + Str$(endPortIndex) + ",value:["
+					JSONResponse$ = "{'set':'sample_distance_error','type':" + Str$(g_CassetteType(cassette_position))
+					JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
 					puckIndex = responseJSONPacketIndex
 					For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
 						JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.000") + ","
 					Next
 					JSONResponse$ = JSONResponse$ + "]}"
-					Print JSONResponse$
+
 					UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
 				Next
-			Else
-				JSONResponse$ = "{set:'sample_distance_error',start:0,end:0,value:[]}"
-				Print JSONResponse$
-				UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
 			EndIf
 		Next
     EndIf

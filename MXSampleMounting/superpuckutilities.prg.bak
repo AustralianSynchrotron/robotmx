@@ -576,16 +576,18 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		EndIf
 
-		GTTwistOffMagnet
+		''GTTwistOffMagnet
 	Else
-		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		''There is no sample (or ForceTouch failure)
+		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTprobeSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 
-		Move P(standbyPoint)
+		''Move P(standbyPoint)
 	EndIf
+	
+	GTTwistOffMagnet
 	
 	'' Client Update after probing decision has been made
 	msg$ = "{'set':'adaptor_sample_distance', 'position':" + Str$(cassette_position) + ", 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':" + Str$(g_SPSampleDistanceError(cassette_position, puckIndex, portIndex)) + "}"
