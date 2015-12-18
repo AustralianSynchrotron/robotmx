@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/12/16 02:30:42:103,DS:0000004782,CS:29469,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2015/12/17 03:43:14:009,DS:0000004801,CS:20532,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="superpuckutilities.prg"
 bMdiMaximized=True
 nProgramFileCount=18
 ProgramFile1 {
@@ -126,7 +126,7 @@ ProgramFile11 {
 ProgramFile12 {
 	sName="superpuckutilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0

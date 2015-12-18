@@ -5,15 +5,50 @@
 
 Global String g_PortsRequestString$(NUM_CASSETTES)
 
+Function debugProbeNormal(cassette_position As Integer)
+	Integer cassetteIndex
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		g_PortsRequestString$(cassetteIndex) = ""
+	Next
+	
+	Integer rowIndex, ColumnIndex
+	For ColumnIndex = 0 To NUM_COLUMNS - 1
+		For rowIndex = 0 To NUM_ROWS - 1
+			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
+		Next
+	Next
+
+	ProbeCassettes
+	GTRetrievePortsProperty
+Fend
+
+Function debugProbeCalib(cassette_position As Integer)
+	Integer cassetteIndex
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		g_PortsRequestString$(cassetteIndex) = ""
+	Next
+	
+	Integer rowIndex, ColumnIndex
+	For ColumnIndex = 0 To NUM_COLUMNS - 1
+		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
+		For rowIndex = 1 To NUM_ROWS - 2
+			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
+		Next
+		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
+	Next
+
+	ProbeCassettes
+	GTRetrievePortsProperty
+Fend
+
 Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Integer)
 
 	Integer cassetteIndex
 	For cassetteIndex = 0 To NUM_CASSETTES - 1
 		g_PortsRequestString$(cassetteIndex) = ""
 	Next
-	
+		
 	Integer puckIndex, puckPortIndex
-	
 	For puckIndex = PUCK_A To puckIndexToProbe - 1
 		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
 			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
@@ -32,6 +67,7 @@ Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Intege
 	Next
 	
 	ProbeCassettes
+	GTRetrievePortsProperty
 Fend
 
 Function ProbeCassettes
@@ -85,6 +121,7 @@ Function ProbeCassettes
 		If probeThisCassette Then
 			If GTProbeCassetteType(cassette_position) Then
             	''only the ports that are to be probed are reset to unknown before probing.
+            	''GTResetSpecificPorts is only called here because the user might forget to call it before probing
 				GTResetSpecificPorts(cassette_position)
 				If Not GTProbeSpecificPorts(cassette_position) Then
 					g_RunResult$ = "GTProbeSpecificPorts Failed"
@@ -111,4 +148,82 @@ Function ProbeCassettes
     Print "GTProbeCassettes finished at ", Date$, " ", Time$
 Fend
 
+Function GTRetrievePortsProperty
+	
+	String RequestTokens$(0)
+	Integer RequestArgC
+    
+    ''parse argument from global
+    ParseStr g_RunArgs$, RequestTokens$(), " "
+    ''check argument
+    RequestArgC = UBound(RequestTokens$) + 1
+
+	Integer strIndex
+	String cassetteChar$
+	Integer cassette_position
+    String JSONResponse$
+	Integer portsPerJSONPacket, numJSONPackets, responseJSONPacketIndex
+	Integer startPortIndex, endPortIndex, portIndex
+	Integer columnIndex, rowIndex, puckIndex, puckPortIndex
+    If RequestArgC > 0 Then
+    	For strIndex = 1 To Len(RequestTokens$(0))
+			cassetteChar$ = Mid$(RequestTokens$(0), strIndex, 1)
+
+			Select UCase$(cassetteChar$)
+				Case "L"
+					cassette_position = LEFT_CASSETTE
+				Case "M"
+					cassette_position = MIDDLE_CASSETTE
+				Case "R"
+					cassette_position = RIGHT_CASSETTE
+				Default
+					cassette_position = UNKNOWN_CASSETTE
+			Send
+
+			Select g_CassetteType(cassette_position)
+				Case NORMAL_CASSETTE ''For Calibration Cassette Same
+					portsPerJSONPacket = 24
+					numJSONPackets = (NUM_ROWS * NUM_COLUMNS) / portsPerJSONPacket
+					
+					For responseJSONPacketIndex = 0 To numJSONPackets - 1
+						startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
+						endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
+						
+						JSONResponse$ = "{set:'sample_distance_error',start:" + Str$(startPortIndex) + ",end:" + Str$(endPortIndex) + ",value:["
+						For portIndex = startPortIndex To endPortIndex
+							columnIndex = portIndex / NUM_ROWS
+							rowIndex = portIndex - (columnIndex * NUM_ROWS)
+							
+							JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ","
+						Next
+						JSONResponse$ = JSONResponse$ + "]}"
+						Print JSONResponse$
+						UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
+					Next
+
+				Case SUPERPUCK_CASSETTE
+					portsPerJSONPacket = 16 '' One packet for each puck
+					numJSONPackets = NUM_PUCKS
+					
+					For responseJSONPacketIndex = 0 To numJSONPackets - 1
+						startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
+						endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
+						
+						JSONResponse$ = "{set:'sample_distance_error',start:" + Str$(startPortIndex) + ",end:" + Str$(endPortIndex) + ",value:["
+						puckIndex = responseJSONPacketIndex
+						For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+							JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.000") + ","
+						Next
+						JSONResponse$ = JSONResponse$ + "]}"
+						Print JSONResponse$
+						UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
+					Next
+				Default
+					JSONResponse$ = "{set:'sample_distance_error',start:0,end:0,value:[]}"
+					Print JSONResponse$
+					UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
+			Send
+		Next
+    EndIf
+Fend
 

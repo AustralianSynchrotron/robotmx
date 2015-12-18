@@ -4,8 +4,8 @@
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
 
-Global Real g_SampleDistancefromCASSurface(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
-Global Integer g_CAS_PortStatus(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
+Global Preserve Real g_CASSampleDistanceError(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
+Global Preserve Integer g_CAS_PortStatus(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
 
 Function GTCassetteName$(cassette_position As Integer) As String
 	If cassette_position = LEFT_CASSETTE Then
@@ -31,17 +31,9 @@ Function GTgetColumnIndex(columnChar$ As String, ByRef columnIndex As Integer) A
 Fend
 
 Function GTapplyTiltToOffsets(cassette_position As Integer, PerfectXoffset As Real, PerfectYoffset As Real, PerfectZoffset As Real, ByRef Actualoffsets() As Real)
-	Actualoffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
-	Actualoffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
-	Actualoffsets(2) = PerfectZoffset - (PerfectXoffset * g_tiltDX(cassette_position) + PerfectYoffset * g_tiltDY(cassette_position))
-Fend
-
-Function GTResetColumn(cassette_position As Integer, columnIndex As Integer)
-	Integer rowIndex
-	For rowIndex = 0 To NUM_ROWS - 1
-		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = 0.0
-		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
-	Next
+	ActualOffsets(0) = PerfectXoffset + PerfectZoffset * g_tiltDX(cassette_position)
+	ActualOffsets(1) = PerfectYoffset + PerfectZoffset * g_tiltDY(cassette_position)
+	ActualOffsets(2) = PerfectZoffset - (PerfectXoffset * g_tiltDX(cassette_position) + PerfectYoffset * g_tiltDY(cassette_position))
 Fend
 
 '' To get a point on the circumference of the circle with radius taken from the cassette center [cassette's bottom center's (X,Y) location]
@@ -112,14 +104,11 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		Real distanceCASSurfacetoHere
 		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
 		
-		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = distanceCASSurfacetoHere
-		msg$ = "{'set':'adaptor_sample_distance', 'position':" + Str$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + Str$(distanceCASSurfacetoHere) + "}"
-		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-			
 		'' Distance error from perfect sample position
 		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distanceCASSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_CAS
-		
+		g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = distErrorFromPerfectSamplePos
+
 		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
 			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
 			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_ERROR
@@ -139,15 +128,17 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		
 		GTTwistOffMagnet
 	Else
+		'' There is no sample (or ForceTouch failure)
 		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
-		''In reality g_SampleDistancefromCASSurface is greater than maxDistanceToScan because there is no sample (or ForceTouch failure)
-		g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = maxDistanceToScan
+		g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_CAS
 		msg$ = "GTprobeCassettePort: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		Move P(standbyPoint)
 	EndIf
 	
 	'' Client Update after probing decision has been made
+	msg$ = "{'set':'cassette_sample_distance', 'position':" + Str$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + Str$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex)) + "}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	msg$ = "{'set':'cassette_port_status', 'position':" + Str$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 		
@@ -234,7 +225,7 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 			PortResetRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), columnIndex * NUM_ROWS + rowIndex + 1, 1)
 			If (PortResetRequestChar$ = "1") Then
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
-				g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = 0.0
+				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
 				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
 			EndIf
 		Next
@@ -245,7 +236,7 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 			'' Reset the cassette ports corresponding to the rows 2 to 7, because these ports don't exist in calibration cassette
 			For rowIndex = 1 To NUM_ROWS - 2
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
-				g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = 0.0
+				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
 				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
 			Next
 		Next
@@ -256,7 +247,7 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 		For columnIndex = 0 To NUM_COLUMNS - 1
 			For rowIndex = 0 To NUM_ROWS - 1
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
-				g_SampleDistancefromCASSurface(cassette_position, rowIndex, columnIndex) = 0.0
+				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
 				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
 			Next
 		Next
