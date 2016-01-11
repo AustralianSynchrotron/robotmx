@@ -1,9 +1,0 @@
-placer calibration at 2015/06/03 14:55:21
-touched magnet head at ( 222.525,  338.73)
-cavity touched holder arm at ( 216.228,  346.73)
-touch magnet head at Z= -147.872
-g_PlacerWallToHead= 0.616013
-SUCCESS: Placer position ( 228.624,  341.73,  -159.602,  88.059)
-placer calibration end at 2015/06/03 14:56:38
-P26 moved from ( 228.642,  341.716,  -159.6,  88.1577) to ( 228.624,  341.73,  -159.602,  88.059) 
-post   level error:  0.0662079mm

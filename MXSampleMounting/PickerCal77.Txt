@@ -1,2 +1,0 @@
-picker calibration at 2015/11/04 17:54:18
-touched seat at ( 117.624,  404.639) and ( 116.788,  424.639)

@@ -19,7 +19,6 @@ Function debugProbeNormal(cassette_position As Integer)
 	Next
 
 	ProbeCassettes
-	GTRetrievePortsProperty
 Fend
 
 Function debugProbeCalib(cassette_position As Integer)
@@ -38,7 +37,6 @@ Function debugProbeCalib(cassette_position As Integer)
 	Next
 
 	ProbeCassettes
-	GTRetrievePortsProperty
 Fend
 
 Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Integer)
@@ -67,12 +65,14 @@ Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Intege
 	Next
 	
 	ProbeCassettes
-	GTRetrievePortsProperty
 Fend
 
 Function ProbeCassettes
 	Cls
     Print "GTProbeCassettes entered at ", Date$, " ", Time$
+    
+    ''Ensure moves are not restricted to XY plane for probe
+    g_OnlyAlongAxis = False
 
 	''init result
     g_RunResult$ = ""

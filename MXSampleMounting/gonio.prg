@@ -70,6 +70,10 @@ Function GoHomeFromGonio
 		SetFastSpeed
 		''detach
 		Move P24
+		Print "GoHomeFromGonio move P24 completed"
+		Print "RealPos=", RealPos
+		Print "P24=",
+		Print P24
 	EndIf
 	
     If isCloseToPoint(24) Then
@@ -85,6 +89,7 @@ Function GoHomeFromGonio
 			Motor Off
 			Quit All
 	    EndIf
+	    Print "ForceTouch done RealPos=", RealPos
 		SetFastSpeed
 		Move P22
 	EndIf
@@ -124,7 +129,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	EndIf
     
     g_OnlyAlongAxis = True
-    
+       
     ''log file
     g_FCntGonio = g_FCntGonio + 1
     WOpen "GoniometerCal" + Str$(g_FCntGonio) + ".Txt" As #LOG_FILE_NO
@@ -134,7 +139,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
     Print #LOG_FILE_NO, "dx=", dx, "dy=", dy, ", dz=", dz, "du=", du
 
 	UpdateClient(TASK_PROG, "0 of 100", INFO_LEVEL)
-
+    
     If Motor = Off Then
         Motor On
     EndIf
@@ -143,6 +148,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
     EndIf
 
     Tool 0
+       
     If Not Init Then
         g_SafeToGoHome = True
 
@@ -267,7 +273,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 			''Tell the user how long it took 
         	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 			If g_IncludeStrip Then
-				Move Here -Z(STRIP_PLACER_Z_OFFSET)
+				Move RealPos -Z(STRIP_PLACER_Z_OFFSET)
 			EndIf
             For GNWait = 1 To 100
                 If g_FlagAbort Then
@@ -277,7 +283,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
                 EndIf
                 Wait 1
             Next
-            Move Here :Z(-2)
+            Move RealPos :Z(-2)
         EndIf
         
         If g_FlagAbort Then
@@ -358,7 +364,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	    
 	    ''try to side step in
 	    ''remember start position in case need to try again
-		P51 = Here
+		P51 = RealPos
 	    For GNPullTimes = 1 To 3
 			If Not ForceTouch(GNUpstreamDir, (GONIO_X_SAFE_BUFFER - CAVITY_RADIUS), False) Then
 				Exit For
@@ -368,12 +374,12 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 					''shift 1 mm back
 					Move P51
 					TongMove DIRECTION_CAVITY_TAIL, 1, False
-					P51 = Here
+					P51 = RealPos
 				Case 2
 					''shift 1 mm forwar from the original place
 					Move P51
 					TongMove DIRECTION_CAVITY_HEAD, 2, False
-					P51 = Here
+					P51 = RealPos
 				Case 3
 					g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_GONIO
 					g_RunResult$ = "something blocked tong move to goniometer while it is side stepping in"
@@ -396,7 +402,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             Exit Function
         EndIf
 	    ''now push forward to touch goniometer head with cavity edge
-		P51 = Here
+		P51 = RealPos
         If Not ForceTouch(DIRECTION_CAVITY_HEAD, 10, True) Then
             g_RunResult$ = "FAILED: calibrate goniometer cannot touch the head after side step in"
             Print #LOG_FILE_NO, g_RunResult$
@@ -410,16 +416,20 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             Exit Function
         EndIf
 		''now move in to cover goniometer head with cavity
-		TongMove DIRECTION_CAVITY_TAIL, 1, False
+		TongMove DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_GONIO_DETACH, False
 		TongMove GNUpstreamDir, CAVITY_RADIUS, False
-		P24 = Here
+		Print "Before P24=",
+		Print P24
+		P24 = RealPos
+		Print "After P24=",
+		Print P24
 		TongMove DIRECTION_CAVITY_HEAD, 1 + GONIO_OVER_MAGNET_HEAD, False
     Else
         ''someone manually put the cavity over the goniometer
-        GonioX = CX(Here)
-        GonioY = CY(Here)
-        GonioZ = CZ(Here)
-        GonioU = CU(Here)
+        GonioX = CX(RealPos)
+        GonioY = CY(RealPos)
+        GonioZ = CZ(RealPos)
+        GonioU = CU(RealPos)
     EndIf
     
     ''Removed 24/02/14 dont adjust U of Gonio to cardinal angle anymore.
@@ -441,9 +451,9 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	''	Go Here +U(tmp_Real1)
 	''EndIf
         
-    msg$ = "init position (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
+    msg$ = "init position (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos)) + ")"
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    Print #LOG_FILE_NO, "init position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+    Print #LOG_FILE_NO, "init position (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
 
 	UpdateClient(TASK_MSG, "gonio cal: adjust position for cut middle", INFO_LEVEL)
 	
@@ -507,7 +517,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             Exit Function
         EndIf
 
-        Print #LOG_FILE_NO, "after cut middle for X (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+        Print #LOG_FILE_NO, "after cut middle for X (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     EndIf
 
     ''find Z
@@ -533,7 +543,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             EndIf
             Exit Function
         EndIf
-        Print #LOG_FILE_NO, "after cut middle for Z (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+        Print #LOG_FILE_NO, "after cut middle for Z (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     EndIf
 
     ''find X again after Z centered
@@ -560,13 +570,13 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             EndIf
             Exit Function
         EndIf
-        Print #LOG_FILE_NO, "after cut middle for X (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+        Print #LOG_FILE_NO, "after cut middle for X (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     EndIf
 
-    GonioX = CX(Here)
-    GonioY = CY(Here)
-    GonioZ = CZ(Here)
-    GonioU = CU(Here)
+    GonioX = CX(RealPos)
+    GonioY = CY(RealPos)
+    GonioZ = CZ(RealPos)
+    GonioU = CU(RealPos)
 
     ''find Y
     SetFastSpeed
@@ -576,8 +586,8 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	GNDwnStrmRad = DegToRad(g_Perfect_DownStream_Angle)
 
     ''save position in case we need to come back
-	P51 = Here
-	Move Here +X(CAVITY_RADIUS * Cos(GNDwnStrmRad)) +Y(CAVITY_RADIUS * Sin(GNDwnStrmRad))
+	P51 = RealPos
+	Move RealPos +X(CAVITY_RADIUS * Cos(GNDwnStrmRad)) +Y(CAVITY_RADIUS * Sin(GNDwnStrmRad))
     SetVerySlowSpeed
 
     Wait TIME_WAIT_BEFORE_RESET
@@ -598,7 +608,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
         g_Steps = 12
         UpdateClient(TASK_PROG, "84 of 100", INFO_LEVEL)
         UpdateClient(TASK_MSG, "gonio cal: press tong to gonio", INFO_LEVEL)
-		P52 = Here
+		P52 = RealPos
         If Not ForceTouch(DIRECTION_CAVITY_HEAD, 10, True) Then
             g_RunResult$ = "FAILED: calibrate goniometer failed at Y touch"
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
@@ -608,7 +618,7 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
             Move P51
 		    TongMove DIRECTION_CAVITY_HEAD, 2 * SAFE_BUFFER_FOR_GONIO_DETACH + GONIO_OVER_MAGNET_HEAD, False
         Else
-            Print #LOG_FILE_NO, "touched goniometer for Y at (", CX(Here), ", ", CY(Here), ")"
+            Print #LOG_FILE_NO, "touched goniometer for Y at (", CX(RealPos), ", ", CY(RealPos), ")"
             GonioCalibration = True
 
             ''move in
@@ -619,19 +629,19 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 		    TongMove DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_GONIO_DETACH, False
             UpdateClient(TASK_PROG, "97 of 100", INFO_LEVEL)
             
-           	Move Here -X(CAVITY_RADIUS * Cos(GNDwnStrmRad)) -Y(CAVITY_RADIUS * Sin(GNDwnStrmRad))
+           	Move RealPos -X(CAVITY_RADIUS * Cos(GNDwnStrmRad)) -Y(CAVITY_RADIUS * Sin(GNDwnStrmRad))
            	UpdateClient(TASK_PROG, "98 of 100", INFO_LEVEL)
 		    TongMove DIRECTION_CAVITY_HEAD, (SAFE_BUFFER_FOR_GONIO_DETACH + GONIO_OVER_MAGNET_HEAD), False
 		    ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 		    UpdateClient(TASK_PROG, "99 of 100", INFO_LEVEL)
-            msg$ = "final (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
+            msg$ = "final (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos)) + ")"
             UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-            Print #LOG_FILE_NO, "final (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+            Print #LOG_FILE_NO, "final (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
             
             If Not Init Then
                 Print #LOG_FILE_NO, "old P20 (", CX(P20), ", ", CY(P20), ", ", CZ(P20), ", ", CU(P20), ")"
             EndIf
-            P21 = Here
+            P21 = RealPos
             P20 = P21 - XY(dx, dy, dz, du)
             msg$ = "new P20 (" + Str$(CX(P20)) + ", " + Str$(CY(P20)) + ", " + Str$(CZ(P20)) + ", " + Str$(CU(P20)) + ")"
             UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
@@ -671,6 +681,10 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
         SetFastSpeed
         ''detach
         Move P24
+        Print "Gonio calibration move p24 complete"
+        Print "RealPos=", RealPos
+        Print "P24=",
+        Print P24
         GoHomeFromGonio
         MoveTongHome
     EndIf
@@ -777,10 +791,10 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
         Move P90
     Else
         ''someone manually put the cavity over the goniometer
-        GonioX = CX(Here)
-        GonioY = CY(Here)
-        GonioZ = CZ(Here)
-        GonioU = CU(Here)
+        GonioX = CX(RealPos)
+        GonioY = CY(RealPos)
+        GonioZ = CZ(RealPos)
+        GonioU = CU(RealPos)
     EndIf
 
     g_CurrentSteps = 0
@@ -805,9 +819,9 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
         Exit Function
     EndIf
     
-    msg$ = "init position (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
+    msg$ = "init position (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos)) + ")"
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    Print #LOG_FILE_NO, "init position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+    Print #LOG_FILE_NO, "init position (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
 
     ''find X
     g_CurrentSteps = 12
@@ -837,7 +851,7 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
         Jump P0
         Exit Function
     EndIf
-    Print #LOG_FILE_NO, "after cut middle for XY (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+    Print #LOG_FILE_NO, "after cut middle for XY (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
 
     ''find Z
     g_CurrentSteps = 36
@@ -866,7 +880,7 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
         Jump P0
         Exit Function
     EndIf
-    Print #LOG_FILE_NO, "after cut middle for Z (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+    Print #LOG_FILE_NO, "after cut middle for Z (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
 
     g_CurrentSteps = 60
     g_Steps = 24
@@ -894,7 +908,7 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
         Jump P0
         Exit Function
     EndIf
-    Print #LOG_FILE_NO, "after cut middle for X (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+    Print #LOG_FILE_NO, "after cut middle for X (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
 
     
     ''find YX
@@ -936,7 +950,7 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
 		Exit Function
     EndIf
     
-    Print #LOG_FILE_NO, "touched beamtool for Y at (", CX(Here), ", ", CY(Here), ")"
+    Print #LOG_FILE_NO, "touched beamtool for Y at (", CX(RealPos), ", ", CY(RealPos), ")"
     BeamToolCalibration = True
 
     ''move in
@@ -954,7 +968,7 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
 	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     	Print #LOG_FILE_NO, "old P90 (", CX(P90), ", ", CY(P90), ", ", CZ(P90), ", ", CU(P90), ")"
     EndIf
-    P90 = Here
+    P90 = RealPos
     msg$ = "new P90 (" + Str$(CX(P90)) + ", " + Str$(CY(P90)) + ", " + Str$(CZ(P90)) + ", " + Str$(CU(P90)) + ")"
     Print #LOG_FILE_NO, "new P90 (", CX(P90), ", ", CY(P90), ", ", CZ(P90), ", ", CU(P90), ")"
     SavePointHistory 90, g_FCntBeamTool

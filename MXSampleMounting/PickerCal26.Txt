@@ -1,2 +1,0 @@
-picker calibration at 2015/06/03 15:32:26
-FAILED: It must start from P6 position

@@ -213,7 +213,7 @@ Fend
 ''Do not call from ReceiveSendLoop, it must be separate thread
 Function UpdateClient(receiver As Integer, msg$ As String, level As Integer)
 	''Print message locally if within specified g_PrintLevel
-	If ((receiver = TASK_MSG) And (g_PrintLevel And level > 0)) Then
+	If ((g_PrintLevel And level > 0)) Then
 		Print msg$
 	EndIf
 	If receiver = TASK_MSG Then
@@ -453,14 +453,7 @@ Function Jog(RobotJoint As Integer, BitPos As Integer, BitNeg As Integer)
 		For i = 1 To 6 Step 1
           pulses(i) = Pls(i)
 		Next
-		
-		''save current speed
-		savSpeed = Speed(1)
-		''restrict speed to 5% for jog
-		If savSpeed > 5 Then
-			Speed (5)
-		EndIf
-		
+			
 		''calculate required tweak
 		If MemSw(BitPos) = On Then
 			''+ve tweak full range for joint
@@ -566,7 +559,7 @@ Function IsCmdBackground As Boolean
 				PDel g_teachpoint
 			EndIf
 		Case "Teach"
-			P(g_teachpoint) = Here
+			P(g_teachpoint) = RealPos
 		Case "Quit"
 			''search for requested taskname. if found, then task is running
 			For i = USER_TASKS_START To 32 Step 1
@@ -650,9 +643,6 @@ Function IsCmdBackground As Boolean
 			TmReset BACK_TIMER
 			''Try to process recv cmd using Eval 
 			backretval = EVal(cmd$, backreply$)
-			If toks$(0) = "g_ProbeRequestString$" Then
-				Print cmd$
-			EndIf
 			If backretval = 0 Then
 				''cmd success
 				IsCmdBackground = True

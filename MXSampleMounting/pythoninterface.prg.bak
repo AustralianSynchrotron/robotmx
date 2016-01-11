@@ -19,7 +19,6 @@ Function debugProbeNormal(cassette_position As Integer)
 	Next
 
 	ProbeCassettes
-	GTRetrievePortsProperty
 Fend
 
 Function debugProbeCalib(cassette_position As Integer)
@@ -38,7 +37,6 @@ Function debugProbeCalib(cassette_position As Integer)
 	Next
 
 	ProbeCassettes
-	GTRetrievePortsProperty
 Fend
 
 Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Integer)
@@ -67,15 +65,18 @@ Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Intege
 	Next
 	
 	ProbeCassettes
-	GTRetrievePortsProperty
 Fend
 
 Function ProbeCassettes
 	Cls
     Print "GTProbeCassettes entered at ", Date$, " ", Time$
+    
+    ''Ensure moves are not restricted to XY plane for probe
+    g_OnlyAlongAxis = False
 
 	''init result
     g_RunResult$ = ""
+    
     
 	'' Initialize all constants
 	If Not GTInitialize Then
@@ -188,12 +189,13 @@ Function GTRetrievePortsProperty
 					startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
 					endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 					
-					JSONResponse$ = "{'set':'sample_distance_error','type':" + Str$(g_CassetteType(cassette_position)) + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
+					JSONResponse$ = "{'set':'sample_distance_error','type':" + Str$(g_CassetteType(cassette_position))
+					JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
 					For portIndex = startPortIndex To endPortIndex
-						ColumnIndex = portIndex / NUM_ROWS
-						rowIndex = portIndex - (ColumnIndex * NUM_ROWS)
+						columnIndex = portIndex / NUM_ROWS
+						rowIndex = portIndex - (columnIndex * NUM_ROWS)
 						
-						JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex), "0.000") + ","
+						JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ","
 					Next
 					JSONResponse$ = JSONResponse$ + "]}"
 

@@ -1,6 +1,7 @@
 #include "mxrobotdefs.inc"
 #include "networkdefs.inc"
 #include "forcedefs.inc"
+#include "genericdefs.inc"
 
 ''===========================================================
 ''left arm or right arm system
@@ -343,14 +344,8 @@ Function ForceTest
 		If FSReadForces(ByRef forces()) Then
 			''Success, print result
 			''Print result
-			Print "Forces: ",
-			For i = 1 To NUM_FORCES Step 1
-				Print " ",
-				Print FmtStr$(forces(i), "00.000"),
-			Next
-			''Add new line
-			Print ""
-			Wait .5
+			Print FmtStr$(forces(1), "00.000") + " " + FmtStr$(forces(2), "00.000") + " " + FmtStr$(forces(3), "00.000") + " " + FmtStr$(forces(4), "00.000") + " " + FmtStr$(forces(5), "00.000") + " " + FmtStr$(forces(6), "00.000")
+			Wait 3
 		Else
 			''Print error from api
 			FSGetErrorDesc(ByRef mesg$)
@@ -365,7 +360,7 @@ Function InitForceConstants
 
 #ifndef MIXED_ARM_ORIENTAION
 	''check arm orientation
-	P30 = Here
+	P30 = RealPos
 	g_ArmOrientation = Hand(P30)
 
 	''init perfect values for left or right arm systems
@@ -636,11 +631,11 @@ Function GetCutMiddleData(forceName As Integer, ByRef scanRange As Real, ByRef n
     Send
 Fend
 Function GetDestination(ByVal forceName As Integer, ByVal stepDistance As Real, ByRef dest() As Real)
-    CalculateStepSize(forceName, stepDistance, CU(Here), ByRef dest())
-    dest(1) = dest(1) + CX(Here)
-    dest(2) = dest(2) + CY(Here)
-    dest(3) = dest(3) + CZ(Here)
-    dest(4) = dest(4) + CU(Here)
+    CalculateStepSize(forceName, stepDistance, CU(RealPos), ByRef dest())
+    dest(1) = dest(1) + CX(RealPos)
+    dest(2) = dest(2) + CY(RealPos)
+    dest(3) = dest(3) + CZ(RealPos)
+    dest(4) = dest(4) + CU(RealPos)
 Fend
 Function CalculateStepSize(ByVal forceName As Integer, ByVal stepDistance As Real, ByVal currentU As Real, ByRef stepSize() As Real)
 
@@ -749,11 +744,11 @@ Fend
 Function ForceCross(forceName As Integer, threshold As Real, scanDistance As Real, numSteps As Integer, fineTune As Boolean) As Boolean
     String msg$
     ''calculate where is the best destination,
-    CalculateStepSize(forceName, scanDistance, CU(Here), ByRef FCDestPosition())
-    FCDestPosition(1) = FCDestPosition(1) + CX(Here)
-    FCDestPosition(2) = FCDestPosition(2) + CY(Here)
-    FCDestPosition(3) = FCDestPosition(3) + CZ(Here)
-    FCDestPosition(4) = FCDestPosition(4) + CU(Here)
+    CalculateStepSize(forceName, scanDistance, CU(RealPos), ByRef FCDestPosition())
+    FCDestPosition(1) = FCDestPosition(1) + CX(RealPos)
+    FCDestPosition(2) = FCDestPosition(2) + CY(RealPos)
+    FCDestPosition(3) = FCDestPosition(3) + CZ(RealPos)
+    FCDestPosition(4) = FCDestPosition(4) + CU(RealPos)
     
     msg$ = "ForceCross forceName: " + Str$(forceName) + ", threshold: " + Str$(threshold) + " distance: " + Str$(scanDistance)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
@@ -791,11 +786,11 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
     GetCurrentPosition(ByRef FTHInitP())
 
     ''get destination position from the scan distance
-    CalculateStepSize(forceName, scanDistance, CU(Here), ByRef FTHDestP())
-    FTHDestP(1) = FTHDestP(1) + CX(Here)
-    FTHDestP(2) = FTHDestP(2) + CY(Here)
-    FTHDestP(3) = FTHDestP(3) + CZ(Here)
-    FTHDestP(4) = FTHDestP(4) + CU(Here)
+    CalculateStepSize(forceName, scanDistance, CU(RealPos), ByRef FTHDestP())
+    FTHDestP(1) = FTHDestP(1) + CX(RealPos)
+    FTHDestP(2) = FTHDestP(2) + CY(RealPos)
+    FTHDestP(3) = FTHDestP(3) + CZ(RealPos)
+    FTHDestP(4) = FTHDestP(4) + CU(RealPos)
       
     ''try move with trigger first, if failed, we will scan with steps.
     FTHThreshold = GetTouchThreshold(forceName)
@@ -902,7 +897,7 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
     EndIf
     
     ForceTouch = True
-    ''OK, here it is
+    ''OK, RealPos it is
     GetCurrentPosition(ByRef g_CurrentP())
     g_CurrentSingleF = ReadForce(forceName)
 	
@@ -940,10 +935,10 @@ Function isCloseToPoint(Num As Integer) As Boolean
 
     isCloseToPoint = True
     
-    ICTPDX = CX(Here) - CX(P(Num))
-    ICTPDY = CY(Here) - CY(P(Num))
-    ICTPDZ = CZ(Here) - CZ(P(Num))
-    ICTPDU = CU(Here) - CU(P(Num))
+    ICTPDX = CX(RealPos) - CX(P(Num))
+    ICTPDY = CY(RealPos) - CY(P(Num))
+    ICTPDZ = CZ(RealPos) - CZ(P(Num))
+    ICTPDU = CU(RealPos) - CU(P(Num))
 
     ''These two, must be close in all XYZU
     If Num = 6 Or Num = 21 Then
@@ -984,7 +979,7 @@ Fend
 ''move by direction and distance
 Function TongMove(ByVal direction As Integer, ByVal distance As Real, ByVal withTrigger As Boolean)
 
-    CalculateStepSize(direction, distance, CU(Here), ByRef TMChange())
+    CalculateStepSize(direction, distance, CU(RealPos), ByRef TMChange())
     ''move
     StepMove(ByRef TMChange(), withTrigger)
 Fend
@@ -997,7 +992,7 @@ Function ResetForceSensor As Boolean
     SetFastSpeed
     
     ''move up 10 mm
-    Move Here +Z(10.0)
+    Move RealPos +Z(10.0)
     
     ''reset force sensor
     Wait TIME_WAIT_BEFORE_RESET
@@ -1006,10 +1001,10 @@ Function ResetForceSensor As Boolean
     EndIf
 
     ''move back
-    Move Here -Z(8.0)
+    Move RealPos -Z(8.0)
     
     SetVerySlowSpeed
-    Move Here -Z(2.0)
+    Move RealPos -Z(2.0)
 	UpdateClient(TASK_MSG, "force sensor resetted", INFO_LEVEL)
     
     ResetForceSensor = True
@@ -1020,7 +1015,7 @@ Function TwistRelease
 	Real currAngle, dx, dy
 	''Setup variables	
 	currTool = Tool()
-	currAngle = DegToRad(CU(Here))
+	currAngle = DegToRad(CU(RealPos))
 	dx = -10.0 * Cos(currAngle);
 	dy = -10.0 * Sin(currAngle);
 	''if not near gonio
@@ -1031,8 +1026,8 @@ Function TwistRelease
 			TLSet 3, XY(CX(P12), CY(P12), CZ(P12), CU(P12))
 			''do the move
 			Tool 3
-			Go (Here +U(45))
-			Move (Here +X(dx) +Y(dy))
+			Go (RealPos +U(45))
+			Move (RealPos +X(dx) +Y(dy))
 			''restore tool 
 			Tool currTool
 		EndIf
@@ -1111,8 +1106,8 @@ Function MoveTongHome
     SetVeryFastSpeed
     
     ''Maybe called with LimZ set lower than P1, so avoid jump command
-    If Dist(Here, P0) > 3 Then
-        Go Here :Z(-2)
+    If Dist(RealPos, P0) > 3 Then
+        Go RealPos :Z(-2)
 #ifdef MIXED_ARM_ORIENTATION
         Go P1
 #else
@@ -1146,7 +1141,7 @@ Fend
 Function MoveTongOut
     Tool 0
 
-    Move Here :Z(-1)
+    Move RealPos :Z(-1)
 #ifdef MIXED_ARM_ORIENTATION
 	Go P1
 #else
@@ -1155,52 +1150,72 @@ Function MoveTongOut
 Fend
 
 Function GenericMove(ByRef position() As Real, tillForce As Boolean)
-	Real diffx, diffy, diffz, diffu
+	''Setup error handler
+	OnErr GoTo errHandler
 	
-	diffx = Abs(position(1) - CX(Here))
-	diffy = Abs(position(2) - CY(Here))
-	diffz = Abs(position(3) - CZ(Here))
-	diffu = Abs(position(4) - CU(Here))
-	
-    If (diffx >= 0.0009) Or (diffy >= 0.0009) Or (diffz >= 0.0009) Then
-    ''If (position(1) <> CX(Here)) Or (position(2) <> CY(Here)) Or (position(3) <> CZ(Here)) Then
-        If tillForce Then
-        		Move Here :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4)) Till g_FSForceTriggerStatus <> 0
-        Else
-	        	Move Here :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4))
-        EndIf
+	''Try move command first default
+    If tillForce Then
+  		Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4)) Till g_FSForceTriggerStatus <> 0
     Else
-        If tillForce Then
-            Go Here :U(position(4)) Till g_FSForceTriggerStatus <> 0
-        Else
-            Go Here :U(position(4))
-        EndIf
+      	Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4))
+    EndIf
+    ''Move command successful
+    Exit Function
+    
+    ''Move command failed, so use go command instead
+GoInstead:
+    If tillForce Then
+	    Go RealPos :U(position(4)) Till g_FSForceTriggerStatus <> 0
+    Else
+        Go RealPos :U(position(4))
+    EndIf
+    ''Go command successful
+    Exit Function
+    
+errHandler:
+    ''Only the tool orientation was attempted to be changed by the CP statement error
+    If Err = 4035 Then
+        ''Move failed, use go instead
+    	EResume GoInstead
     EndIf
 Fend
 
 Function StepMove(ByRef stepSize() As Real, tillForce As Boolean)
+	''Setup error handler
+	OnErr GoTo errHandler
 		
-	If (Abs(stepSize(1)) >= 0.0009) Or (Abs(stepSize(2)) >= 0.0009) Or (Abs(stepSize(3)) >= 0.0009) Then
-    ''If (stepSize(1) <> 0) Or (stepSize(2) <> 0) Or (stepSize(3) <> 0) Then
-        If tillForce Then
-            Move Here + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4)) Till g_FSForceTriggerStatus <> 0
-        Else
-            Move Here + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4))
-        EndIf
+	''Try move command first default
+    If tillForce Then
+		Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4)) Till g_FSForceTriggerStatus <> 0
     Else
-        If tillForce Then
-            Go Here +U(stepSize(4)) Till g_FSForceTriggerStatus <> 0
-        Else
-            Go Here +U(stepSize(4)) Till g_FSForceTriggerStatus <> 0
-        EndIf
+        Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4))
+    EndIf
+    ''Move command successful
+    Exit Function
+    
+    ''Move command failed, so use go command instead
+GoInstead:
+    If tillForce Then
+    	Go RealPos +U(stepSize(4)) Till g_FSForceTriggerStatus <> 0
+    Else
+    	Go RealPos +U(stepSize(4)) Till g_FSForceTriggerStatus <> 0
+    EndIf
+    ''Go command successful
+    Exit Function
+    
+errHandler:
+    ''Only the tool orientation was attempted to be changed by the CP statement error
+    If Err = 4035 Then
+        ''Move failed, use go instead
+    	EResume GoInstead
     EndIf
 Fend
 
 Function GetCurrentPosition(ByRef position() As Real)
-    position(1) = CX(Here)
-    position(2) = CY(Here)
-    position(3) = CZ(Here)
-    position(4) = CU(Here)
+    position(1) = CX(RealPos)
+    position(2) = CY(RealPos)
+    position(3) = CZ(RealPos)
+    position(4) = CU(RealPos)
 Fend
 
 Function HypStepSize(ByRef stepSize() As Real) As Real
@@ -1832,7 +1847,7 @@ Function FromHomeToTakeMagnet As Boolean
     	msg$ = "Cooled tong for " + Str$(WaitLN2BoilingStop(SENSE_TIMEOUT, HIGH_SENSITIVITY, HIGH_SENSITIVITY)) + " seconds"
     	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
         If g_IncludeStrip Then
-			Move Here -Z(STRIP_PLACER_Z_OFFSET)
+			Move RealPos -Z(STRIP_PLACER_Z_OFFSET)
         EndIf
         Move P3
         ''check gripper again after cooling down
@@ -1867,7 +1882,7 @@ Function FromHomeToTakeMagnet As Boolean
 		Exit Function
     EndIf
 
-    Move Here +Z(20)
+    Move RealPos +Z(20)
 
     If Not Close_Gripper Then
         Print "close gripper failed at holding magnet, aborting"
@@ -1914,7 +1929,7 @@ Function Recovery
         Exit Function
     EndIf
     If g_HoldMagnet Then
-        Move Here :Z(g_Jump_LimZ_LN2)
+        Move RealPos :Z(g_Jump_LimZ_LN2)
         Move P6 :Z(g_Jump_LimZ_LN2)
         Move P6 +Z(20)
         ''if we cannot open gripper, we will stop right here, not go home
@@ -2420,26 +2435,16 @@ Print "g_OnlyAlongAxis=", g_OnlyAlongAxis
 Print "g_LN2LevelHigh=", g_LN2LevelHigh
 
 Fend
-''Prepare to enter dewar from any point.  Must clear the frame
+''From any position, goto P3, and clear dewar frame
 Function ToDewarClearFrame As Boolean
 	String error$
-	Integer closestp
+	Real xpos
 	Real diff
+	Integer closestp
 	''Default return value
 	ToDewarClearFrame = True
-	
 	''setup error handler to catch errors
 	OnErr GoTo errHandler
-	''We want low power
-	Power Low
-	''Set LimZ to allow most moves
-	LimZ 0
-	''Ensure motor is on
-	If Motor = Off Then
-		Motor On
-	EndIf
-	''Ensure toolset 0
-	Tool 0
 	''Open the lid
 	If Not Open_Lid Then
 	    ''Lid failed to open
@@ -2448,21 +2453,35 @@ Function ToDewarClearFrame As Boolean
 	EndIf
 	''Ensure gripper closed
 	Close_Gripper
-	''Ensure safe speed
-	Speed 5
-	''Determine closest point to current position
-	closestp = GetClosestPoint(ByRef diff)
-	If (closestp = 21 Or closestp = 22 Or closestp = 24) Then
-   		GoHomeFromGonio()  	''current position is gonio side of frame
-   	ElseIf (closestp = 0) Then
-   		Jump P1				''Current position is home side of frame
-   	EndIf
+	''Determine what side of dewar we are on now
+	xpos = CX(RealPos)
+	''Gonio side of dewar
+	If (xpos < GONIO_SIDEX) Then
+		''GoHomeFromGonio will do nothing or finish at p18
+		Print "Gonio side"
+		GoHomeFromGonio()
+	EndIf
+	''Home side of dewar
+	If (xpos > HOME_SIDEX) Then
+		closestp = GetClosestPoint(ByRef diff)
+	    Print "diff=" + Str$(diff)
+	    Print "closestp=" + Str$(closestp)
+	    ''Jump to p1 if not there already
+	    If ((diff > 1 And closestp = 1) Or closestp <> 1) Then
+	    	Print "Jump p1"
+		    Jump P1
+	    EndIf
+	EndIf
+	
+	LimZ 0
+	Jump P3 :Z(0)
+	
 SkipTask:
 	Exit Function
    	
 errHandler:
 	''construct error string to send back to host
-	error$ = "ToDewarClearFrame !!Error: " + Str$(Err) + " " + ErrMsg$(Err) + Str$(Erl)
+	error$ = "ToDewarClearFrame !!Error: " + Str$(Err) + " " + ErrMsg$(Err) + " " + Str$(Erl)
 	''indicate error occured
 	g_foreretval = Err
 	''inform client about error

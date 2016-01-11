@@ -5,7 +5,7 @@
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
 
-Global Integer g_CassetteType(NUM_CASSETTES)
+Global Preserve Integer g_CassetteType(NUM_CASSETTES)
 
 
 Function GTCassetteType$(cassetteType As Integer) As String

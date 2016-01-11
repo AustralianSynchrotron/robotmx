@@ -1,6 +1,5 @@
 #include "networkdefs.inc"
 #include "genericdefs.inc"
-#include "reporterdefs.inc"
 
 Boolean m_GTInitialized
 

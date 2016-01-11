@@ -70,4 +70,10 @@
 #define OUTSIDE_LN2_MOVE_DEACCEL 60
 #define OUTSIDE_LN2_MOVE_SPEED 72
 
+''X Edge of dewar on goniometer side
+''Below are world coordinates in mm
+#define GONIO_SIDEX -165
+#define HOME_SIDEX 285
+
+
 

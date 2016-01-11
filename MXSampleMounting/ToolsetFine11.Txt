@@ -1,3 +1,0 @@
-=======================================================
-toolset FineTune 2015/12/09 13:24:17
-placer failed to touch dest in theta

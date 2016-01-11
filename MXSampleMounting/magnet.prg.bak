@@ -264,7 +264,7 @@ Function MagnetCalibration As Boolean
             Exit Function
         EndIf
         SetFastSpeed
-        Move Here +Z(20)
+        Move RealPos +Z(20)
         If Not Close_Gripper Then
             UpdateClient(TASK_MSG, "close gripper failed at magnet after finding it", ERROR_LEVEL)
             Move P6
@@ -1710,12 +1710,17 @@ Function CalculateToolset As Boolean
     Print #LOG_FILE_NO, "toolset calibration at ", Date$, " ", Time$
 
     ''print out old toolset
-    P51 = TLSet(1)
-    msg$ = "Old TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    P51 = TLSet(2)
-    msg$ = "Old TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    If GTCheckTool(1) Then
+        P51 = TLSet(1)
+    	msg$ = "Old TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    EndIf
+    
+    If GTCheckTool(2) Then
+        P51 = TLSet(2)
+	    msg$ = "Old TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    EndIf
     
     ''adjust because the the direction we move is not exactly X or Y
     ''this is rough calculation, we ignore second order error
@@ -1960,7 +1965,7 @@ Function FindMagnet As Boolean
     If Power = 1 Then
         Power Low
     EndIf
-
+    
     ''check conditions
     ''check current position
     If (Not isCloseToPoint(0)) And (Not isCloseToPoint(1)) Then

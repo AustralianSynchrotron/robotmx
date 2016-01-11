@@ -199,6 +199,7 @@ Function CassetteXY() As Boolean
         CXYNewX = Sqr(CXYNewX * CXYNewX + CXYNewY * CXYNewY)
         msg$ = "touch point[" + Str$(CXYIndex) + "]" + "to center distance=" + Str$(CXYNewX)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+        Print "CXYNewX -CXYRadius=", Abs(CXYNewX - CXYRadius)
         If Abs(CXYNewX - CXYRadius) > 1 Then
             g_RunResult$ = "cassette cal: failed, toolset calibration is way too off"
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
@@ -448,9 +449,9 @@ Function CalCassetteAngle(ByVal cutOutZ As Real) As Boolean
     Print #LOG_FILE_NO, "angle from vertical edge =", AFromXEdge
 
     Angle = (AFromXEdge + AFromYEdge) /2
-    msg$ = "final Angle =" + Str$(Angle)
+    msg$ = "final Angle =" + Str$(angle)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    Print #LOG_FILE_NO, "final Angle =", Angle
+    Print #LOG_FILE_NO, "final Angle =", angle
 Fend
 
 ''normal cassette used in calibration, we will probe port A1 to find the angle
@@ -528,6 +529,7 @@ Function NorCassetteAngle(ByVal XCenter As Real, ByVal YCentre As Real) As Boole
 Fend
 Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boolean
 	String msg$
+	Cls
 
     CassetteCalibration = False
     g_SafeToGoHome = False
@@ -579,15 +581,12 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         Select OneCassette$
 #ifndef LEFT_CASSETTE_NOT_EXIST
 			Case "l"
-;
 #endif
 #ifndef MIDDLE_CASSETTE_NOT_EXIST
 			Case "m"
-;
 #endif
 #ifndef RIGHT_CASSETTE_NOT_EXIST
 			Case "r"
-;
 #endif
 			Default
 				g_RunResult$ = "Bad input for one cassette, should be one of rlm"
@@ -730,20 +729,15 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
 			msg$ = "Old position (" + Str$(CenterX) + ", " + Str$(CenterY) + ", " + Str$(BottomZ) + ", " + Str$(Angle) + ")"
 			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
             Print #LOG_FILE_NO, "Old position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", Angle, ")"
-            
-            Print "BottomPoint="
-            Print BottomPoint
-
-
-            Print "TopPoint="
-            Print TopPoint
-            
+                       
+            ''Print old BottomPoint only if it exists
 			If PDef(P(BottomPoint)) Then
 	            msg$ = "old Bottom (" + Str$(CX(P(BottomPoint))) + ", " + Str$(CY(P(BottomPoint))) + ", " + Str$(CZ(P(BottomPoint))) + ")"
 	  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	            Print #LOG_FILE_NO, "Old Bottom (", CX(P(BottomPoint)), ", ", CY(P(BottomPoint)), ", ", CZ(P(BottomPoint)), ")"
 			EndIf
 			
+			''Print old TopPoint only if it exists
 			If PDef(P(TopPoint)) Then
 				msg$ = "old Top (" + Str$(CX(P(TopPoint))) + ", " + Str$(CY(P(TopPoint))) + ", " + Str$(CZ(P(TopPoint))) + ")"
 	  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
@@ -981,6 +975,8 @@ Function VB_CassetteCal
     EndIf
     
     ''call function
+    Print VBCCTokens$(0)
+    
     If Not CassetteCalibration(VBCCTokens$(0), VBCCInit) Then
         If g_FlagAbort Then
             g_RunResult$ = "User Abort"

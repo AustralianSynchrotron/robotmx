@@ -1,5 +1,5 @@
-ENVT0100,LM:2015/12/17 05:52:54:150,DS:0000004801,CS:20532,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="superpuckutilities.prg"
+ENVT0100,LM:2016/01/11 05:03:07:109,DS:0000004798,CS:05199,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="utilities.prg"
 bMdiMaximized=True
 nProgramFileCount=18
 ProgramFile1 {
@@ -38,7 +38,7 @@ ProgramFile3 {
 ProgramFile4 {
 	sName="utilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -126,12 +126,12 @@ ProgramFile11 {
 ProgramFile12 {
 	sName="superpuckutilities.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=773
+		nHeight=390
 	}
 }
 ProgramFile13 {
@@ -152,8 +152,8 @@ ProgramFile14 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=683
+		nHeight=520
 	}
 }
 ProgramFile15 {
@@ -196,8 +196,8 @@ ProgramFile18 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=869
+		nHeight=564
 	}
 }
 nIncludeFileCount=6
@@ -275,8 +275,8 @@ PointFile1 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=123
+		nHeight=34
 	}
 }
 sActiveWindow="main.prg"
@@ -284,14 +284,14 @@ CmdWindow {
 	bOpened=False
 	Window {
 		nLeft=33
-		nTop=130
+		nTop=11
 		nWidth=897
 		nHeight=406
 	}
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=52
 		nTop=27
@@ -313,17 +313,17 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=838
-		nTop=100
+		nLeft=433
+		nTop=333
 		nWidth=470
-		nHeight=349
+		nHeight=342
 	}
 }
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=426
-		nTop=58
+		nLeft=284
+		nTop=245
 		nWidth=827
 		nHeight=530
 	}
