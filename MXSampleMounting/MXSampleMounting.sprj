@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/01/14 00:04:52:625,DS:0000008331,CS:06168,MA:00-0C-29-B8-F2-20,EI:           
+ENVT0100,LM:2016/01/14 06:58:50:734,DS:0000008490,CS:08007,MA:00-0C-29-B8-F2-20,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="C:\\EpsonRC60\\Projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="1/14/2016 11:04:50 AM"
+	sLastModified="1/14/2016 5:58:43 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=True
@@ -29,7 +29,7 @@ UserErrorsFile {
 	nChecksum=0
 }
 nRobotCount=1
-nProgramFileCount=20
+nProgramFileCount=21
 ProgramFile1 {
 	sName="magnet.prg"
 	bCompiled=False
@@ -130,7 +130,12 @@ ProgramFile20 {
 	bCompiled=False
 	bStoreInController=True
 }
-nIncludeFileCount=7
+ProgramFile21 {
+	sName="jsonutilities.prg"
+	bCompiled=False
+	bStoreInController=True
+}
+nIncludeFileCount=8
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bStoreInController=True
@@ -157,6 +162,10 @@ IncludeFile6 {
 }
 IncludeFile7 {
 	sName="mountingdefs.inc"
+	bStoreInController=True
+}
+IncludeFile8 {
+	sName="jsondefs.inc"
 	bStoreInController=True
 }
 nPointFileCount=1

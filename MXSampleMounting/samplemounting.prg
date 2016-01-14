@@ -1,5 +1,11 @@
 #include "networkdefs.inc"
+#include "genericdefs.inc"
 #include "mountingdefs.inc"
+
+Global Preserve Integer g_InterestedCassettePosition
+Global Preserve Integer g_InterestedPuckColumnIndex
+Global Preserve Integer g_InterestedRowPuckPortIndex
+Global Preserve Integer g_InterestedSampleStatus
 
 Function GTGonioReachable() As Boolean
 	'' Check if robot can reach goniometer
@@ -95,6 +101,28 @@ Function GTSetGoniometerPoints(dx As Real, dy As Real, dz As Real, du As Real) A
 	GTSetGoniometerPoints = True
 Fend
 
+Function GTsetInterestPoint(cassette_position As Integer, puckColumnIndex As Integer, rowPuckPortIndex As Integer) As Boolean
+	'' This function returns false if the port supplied is Invalid or if there is no sample in that port
+	GTsetInterestPoint = False
+	
+	g_InterestedCassettePosition = cassette_position
+	g_InterestedPuckColumnIndex = puckColumnIndex
+	g_InterestedRowPuckPortIndex = rowPuckPortIndex
+	g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
+	
+	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_OCCUPIED Then
+			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
+			GTsetInterestPoint = True
+		EndIf
+	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_OCCUPIED Then
+			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
+			GTsetInterestPoint = True
+		EndIf
+	EndIf
+Fend
+
 Function GTMoveToSPMountPortStandbyPoint(cassette_position As Integer, puckIndex As Integer, puckPortIndex As Integer)
 	'' This move should be called only after picking magnet from cradle
 	
@@ -117,7 +145,7 @@ Function GTMoveToSPMountPortStandbyPoint(cassette_position As Integer, puckIndex
 	Move P(puckPortStandbyPoint)
 Fend
 
-Function GTMoveToCassetteMountPortStandbyPoint(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer)
+Function GTMoveToCASMountPortStandbyPoint(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer)
 	'' This move should be called only after picking magnet from cradle
 	
 	GTsetCassetteMountStandbyPoints(cassette_position, rowIndex, columnIndex, PORT_MOUNT_READY_DISTANCE)
@@ -138,4 +166,20 @@ Function GTMoveToCassetteMountPortStandbyPoint(cassette_position As Integer, row
 	EndIf
 Fend
 
+Function GTMountInterestedPort
+	'' GTMoveTo<___>MountPortStandbyPoint sets the standby points and intermediate points
+	If (g_CassetteType(g_InterestedCassettePosition) = NORMAL_CASSETTE) Or (g_CassetteType(g_InterestedCassettePosition) = CALIBRATION_CASSETTE) Then
+		GTMoveToCASMountPortStandbyPoint(g_InterestedCassettePosition, g_InterestedRowPuckPortIndex, g_InterestedPuckColumnIndex)
+	ElseIf g_CassetteType(g_InterestedCassettePosition) = SUPERPUCK_CASSETTE Then
+		GTMoveToSPMountPortStandbyPoint(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)
+	EndIf
+	
+		
+	'' Put dumbbell in Cradle
+	If Not GTReturnMagnet Then
+		g_RunResult$ = "GTReturnMagnet failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+Fend
 

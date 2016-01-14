@@ -1,7 +1,7 @@
-ENVT0100,LM:2016/01/14 00:05:08:093,DS:0000005243,CS:27960,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="pythoninterface.prg"
+ENVT0100,LM:2016/01/14 07:12:33:125,DS:0000005515,CS:27744,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="utilities.prg"
 bMdiMaximized=True
-nProgramFileCount=20
+nProgramFileCount=21
 ProgramFile1 {
 	sName="magnet.prg"
 	bOpened=True
@@ -38,7 +38,7 @@ ProgramFile3 {
 ProgramFile4 {
 	sName="utilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -192,7 +192,7 @@ ProgramFile17 {
 ProgramFile18 {
 	sName="pythoninterface.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -222,7 +222,18 @@ ProgramFile20 {
 		nHeight=260
 	}
 }
-nIncludeFileCount=7
+ProgramFile21 {
+	sName="jsonutilities.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+nIncludeFileCount=8
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bOpened=True
@@ -291,6 +302,17 @@ IncludeFile6 {
 }
 IncludeFile7 {
 	sName="mountingdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+IncludeFile8 {
+	sName="jsondefs.inc"
 	bOpened=True
 	nWinState=0
 	Window {

@@ -2,6 +2,7 @@
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
+#include "jsondefs.inc"
 
 Global String g_PortsRequestString$(NUM_CASSETTES)
 
@@ -28,7 +29,7 @@ Function debugProbeCalib(cassette_position As Integer)
 	Next
 	
 	Integer rowIndex, ColumnIndex
-	For columnIndex = 0 To NUM_COLUMNS - 1
+	For ColumnIndex = 0 To NUM_COLUMNS - 1
 		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 		For rowIndex = 1 To NUM_ROWS - 2
 			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
@@ -161,11 +162,9 @@ Function GTRetrievePortsProperty
 	Integer strIndex
 	String cassetteChar$
 	Integer cassette_position
-    String JSONResponse$
-	Integer portsPerJSONPacket, numJSONPackets, responseJSONPacketIndex
-	Integer startPortIndex, endPortIndex, portIndex
-	Integer columnIndex, rowIndex, puckIndex, puckPortIndex
-    If RequestArgC > 0 Then
+
+	Integer jsonDataToSend, jsonDataToSendStrIndex
+    If RequestArgC = 2 Then
     	For strIndex = 1 To Len(RequestTokens$(0))
 			cassetteChar$ = Mid$(RequestTokens$(0), strIndex, 1)
 
@@ -180,46 +179,20 @@ Function GTRetrievePortsProperty
 					cassette_position = UNKNOWN_CASSETTE
 			Send
 
-			If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
-				portsPerJSONPacket = 24
-				numJSONPackets = (NUM_ROWS * NUM_COLUMNS) / portsPerJSONPacket
+			For jsonDataToSendStrIndex = 1 To Len(RequestTokens$(1))
+				Select UCase$(Mid$(RequestTokens$(1), jsonDataToSendStrIndex, 1))
+					Case "P"
+						jsonDataToSend = PUCK_STATUS
+					Case "S"
+						jsonDataToSend = SAMPLE_PORT_STATUS
+					Case "D"
+						jsonDataToSend = SAMPLE_DISTANCE_ERROR
+					Default
+						Exit Function
+				Send
 				
-				For responseJSONPacketIndex = 0 To numJSONPackets - 1
-					startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
-					endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
-					
-					JSONResponse$ = "{'set':'sample_distance_error','type':" + Str$(g_CassetteType(cassette_position))
-					JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
-					For portIndex = startPortIndex To endPortIndex
-						columnIndex = portIndex / NUM_ROWS
-						rowIndex = portIndex - (columnIndex * NUM_ROWS)
-						
-						JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ","
-					Next
-					JSONResponse$ = JSONResponse$ + "]}"
-
-					UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
-				Next
-
-			ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-				portsPerJSONPacket = 16 '' One packet for each puck
-				numJSONPackets = NUM_PUCKS
-				
-				For responseJSONPacketIndex = 0 To numJSONPackets - 1
-					startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
-					endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
-					
-					JSONResponse$ = "{'set':'sample_distance_error','type':" + Str$(g_CassetteType(cassette_position))
-					JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
-					puckIndex = responseJSONPacketIndex
-					For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-						JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.000") + ","
-					Next
-					JSONResponse$ = JSONResponse$ + "]}"
-
-					UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
-				Next
-			EndIf
+				GTsendJSONResponse(jsonDataToSend, cassette_position)
+			Next
 		Next
     EndIf
 Fend
@@ -267,9 +240,9 @@ Function GTMountSamplePort
 	String cassetteChar$
 	Integer cassette_position
 	String columnOrPuckChar$
-	Integer columnIndex, puckIndex
+	Integer columnPuckIndex
 	String rowOrPuckPortChar$
-	Integer rowIndex, puckPortIndex
+	Integer rowPuckPortIndex
 
 
     If RequestArgC = 3 Then
@@ -291,28 +264,28 @@ Function GTMountSamplePort
 		columnOrPuckChar$ = Mid$(RequestTokens$(1), 1, 1)
 		rowOrPuckPortChar$ = Mid$(RequestTokens$(2), 1, 1)
 		
-		If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-			If Not GTgetPuckIndex(columnOrPuckChar$, ByRef puckIndex) Then
-				g_RunResult$ = "GTMountSamplePort: Invalid Puck Name supplied in g_RunArgs$"
-				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-				Exit Function
-			EndIf
-			puckPortIndex = Val(rowOrPuckPortChar$) - 1
-			If puckPortIndex < 0 Or puckPortIndex > NUM_PUCK_PORTS - 1 Then
-				g_RunResult$ = "GTMountSamplePort: Invalid Puck Port supplied in g_RunArgs$"
-				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-				Exit Function
-			EndIf
-		ElseIf (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
-			If Not GTgetColumnIndex(columnOrPuckChar$, ByRef columnIndex) Then
+		If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+			If Not GTgetColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
 				g_RunResult$ = "GTMountSamplePort: Invalid Column Name supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 			
-			rowIndex = Val(rowOrPuckPortChar$) - 1
-			If rowIndex < 0 Or rowIndex > NUM_ROWS - 1 Then
+			rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
+			If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_ROWS - 1 Then
 				g_RunResult$ = "GTMountSamplePort: Invalid Row Position supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+		ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+			If Not GTgetPuckIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
+				g_RunResult$ = "GTMountSamplePort: Invalid Puck Name supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+			rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
+			If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_PUCK_PORTS - 1 Then
+				g_RunResult$ = "GTMountSamplePort: Invalid Puck Port supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
@@ -323,15 +296,13 @@ Function GTMountSamplePort
 		EndIf
 	EndIf
 	
-	'' Other functions in between
+	If Not GTsetInterestPoint(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
+		g_RunResult$ = "GTMountSamplePort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
 	
-	'' Return Magnet To Cradle And Go to Home Position
-	''g_RunResult$ = "progress GTReturnMagnetAndGoHome"
-	''If Not GTReturnMagnetAndGoHome Then
-	''	g_RunResult$ = "GTReturnMagnetAndGoHome failed"
-	''	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-	''	Exit Function
-	''EndIf
+	GTMountInterestedPort
 	
 	g_RunResult$ = "success GTMountSamplePort"
     Print "GTMountSamplePort finished at ", Date$, " ", Time$
