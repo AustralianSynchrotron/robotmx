@@ -90,9 +90,9 @@ Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer,
 	
 	Real perfectU
 	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
-		perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
+		perfectU = GTadjustUAngle(cassette_position, (angle_to_puck_center - 90))
 	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
-		perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center + 90) - g_UForNormalStandby(cassette_position)))
+		perfectU = GTadjustUAngle(cassette_position, (angle_to_puck_center + 90))
 	EndIf
 	
 	Real puck_edge_x, puck_edge_y, puck_edge_z
@@ -173,9 +173,9 @@ Function GTgetAdaptorAngleErrorProbePoint(cassette_position As Integer, puckInde
 	
 	Real perfectU
 	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
-		perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
+		perfectU = GTadjustUAngle(cassette_position, (angle_to_puck_center - 90))
 	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
-		perfectU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center + 90) - g_UForNormalStandby(cassette_position)))
+		perfectU = GTadjustUAngle(cassette_position, (angle_to_puck_center + 90))
 	EndIf
 	
 	Real puck_center_x, puck_center_y, puck_center_z
@@ -375,9 +375,9 @@ Function GTperfectSPPortOffset(cassette_position As Integer, portIndex As Intege
 	angle_to_puck_center = g_AngleOffset(cassette_position) + g_AngleOfFirstColumn(cassette_position) + m_SP_Alpha(puckIndex) + m_adaptorAngleError(cassette_position, puckIndex)
 	
 	If (puckIndex = PUCK_A Or puckIndex = PUCK_B) Then
-		u = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center - 90) - g_UForNormalStandby(cassette_position)))
+		u = GTadjustUAngle(cassette_position, (angle_to_puck_center - 90))
 	Else	''(puckIndex = PUCK_C Or puckIndex = PUCK_D) Then
-		u = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, ((angle_to_puck_center + 90) - g_UForNormalStandby(cassette_position)))
+		u = GTadjustUAngle(cassette_position, (angle_to_puck_center + 90))
 	EndIf
 	
 	Real puck_center_x, puck_center_y, puck_center_z
@@ -697,4 +697,36 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 	EndIf
 Fend
 
+'' *************** Mounting Code starts from here ***************
+
+Function GTsetSPMountStandbyPoints(cassette_position As Integer, puckIndex As Integer, puckPortIndex As Integer, standbyDistanceFromSPSurface As Real)
+	Real ZoffsetFromBottom, dummyVariable
+	GTperfectSPPortOffset(cassette_position, puckPortIndex, puckIndex, standbyDistanceFromSPSurface, ByRef dummyVariable, ByRef dummyVariable, ByRef ZoffsetFromBottom, ByRef dummyVariable)
+	
+	Real standby_circle_radius
+	standby_circle_radius = m_SP_Puck_Thickness(PUCK_A) * CASSETTE_SHRINK_FACTOR + standbyDistanceFromSPSurface
+
+	Integer SPStandbyPoint, SPStandbyToPortStandbyArcPoint, SPSecondaryArcPoint, puckPortStandbyPoint
+	SPStandbyPoint = 50
+	SPStandbyToPortStandbyArcPoint = 51
+	SPSecondaryArcPoint = 55
+	puckPortStandbyPoint = 52 '' destination point
+
+	GTSetCircumferencePointFromU(cassette_position, g_UForPuckStandby(cassette_position), standby_circle_radius, ZoffsetFromBottom, SPStandbyPoint)
+	GTsetSPPortPoint(cassette_position, puckPortIndex, puckIndex, standbyDistanceFromSPSurface, puckPortStandbyPoint)
+
+	If Abs(CU(P(puckPortStandbyPoint)) - CU(P(SPStandbyPoint))) < 10.0 Then
+		'' Set SPStandbyToPortStandbyArcPoint and SPSecondaryArcPoint as zero 
+		'' so we can check whether these points are required before/for moving
+		P(SPStandbyToPortStandbyArcPoint) = XY(0, 0, 0, 0)
+		P(SPSecondaryArcPoint) = XY(0, 0, 0, 0)
+	Else
+		Real uAngleOfPassingArcPoint
+		uAngleOfPassingArcPoint = (CU(P(SPStandbyPoint)) + CU(P(puckPortStandbyPoint))) / 2.0
+	
+		GTSetCircumferencePointFromU(cassette_position, uAngleOfPassingArcPoint, standby_circle_radius, ZoffsetFromBottom, SPStandbyToPortStandbyArcPoint)
+		GTSetCircumferencePointFromU(cassette_position, CU(P(puckPortStandbyPoint)), standby_circle_radius, ZoffsetFromBottom, SPSecondaryArcPoint)
+	EndIf
+
+Fend
 

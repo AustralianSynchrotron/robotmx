@@ -8,6 +8,61 @@ Global Real g_dumbbell_Perfect_Angle
 Global Real g_dumbbell_Perfect_cosValue
 Global Real g_dumbbell_Perfect_sinValue
 
+Global Real g_goniometer_Angle
+Global Real g_goniometer_cosValue
+Global Real g_goniometer_sinValue
+
+
+Function GTCheckPoint(pointNum As Integer) As Boolean
+	String msg$
+	
+	msg$ = "GTCheckPoint(P" + Str$(pointNum) + ")"
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	If (Not PDef(P(pointNum))) Then
+		msg$ = "GTCheckPoint: P" + Str$(pointNum) + " is not defined yet!"
+		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+		GTCheckPoint = False
+	ElseIf CX(P(pointNum)) = 0 Or CY(P(pointNum)) = 0 Then
+		msg$ = "GTCheckPoint: P" + Str$(pointNum) + " has X or Y coordinate set to 0(zero)!"
+		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+		GTCheckPoint = False
+	Else
+		msg$ = "GTCheckPoint: P" + Str$(pointNum) + " is Valid."
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		GTCheckPoint = True
+	EndIf
+Fend
+Function GTCheckTool(toolNum As Integer) As Boolean
+	''Messaging variable
+	String msg$
+	''Default return value
+	GTCheckTool = False
+	''Setup error handler
+    OnErr GoTo ToolSetError
+	
+	''Check specified tool
+	P51 = TLSet(toolNum)
+	If CX(P51) = 0 Or CY(P51) = 0 Or CU(P51) = 0 Then
+		msg$ = "GTCheckTool: Tool(" + Str$(toolNum) + ") is not defined yet!"
+		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+	Else
+		msg$ = "GTCheckTool: Tool(" + Str$(toolNum) + ") is Valid."
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		GTCheckTool = True
+	EndIf
+	Exit Function
+
+''Error handler
+ToolSetError:
+	''inform the client
+	msg$ = "GTCheckTool: Tool(" + Str$(toolNum) + ") is not defined yet!"
+	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+	''Clear the error
+	OnErr GoTo 0
+	''Exit function
+	Exit Function
+Fend
+
 Function GTInitBasicPoints() As Boolean
  	'' Check Points P0, P1 and P18
 	If GTCheckPoint(0) And GTCheckPoint(1) And GTCheckPoint(18) Then
@@ -123,6 +178,22 @@ Function GTInitCassettePoints() As Boolean
 	GTInitCassettePoints = True
 Fend
 
+Function GTInitGoniometerPoints() As Boolean
+ 	'' Check Point P20
+	If GTCheckPoint(20) Then
+		// P20 is pointing towards Gonio, so Gonio orientation is 180 degrees from CU(P20)
+		g_goniometer_Angle = CU(P20) + 180
+		g_goniometer_cosValue = Cos(DegToRad(g_goniometer_Angle))
+		g_goniometer_sinValue = Sin(DegToRad(g_goniometer_Angle))
+		
+		UpdateClient(TASK_MSG, "GTInitGoniometerPoints completed.", INFO_LEVEL)
+		GTInitGoniometerPoints = True
+	Else
+		UpdateClient(TASK_MSG, "GTInitGoniometerPoints: error in GTCheckPoint!", ERROR_LEVEL)
+		GTInitGoniometerPoints = False
+	EndIf
+Fend
+
 Function GTInitAllPoints() As Boolean
 
 	If Not GTInitBasicPoints() Then
@@ -141,6 +212,13 @@ Function GTInitAllPoints() As Boolean
 	
 	If Not GTInitCassettePoints() Then
 		g_RunResult$ = "GTInitAllPoints: error in GTInitCassettePoints!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		GTInitAllPoints = False
+		Exit Function
+	EndIf
+	
+	If Not GTInitGoniometerPoints() Then
+		g_RunResult$ = "GTInitAllPoints: error in GTInitGoniometerPoints!"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTInitAllPoints = False
 		Exit Function

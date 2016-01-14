@@ -29,7 +29,11 @@ Fend
 Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum As Integer, uOffset As Real, ByRef scanZdistance As Real)
 	Real radiusToCircleCassette, standbyPointU, standbyZoffsetFromCassetteBottom
 	
+	Print "+GTSetScanCassetteTopStandbyPoint"
+	
 	radiusToCircleCassette = CASSETTE_RADIUS * CASSETTE_SHRINK_FACTOR - 3.0
+	
+	Print StringPoint$(pointNum)
 	
 	Real Uangle
 	Uangle = g_AngleOfFirstColumn(cassette_position) + uOffset
@@ -44,8 +48,11 @@ Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum
 	'' Rotate 30 degrees to give cavity some space
 	P(pointNum) = P(pointNum) +U(30.0)
 	
+	Print StringPoint$(pointNum)
+	
 	'' Maximum distance in Z-axis to scan for Cassette using TouchCassetteTop = 30mm
 	scanZdistance = 30.0
+	Print "-GTSetScanCassetteTopStandbyPoint"
 Fend
 
 

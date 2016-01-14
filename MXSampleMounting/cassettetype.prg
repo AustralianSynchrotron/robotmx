@@ -37,7 +37,7 @@ Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum
 	
 	Real Uangle
 	Uangle = g_AngleOfFirstColumn(cassette_position) + uOffset
-	standbyPointU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, (Uangle - g_UForNormalStandby(cassette_position)))
+	standbyPointU = GTadjustUAngle(cassette_position, Uangle)
 	
 	'' 15mm above Maximum Cassette Height = SUPERPUCK_HEIGHT
 	standbyZoffsetFromCassetteBottom = CASSETTE_SHRINK_FACTOR * SUPERPUCK_HEIGHT + 15.0

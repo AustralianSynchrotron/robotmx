@@ -28,7 +28,7 @@ Function debugProbeCalib(cassette_position As Integer)
 	Next
 	
 	Integer rowIndex, ColumnIndex
-	For ColumnIndex = 0 To NUM_COLUMNS - 1
+	For columnIndex = 0 To NUM_COLUMNS - 1
 		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 		For rowIndex = 1 To NUM_ROWS - 2
 			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
@@ -222,5 +222,118 @@ Function GTRetrievePortsProperty
 			EndIf
 		Next
     EndIf
+Fend
+
+Function GTMountSamplePort
+	Cls
+    Print "GTMountSamplePort entered at ", Date$, " ", Time$
+    
+    ''Ensure moves are not restricted to XY plane for probe
+    g_OnlyAlongAxis = False
+
+	''init result
+    g_RunResult$ = ""
+    
+	'' Initialize all constants
+	If Not GTInitialize Then
+		g_RunResult$ = "error GTInitialize failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+
+	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
+	If Not GTCheckAndPickMagnet Then
+		g_RunResult$ = "GTCheckAndPickMagnet: Grabbing magnet failed"
+    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+		
+	
+	String RequestTokens$(0)
+	Integer RequestArgC
+    
+    ''parse argument from global
+    ParseStr g_RunArgs$, RequestTokens$(), " "
+    ''check argument
+    RequestArgC = UBound(RequestTokens$) + 1
+
+
+	String cassetteChar$
+	Integer cassette_position
+	String columnOrPuckChar$
+	Integer columnIndex, puckIndex
+	String rowOrPuckPortChar$
+	Integer rowIndex, puckPortIndex
+
+
+    If RequestArgC = 3 Then
+		cassetteChar$ = Mid$(RequestTokens$(0), 1, 1)
+		Select UCase$(cassetteChar$)
+			Case "L"
+				cassette_position = LEFT_CASSETTE
+			Case "M"
+				cassette_position = MIDDLE_CASSETTE
+			Case "R"
+				cassette_position = RIGHT_CASSETTE
+			Default
+				cassette_position = UNKNOWN_CASSETTE
+				g_RunResult$ = "GTMountSamplePort: Invalid Cassette Position supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+		Send
+
+		columnOrPuckChar$ = Mid$(RequestTokens$(1), 1, 1)
+		rowOrPuckPortChar$ = Mid$(RequestTokens$(2), 1, 1)
+		
+		If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+			If Not GTgetPuckIndex(columnOrPuckChar$, ByRef puckIndex) Then
+				g_RunResult$ = "GTMountSamplePort: Invalid Puck Name supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+			puckPortIndex = Val(rowOrPuckPortChar$) - 1
+			If puckPortIndex < 0 Or puckPortIndex > NUM_PUCK_PORTS - 1 Then
+				g_RunResult$ = "GTMountSamplePort: Invalid Puck Port supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+		ElseIf (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+			If Not GTgetColumnIndex(columnOrPuckChar$, ByRef columnIndex) Then
+				g_RunResult$ = "GTMountSamplePort: Invalid Column Name supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+			
+			rowIndex = Val(rowOrPuckPortChar$) - 1
+			If rowIndex < 0 Or rowIndex > NUM_ROWS - 1 Then
+				g_RunResult$ = "GTMountSamplePort: Invalid Row Position supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+		Else
+			g_RunResult$ = "GTMountSamplePort: Invalid CassetteType Detected! Please probe this cassette again"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			Exit Function
+		EndIf
+	EndIf
+	
+	'' Other functions in between
+	
+	'' Return Magnet To Cradle And Go to Home Position
+	''g_RunResult$ = "progress GTReturnMagnetAndGoHome"
+	''If Not GTReturnMagnetAndGoHome Then
+	''	g_RunResult$ = "GTReturnMagnetAndGoHome failed"
+	''	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	''	Exit Function
+	''EndIf
+	
+	g_RunResult$ = "success GTMountSamplePort"
+    Print "GTMountSamplePort finished at ", Date$, " ", Time$
 Fend
 

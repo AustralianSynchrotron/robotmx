@@ -62,17 +62,17 @@ Function GTCheckAndPickMagnet As Boolean
 	If GTIsMagnetInTong Then
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInTong found magnet on tong.", ERROR_LEVEL)
 	Else
-		Jump P3
+		Jump P3 '' Cooling Point in front of cradle
 		If Not Open_Gripper Then
 			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:Open_Gripper failed", ERROR_LEVEL)
 			Exit Function
 		EndIf
-		Move P6
+		Move P6 '' gripper catches the magnet in cradle
 		If Not Close_Gripper Then
 			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:Close_Gripper failed", ERROR_LEVEL)
 			Exit Function
 		EndIf
-		Jump P3
+		Move P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
 	EndIf
 	
 	GTCheckAndPickMagnet = True
@@ -83,14 +83,16 @@ Function GTReturnMagnet As Boolean
 	
 	Tool 0
 	
-	Jump P6
+	Jump P4 '' point directly above cradle
 
+	Move P6 '' gripper catches the magnet in cradle
+	
 	If Not Open_Gripper Then
 		UpdateClient(TASK_MSG, "GTReturnMagnet:Open_Gripper failed", INFO_LEVEL)
 		Exit Function
 	EndIf
 
-	Move P3
+	Move P3 '' Cooling Point in front of cradle
 	
 	'' No need to close gripper
 	''If Not Close_Gripper Then
