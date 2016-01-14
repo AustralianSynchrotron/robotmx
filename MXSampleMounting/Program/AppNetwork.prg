@@ -66,7 +66,7 @@ Function MyQuickTest
 	For i = 1 To NUM_CASSETTES Step 1
 		For j = 1 To NUM_ROWS Step 1
 			For k = 1 To NUM_COLUMNS Step 1
-				data$(i) = data$(i) + Str$(g_SampleDistancefromCASSurface(i, j, k)) + " "
+				data$(i) = data$(i) + Str$(g_CASSampleDistanceError(i, j, k)) + " "
 			Next
 		Next
 	Next

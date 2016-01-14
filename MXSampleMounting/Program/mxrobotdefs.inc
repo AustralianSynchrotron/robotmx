@@ -102,7 +102,7 @@
 #define SAFE_BUFFER_FOR_U_TURN 20
 #define SAFE_BUFFER_FOR_RESET_FORCE 10
 #define SAFE_BUFFER_FOR_DETACH 5
-#define SAFE_BUFFER_FOR_GONIO_DETACH 1
+#define SAFE_BUFFER_FOR_GONIO_DETACH 1.3
 #define SAFE_BUFFER_FOR_Z_TOUCH 5
 ''how much in Y direction the cavity overlap with magnet head
 '' should be 2-3.55,

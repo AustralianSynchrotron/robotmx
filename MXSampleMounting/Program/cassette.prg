@@ -149,8 +149,8 @@ Function CassetteXY() As Boolean
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Exit Function
         EndIf
-        CXYTouch(CXYIndex, 1) = CX(Here)
-        CXYTouch(CXYIndex, 2) = CY(Here)
+        CXYTouch(CXYIndex, 1) = CX(RealPos)
+        CXYTouch(CXYIndex, 2) = CY(RealPos)
         
         SetFastSpeed
         Move P51
@@ -158,10 +158,10 @@ Function CassetteXY() As Boolean
         ''arc to next point        
         If CXYIndex < 4 Then
             CXYDirection = DegToRad(90 * (CXYIndex + 2))
-            P51 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(Here) + 90))
+            P51 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 90))
 
             CXYDirection = DegToRad(90 * (CXYIndex + 1.5))
-            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(Here) + 45))
+            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 45))
             Hand P51, CassetteOrientation
             Hand P52, CassetteOrientation
             Arc P52, P51
@@ -171,7 +171,7 @@ Function CassetteXY() As Boolean
 		    P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
 
             CXYDirection = DegToRad(90 * 3.5)
-            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(Here) - 135))
+            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) - 135))
             Hand P51, CassetteOrientation
             Hand P52, CassetteOrientation
             Arc P52, P51
@@ -199,6 +199,7 @@ Function CassetteXY() As Boolean
         CXYNewX = Sqr(CXYNewX * CXYNewX + CXYNewY * CXYNewY)
         msg$ = "touch point[" + Str$(CXYIndex) + "]" + "to center distance=" + Str$(CXYNewX)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+        Print "CXYNewX -CXYRadius=", Abs(CXYNewX - CXYRadius)
         If Abs(CXYNewX - CXYRadius) > 1 Then
             g_RunResult$ = "cassette cal: failed, toolset calibration is way too off"
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
@@ -267,10 +268,10 @@ Function CassetteZ() As Boolean
             Exit Function
         EndIf
         
-        CCZTouch(CCZIndex) = CZ(Here)
-        msg$ = "picker touch at Z=" + Str$(CZ(Here))
+        CCZTouch(CCZIndex) = CZ(RealPos)
+        msg$ = "picker touch at Z=" + Str$(CZ(RealPos))
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-        Print #LOG_FILE_NO, "picker touched at (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ")"
+        Print #LOG_FILE_NO, "picker touched at (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ")"
     Next
     CassetteZ = True
     
@@ -402,11 +403,11 @@ Function CalCassetteAngle(ByVal cutOutZ As Real) As Boolean
             Exit Function
         EndIf
         
-        msg$ = "Touched edge at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+        msg$ = "Touched edge at (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ")"
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-        Print #LOG_FILE_NO, "Touched edge at (", CX(Here), ", ", CY(Here), ")"
-        CCATouch(CCAIndex, 1) = CX(Here)
-        CCATouch(CCAIndex, 2) = CY(Here)
+        Print #LOG_FILE_NO, "Touched edge at (", CX(RealPos), ", ", CY(RealPos), ")"
+        CCATouch(CCAIndex, 1) = CX(RealPos)
+        CCATouch(CCAIndex, 2) = CY(RealPos)
         
         ''move back to standby point
         SetFastSpeed
@@ -448,9 +449,9 @@ Function CalCassetteAngle(ByVal cutOutZ As Real) As Boolean
     Print #LOG_FILE_NO, "angle from vertical edge =", AFromXEdge
 
     Angle = (AFromXEdge + AFromYEdge) /2
-    msg$ = "final Angle =" + Str$(Angle)
+    msg$ = "final Angle =" + Str$(angle)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    Print #LOG_FILE_NO, "final Angle =", Angle
+    Print #LOG_FILE_NO, "final Angle =", angle
 Fend
 
 ''normal cassette used in calibration, we will probe port A1 to find the angle
@@ -502,15 +503,15 @@ Function NorCassetteAngle(ByVal XCenter As Real, ByVal YCentre As Real) As Boole
 			Exit Function
 		EndIf
         Move P53
-        Print #LOG_FILE_NO, "start at A1:(", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+        Print #LOG_FILE_NO, "start at A1:(", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     
         ''find Y    
         If Not g_FlagAbort Then
             CutMiddleWithArguments FORCE_YTORQUE, 0, GetForceThreshold(FORCE_YTORQUE), 6, 12
-            Print #LOG_FILE_NO, "after cut middle for Y (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+            Print #LOG_FILE_NO, "after cut middle for Y (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     
             ''calculate new angle and adjust our U
-            CCAInRad = Atan((CY(Here) - YCentre) / (CX(Here) - XCenter))
+            CCAInRad = Atan((CY(RealPos) - YCentre) / (CX(RealPos) - XCenter))
             Select CCAIndex
             Case 1
                 AFromYEdge = RadToDeg(CCAInRad)
@@ -528,6 +529,7 @@ Function NorCassetteAngle(ByVal XCenter As Real, ByVal YCentre As Real) As Boole
 Fend
 Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boolean
 	String msg$
+	Cls
 
     CassetteCalibration = False
     g_SafeToGoHome = False
@@ -579,15 +581,12 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         Select OneCassette$
 #ifndef LEFT_CASSETTE_NOT_EXIST
 			Case "l"
-;
 #endif
 #ifndef MIDDLE_CASSETTE_NOT_EXIST
 			Case "m"
-;
 #endif
 #ifndef RIGHT_CASSETTE_NOT_EXIST
 			Case "r"
-;
 #endif
 			Default
 				g_RunResult$ = "Bad input for one cassette, should be one of rlm"
@@ -634,9 +633,9 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         ''we are sitting at the center top of the cassette
         g_HoldMagnet = True
         Tool 1
-        CenterX = CX(Here)
-        CenterY = CY(Here)
-        BottomZ = CZ(Here) - 142
+        CenterX = CX(RealPos)
+        CenterY = CY(RealPos)
+        BottomZ = CZ(RealPos) - 142
         Angle = 0
     EndIf
 
@@ -691,8 +690,8 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         If Not Init Then
             Select OneCassette$
             Case "l"
-            	If (Not GTCheckPoint(34) Or Not GTCheckPoint(41) Or Not GTCheckPoint(44)) Then
-	            	UpdateClient(TASK_MSG, "Left cassette points not defined", ERROR_LEVEL)
+            	If Not GTCheckPoint(34) Then
+	            	UpdateClient(TASK_MSG, "Left cassette XY centre not defined", ERROR_LEVEL)
 	            	Exit Function
             	EndIf
                 CenterX = CX(P34)
@@ -701,8 +700,8 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
                 Angle = CU(P34)
                 CassetteOrientation = Hand(P34)
             Case "m"
-            	If (Not GTCheckPoint(35) Or Not GTCheckPoint(42) Or Not GTCheckPoint(45)) Then
-	            	UpdateClient(TASK_MSG, "Middle cassette points not defined", ERROR_LEVEL)
+            	If Not GTCheckPoint(35) Then
+	            	UpdateClient(TASK_MSG, "Middle cassette XY centre not defined", ERROR_LEVEL)
 	            	Exit Function
             	EndIf
                 CenterX = CX(P35)
@@ -711,8 +710,8 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
                 Angle = CU(P35)
                 CassetteOrientation = Hand(P35)
             Case "r"
-            	If (Not GTCheckPoint(36) Or Not GTCheckPoint(43) Or Not GTCheckPoint(46)) Then
-	            	UpdateClient(TASK_MSG, "Right cassette points not defined", ERROR_LEVEL)
+            	If Not GTCheckPoint(36) Then
+	            	UpdateClient(TASK_MSG, "Right cassette XY centre not defined", ERROR_LEVEL)
 	            	Exit Function
             	EndIf
                 CenterX = CX(P36)
@@ -727,19 +726,25 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
                 Exit Function
             Send
 
-            Print #LOG_FILE_NO, "Old position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", Angle, ")"
-
 			msg$ = "Old position (" + Str$(CenterX) + ", " + Str$(CenterY) + ", " + Str$(BottomZ) + ", " + Str$(Angle) + ")"
 			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-            msg$ = "old Bottom (" + Str$(CX(P(BottomPoint))) + ", " + Str$(CY(P(BottomPoint))) + ", " + Str$(CZ(P(BottomPoint))) + ")"
-  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-            msg$ = "old Top (" + Str$(CX(P(TopPoint))) + ", " + Str$(CY(P(TopPoint))) + ", " + Str$(CZ(P(TopPoint))) + ")"
-   			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-            Print #LOG_FILE_NO, "Old Bottom (", CX(P(BottomPoint)), ", ", CY(P(BottomPoint)), ", ", CZ(P(BottomPoint)), ")"
-            Print #LOG_FILE_NO, "old Top (", CX(P(TopPoint)), ", ", CY(P(TopPoint)), ", ", CZ(P(TopPoint)), ")"
+            Print #LOG_FILE_NO, "Old position (", CenterX, ", ", CenterY, ", ", BottomZ, ", ", Angle, ")"
+                       
+            ''Print old BottomPoint only if it exists
+			If PDef(P(BottomPoint)) Then
+	            msg$ = "old Bottom (" + Str$(CX(P(BottomPoint))) + ", " + Str$(CY(P(BottomPoint))) + ", " + Str$(CZ(P(BottomPoint))) + ")"
+	  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	            Print #LOG_FILE_NO, "Old Bottom (", CX(P(BottomPoint)), ", ", CY(P(BottomPoint)), ", ", CZ(P(BottomPoint)), ")"
+			EndIf
+			
+			''Print old TopPoint only if it exists
+			If PDef(P(TopPoint)) Then
+				msg$ = "old Top (" + Str$(CX(P(TopPoint))) + ", " + Str$(CY(P(TopPoint))) + ", " + Str$(CZ(P(TopPoint))) + ")"
+	  			UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	  			Print #LOG_FILE_NO, "old Top (", CX(P(TopPoint)), ", ", CY(P(TopPoint)), ", ", CZ(P(TopPoint)), ")"
+			EndIf
         EndIf
-
-
+        
         g_Steps = 60 / CCTotalCAS
         g_CurrentSteps = (100 * CSTIndex - 100) / CCTotalCAS
         msg$ = Str$(g_CurrentSteps) + " of 100"
@@ -970,6 +975,8 @@ Function VB_CassetteCal
     EndIf
     
     ''call function
+    Print VBCCTokens$(0)
+    
     If Not CassetteCalibration(VBCCTokens$(0), VBCCInit) Then
         If g_FlagAbort Then
             g_RunResult$ = "User Abort"

@@ -4,33 +4,35 @@
 #include "superpuckdefs.inc"
 #include "jsondefs.inc"
 
-Function PortStatusString$(PortStatus As Integer) As String
+Function GTPortStatusString$(PortStatus As Integer) As String
 	Select PortStatus
 		Case PORT_OCCUPIED
-			PortStatusString$ = "PRESE"
+			GTPortStatusString$ = "'OCC'"
 		Case PORT_VACANT
-			PortStatusString$ = "VACAN"
+			GTPortStatusString$ = "'VAC'"
 		Case PORT_ERROR
-			PortStatusString$ = "ERROR"
+			GTPortStatusString$ = "'ERR'"
 		Default
-			PortStatusString$ = "UNKNO"
+			GTPortStatusString$ = "'UNK'"
 	Send
 Fend
 
-Function PuckStatusString$(PuckStatus As Integer) As String
+Function GTPuckStatusString$(PuckStatus As Integer) As String
 	Select PuckStatus
 		Case PUCK_PRESENT
-			PuckStatusString$ = "PRESE"
+			GTPuckStatusString$ = "'OCC'"
 		Case PUCK_ABSENT
-			PuckStatusString$ = "VACAN"
+			GTPuckStatusString$ = "'VAC'"
 		Case PUCK_JAM
-			PuckStatusString$ = "ERROR"
+			GTPuckStatusString$ = "'ERR'"
 		Default
-			PuckStatusString$ = "UNKNO"
+			GTPuckStatusString$ = "'UNK'"
 	Send
 Fend
 
-Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
+Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As Integer)
+	'' This function also sends Calibration Cassette data
+	
 	String JSONResponse$
 	Integer portsPerJSONPacket, numJSONPackets, responseJSONPacketIndex
 	Integer startPortIndex, endPortIndex, portIndex
@@ -44,24 +46,25 @@ Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 		startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
 		endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 		
-		If dataToSend = SAMPLE_PORT_STATUS Then
-			JSONResponse$ = "{'set':'sample_port_status'"
-		ElseIf dataToSend = SAMPLE_DISTANCE_ERROR Then
-			JSONResponse$ = "{'set':'sample_distance_error'"
+		If dataToSend = Cassette_PORTs_STATUS Then
+			JSONResponse$ = "{'set':'cassette_ports_status'"
+		ElseIf dataToSend = Cassette_DISTANCE_ERRORs Then
+			JSONResponse$ = "{'set':'cassette_distance_errors'"
 		Else
 			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
 			Exit Function
 		EndIf
-		
-		JSONResponse$ = JSONResponse$ + ",'type':" + Str$(g_CassetteType(cassette_position))
+
+		JSONResponse$ = JSONResponse$ + ",'position':'" + GTCassettePosition$(cassette_position) + "'"
+		JSONResponse$ = JSONResponse$ + ",'type':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'"
 		JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
 		For portIndex = startPortIndex To endPortIndex
 			columnIndex = portIndex / NUM_ROWS
 			rowIndex = portIndex - (columnIndex * NUM_ROWS)
 			
-			If dataToSend = SAMPLE_PORT_STATUS Then
-				JSONResponse$ = JSONResponse$ + PortStatusString$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ","
-			ElseIf dataToSend = SAMPLE_DISTANCE_ERROR Then
+			If dataToSend = Cassette_PORTs_STATUS Then
+				JSONResponse$ = JSONResponse$ + GTPortStatusString$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ","
+			ElseIf dataToSend = Cassette_DISTANCE_ERRORs Then
 				JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ","
 			EndIf
 		Next
@@ -85,22 +88,23 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 		startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
 		endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 		
-		If dataToSend = SAMPLE_PORT_STATUS Then
-			JSONResponse$ = "{'set':'sample_port_status'"
-		ElseIf dataToSend = SAMPLE_DISTANCE_ERROR Then
-			JSONResponse$ = "{'set':'sample_distance_error'"
+		If dataToSend = Cassette_PORTs_STATUS Then
+			JSONResponse$ = "{'set':'cassette_ports_status'"
+		ElseIf dataToSend = Cassette_DISTANCE_ERRORs Then
+			JSONResponse$ = "{'set':'cassette_distance_errors'"
 		Else
 			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
 			Exit Function
 		EndIf
 		
-		JSONResponse$ = JSONResponse$ + ",'type':" + Str$(g_CassetteType(cassette_position))
+		JSONResponse$ = JSONResponse$ + ",'position':" + GTCassettePosition$(cassette_position)
+		JSONResponse$ = JSONResponse$ + ",'type':" + GTCassetteType$(g_CassetteType(cassette_position))
 		JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
 		puckIndex = responseJSONPacketIndex
 		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-			If dataToSend = SAMPLE_PORT_STATUS Then
-				JSONResponse$ = JSONResponse$ + PortStatusString$(g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex)) + ","
-			ElseIf dataToSend = SAMPLE_DISTANCE_ERROR Then
+			If dataToSend = Cassette_PORTs_STATUS Then
+				JSONResponse$ = JSONResponse$ + GTPortStatusString$(g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex)) + ","
+			ElseIf dataToSend = Cassette_DISTANCE_ERRORs Then
 				JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.000") + ","
 			EndIf
 		Next
@@ -115,22 +119,23 @@ Function GTsendPuckData(cassette_position As Integer)
 	String JSONResponse$
 	Integer puckIndex
 	
-	JSONResponse$ = "{'set':'puck_status'"
-	JSONResponse$ = JSONResponse$ + ",'position':" + Str$(cassette_position)
+	JSONResponse$ = "{'set':'cassette_pucks_status'"
+	JSONResponse$ = JSONResponse$ + ",'position':" + GTCassettePosition$(cassette_position)
+	JSONResponse$ = JSONResponse$ + ",'type':" + GTCassetteType$(g_CassetteType(cassette_position))
 	JSONResponse$ = JSONResponse$ + ",'value':["
 	For puckIndex = 0 To NUM_PUCKS - 1
-		JSONResponse$ = JSONResponse$ + PuckStatusString$(g_PuckStatus(cassette_position, puckIndex)) + ","
+		JSONResponse$ = JSONResponse$ + GTPuckStatusString$(g_PuckStatus(cassette_position, puckIndex)) + ","
 	Next
 	JSONResponse$ = JSONResponse$ + "]}"
 
 	UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
 Fend
 
-Function sendJSONResponse(dataToSend As Integer, cassette_position As Integer)
+Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
-		GTsendCassetteData(dataToSend, cassette_position)
+		GTsendNormalCassetteData(dataToSend, cassette_position)
 	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		If dataToSend = PUCK_STATUS Then
+		If dataToSend = CASSETTE_PUCKs_STATUS Then
 			GTsendPuckData(cassette_position)
 		Else
 			GTsendSuperPuckData(dataToSend, cassette_position)

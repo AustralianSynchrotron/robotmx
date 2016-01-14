@@ -7,17 +7,17 @@
 Global Preserve Real g_CASSampleDistanceError(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
 Global Preserve Integer g_CAS_PortStatus(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
 
-Function GTgetColumnIndex(columnChar$ As String, ByRef columnIndex As Integer) As Boolean
+Function GTParseColumnIndex(columnChar$ As String, ByRef columnIndex As Integer) As Boolean
 	columnChar$ = UCase$(columnChar$)
 	columnIndex = Asc(columnChar$) - Asc("A")
 	
-	If (ColumnIndex < 0) Or (ColumnIndex > NUM_COLUMNS - 1) Then
+	If (columnIndex < 0) Or (columnIndex > NUM_COLUMNS - 1) Then
 		columnIndex = UNKNOWN_POSITION
-		GTgetColumnIndex = False
+		GTParseColumnIndex = False
 		Exit Function
 	EndIf
 
-	GTgetColumnIndex = True
+	GTParseColumnIndex = True
 Fend
 
 Function GTcolumnName$(columnIndex As Integer)
@@ -97,9 +97,9 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	EndIf
 	
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'cassette_sample_distance', 'position':" + Str$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + Str$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex)) + "}"
+	msg$ = "{'set':'cassette_sample_distance', 'position':" + GTCassettePosition$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + "}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-	msg$ = "{'set':'cassette_port_status', 'position':" + Str$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "}"
+	msg$ = "{'set':'cassette_port_status', 'position':" + GTCassettePosition$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + GTPortStatusString$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 		
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
@@ -204,18 +204,18 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 		'' This condition is reached only if the cassette is nether a normal cassette nor a calibration cassette
 		'' Or this function (GTResetSpecificPortsInCassette) is called before probing CassetteType
 		'' So reset all the ports to unknown
-		For columnIndex = 0 To NUM_COLUMNS - 1
+		For ColumnIndex = 0 To NUM_COLUMNS - 1
 			For rowIndex = 0 To NUM_ROWS - 1
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
-				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
-				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+				g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = 0.0
+				g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_UNKNOWN
 			Next
 		Next
 	EndIf
 Fend
 
 '' *************** Mounting Code starts from here ***************
-Function GTsetCassetteMountStandbyPoints(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer, standbyDistanceFromCASSurface As Integer)
+Function GTsetCassetteMountStandbyPoints(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer, standbyDistanceFromCASSurface As Real)
 	Real ZoffsetFromBottom
 	ZoffsetFromBottom = (CASSETTE_A1_HEIGHT + CASSETTE_ROW_HEIGHT * rowIndex) * CASSETTE_SHRINK_FACTOR
 	

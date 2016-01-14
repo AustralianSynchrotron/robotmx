@@ -16,29 +16,6 @@ Function GTSaveCurrentRobotSpeedMode
 	m_previous_Move_SpeedSetting = SpeedS(1); ''Print "move_speed=" + Str$(m_previous_Move_SpeedSetting);
 Fend
 
-Function GTsetRobotSpeedMode(speed_mode As Byte)
-	GTSaveCurrentRobotSpeedMode
-	
-	Select speed_mode
-		Case PROBE_SPEED
-			SetProbeSpeed
-			
-		Case INSIDE_LN2_SPEED
-			SetInsideLN2Speed
-			
-		Case OUTSIDE_LN2_SPEED
-			SetOutsideLN2Speed
-	Send
-Fend
-
-Function GTLoadPreviousRobotSpeedMode
-	Accel m_previous_Go_Acceleration, m_previous_Go_Deceleration
-	Speed m_previous_Go_SpeedSetting
-	
-	AccelS m_previous_Move_Acceleration, m_previous_Move_Deceleration
-	SpeedS m_previous_Move_SpeedSetting
-Fend
-
 Function SetProbeSpeed
 	Accel PROBE_GO_ACCEL, PROBE_GO_DEACCEL
     Speed PROBE_GO_SPEED
@@ -61,5 +38,28 @@ Function SetOutsideLN2Speed
     
     AccelS outside_LN2_MOVE_ACCEL, outside_LN2_MOVE_DEACCEL
     SpeedS outside_LN2_MOVE_SPEED
+Fend
+
+Function GTsetRobotSpeedMode(speed_mode As Byte)
+	GTSaveCurrentRobotSpeedMode
+	
+	Select speed_mode
+		Case PROBE_SPEED
+			SetProbeSpeed
+			
+		Case INSIDE_LN2_SPEED
+			SetInsideLN2Speed
+			
+		Case OUTSIDE_LN2_SPEED
+			SetOutsideLN2Speed
+	Send
+Fend
+
+Function GTLoadPreviousRobotSpeedMode
+	Accel m_previous_Go_Acceleration, m_previous_Go_Deceleration
+	Speed m_previous_Go_SpeedSetting
+	
+	AccelS m_previous_Move_Acceleration, m_previous_Move_Deceleration
+	SpeedS m_previous_Move_SpeedSetting
 Fend
 

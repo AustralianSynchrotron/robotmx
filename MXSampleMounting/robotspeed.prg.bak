@@ -7,15 +7,13 @@ Integer m_previous_Go_SpeedSetting
 Real m_previous_Move_SpeedSetting
 
 Function GTSaveCurrentRobotSpeedMode
-	m_previous_Go_Acceleration = Accel(1); Print "go_acc=" + Str$(m_previous_Go_Acceleration);
-	m_previous_Go_Deceleration = Accel(2); Print "go_dec=" + Str$(m_previous_Go_Deceleration);
-	m_previous_Go_SpeedSetting = Speed(1); Print "go_speed=" + Str$(m_previous_Go_SpeedSetting);
+	m_previous_Go_Acceleration = Accel(1); ''Print "go_acc=" + Str$(m_previous_Go_Acceleration);
+	m_previous_Go_Deceleration = Accel(2); ''Print "go_dec=" + Str$(m_previous_Go_Deceleration);
+	m_previous_Go_SpeedSetting = Speed(1); ''Print "go_speed=" + Str$(m_previous_Go_SpeedSetting);
 
-	m_previous_Move_Acceleration = AccelS(1); Print "move_acc=" + Str$(m_previous_Move_Acceleration);
-	m_previous_Move_Deceleration = AccelS(2); Print "move_dec=" + Str$(m_previous_Move_Deceleration);
-	m_previous_Move_SpeedSetting = SpeedS(1); Print "move_speed=" + Str$(m_previous_Move_SpeedSetting);
-	
-	
+	m_previous_Move_Acceleration = AccelS(1); ''Print "move_acc=" + Str$(m_previous_Move_Acceleration);
+	m_previous_Move_Deceleration = AccelS(2); ''Print "move_dec=" + Str$(m_previous_Move_Deceleration);
+	m_previous_Move_SpeedSetting = SpeedS(1); ''Print "move_speed=" + Str$(m_previous_Move_SpeedSetting);
 Fend
 
 Function GTsetRobotSpeedMode(speed_mode As Byte)

@@ -1,7 +1,7 @@
-ENVT0100,LM:2015/12/16 00:22:05:415,DS:0000004780,CS:15699,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2016/01/14 22:37:23:703,DS:0000005519,CS:30827,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="superpuckdefs.inc"
 bMdiMaximized=True
-nProgramFileCount=18
+nProgramFileCount=21
 ProgramFile1 {
 	sName="magnet.prg"
 	bOpened=True
@@ -128,10 +128,10 @@ ProgramFile12 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=0
-		nWidth=452
-		nHeight=260
+		nLeft=309
+		nTop=149
+		nWidth=773
+		nHeight=390
 	}
 }
 ProgramFile13 {
@@ -147,13 +147,13 @@ ProgramFile13 {
 }
 ProgramFile14 {
 	sName="numericmanipulations.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=683
+		nHeight=520
 	}
 }
 ProgramFile15 {
@@ -196,11 +196,44 @@ ProgramFile18 {
 	Window {
 		nLeft=0
 		nTop=0
+		nWidth=869
+		nHeight=564
+	}
+}
+ProgramFile19 {
+	sName="samplemounting.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
 		nWidth=452
 		nHeight=260
 	}
 }
-nIncludeFileCount=6
+ProgramFile20 {
+	sName="normalcassetteutilities.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+ProgramFile21 {
+	sName="jsonutilities.prg"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+nIncludeFileCount=8
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bOpened=True
@@ -259,6 +292,28 @@ IncludeFile5 {
 IncludeFile6 {
 	sName="superpuckdefs.inc"
 	bOpened=True
+	nWinState=2
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+IncludeFile7 {
+	sName="mountingdefs.inc"
+	bOpened=True
+	nWinState=0
+	Window {
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
+	}
+}
+IncludeFile8 {
+	sName="jsondefs.inc"
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -275,23 +330,23 @@ PointFile1 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=123
+		nHeight=34
 	}
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=33
-		nTop=130
+		nTop=11
 		nWidth=897
 		nHeight=406
 	}
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=52
 		nTop=27
@@ -313,17 +368,17 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=838
-		nTop=100
+		nLeft=433
+		nTop=333
 		nWidth=470
-		nHeight=349
+		nHeight=342
 	}
 }
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=426
-		nTop=58
+		nLeft=284
+		nTop=245
 		nWidth=827
 		nHeight=530
 	}

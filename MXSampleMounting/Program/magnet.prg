@@ -264,7 +264,7 @@ Function MagnetCalibration As Boolean
             Exit Function
         EndIf
         SetFastSpeed
-        Move Here +Z(20)
+        Move RealPos +Z(20)
         If Not Close_Gripper Then
             UpdateClient(TASK_MSG, "close gripper failed at magnet after finding it", ERROR_LEVEL)
             Move P6
@@ -306,9 +306,9 @@ Function MagnetCalibration As Boolean
         UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
-    Move Here -Z(15)
+    Move RealPos -Z(15)
     SetVerySlowSpeed
-    Move Here -Z(3)
+    Move RealPos -Z(3)
     
     ''continue with calibration    
     UpdateClient(TASK_MSG, "dumbbell calibration", INFO_LEVEL)
@@ -460,7 +460,7 @@ Function PostCalibration As Boolean
     m_IgnoreFZForNow = False
 
     Old_U4MagnetHolder = g_U4MagnetHolder
-    g_U4MagnetHolder = CU(Here)
+    g_U4MagnetHolder = CU(RealPos)
     ''set to CU(P6) if not in calibration
 
     g_OnlyAlongAxis = True
@@ -472,10 +472,10 @@ Function PostCalibration As Boolean
     m_AllOK = False
 
     ''save old values to print at the end
-    PCOldPosition(1) = CX(Here)
-    PCOldPosition(2) = CY(Here)
-    PCOldPosition(3) = CZ(Here)
-    PCOldPosition(4) = CU(Here)
+    PCOldPosition(1) = CX(RealPos)
+    PCOldPosition(2) = CY(RealPos)
+    PCOldPosition(3) = CZ(RealPos)
+    PCOldPosition(4) = CU(RealPos)
     ReadForces(ByRef PCOldForces())
 
     'max repeat 12: we have 4 independant variables to reduce'
@@ -639,13 +639,13 @@ Function PostCalibration As Boolean
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     UpdateClient(TASK_MSG, "===================================================================", DEBUG_LEVEL)
     UpdateClient(TASK_MSG, "Position changes:", DEBUG_LEVEL)
-    msg$ = "FX: " + Str$(PCOldPosition(1)) + " to " + Str$(CX(Here))
+    msg$ = "FX: " + Str$(PCOldPosition(1)) + " to " + Str$(CX(RealPos))
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    msg$ = "FY: " + Str$(PCOldPosition(2)) + " to " + Str$(CY(Here))
+    msg$ = "FY: " + Str$(PCOldPosition(2)) + " to " + Str$(CY(RealPos))
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    msg$ = "FZ: " + Str$(PCOldPosition(3)) + " to " + Str$(CZ(Here))
+    msg$ = "FZ: " + Str$(PCOldPosition(3)) + " to " + Str$(CZ(RealPos))
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    msg$ = "TX: " + Str$(PCOldPosition(4)) + " to " + Str$(CU(Here))
+    msg$ = "TX: " + Str$(PCOldPosition(4)) + " to " + Str$(CU(RealPos))
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     UpdateClient(TASK_MSG, "===================================================================", DEBUG_LEVEL)
 
@@ -666,16 +666,16 @@ Function PostCalibration As Boolean
     Print #LOG_FILE_NO, "TZ: ", PCOldForces(6), " to ", PCCurrentForces(6)
     Print #LOG_FILE_NO, "==================================================================="
     Print #LOG_FILE_NO, "Position changes"
-    Print #LOG_FILE_NO, "X: ", PCOldPosition(1), " to ", CX(Here)
-    Print #LOG_FILE_NO, "Y: ", PCOldPosition(2), " to ", CY(Here)
-    Print #LOG_FILE_NO, "Z: ", PCOldPosition(3), " to ", CZ(Here)
-    Print #LOG_FILE_NO, "U: ", PCOldPosition(4), " to ", CU(Here)
+    Print #LOG_FILE_NO, "X: ", PCOldPosition(1), " to ", CX(RealPos)
+    Print #LOG_FILE_NO, "Y: ", PCOldPosition(2), " to ", CY(RealPos)
+    Print #LOG_FILE_NO, "Z: ", PCOldPosition(3), " to ", CZ(RealPos)
+    Print #LOG_FILE_NO, "U: ", PCOldPosition(4), " to ", CU(RealPos)
     Print #LOG_FILE_NO, "==================================================================="
 
     ''save the result
     If PostCalibration Then
         P86 = P6
-        P6 = Here
+        P6 = RealPos
         msg$ = "P6 moved from (" + Str$(CX(P86)) + ", " + Str$(CY(P86)) + ", " + Str$(CZ(P86)) + ", " + Str$(CU(P86)) + ") "
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 		msg$ = "to (" + Str$(CX(P6)) + ", " + Str$(CY(P6)) + ", " + Str$(CZ(P6)) + ", " + Str$(CU(P6)) + ") "
@@ -696,7 +696,7 @@ Function PostCalibration As Boolean
         P3 = P6 +X(20 * Cos(tmp_Real)) +Y(20 * Sin(tmp_Real))
         ''P2 is above P3
         P2 = P3 :Z(-2)
-        g_U4MagnetHolder = CU(Here)
+        g_U4MagnetHolder = CU(RealPos)
     Else
         ''restore old preserved global
         g_U4MagnetHolder = Old_U4MagnetHolder
@@ -704,23 +704,23 @@ Function PostCalibration As Boolean
 
 #ifdef PUSH_MAGNET_ASIDE
     If PostCalibration Then
-        PCPushX = CX(Here)
-        PCPushY = CY(Here)
+        PCPushX = CX(RealPos)
+        PCPushY = CY(RealPos)
         If Not ForceTouch(DIRECTION_CAVITY_TAIL, 1, True) Then
             UpdateClient(TASK_MSG, "Failed in push magnet aside to reduce freedom in operation", WARNING_LEVEL)
             Print #LOG_FILE_NO, "Failed in push magnet aside to reduce freedom in operation"
         EndIf
     
-    	msg$ = "Push Magnet to one side, X, Y moved from (" + Str$(PCPushX) + ", " + Str$(PCPushY) + ") to (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+    	msg$ = "Push Magnet to one side, X, Y moved from (" + Str$(PCPushX) + ", " + Str$(PCPushY) + ") to (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ")"
     	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-        Print #LOG_FILE_NO, "Push Magnet to one side, X, Y moved from (", PCPushX, ", ", PCPushY, ") to (", CX(Here), ", ", CY(Here), ")"
+        Print #LOG_FILE_NO, "Push Magnet to one side, X, Y moved from (", PCPushX, ", ", PCPushY, ") to (", CX(RealPos), ", ", CY(RealPos), ")"
 
         If (GTCheckPoint(7)) Then
 	        msg$ = "P7 moved from (" + Str$(CX(P7)) + ", " + Str$(CY(P7)) + ", " + Str$(CZ(P7)) + ", " + Str$(CU(P7)) + ") "
     	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         	Print #LOG_FILE_NO, "P7 moved from (", CX(P7), ", ", CY(P7), ", ", CZ(P7), ", ", CU(P7), ") ",
         EndIf
-        P7 = Here
+        P7 = RealPos
         msg$ = "to (" + Str$(CX(P7)) + ", " + Str$(CY(P7)) + ", " + Str$(CZ(P7)) + ", " + Str$(CU(P7)) + ") "
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print #LOG_FILE_NO, "to (", CX(P7), ", ", CY(P7), ", ", CZ(P7), ", ", CU(P7), ") "
@@ -823,7 +823,7 @@ Function ReduceFZ
     RFZStepStart = g_CurrentSteps
     RFZStepTotal = g_Steps
 
-    RFZOldZ = CZ(Here)
+    RFZOldZ = CZ(RealPos)
 
     'Find out current FZ situation'
     RFZOldFZ = ReadForce(FORCE_ZFORCE)
@@ -839,7 +839,7 @@ Function ReduceFZ
 
     g_Steps = RFZStepTotal /2
     If Not ForceCross(FORCE_ZFORCE, -g_ThresholdFZ, g_MaxRangeZ, g_ZNumSteps, False) Then
-        RFZNewZ = CZ(Here)
+        RFZNewZ = CZ(RealPos)
         RFZNewFZ = ReadForce(FORCE_ZFORCE)
         m_IgnoreFZForNow = True ''we will deal with it in FindZPosition when all other forces are reduced.
         UpdateClient(TASK_MSG, "force sensor need reset, ignore FZ for now", INFO_LEVEL)
@@ -859,7 +859,7 @@ Function ReduceFZ
     
     ForceCross FORCE_ZFORCE, -g_MinFZ, 2 * m_MinZStep, 2, False
     
-    RFZNewZ = CZ(Here)
+    RFZNewZ = CZ(RealPos)
     RFZNewFZ = ReadForce(FORCE_ZFORCE)
 
     msg$ = "ReduceFZ, Z moved from " + Str$(RFZOldZ) + " to " + Str$(RFZNewZ) + ", FZ from " + Str$(RFZOldFZ) + " to " + Str$(RFZNewFZ)
@@ -876,7 +876,7 @@ Function FindZPosition As Boolean
     FZPStepTotal = g_Steps
 
     ''Init_Magnet_Constants
-    FZPOldZ = CZ(Here)
+    FZPOldZ = CZ(RealPos)
 
     'Find out current FZ situation'
     FZPOldFZ = ReadForce(FORCE_ZFORCE)
@@ -885,7 +885,7 @@ Function FindZPosition As Boolean
 
     ''reset force sensor
     m_IgnoreFZForNow = False
-    Move Here +Z(2)
+    Move RealPos +Z(2)
     UpdateClient(TASK_MSG, "dumbbell: resetting force sensor", INFO_LEVEL)
     ResetForceSensor    ''this will move up 10mm more and back
     g_Steps = FZPStepTotal /2
@@ -899,7 +899,7 @@ Function FindZPosition As Boolean
         UpdateClient(TASK_MSG, "not bottomed this time, try next time", INFO_LEVEL)
         Print #LOG_FILE_NO, "not bottomed this time, try next time"
     Else
-        Move Here +Z(0.05)
+        Move RealPos +Z(0.05)
     EndIf
 Fend
 
@@ -951,7 +951,7 @@ Function PickerTouchSeat As Boolean
         Exit Function
     EndIf
 
-    Go Here -Z(35) -U(180)  ''lower arm so that cavity will be within the height of seat
+    Go RealPos -Z(35) -U(180)  ''lower arm so that cavity will be within the height of seat
                             ''rotate 180 so that cavity, not the magnet, will be close to seat
                             ''we take -180 not +180, because we want to arc in the future
                             ''between magnet position, picker position, placer position
@@ -980,11 +980,11 @@ Function PickerTouchSeat As Boolean
     msg$ = Str$(g_CurrentSteps) + " of 100"
     UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
 
-    msg$ = "cavity touched placer side of seat at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+    msg$ = "cavity touched placer side of seat at (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ")"
     UpdateClient(TASK_PROG, msg$, DEBUG_LEVEL)
 
-    PKTSX1 = CX(Here)
-    PKTSY1 = CY(Here)
+    PKTSX1 = CX(RealPos)
+    PKTSY1 = CY(RealPos)
 
     ''touch the other end: detach the seat, then move along 20 mm to touch the picker end
     SetFastSpeed
@@ -1005,11 +1005,11 @@ Function PickerTouchSeat As Boolean
     SetVerySlowSpeed
 
     ''save start position
-    PKTSX2 = CX(Here)
-    PKTSY2 = CY(Here)
+    PKTSX2 = CX(RealPos)
+    PKTSY2 = CY(RealPos)
     If Not ForceTouch(DIRECTION_MAGNET_TO_CAVITY, PKTSRange, True) Then
         Print "touch seat failed at picker side for the first try"
-        Move Here :X(PKTSX2) :Y(PKTSY2)
+        Move RealPos :X(PKTSX2) :Y(PKTSY2)
 		If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 			g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
 			g_RunResult$ = "force sensor reset failed at pickerTouchingSeat picker side"
@@ -1027,11 +1027,11 @@ Function PickerTouchSeat As Boolean
     EndIf
 
     PickerTouchSeat = True
-    msg$ = "picker cavity touched seat at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+    msg$ = "picker cavity touched seat at (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ")"
 	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 			
-    PKTSX2 = CX(Here)
-    PKTSY2 = CY(Here)
+    PKTSX2 = CX(RealPos)
+    PKTSY2 = CY(RealPos)
     
     Print #LOG_FILE_NO, "touched seat at (", PKTSX1, ", ", PKTSY1, ") and (", PKTSX2, ", ", PKTSY2, ")"
     ''recheck
@@ -1039,7 +1039,7 @@ Function PickerTouchSeat As Boolean
     	UpdateClient(TASK_MSG, "touching seat for picker may failed, please check", INFO_LEVEL)
         If PKTSX2 > PKTSX1 Then
             PKTSX2 = PKTSX1
-            Move Here :X(PKTSX1)
+            Move RealPos :X(PKTSX1)
             Print "X moved to ", PKTSX1
         EndIf
     EndIf
@@ -1072,10 +1072,10 @@ Function PickerCalibration As Boolean
     EndIf
 
 
-    PKCInitX = CX(Here)
-    PKCInitY = CY(Here)
-    PKCInitZ = CZ(Here) + V_DISTANCE_CAVITY_TO_GRIPPER
-    PKCInitU = CU(Here)
+    PKCInitX = CX(RealPos)
+    PKCInitY = CY(RealPos)
+    PKCInitZ = CZ(RealPos) + V_DISTANCE_CAVITY_TO_GRIPPER
+    PKCInitU = CU(RealPos)
 
     InitForceConstants
     
@@ -1116,7 +1116,7 @@ Function PickerCalibration As Boolean
     ''we know when the cavity hit the seat, it is still with in the seat a lot, 15mm is good
     PKCRange = SAFE_BUFFER_FOR_RESET_FORCE + 15
     TongMove DIRECTION_CAVITY_TAIL, PKCRange, False
-    Move Here :Z(PKCInitZ)
+    Move RealPos :Z(PKCInitZ)
     ''move the edge of cavity to the center of magnet head
     ''Move P* :X(PKCFinalX - CAVITY_RADIUS)
     TongMove DIRECTION_MAGNET_TO_CAVITY, SAFE_BUFFER_FOR_DETACH + HALF_OF_SEAT_THICKNESS, False
@@ -1135,7 +1135,7 @@ Function PickerCalibration As Boolean
         Close #LOG_FILE_NO
         Exit Function
     EndIf
-    Print #LOG_FILE_NO, "touched magnet head at (", CX(Here), ", ", CY(Here), ")"
+    Print #LOG_FILE_NO, "touched magnet head at (", CX(RealPos), ", ", CY(RealPos), ")"
     g_Steps = PKCStepTotal /6
     g_CurrentSteps = PKCStepStart + 3 * g_Steps
     msg$ = Str$(g_CurrentSteps) + " of 100"
@@ -1148,7 +1148,7 @@ Function PickerCalibration As Boolean
     ''Move P* +Y(10)
     TongMove DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_RESET_FORCE, False
     
-    Move Here +Z(CAVITY_RADIUS + MAGNET_HEAD_RADIUS + SAFE_BUFFER_FOR_Z_TOUCH)
+    Move RealPos +Z(CAVITY_RADIUS + MAGNET_HEAD_RADIUS + SAFE_BUFFER_FOR_Z_TOUCH)
     ''Move P* :X(PKCFinalX) :Y(PKCFinalY)
     ''move cavity center to magnet center
     TongMove DIRECTION_MAGNET_TO_CAVITY, CAVITY_RADIUS, False
@@ -1171,10 +1171,10 @@ Function PickerCalibration As Boolean
         Exit Function
     EndIf
     
-    Print #LOG_FILE_NO, "touch magnet head at Z=", CZ(Here)
+    Print #LOG_FILE_NO, "touch magnet head at Z=", CZ(RealPos)
     ''PKCFinalZ = CZ(P*) - CAVITY_RADIUS - MAGNET_HEAD_RADIUS
     ''move a little up 
-    Move Here +Z(0.05)
+    Move RealPos +Z(0.05)
 
     g_Steps = PKCStepTotal /6
     g_CurrentSteps = PKCStepStart + 4 * g_Steps
@@ -1183,12 +1183,12 @@ Function PickerCalibration As Boolean
     UpdateClient(TASK_MSG, "picker cal: touching head for more accurate X", INFO_LEVEL)
 
     SetFastSpeed
-    Move Here +Z(SAFE_BUFFER_FOR_DETACH)
+    Move RealPos +Z(SAFE_BUFFER_FOR_DETACH)
 
     TongMove DIRECTION_CAVITY_TO_MAGNET, CAVITY_RADIUS + HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, False
-    Move Here -Z(SAFE_BUFFER_FOR_DETACH + CAVITY_RADIUS + MAGNET_HEAD_RADIUS)
-    m_MAPAStartX = CX(Here)
-    m_MAPAStartY = CY(Here)
+    Move RealPos -Z(SAFE_BUFFER_FOR_DETACH + CAVITY_RADIUS + MAGNET_HEAD_RADIUS)
+    m_MAPAStartX = CX(RealPos)
+    m_MAPAStartY = CY(RealPos)
     SetVerySlowSpeed
     If Not ForceTouch(DIRECTION_MAGNET_TO_CAVITY, HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, True) Then
         UpdateClient(TASK_MSG, "Failed for accurate post angle: touching picker head", ERROR_LEVEL)
@@ -1197,12 +1197,12 @@ Function PickerCalibration As Boolean
         
         ''move to position for next step   
         SetFastSpeed
-        Move Here :X(m_MAPAStartX) :Y(m_MAPAStartY)
+        Move RealPos :X(m_MAPAStartX) :Y(m_MAPAStartY)
         TongMove DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_RESET_FORCE + OVER_LAP_FOR_Z_TOUCH, False
         TongMove DIRECTION_MAGNET_TO_CAVITY, CAVITY_RADIUS + HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, False
     Else
-        m_MAPAStartX = m_MAPAStartX - CX(Here)
-        m_MAPAStartY = m_MAPAStartY - CY(Here)
+        m_MAPAStartX = m_MAPAStartX - CX(RealPos)
+        m_MAPAStartY = m_MAPAStartY - CY(RealPos)
         g_PickerWallToHead = Sqr(m_MAPAStartX * m_MAPAStartX + m_MAPAStartY * m_MAPAStartY) - SAFE_BUFFER_FOR_DETACH
         msg$ = "g_PickerWallToHead=" + Str$(g_PickerWallToHead)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
@@ -1231,8 +1231,8 @@ Function PickerCalibration As Boolean
     ''move back to where we hit the magnet head
     TongMove DIRECTION_CAVITY_HEAD, SAFE_BUFFER_FOR_RESET_FORCE, False
     ''save data for toolset calibration
-    g_Picker_X = CX(Here)
-    g_Picker_Y = CY(Here)
+    g_Picker_X = CX(RealPos)
+    g_Picker_Y = CY(RealPos)
 
     SetVerySlowSpeed
     
@@ -1251,8 +1251,8 @@ Function PickerCalibration As Boolean
     ''move back to where we hit the magnet head using cavity edge
     TongMove DIRECTION_CAVITY_HEAD, SAFE_BUFFER_FOR_RESET_FORCE, False
     ''save data for toolset calibration
-    g_Picker_X = CX(Here)
-    g_Picker_Y = CY(Here)
+    g_Picker_X = CX(RealPos)
+    g_Picker_Y = CY(RealPos)
 
     SetVerySlowSpeed
     ''move in 3mm
@@ -1260,9 +1260,9 @@ Function PickerCalibration As Boolean
     ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 
 #endif
-	msg$ = "SUCCESS: Picker position (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
+	msg$ = "SUCCESS: Picker position (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos)) + ")"
 	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    Print #LOG_FILE_NO, "SUCCESS: Picker position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+    Print #LOG_FILE_NO, "SUCCESS: Picker position (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     Print #LOG_FILE_NO, "picker calibration end at ", Date$, " ", Time$
 
     If (GTCheckPoint(16)) Then
@@ -1272,7 +1272,7 @@ Function PickerCalibration As Boolean
 	    msg$ = "Old P16 (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ")"
 	    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 	EndIf
-    P16 = Here
+    P16 = RealPos
     msg$ = "to (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ") "
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "to (", CX(P16), ", ", CY(P16), ", ", CZ(P16), ", ", CU(P16), ") "
@@ -1327,10 +1327,10 @@ Function PlacerCalibration As Boolean
 
 	UpdateClient(TASK_MSG, "placer cal: arc to placer side", INFO_LEVEL)
 
-    CPCInitX = CX(Here)
-    CPCInitY = CY(Here)
-    CPCInitZ = CZ(Here)
-    CPCInitU = CU(Here)
+    CPCInitX = CX(RealPos)
+    CPCInitY = CY(RealPos)
+    CPCInitZ = CZ(RealPos)
+    CPCInitU = CU(RealPos)
 
     ''calculate the final position from P6:
     ''from P6 move from Cavity to magnet of distance of CAVITY_TO_MAGNET,
@@ -1349,7 +1349,7 @@ Function PlacerCalibration As Boolean
     CPCFinalY = CPCFinalY + CPCStepSize(2)
 
     ''CPCFinalZ = CZ(P6) + V_DISTANCE_CAVITY_TO_GRIPPER
-    CPCFinalZ = CZ(Here) ''in fact, this may  be better
+    CPCFinalZ = CZ(RealPos) ''in fact, this may  be better
     CPCFinalU = CU(P6)
     
     ''try to arc from picker to placer : turn +U(180)
@@ -1392,7 +1392,7 @@ Function PlacerCalibration As Boolean
         Exit Function
     EndIf
 
-    Print #LOG_FILE_NO, "touched magnet head at (", CX(Here), ", ", CY(Here), ")"
+    Print #LOG_FILE_NO, "touched magnet head at (", CX(RealPos), ", ", CY(RealPos), ")"
 
     g_Steps = CPCStepTotal /5
     g_CurrentSteps = CPCStepStart + 2 * g_Steps
@@ -1408,7 +1408,7 @@ Function PlacerCalibration As Boolean
     ''here we do not need to give very big safe buffer like in placer calibration.
     ''the error is no way too big.
 
-    Move Here -Z(20)
+    Move RealPos -Z(20)
 
     TongMove DIRECTION_CAVITY_HEAD, DISTANCE_TOUCH_ARM + SAFE_BUFFER_FOR_DETACH, False
     ''should be change too much.  It is determined by the tong shape.
@@ -1431,9 +1431,9 @@ Function PlacerCalibration As Boolean
     EndIf
     
     ''we touched the holder arm:
-    msg$ = "cavity touched holder arm at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+    msg$ = "cavity touched holder arm at (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ")"
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    Print #LOG_FILE_NO, "cavity touched holder arm at (", CX(Here), ", ", CY(Here), ")"
+    Print #LOG_FILE_NO, "cavity touched holder arm at (", CX(RealPos), ", ", CY(RealPos), ")"
 
     g_Steps = CPCStepTotal /5
     g_CurrentSteps = CPCStepStart + 3 * g_Steps
@@ -1446,7 +1446,7 @@ Function PlacerCalibration As Boolean
     SetFastSpeed
     TongMove DIRECTION_MAGNET_TO_CAVITY, SAFE_BUFFER_FOR_DETACH, False
     TongMove DIRECTION_CAVITY_TAIL, DISTANCE_TOUCH_ARM - OVER_LAP_FOR_Z_TOUCH, False
-    Move Here +Z(20 + CAVITY_RADIUS + MAGNET_HEAD_RADIUS + SAFE_BUFFER_FOR_Z_TOUCH)
+    Move RealPos +Z(20 + CAVITY_RADIUS + MAGNET_HEAD_RADIUS + SAFE_BUFFER_FOR_Z_TOUCH)
 
     ''move to above magnet head
     TongMove DIRECTION_CAVITY_TO_MAGNET, SAFE_BUFFER_FOR_DETACH + HALF_OF_SEAT_THICKNESS + CAVITY_RADIUS, False
@@ -1465,9 +1465,9 @@ Function PlacerCalibration As Boolean
         Close #LOG_FILE_NO
         Exit Function
     EndIf
-    Print #LOG_FILE_NO, "touch magnet head at Z=", CZ(Here)
+    Print #LOG_FILE_NO, "touch magnet head at Z=", CZ(RealPos)
     ''CPCFinalZ = CZ(P*) - CAVITY_RADIUS - MAGNET_HEAD_RADIUS
-    Move Here +Z(0.05)
+    Move RealPos +Z(0.05)
 
     g_Steps = CPCStepTotal /5
     g_CurrentSteps = CPCStepStart + 4 * g_Steps
@@ -1476,12 +1476,12 @@ Function PlacerCalibration As Boolean
     UpdateClient(TASK_MSG, "placer cal: touching head for more accurate X", INFO_LEVEL)
 
     SetFastSpeed
-    Move Here +Z(SAFE_BUFFER_FOR_DETACH)
+    Move RealPos +Z(SAFE_BUFFER_FOR_DETACH)
 	UpdateClient(TASK_MSG, "touch head in X direction to get more accurate position", INFO_LEVEL)
     TongMove DIRECTION_MAGNET_TO_CAVITY, CAVITY_RADIUS + HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, False
-    Move Here -Z(SAFE_BUFFER_FOR_DETACH + CAVITY_RADIUS + MAGNET_HEAD_RADIUS)
-    m_MAPAStartX = CX(Here)
-    m_MAPAStartY = CY(Here)
+    Move RealPos -Z(SAFE_BUFFER_FOR_DETACH + CAVITY_RADIUS + MAGNET_HEAD_RADIUS)
+    m_MAPAStartX = CX(RealPos)
+    m_MAPAStartY = CY(RealPos)
     SetVerySlowSpeed
     If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, True) Then
         UpdateClient(TASK_MSG, "Failed for accurate post angle: touching picker head", ERROR_LEVEL)
@@ -1490,12 +1490,12 @@ Function PlacerCalibration As Boolean
         
         ''move to position for next step   
         SetFastSpeed
-        Move Here :X(m_MAPAStartX) :Y(m_MAPAStartY)
+        Move RealPos :X(m_MAPAStartX) :Y(m_MAPAStartY)
         TongMove DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_RESET_FORCE + OVER_LAP_FOR_Z_TOUCH, False
         TongMove DIRECTION_CAVITY_TO_MAGNET, CAVITY_RADIUS + HALF_OF_SEAT_THICKNESS + SAFE_BUFFER_FOR_DETACH, False
     Else
-        m_MAPAStartX = m_MAPAStartX - CX(Here)
-        m_MAPAStartY = m_MAPAStartY - CY(Here)
+        m_MAPAStartX = m_MAPAStartX - CX(RealPos)
+        m_MAPAStartY = m_MAPAStartY - CY(RealPos)
         g_PlacerWallToHead = Sqr(m_MAPAStartX * m_MAPAStartX + m_MAPAStartY * m_MAPAStartY) - SAFE_BUFFER_FOR_DETACH
         msg$ = "g_PlacerWallToHead=" + Str$(g_PlacerWallToHead)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
@@ -1521,8 +1521,8 @@ Function PlacerCalibration As Boolean
     
     TongMove DIRECTION_CAVITY_HEAD, SAFE_BUFFER_FOR_RESET_FORCE, False
     ''save data for toolset calibration
-    g_Placer_X = CX(Here)
-    g_Plaver_Y = CY(Here)
+    g_Placer_X = CX(RealPos)
+    g_Plaver_Y = CY(RealPos)
     
     SetVerySlowSpeed
 
@@ -1539,8 +1539,8 @@ Function PlacerCalibration As Boolean
     ''move back to where we hit the magnet head with cavity edge
     TongMove DIRECTION_CAVITY_HEAD, SAFE_BUFFER_FOR_RESET_FORCE, False
     ''save data for toolset calibration
-    g_Placer_X = CX(Here)
-    g_Placer_Y = CY(Here)
+    g_Placer_X = CX(RealPos)
+    g_Placer_Y = CY(RealPos)
     ''move in final position
     SetVerySlowSpeed
     TongMove DIRECTION_CAVITY_HEAD, PLACER_OVER_MAGNET_HEAD, False
@@ -1548,9 +1548,9 @@ Function PlacerCalibration As Boolean
 
 #endif
 
-	msg$ = "SUCCESS: Placer position (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ", " + Str$(CZ(Here)) + ", " + Str$(CU(Here)) + ")"
+	msg$ = "SUCCESS: Placer position (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos)) + ")"
 	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    Print #LOG_FILE_NO, "SUCCESS: Placer position (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+    Print #LOG_FILE_NO, "SUCCESS: Placer position (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     Print #LOG_FILE_NO, "placer calibration end at ", Date$, " ", Time$
 
     If (GTCheckPoint(26)) Then
@@ -1560,7 +1560,7 @@ Function PlacerCalibration As Boolean
 	    msg$ = "Old P26 (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ")"
     	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
     EndIf
-    P26 = Here
+    P26 = RealPos
     msg$ = "to (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ") "
 	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "to (", CX(P26), ", ", CY(P26), ", ", CZ(P26), ", ", CU(P26), ") "
@@ -1710,12 +1710,17 @@ Function CalculateToolset As Boolean
     Print #LOG_FILE_NO, "toolset calibration at ", Date$, " ", Time$
 
     ''print out old toolset
-    P51 = TLSet(1)
-    msg$ = "Old TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    P51 = TLSet(2)
-    msg$ = "Old TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    If GTCheckTool(1) Then
+        P51 = TLSet(1)
+    	msg$ = "Old TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    EndIf
+    
+    If GTCheckTool(2) Then
+        P51 = TLSet(2)
+	    msg$ = "Old TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+    	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+    EndIf
     
     ''adjust because the the direction we move is not exactly X or Y
     ''this is rough calculation, we ignore second order error
@@ -1804,10 +1809,10 @@ Function isGoodForPlacerCal As Boolean
     ISP16IdealU = CU(P16)
     
     
-    ISP16DX = CX(Here) - ISP16IdealX
-    ISP16DY = CY(Here) - ISP16IdealY
-    ISP16DZ = CZ(Here) - ISP16IdealZ
-    ISP16DU = CU(Here) - ISP16IdealU
+    ISP16DX = CX(RealPos) - ISP16IdealX
+    ISP16DY = CY(RealPos) - ISP16IdealY
+    ISP16DZ = CZ(RealPos) - ISP16IdealZ
+    ISP16DU = CU(RealPos) - ISP16IdealU
 
     If Abs(ISP16DU) > 2 Then
         isGoodForPlacerCal = False
@@ -1822,7 +1827,7 @@ Function isGoodForPlacerCal As Boolean
     EndIf
 
     ''more safe, check against P6 also
-    ISP16DU = Abs(CU(Here) - CU(P6))
+    ISP16DU = Abs(CU(RealPos) - CU(P6))
     ISP16DU = ISP16DU - 180
     If Abs(ISP16DU) > 2 Then
         isGoodForPlacerCal = False
@@ -1834,7 +1839,7 @@ Function ParallelGripperAndCradle As Boolean
 	String msg$
     ParallelGripperAndCradle = False
 
-    PGCOldU = CU(Here)
+    PGCOldU = CU(RealPos)
     PGCOldForce = ReadForce(DIRECTION_CAVITY_TO_MAGNET)
     msg$ = "ParallelGripperAndCradle: old U=" + Str$(PGCOldU) + ", old force=" + Str$(PGCOldForce)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
@@ -1857,16 +1862,16 @@ Function ParallelGripperAndCradle As Boolean
         For PGCDirection = 1 To 2
             For PGCStepIndex = 1 To PGCNumSteps
                 If g_FlagAbort Then
-                    Go Here :U(PGCOldU)
+                    Go RealPos :U(PGCOldU)
                     Exit Function
                 EndIf
                 Select PGCDirection
                 Case 1
-                    Go Here +U(PGCStepSize)
+                    Go RealPos +U(PGCStepSize)
                 Case 2
-                    Go Here -U(PGCStepSize)
+                    Go RealPos -U(PGCStepSize)
                 Send
-                PGCNewU = CU(Here)
+                PGCNewU = CU(RealPos)
                 PGCNewForce = ReadForce(DIRECTION_CAVITY_TO_MAGNET)
                 PGCNewForce = Abs(PGCNewForce)
                 
@@ -1879,13 +1884,13 @@ Function ParallelGripperAndCradle As Boolean
             Next ''For PGCStepIndex = 1 to PGCNumSteps
             If PGCStepIndex > PGCNumSteps Then
                 Print "U moved out of range without reach min force"
-                Go Here :U(PGCOldU)
+                Go RealPos :U(PGCOldU)
                 Exit Function
             EndIf
             msg$ = Str$(g_CurrentSteps + (PGCScanIndex * 2 + PGCDirection - 2) * g_Steps / 4) + " of 100"
             UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
         Next ''For PGCDirection = 1 To 2
-        Go Here :U(PGCGoodU)
+        Go RealPos :U(PGCGoodU)
     Next ''For PGCScanIndex = 1 to 2
     
     ParallelGripperAndCradle = True
@@ -1896,25 +1901,25 @@ Function PullOutZ As Boolean
 	String msg$
     PullOutZ = False
     
-    POZOldX = CX(Here)
-    POZOldY = CY(Here)
-    POZOldZ = CZ(Here)
+    POZOldX = CX(RealPos)
+    POZOldY = CY(RealPos)
+    POZOldZ = CZ(RealPos)
 
     For StepIndex = 1 To POZ_MAX_STEPS
-        Move Here +Z(POZ_STEPSIZE)
+        Move RealPos +Z(POZ_STEPSIZE)
         g_Steps = 0 ''to prevent ForceTouch update progress bar
         If Not ForceTouch(DIRECTION_CAVITY_TO_MAGNET, 2 * SAFE_BUFFER_FOR_DETACH, False) Then
-            Move Here +Z(POZ_STEPSIZE) ''one more step for safety
+            Move RealPos +Z(POZ_STEPSIZE) ''one more step for safety
             If Not g_FlagAbort Then
                 PullOutZ = True
-                msg$ = "got Z at " + Str$(CZ(Here))
+                msg$ = "got Z at " + Str$(CZ(RealPos))
                 UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
             Else
                 TongMove DIRECTION_MAGNET_TO_CAVITY, 20, False
             EndIf
             Exit Function
         EndIf
-          Move Here :X(POZOldX) :Y(POZOldY)
+          Move RealPos :X(POZOldX) :Y(POZOldY)
     Next
     
     UpdateClient(TASK_MSG, "not got top of cradle", INFO_LEVEL)
@@ -1960,7 +1965,7 @@ Function FindMagnet As Boolean
     If Power = 1 Then
         Power Low
     EndIf
-
+    
     ''check conditions
     ''check current position
     If (Not isCloseToPoint(0)) And (Not isCloseToPoint(1)) Then
@@ -2016,7 +2021,7 @@ Function FindMagnet As Boolean
 	tmp_DY = 30 * Sin(tmp_Real) + Y_FROM_CRADLE_TO_MAGNET * Sin(tmp_Real2)
 	Jump P6 +X(tmp_DX) +Y(tmp_DY)
 	
-    Move Here -Z(Z_FROM_CRADLE_TO_MAGNET + FIND_MAGNET_Z_DOWN)
+    Move RealPos -Z(Z_FROM_CRADLE_TO_MAGNET + FIND_MAGNET_Z_DOWN)
     
     SetVerySlowSpeed
 
@@ -2025,12 +2030,12 @@ Function FindMagnet As Boolean
         msg$ = "Cooled tong for " + Str$(WaitLN2BoilingStop(SENSE_TIMEOUT, HIGH_SENSITIVITY, HIGH_SENSITIVITY)) + " seconds"
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         ''MagLevelError used here as relative depth
-        MagLevelError = CZ(P6) - STRIP_PLACER_Z_OFFSET - CZ(Here)
+        MagLevelError = CZ(P6) - STRIP_PLACER_Z_OFFSET - CZ(RealPos)
         If g_IncludeStrip Then
-			Move Here +Z(MagLevelError)
+			Move RealPos +Z(MagLevelError)
         EndIf
         If g_IncludeStrip Then
-			Move Here -Z(MagLevelError)
+			Move RealPos -Z(MagLevelError)
         EndIf
     Else
         Wait TIME_WAIT_BEFORE_RESET
@@ -2117,8 +2122,8 @@ Function FindMagnet As Boolean
     	UpdateClient(TASK_MSG, "Touched left end OK", INFO_LEVEL)
     EndIf
     
-    FMLeftX = CX(Here)
-    FMLeftY = CY(Here)
+    FMLeftX = CX(RealPos)
+    FMLeftY = CY(RealPos)
     
     ''try to touch the other end
     g_CurrentSteps = FMStepStart + FMStepTotal /2
@@ -2150,8 +2155,8 @@ Function FindMagnet As Boolean
     Else
     	UpdateClient(TASK_MSG, "Touched right end OK", INFO_LEVEL)
     EndIf
-    FMRightX = CX(Here)
-    FMRightY = CY(Here)
+    FMRightX = CX(RealPos)
+    FMRightY = CY(RealPos)
     FMDX = FMLeftX - FMRightX
     FMDY = FMLeftY - FMRightY
     FMDistance = Sqr(FMDX * FMDX + FMDY * FMDY)
@@ -2168,7 +2173,7 @@ Function FindMagnet As Boolean
     TongMove DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_DETACH, False
     TongMove DIRECTION_MAGNET_TO_CAVITY, OVERLAP_GRAPPER_CRADLE + SAFE_BUFFER_FOR_DETACH, False
     TongMove DIRECTION_CAVITY_HEAD, FMDistance / 2 + SAFE_BUFFER_FOR_DETACH, False
-    Move Here +Z(FIND_MAGNET_Z_DOWN + 1)
+    Move RealPos +Z(FIND_MAGNET_Z_DOWN + 1)
     SetVerySlowSpeed
 
     ''pull up until force disappear
@@ -2189,7 +2194,7 @@ Function FindMagnet As Boolean
     
     FMFinalX = (FMLeftX + FMRightX) /2
     FMFinalY = (FMLeftY + FMRightY) /2
-    Move Here :X(FMFinalX) :Y(FMFinalY)
+    Move RealPos :X(FMFinalX) :Y(FMFinalY)
     SetVerySlowSpeed
     
     ''try to find Z by touching out the top edge of cradle holder.
@@ -2214,8 +2219,8 @@ Function FindMagnet As Boolean
     	UpdateClient(TASK_MSG, "Z touch the cradle OK", ERROR_LEVEL)
     EndIf
     
-    FMFinalZ = CZ(Here)
-    FMFinalU = CU(Here)
+    FMFinalZ = CZ(RealPos)
+    FMFinalU = CU(RealPos)
     
     ''adjust and move to P6
     g_CurrentSteps = FMStepStart + 9 * FMStepTotal / 10
@@ -2225,10 +2230,10 @@ Function FindMagnet As Boolean
     
     UpdateClient(TASK_MSG, "find magnet: found it, move in", INFO_LEVEL)
     SetFastSpeed
-    Move Here +Z(SAFE_BUFFER_FOR_DETACH)
+    Move RealPos +Z(SAFE_BUFFER_FOR_DETACH)
     TongMove DIRECTION_MAGNET_TO_CAVITY, OVERLAP_GRAPPER_CRADLE + SAFE_BUFFER_FOR_DETACH, False
     TongMove DIRECTION_CAVITY_TAIL, Y_FROM_CRADLE_TO_MAGNET, False
-    Move Here +Z(Z_FROM_CRADLE_TO_MAGNET - SAFE_BUFFER_FOR_DETACH)
+    Move RealPos +Z(Z_FROM_CRADLE_TO_MAGNET - SAFE_BUFFER_FOR_DETACH)
     
     If Not Open_Gripper Then
         g_RunResult$ = "After find magnet, Open_Gripper Failed"
@@ -2241,7 +2246,7 @@ Function FindMagnet As Boolean
     
     ''give a little bit of safety buffer in Z,
     ''we will easily touch bottom in post calibration
-    Move Here +Z(0.5)
+    Move RealPos +Z(0.5)
     
     If Not CheckMagnet Then
 		Exit Function
@@ -2306,7 +2311,7 @@ Function FineTuneToolSet As Boolean
 
     Move P6
 
-    Move Here +Z(20)
+    Move RealPos +Z(20)
 
     If Not Close_Gripper Then
         UpdateClient(TASK_MSG, "fine tune toolset: close gripper failed", ERROR_LEVEL)
@@ -2339,8 +2344,8 @@ Function FineTuneToolSet As Boolean
     ''dest point is the cradle's right holder center.
     ''it is used again in b-c
     tmp_Real = DegToRad(g_Perfect_Cradle_Angle)
-    FTTSDestX = CX(Here) + (MAGNET_HEAD_THICKNESS + FINGER_THICKNESS / 2.0) * Cos(tmp_Real)
-    FTTSDestY = CY(Here) + (MAGNET_HEAD_THICKNESS + FINGER_THICKNESS / 2.0) * Sin(tmp_Real)
+    FTTSDestX = CX(RealPos) + (MAGNET_HEAD_THICKNESS + FINGER_THICKNESS / 2.0) * Cos(tmp_Real)
+    FTTSDestY = CY(RealPos) + (MAGNET_HEAD_THICKNESS + FINGER_THICKNESS / 2.0) * Sin(tmp_Real)
     
     ''standby point is away from cradle with magnet head align with finger
     tmp_Real = DegToRad(g_Perfect_Cradle_Angle + 90)
@@ -2389,8 +2394,8 @@ Function FineTuneToolSet As Boolean
     msg$ = Str$(g_CurrentSteps) + " of 100"
     UpdateClient(TASK_PROG, msg$, INFO_LEVEL)
     
-    FTTSX(1) = CX(Here)
-    FTTSY(1) = CY(Here)
+    FTTSX(1) = CX(RealPos)
+    FTTSY(1) = CY(RealPos)
     SetFastSpeed
     
     ''get side scale factor for placer
@@ -2404,12 +2409,12 @@ Function FineTuneToolSet As Boolean
     ''move picker to the standby position by shift magnet length
     ''detach
     tmp_Real = DegToRad(g_Perfect_Cradle_Angle + 90)
-    Move Here +X(SAFE_BUFFER_FOR_DETACH * Cos(tmp_Real)) +Y(SAFE_BUFFER_FOR_DETACH * Sin(tmp_Real))
+    Move RealPos +X(SAFE_BUFFER_FOR_DETACH * Cos(tmp_Real)) +Y(SAFE_BUFFER_FOR_DETACH * Sin(tmp_Real))
     ''shift
     tmp_Real = DegToRad(g_Perfect_Cradle_Angle + 180)
     tmp_DX = (MAGNET_LENGTH - MAGNET_HEAD_THICKNESS) * Cos(tmp_Real)
     tmp_DY = (MAGNET_LENGTH - MAGNET_HEAD_THICKNESS) * Sin(tmp_Real)
-   	Move Here +X(tmp_DX) +Y(tmp_DY)
+   	Move RealPos +X(tmp_DX) +Y(tmp_DY)
 
     Wait TIME_WAIT_BEFORE_RESET
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
@@ -2426,8 +2431,8 @@ Function FineTuneToolSet As Boolean
         Close #LOG_FILE_NO
         Exit Function
     EndIf
-    FTTSX(2) = CX(Here)
-    FTTSY(2) = CY(Here)
+    FTTSX(2) = CX(RealPos)
+    FTTSY(2) = CY(RealPos)
     
     ''get side scale factor for picker
     FTTScaleF1 = ReadForce(DIRECTION_CAVITY_TO_MAGNET)
@@ -2439,7 +2444,7 @@ Function FineTuneToolSet As Boolean
 
     SetFastSpeed
     tmp_Real = DegToRad(g_Perfect_Cradle_Angle + 90)
-    Move Here +X(SAFE_BUFFER_FOR_DETACH * Cos(tmp_Real)) +Y(SAFE_BUFFER_FOR_DETACH * Sin(tmp_Real))
+    Move RealPos +X(SAFE_BUFFER_FOR_DETACH * Cos(tmp_Real)) +Y(SAFE_BUFFER_FOR_DETACH * Sin(tmp_Real))
 
     ''calculate theta
     ''touch moving direction
@@ -2477,7 +2482,7 @@ Function FineTuneToolSet As Boolean
     
     FTTSTheta = g_Perfect_Cradle_Angle - FTTSDeltaU  ''now theta is the magnet angle
     
-    FTTSTheta = FTTSTheta - CU(Here)
+    FTTSTheta = FTTSTheta - CU(RealPos)
     ''adjust global variable
     msg$ = "Old g_MagnetTransportAngle =" + Str$(g_MagnetTransportAngle)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
@@ -2525,8 +2530,8 @@ Function FineTuneToolSet As Boolean
                     Close #LOG_FILE_NO
                     Exit Function
                 EndIf
-		        FTTSX(FTTSIndex) = CX(Here)
-		        FTTSY(FTTSIndex) = CY(Here)
+		        FTTSX(FTTSIndex) = CX(RealPos)
+		        FTTSY(FTTSIndex) = CY(RealPos)
                 FTTScaleF1 = ReadForce(DIRECTION_CAVITY_HEAD)
                 TongMove DIRECTION_CAVITY_HEAD, 1, False
                 FTTScaleF2 = ReadForce(DIRECTION_CAVITY_HEAD)
@@ -2539,8 +2544,8 @@ Function FineTuneToolSet As Boolean
                     Close #LOG_FILE_NO
                     Exit Function
                 EndIf
-		        FTTSX(FTTSIndex) = CX(Here)
-		        FTTSY(FTTSIndex) = CY(Here)
+		        FTTSX(FTTSIndex) = CX(RealPos)
+		        FTTSY(FTTSIndex) = CY(RealPos)
                 FTTScaleF1 = ReadForce(DIRECTION_CAVITY_TAIL)
                 TongMove DIRECTION_CAVITY_TAIL, 1, False
                 FTTScaleF2 = ReadForce(DIRECTION_CAVITY_TAIL)
@@ -2601,7 +2606,7 @@ Function FineTuneToolSet As Boolean
         Exit Function
     EndIf
     Move P6 +Z(2)    ''the 2mm here is because both cradle and the magnet hold by tong may not level
-    FTTSZ = CZ(Here)
+    FTTSZ = CZ(RealPos)
     
     SetVerySlowSpeed
     If Not ForceTouch(DIRECTION_MAGNET_TO_CAVITY, 2, True) Then
@@ -2611,8 +2616,8 @@ Function FineTuneToolSet As Boolean
         Close #LOG_FILE_NO
         Exit Function
     EndIf
-    FTTSX(1) = CX(Here)
-    FTTSY(1) = CY(Here)
+    FTTSX(1) = CX(RealPos)
+    FTTSY(1) = CY(RealPos)
 
     g_Steps = FTTStepTotal /8
     g_CurrentSteps = FTTStepStart + 6 * g_Steps
@@ -2623,7 +2628,7 @@ Function FineTuneToolSet As Boolean
     SetFastSpeed
     Move P6 +Z(2)
     Tool 1
-    P51 = Here
+    P51 = RealPos
     Tool 2
     Jump P51 +Z(18)
 
@@ -2635,7 +2640,7 @@ Function FineTuneToolSet As Boolean
         Exit Function
     EndIf
     Tool 0
-    Move Here :Z(FTTSZ)
+    Move RealPos :Z(FTTSZ)
     CutMiddle FORCE_XTORQUE
     
     SetVerySlowSpeed
@@ -2647,8 +2652,8 @@ Function FineTuneToolSet As Boolean
         Exit Function
     EndIf
     
-    FTTSX(2) = CX(Here)
-    FTTSY(2) = CY(Here)
+    FTTSX(2) = CX(RealPos)
+    FTTSY(2) = CY(RealPos)
         
 	tmp_Real2 = FTTSX(2) - FTTSX(1)
 	tmp_Real3 = FTTSY(2) - FTTSY(1)
@@ -2731,7 +2736,7 @@ Function FineTuneToolSet As Boolean
     EndIf
     
     Tool 1
-    P56 = Here
+    P56 = RealPos
     msg$ = "new P56," + Str$(CX(P56)) + "," + Str$(CY(P56)) + "," + Str$(CZ(P56)) + "," + Str$(CU(P56)) + " " + Date$ + " " + Time$
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     Print #LOG_FILE_NO, "new P56,", CX(P56), ",", CY(P56), ",", CZ(P56), ",", CU(P56), " ", Date$, " ", Time$
@@ -2739,7 +2744,7 @@ Function FineTuneToolSet As Boolean
     ''==============================Z offset for placer==========================
     ''get the center of cradle to touch Z
     Tool 2
-    P51 = Here + P56
+    P51 = RealPos + P56
     P51 = XY((CX(P51) / 2), (CY(P51) / 2), (CZ(P51) / 2), (CU(P51) / 2))
     ''move out 3 mm to give more space to the fingers.
     tmp_Real = DegToRad(g_Perfect_Cradle_Angle + 90)
@@ -2767,8 +2772,8 @@ Function FineTuneToolSet As Boolean
         Close #LOG_FILE_NO
         Exit Function
     EndIf
-    FTTSZ = CZ(Here) ''save picker's Z
-    msg$ = "picker touched cradle at Z=" + Str$(CZ(Here))
+    FTTSZ = CZ(RealPos) ''save picker's Z
+    msg$ = "picker touched cradle at Z=" + Str$(CZ(RealPos))
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     
     If Not CheckRigidness Then
@@ -2797,9 +2802,9 @@ Function FineTuneToolSet As Boolean
         Close #LOG_FILE_NO
         Exit Function
     EndIf
-    msg$ = "placer touched cradle at Z=" + Str$(CZ(Here))
+    msg$ = "placer touched cradle at Z=" + Str$(CZ(RealPos))
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-    FTTSZ = FTTSZ - CZ(Here)
+    FTTSZ = FTTSZ - CZ(RealPos)
 
     If Not CheckRigidness Then
         UpdateClient(TASK_MSG, "Gripper finger loose at place side", ERROR_LEVEL)
@@ -2918,16 +2923,16 @@ Function DiffPickerPlacer As Real
     ''touch using picker
     If Not g_FlagAbort Then
         Tool 1
-        P51 = Here
+        P51 = RealPos
         Tool 0
         SetVerySlowSpeed
         If Not ForceTouch(-FORCE_ZFORCE, 20, True) Then
         	UpdateClient(TASK_MSG, "failed to touch a bottom in 20 mm", ERROR_LEVEL)
             Exit Function
         EndIf
-        DPPPickerZ = CZ(Here)
+        DPPPickerZ = CZ(RealPos)
         SetFastSpeed
-        Move Here +Z(5)
+        Move RealPos +Z(5)
         msg$ = "picker touched at " + Str$(DPPPickerZ)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     EndIf
@@ -2944,9 +2949,9 @@ Function DiffPickerPlacer As Real
         	UpdateClient(TASK_MSG, "failed to touch a bottom in 20 mm", ERROR_LEVEL)
             Exit Function
         EndIf
-        DPPPlacerZ = CZ(Here)
+        DPPPlacerZ = CZ(RealPos)
         SetFastSpeed
-        Move Here +Z(5)
+        Move RealPos +Z(5)
         msg$ = "placer touched at " + Str$(DPPPlacerZ)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     EndIf
@@ -3070,7 +3075,7 @@ Function StripCalibration As Boolean
 
     Move P6
 
-    Move Here +Z(20)
+    Move RealPos +Z(20)
 
     If Not Close_Gripper Then
         UpdateClient(TASK_MSG, "strip cal: abort: close gripper failed at magnet", ERROR_LEVEL)
@@ -3116,7 +3121,7 @@ Function StripCalibration As Boolean
 	tmp_DY = tmp_DY + STRIP_PLACER_Y_OFFSET * Sin(tmp_Real2)
 	Tool 2
 	''here 20 is from we moved tong to P6+20
-	P8 = Here +X(tmp_DX) +Y(tmp_DY) -Z(STRIP_PLACER_Z_OFFSET + 20) +U(90)
+	P8 = RealPos +X(tmp_DX) +Y(tmp_DY) -Z(STRIP_PLACER_Z_OFFSET + 20) +U(90)
 	''P80 is standby point, away 10 mm
 	tmp_DX = STANDBY_DISTANCE * Cos(tmp_Real)
 	tmp_DY = STANDBY_DISTANCE * Sin(tmp_Real)
@@ -3151,15 +3156,15 @@ Function StripCalibration As Boolean
 		    g_SafeToGoHome = True
 			Exit Function
         EndIf
-        CPCInitX = CX(Here)
-        CPCInitY = CY(Here)
+        CPCInitX = CX(RealPos)
+        CPCInitY = CY(RealPos)
         ''detach
         SetFastSpeed
         TongMove DIRECTION_CAVITY_HEAD, SAFE_BUFFER_FOR_DETACH, False
-        Move Here -Z(STRIP_PLACER_LIFT_Z)
-        P81 = Here
-        CPCInitZ = CZ(Here)
-        CPCInitU = CU(Here)
+        Move RealPos -Z(STRIP_PLACER_LIFT_Z)
+        P81 = RealPos
+        CPCInitZ = CZ(RealPos)
+        CPCInitU = CU(RealPos)
         Print "strip X touched at ", CPCInitX
     EndIf
 
@@ -3175,7 +3180,7 @@ Function StripCalibration As Boolean
 			UpdateClient(TASK_MSG, "need to scan Z for strip position", INFO_LEVEL)
 			Print #LOG_FILE_NO, "scan Z for strip position"
 			Move P81
-			Move Here -Z(STRIP_PULL_OUT_Z_RANGE / 2.0)
+			Move RealPos -Z(STRIP_PULL_OUT_Z_RANGE / 2.0)
 			Wait 2
 			If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 				g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
@@ -3193,7 +3198,7 @@ Function StripCalibration As Boolean
 				Exit Function
 			EndIf
         EndIf
-		CPCInitZ = CZ(Here)
+		CPCInitZ = CZ(RealPos)
     EndIf
 
     g_CurrentSteps = CPCStepStart + 3 * CPCStepTotal / 5
@@ -3206,7 +3211,7 @@ Function StripCalibration As Boolean
     	msg$ = "moved in Z=" + Str$(CPCInitZ) + "and fine tune Z"
     	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
 		Print #LOG_FILE_NO, "moved in at Z=", CPCInitZ, "fine tune Z"
-		Move Here :X(CPCInitX)
+		Move RealPos :X(CPCInitX)
 		TongMove DIRECTION_CAVITY_TAIL, MAGNET_HEAD_THICKNESS / 2, False
 		''ForcedCutMiddle FORCE_ZFORCE
     	CutMiddleWithArguments FORCE_ZFORCE, 0, GetForceThreshold(FORCE_ZFORCE), 2, 20
@@ -3219,7 +3224,7 @@ Function StripCalibration As Boolean
     ''OK
     If Not g_FlagAbort Then
 		TongMove DIRECTION_CAVITY_HEAD, MAGNET_HEAD_THICKNESS / 2, False
-		P8 = Here
+		P8 = RealPos
         SavePoints "robot1.pts"
 
 	    SavePointHistory 8, g_FCntStrip
@@ -3269,26 +3274,26 @@ Function FindZForStripper As Boolean
 	UpdateClient(TASK_MSG, "strip cal: pull out Z", INFO_LEVEL)
     FindZForStripper = False
     
-    POZOldX = CX(Here)
-    POZOldY = CY(Here)
-    POZOldZ = CZ(Here)
+    POZOldX = CX(RealPos)
+    POZOldY = CY(RealPos)
+    POZOldZ = CZ(RealPos)
 
 	''step size
 	stepSize = STRIP_PULL_OUT_Z_RANGE / STRIP_PULL_OUT_Z_STEP
 
     For StepIndex = 1 To STRIP_PULL_OUT_Z_STEP
-        Move Here +Z(stepSize)
+        Move RealPos +Z(stepSize)
         If Not ForceTouch(DIRECTION_CAVITY_TAIL, SAFE_BUFFER_FOR_DETACH + 3, False) Then
             If Not g_FlagAbort Then
                 FindZForStripper = True
-                msg$ = "got Z at " + Str$(CZ(Here))
+                msg$ = "got Z at " + Str$(CZ(RealPos))
                 UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
             Else
                 TongMove DIRECTION_CAVITY_HEAD, 20, False
             EndIf
             Exit Function
         EndIf
-        Move Here :X(POZOldX) :Y(POZOldY)
+        Move RealPos :X(POZOldX) :Y(POZOldY)
     Next
     
 Fend
@@ -3300,7 +3305,7 @@ Function CheckRigidness As Boolean
 	''pressure for 0.05mm
 	''save the force and position then back off
 	
-	Move Here +Z(1)
+	Move RealPos +Z(1)
     If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
         g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
         g_RunResult$ = "force sensor reset failed at CheckRigidness"
@@ -3309,12 +3314,12 @@ Function CheckRigidness As Boolean
         Exit Function
     EndIf
     
-    Move Here -Z(1)
+    Move RealPos -Z(1)
     CKRNF1 = ReadForce(FORCE_ZFORCE)
     
-    Move Here -Z(0.05)
+    Move RealPos -Z(0.05)
     CKRNF2 = ReadForce(FORCE_ZFORCE)
-  	Move Here +Z(0.05)
+  	Move RealPos +Z(0.05)
   
   	''calculate the rigidness
   	If Abs(CKRNF2 - CKRNF1) < 1 Then
@@ -3353,19 +3358,19 @@ Function TestRigid
     ''touch using picker
     If Not g_FlagAbort Then
         Tool 1
-        P51 = Here
+        P51 = RealPos
         Tool 0
         SetVerySlowSpeed
         If Not ForceTouch(-FORCE_ZFORCE, 20, True) Then
             UpdateClient(TASK_MSG, "failed to touch a bottom in 20 mm", ERROR_LEVEL)
             Exit Function
         EndIf
-        DPPPickerZ = CZ(Here)
+        DPPPickerZ = CZ(RealPos)
         If Not CheckRigidness Then
         	UpdateClient(TASK_MSG, "failed to touch a bottom in 20 mm", WARNING_LEVEL)
         EndIf
         SetFastSpeed
-        Move Here +Z(5)
+        Move RealPos +Z(5)
         msg$ = "picker touched at " + Str$(DPPPickerZ)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     EndIf
@@ -3387,12 +3392,12 @@ Function TestRigid
             Print "failed to touch a bottom in 20 mm"
             Exit Function
         EndIf
-        DPPPlacerZ = CZ(Here)
+        DPPPlacerZ = CZ(RealPos)
         If Not CheckRigidness Then
         	Print "check rigidness failed"
         EndIf
         SetFastSpeed
-        Move Here +Z(5)
+        Move RealPos +Z(5)
         Print "placer touched at ", DPPPlacerZ
     EndIf
     

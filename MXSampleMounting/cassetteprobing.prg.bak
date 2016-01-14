@@ -44,8 +44,6 @@ Function GTProbeCassetteType(cassette_position As Integer) As Boolean
 	
 	standbyPointNum = 52
 	
-	g_OnlyAlongAxis = False
-	
 	Tool PICKER_TOOL
 	
 	GTSetScanCassetteTopStandbyPoint(cassette_position, standbyPointNum, 0, ByRef scanZdistance)

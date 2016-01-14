@@ -65,7 +65,7 @@ Function GTpuckName$(puckIndex As Integer)
 	EndIf
 Fend
 
-Function GTgetPuckIndex(puckChar$ As String, ByRef puckIndex As Integer) As Boolean
+Function GTParsePuckIndex(puckChar$ As String, ByRef puckIndex As Integer) As Boolean
 	puckChar$ = UCase$(puckChar$)
 	Select puckChar$
 		Case "A"
@@ -78,10 +78,10 @@ Function GTgetPuckIndex(puckChar$ As String, ByRef puckIndex As Integer) As Bool
 			puckIndex = PUCK_D
 		Default
 			puckIndex = UNKNOWN_POSITION
-			GTgetPuckIndex = False
+			GTParsePuckIndex = False
 			Exit Function
 	Send
-	GTgetPuckIndex = True
+	GTParsePuckIndex = True
 Fend
 
 Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer, jumpToStandbyPoint As Boolean) As Boolean
@@ -519,7 +519,7 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpT
 	EndIf
 	
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'adaptor_puck_status', 'position':" + Str$(cassette_position) + ", 'puck':'" + GTpuckName$(puckIndex) + "', 'value':" + Str$(g_PuckStatus(cassette_position, puckIndex)) + "}"
+	msg$ = "{'set':'adaptor_puck_status', 'position':'" + GTCassettePosition$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'value':'" + GTPuckStatusString$(g_PuckStatus(cassette_position, puckIndex)) + "'}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
 	Move P(standbyPoint)
@@ -588,10 +588,10 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	EndIf
 	
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'adaptor_sample_distance', 'position':" + Str$(cassette_position) + ", 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':" + Str$(g_SPSampleDistanceError(cassette_position, puckIndex, portIndex)) + "}"
+	msg$ = "{'set':'adaptor_sample_distance', 'position':'" + GTCassettePosition$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':" + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, portIndex), "0.000") + "}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 
-	msg$ = "{'set':'adaptor_port_status', 'position':" + Str$(cassette_position) + ", 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + "}"
+	msg$ = "{'set':'adaptor_port_status', 'position':'" + GTCassettePosition$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':'" + GTPortStatusString$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + "'}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port

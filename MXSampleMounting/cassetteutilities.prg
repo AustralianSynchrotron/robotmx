@@ -3,14 +3,37 @@
 
 '' This .prg file contains generic cassette utilities i.e. routines used by normal, calibration and superpuck cassettes
 
-Function GTCassetteName$(cassette_position As Integer) As String
+Function GTParseCassettePosition(cassetteChar$ As String, ByRef cassette_position As Integer) As Boolean
+	cassetteChar$ = UCase$(cassetteChar$)
+	Select cassetteChar$
+		Case "L"
+			cassette_position = LEFT_CASSETTE
+		Case "M"
+			cassette_position = MIDDLE_CASSETTE
+		Case "R"
+			cassette_position = RIGHT_CASSETTE
+		Default
+			cassette_position = UNKNOWN_POSITION
+			GTParseCassettePosition = False
+			Exit Function
+	Send
+	GTParseCassettePosition = True
+Fend
+
+Function GTCassettePosition$(cassette_position As Integer) As String
 	If cassette_position = LEFT_CASSETTE Then
-		GTCassetteName$ = "left_cassette"
+		GTCassettePosition$ = "left"
 	ElseIf cassette_position = MIDDLE_CASSETTE Then
-		GTCassetteName$ = "middle_cassette"
+		GTCassettePosition$ = "middle"
 	ElseIf cassette_position = RIGHT_CASSETTE Then
-		GTCassetteName$ = "right_cassette"
+		GTCassettePosition$ = "right"
+	Else
+		GTCassettePosition$ = "unknown"
 	EndIf
+Fend
+
+Function GTCassetteName$(cassette_position As Integer) As String
+	GTCassetteName$ = GTCassettePosition$(cassette_position) + "_cassette"
 Fend
 
 Function GTapplyTiltToOffsets(cassette_position As Integer, PerfectXoffset As Real, PerfectYoffset As Real, PerfectZoffset As Real, ByRef Actualoffsets() As Real)

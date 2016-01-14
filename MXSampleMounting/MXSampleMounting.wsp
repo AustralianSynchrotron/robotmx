@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/01/14 07:12:33:125,DS:0000005515,CS:27744,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="utilities.prg"
+ENVT0100,LM:2016/01/14 22:37:23:703,DS:0000005519,CS:30827,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="superpuckdefs.inc"
 bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
@@ -38,7 +38,7 @@ ProgramFile3 {
 ProgramFile4 {
 	sName="utilities.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -292,7 +292,7 @@ IncludeFile5 {
 IncludeFile6 {
 	sName="superpuckdefs.inc"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0

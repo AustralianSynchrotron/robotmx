@@ -29,7 +29,7 @@ Function debugProbeCalib(cassette_position As Integer)
 	Next
 	
 	Integer rowIndex, ColumnIndex
-	For ColumnIndex = 0 To NUM_COLUMNS - 1
+	For columnIndex = 0 To NUM_COLUMNS - 1
 		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 		For rowIndex = 1 To NUM_ROWS - 2
 			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
@@ -149,7 +149,7 @@ Function ProbeCassettes
     Print "GTProbeCassettes finished at ", Date$, " ", Time$
 Fend
 
-Function GTRetrievePortsProperty
+Function JSONDataRequest
 	
 	String RequestTokens$(0)
 	Integer RequestArgC
@@ -182,16 +182,16 @@ Function GTRetrievePortsProperty
 			For jsonDataToSendStrIndex = 1 To Len(RequestTokens$(1))
 				Select UCase$(Mid$(RequestTokens$(1), jsonDataToSendStrIndex, 1))
 					Case "P"
-						jsonDataToSend = PUCK_STATUS
+						jsonDataToSend = CASSETTE_PUCKs_STATUS
 					Case "S"
-						jsonDataToSend = SAMPLE_PORT_STATUS
+						jsonDataToSend = Cassette_PORTs_STATUS
 					Case "D"
-						jsonDataToSend = SAMPLE_DISTANCE_ERROR
+						jsonDataToSend = Cassette_DISTANCE_ERRORs
 					Default
 						Exit Function
 				Send
 				
-				GTsendJSONResponse(jsonDataToSend, cassette_position)
+				GTsendCassetteData(jsonDataToSend, cassette_position)
 			Next
 		Next
     EndIf
@@ -265,7 +265,7 @@ Function GTMountSamplePort
 		rowOrPuckPortChar$ = Mid$(RequestTokens$(2), 1, 1)
 		
 		If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
-			If Not GTgetColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
+			If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
 				g_RunResult$ = "GTMountSamplePort: Invalid Column Name supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
@@ -278,7 +278,7 @@ Function GTMountSamplePort
 				Exit Function
 			EndIf
 		ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-			If Not GTgetPuckIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
+			If Not GTParsePuckIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
 				g_RunResult$ = "GTMountSamplePort: Invalid Puck Name supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function

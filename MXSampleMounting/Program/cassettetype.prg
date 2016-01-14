@@ -5,18 +5,18 @@
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
 
-Global Integer g_CassetteType(NUM_CASSETTES)
+Global Preserve Integer g_CassetteType(NUM_CASSETTES)
 
 
 Function GTCassetteType$(cassetteType As Integer) As String
 	If cassetteType = CALIBRATION_CASSETTE Then
-		GTCassetteType$ = "calibration_cassette"
+		GTCassetteType$ = "calibration"
 	ElseIf cassetteType = NORMAL_CASSETTE Then
-		GTCassetteType$ = "normal_cassette"
+		GTCassetteType$ = "normal"
 	ElseIf cassetteType = SUPERPUCK_CASSETTE Then
-		GTCassetteType$ = "superpuck_cassette"
+		GTCassetteType$ = "superpuck"
 	Else
-		GTCassetteType$ = "unknown_cassette"
+		GTCassetteType$ = "unknown"
 	EndIf
 Fend
 
@@ -29,11 +29,15 @@ Fend
 Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum As Integer, uOffset As Real, ByRef scanZdistance As Real)
 	Real radiusToCircleCassette, standbyPointU, standbyZoffsetFromCassetteBottom
 	
+	Print "+GTSetScanCassetteTopStandbyPoint"
+	
 	radiusToCircleCassette = CASSETTE_RADIUS * CASSETTE_SHRINK_FACTOR - 3.0
+	
+	Print StringPoint$(pointNum)
 	
 	Real Uangle
 	Uangle = g_AngleOfFirstColumn(cassette_position) + uOffset
-	standbyPointU = g_UForNormalStandby(cassette_position) + GTBoundAngle(-180, 180, (Uangle - g_UForNormalStandby(cassette_position)))
+	standbyPointU = GTadjustUAngle(cassette_position, Uangle)
 	
 	'' 15mm above Maximum Cassette Height = SUPERPUCK_HEIGHT
 	standbyZoffsetFromCassetteBottom = CASSETTE_SHRINK_FACTOR * SUPERPUCK_HEIGHT + 15.0
@@ -44,8 +48,11 @@ Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum
 	'' Rotate 30 degrees to give cavity some space
 	P(pointNum) = P(pointNum) +U(30.0)
 	
+	Print StringPoint$(pointNum)
+	
 	'' Maximum distance in Z-axis to scan for Cassette using TouchCassetteTop = 30mm
 	scanZdistance = 30.0
+	Print "-GTSetScanCassetteTopStandbyPoint"
 Fend
 
 
@@ -120,7 +127,7 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 	If min_height_error < ACCPT_ERROR_IN_CASSETTE_HEIGHT Then
 		g_CassetteType(cassette_position) = guessedCassetteType
 		GTCassetteTypeFromHeight = True
-		msg$ = "GTfindCassetteType completed. " + GTCassetteName$(cassette_position) + " Type=" + GTCassetteType$(guessedCassetteType)
+		msg$ = "GTfindCassetteType completed. " + GTCassetteName$(cassette_position) + " CassetteType=" + GTCassetteType$(guessedCassetteType)
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	Else
 		g_CassetteType(cassette_position) = UNKNOWN_CASSETTE
@@ -129,6 +136,9 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 		UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 	EndIf
 	
+	'' Client Update after probing decision has been made
+	msg$ = "{'set':'cassette_type', 'position':'" + GTCassettePosition$(cassette_position) + "', 'min_height_error':" + Str$(min_height_error) + ", 'value':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 Fend
 
 Function GTsetfindAvgHeightStandbyPoint(cassette_position As Integer, pointNum As Integer, index As Integer, guessedCassetteType As Integer, ByRef scanZdistance As Real)

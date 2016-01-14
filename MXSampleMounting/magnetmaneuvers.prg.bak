@@ -5,9 +5,44 @@
 #include "superPuckdefs.inc"
 #include "cassettedefs.inc"
 
-Function GTIsMagnetInTong() As Boolean
+#define CLOSE_DISTANCE 10
+
+Function GTJumpHomeToCoolingPointAndWait As Boolean
 	String msg$
-	GTIsMagnetInTong = False
+	
+	GTJumpHomeToCoolingPointAndWait = False
+
+	If Not Open_Lid Then
+		UpdateClient(TASK_MSG, "GTJumpHomeToCoolingPointAndWait:Open_Lid failed", ERROR_LEVEL)
+        Exit Function
+    EndIf
+   
+   	Motor On
+   	Power High
+   	
+	Tool 0
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+
+	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
+	
+	Jump P3
+	
+	'' for testing only, should be put inside the below if statement
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+	
+	If g_LN2LevelHigh Then
+		Integer timeTakenToCoolTong
+		timeTakenToCoolTong = WaitLN2BoilingStop(SENSE_TIMEOUT, HIGH_SENSITIVITY, HIGH_SENSITIVITY)
+		msg$ = "GTJumpHomeToCoolingPointAndWait: Cooled tong for " + Str$(timeTakenToCoolTong) + " seconds"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	EndIf
+	
+	GTJumpHomeToCoolingPointAndWait = True
+Fend
+
+Function GTIsMagnetInGripper() As Boolean
+	String msg$
+	GTIsMagnetInGripper = False
 
 	Tool 0
 
@@ -37,7 +72,7 @@ Function GTIsMagnetInTong() As Boolean
 			msg$ = "IsMagnetInTong: ForceTouch stopped " + Str$(distErrorFromPerfectMagnetPoint) + "mm before reaching theoretical magnet position."
 			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 		ElseIf distErrorFromPerfectMagnetPoint < MAGNET_PROBE_DISTANCE_TOLERANCE Then
-			GTIsMagnetInTong = True
+			GTIsMagnetInGripper = True
 			msg$ = "IsMagnetInTong: ForceTouch detected magnet in tong with distance error =" + Str$(distErrorFromPerfectMagnetPoint) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		Else
@@ -59,8 +94,8 @@ Function GTCheckAndPickMagnet As Boolean
 	
 	Tool 0
 	
-	If GTIsMagnetInTong Then
-		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInTong found magnet on tong.", ERROR_LEVEL)
+	If GTIsMagnetInGripper Then
+		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong.", ERROR_LEVEL)
 	Else
 		Jump P3 '' Cooling Point in front of cradle
 		If Not Open_Gripper Then
@@ -72,7 +107,7 @@ Function GTCheckAndPickMagnet As Boolean
 			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:Close_Gripper failed", ERROR_LEVEL)
 			Exit Function
 		EndIf
-		Jump P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
+		Move P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
 	EndIf
 	
 	GTCheckAndPickMagnet = True
@@ -119,42 +154,6 @@ Function GTReturnMagnetAndGoHome As Boolean
 	Close_Lid
 	
 	GTReturnMagnetAndGoHome = True
-Fend
-
-
-#define CLOSE_DISTANCE 10
-
-Function GTJumpHomeToCoolingPointAndWait As Boolean
-	String msg$
-	
-	GTJumpHomeToCoolingPointAndWait = False
-
-	If Not Open_Lid Then
-		UpdateClient(TASK_MSG, "GTJumpHomeToCoolingPointAndWait:Open_Lid failed", ERROR_LEVEL)
-        Exit Function
-    EndIf
-   
-   	Motor On
-   	Power High
-   	
-	Tool 0
-	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
-
-	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
-	
-	Jump P3
-	
-	'' for testing only, should be put inside the below if statement
-	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
-	
-	If g_LN2LevelHigh Then
-		Integer timeTakenToCoolTong
-		timeTakenToCoolTong = WaitLN2BoilingStop(SENSE_TIMEOUT, HIGH_SENSITIVITY, HIGH_SENSITIVITY)
-		msg$ = "GTJumpHomeToCoolingPointAndWait: Cooled tong for " + Str$(timeTakenToCoolTong) + " seconds"
-		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-	EndIf
-	
-	GTJumpHomeToCoolingPointAndWait = True
 Fend
 
 Function GTTwistOffMagnet
