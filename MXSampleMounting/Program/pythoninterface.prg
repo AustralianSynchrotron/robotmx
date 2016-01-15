@@ -29,7 +29,7 @@ Function debugProbeCalib(cassette_position As Integer)
 	Next
 	
 	Integer rowIndex, ColumnIndex
-	For columnIndex = 0 To NUM_COLUMNS - 1
+	For ColumnIndex = 0 To NUM_COLUMNS - 1
 		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 		For rowIndex = 1 To NUM_ROWS - 2
 			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
@@ -307,4 +307,101 @@ Function GTMountSamplePort
 	g_RunResult$ = "success GTMountSamplePort"
     Print "GTMountSamplePort finished at ", Date$, " ", Time$
 Fend
+
+
+Function debugJSONNormal(cassette_position As Integer)
+	Integer cassetteIndex
+	Integer rowIndex, ColumnIndex
+	
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		g_CassetteType(cassetteIndex) = UNKNOWN_CASSETTE
+		For ColumnIndex = 0 To NUM_COLUMNS - 1
+			For rowIndex = 0 To NUM_ROWS - 1
+				g_CASSampleDistanceError(cassetteIndex, rowIndex, ColumnIndex) = -1.234
+                g_CAS_PortStatus(cassetteIndex, rowIndex, ColumnIndex) = PORT_VACANT
+			Next
+		Next
+	Next
+	
+	g_CassetteType(cassette_position) = NORMAL_CASSETTE
+	For ColumnIndex = 0 To NUM_COLUMNS - 1
+		For rowIndex = 0 To NUM_ROWS - 1
+			g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = -5.678
+			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
+		Next
+	Next
+
+	JSONDataRequest
+Fend
+
+Function debugJSONCalib(cassette_position As Integer)
+	Integer cassetteIndex
+	Integer rowIndex, ColumnIndex
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		g_CassetteType(cassetteIndex) = UNKNOWN_CASSETTE
+		For ColumnIndex = 0 To NUM_COLUMNS - 1
+			For rowIndex = 1 To NUM_ROWS - 2
+				g_CASSampleDistanceError(cassetteIndex, rowIndex, ColumnIndex) = -1.234
+				g_CAS_PortStatus(cassetteIndex, rowIndex, ColumnIndex) = PORT_VACANT
+			Next
+		Next
+	Next
+	
+	g_CassetteType(cassette_position) = CALIBRATION_CASSETTE
+	For ColumnIndex = 0 To NUM_COLUMNS - 1
+		g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = -5.678
+		rowIndex = 0
+		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
+		For rowIndex = 1 To NUM_ROWS - 2
+			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_UNKNOWN
+		Next
+		g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = -5.678
+		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
+	Next
+
+	JSONDataRequest
+Fend
+
+Function debugJSONPuck(cassette_position As Integer, puckIndexToProbe As Integer)
+	Integer cassetteIndex
+	Integer puckIndex, puckPortIndex
+	
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		g_CassetteType(cassetteIndex) = UNKNOWN_CASSETTE
+		For puckIndex = 0 To NUM_PUCKS - 1
+			g_PuckStatus(cassetteIndex, puckIndex) = PUCK_ABSENT
+			For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+				g_SPSampleDistanceError(cassetteIndex, puckIndex, puckPortIndex) = -1.234
+				g_SP_PortStatus(cassetteIndex, puckIndex, puckPortIndex) = PORT_VACANT
+			Next
+		Next
+	Next
+	
+	g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE
+	For puckIndex = PUCK_A To puckIndexToProbe - 1
+		g_PuckStatus(cassette_position, puckIndex) = PUCK_ABSENT
+		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+			g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = -1.234
+			g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_VACANT
+		Next
+	Next
+
+	puckIndex = puckIndexToProbe
+	g_PuckStatus(NUM_CASSETTES, NUM_PUCKS) = PUCK_PRESENT
+	For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+		g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = -5.678
+		g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_OCCUPIED
+	Next
+
+	For puckIndex = puckIndexToProbe + 1 To PUCK_D
+		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+			g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = -9.012
+			g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_VACANT
+		Next
+	Next
+	
+	JSONDataRequest
+Fend
+
+
 

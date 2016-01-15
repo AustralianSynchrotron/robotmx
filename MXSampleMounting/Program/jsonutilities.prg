@@ -39,7 +39,7 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 	Integer columnIndex, rowIndex
 	Integer puckIndex, puckPortIndex
 
-	portsPerJSONPacket = 24
+	portsPerJSONPacket = 16
 	numJSONPackets = (NUM_ROWS * NUM_COLUMNS) / portsPerJSONPacket
 	
 	For responseJSONPacketIndex = 0 To numJSONPackets - 1
@@ -97,8 +97,8 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 			Exit Function
 		EndIf
 		
-		JSONResponse$ = JSONResponse$ + ",'position':" + GTCassettePosition$(cassette_position)
-		JSONResponse$ = JSONResponse$ + ",'type':" + GTCassetteType$(g_CassetteType(cassette_position))
+		JSONResponse$ = JSONResponse$ + ",'position':'" + GTCassettePosition$(cassette_position) + "'"
+		JSONResponse$ = JSONResponse$ + ",'type':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'"
 		JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
 		puckIndex = responseJSONPacketIndex
 		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
@@ -120,8 +120,9 @@ Function GTsendPuckData(cassette_position As Integer)
 	Integer puckIndex
 	
 	JSONResponse$ = "{'set':'cassette_pucks_status'"
-	JSONResponse$ = JSONResponse$ + ",'position':" + GTCassettePosition$(cassette_position)
-	JSONResponse$ = JSONResponse$ + ",'type':" + GTCassetteType$(g_CassetteType(cassette_position))
+	JSONResponse$ = JSONResponse$ + ",'position':'" + GTCassettePosition$(cassette_position) + "'"
+	JSONResponse$ = JSONResponse$ + ",'type':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'"
+	JSONResponse$ = JSONResponse$ + ",'start':" + Str$(0) + ",'end':" + Str$(NUM_PUCKS - 1)
 	JSONResponse$ = JSONResponse$ + ",'value':["
 	For puckIndex = 0 To NUM_PUCKS - 1
 		JSONResponse$ = JSONResponse$ + GTPuckStatusString$(g_PuckStatus(cassette_position, puckIndex)) + ","
@@ -140,6 +141,36 @@ Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 		Else
 			GTsendSuperPuckData(dataToSend, cassette_position)
 		EndIf
+	Else
+		'' Unknown Cassette
+		String JSONResponse$
+		
+		If dataToSend = Cassette_PORTs_STATUS Then
+			JSONResponse$ = "{'set':'cassette_ports_status'"
+		ElseIf dataToSend = Cassette_DISTANCE_ERRORs Then
+			JSONResponse$ = "{'set':'cassette_distance_errors'"
+		ElseIf dataToSend = CASSETTE_PUCKs_STATUS Then
+			JSONResponse$ = "{'set':'cassette_pucks_status'"
+		Else
+			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
+			Exit Function
+		EndIf
+
+		JSONResponse$ = JSONResponse$ + ",'position':'" + GTCassettePosition$(cassette_position) + "'"
+		JSONResponse$ = JSONResponse$ + ",'type':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'"
+		
+		If dataToSend = Cassette_PORTs_STATUS Then
+			JSONResponse$ = JSONResponse$ + ",'start':0,'end':0,'value':[]}"
+		ElseIf dataToSend = Cassette_DISTANCE_ERRORs Then
+			JSONResponse$ = JSONResponse$ + ",'start':0,'end':0,'value':[]}"
+		ElseIf dataToSend = CASSETTE_PUCKs_STATUS Then
+			JSONResponse$ = JSONResponse$ + ",'start':0,'end':0,'value':[]}"
+		Else
+			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
+			Exit Function
+		EndIf
+
+		UpdateClient(CLIENT_UPDATE, JSONResponse$, INFO_LEVEL)
 	EndIf
 Fend
 

@@ -1286,4 +1286,8 @@ P999 = XY(   521.253,   52.433, -262.891,   89.498 )  /R /0
  0
 > print g_PrintLevel
  14
+> JSONDataRequest
+!!Error: 2305, Cannot execute a Call statement from the command window.
+> print g_RunArgs$
+LMR PSD
 > 
