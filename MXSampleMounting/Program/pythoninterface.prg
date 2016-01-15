@@ -355,7 +355,7 @@ Function debugJSONCalib(cassette_position As Integer)
 		For rowIndex = 1 To NUM_ROWS - 2
 			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_UNKNOWN
 		Next
-		g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = -5.678
+		g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = -5.678
 		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
 	Next
 
@@ -387,7 +387,7 @@ Function debugJSONPuck(cassette_position As Integer, puckIndexToProbe As Integer
 	Next
 
 	puckIndex = puckIndexToProbe
-	g_PuckStatus(NUM_CASSETTES, NUM_PUCKS) = PUCK_PRESENT
+	g_PuckStatus(cassette_position, puckIndex) = PUCK_PRESENT
 	For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
 		g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = -5.678
 		g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_OCCUPIED

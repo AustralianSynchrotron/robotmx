@@ -59,13 +59,13 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 		JSONResponse$ = JSONResponse$ + ",'type':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'"
 		JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'end':" + Str$(endPortIndex) + ",'value':["
 		For portIndex = startPortIndex To endPortIndex
-			columnIndex = portIndex / NUM_ROWS
-			rowIndex = portIndex - (columnIndex * NUM_ROWS)
+			ColumnIndex = portIndex / NUM_ROWS
+			rowIndex = portIndex - (ColumnIndex * NUM_ROWS)
 			
 			If dataToSend = Cassette_PORTs_STATUS Then
-				JSONResponse$ = JSONResponse$ + GTPortStatusString$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ","
+				JSONResponse$ = JSONResponse$ + Str$(g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex)) + "," ''GTPortStatusString$
 			ElseIf dataToSend = Cassette_DISTANCE_ERRORs Then
-				JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.00") + ","
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex), "0.00") + ","
 			EndIf
 		Next
 		JSONResponse$ = JSONResponse$ + "]}"
@@ -103,7 +103,7 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 		puckIndex = responseJSONPacketIndex
 		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
 			If dataToSend = Cassette_PORTs_STATUS Then
-				JSONResponse$ = JSONResponse$ + GTPortStatusString$(g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex)) + ","
+				JSONResponse$ = JSONResponse$ + Str$(g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex)) + "," ''GTPortStatusString$
 			ElseIf dataToSend = Cassette_DISTANCE_ERRORs Then
 				JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.00") + ","
 			EndIf
@@ -125,7 +125,7 @@ Function GTsendPuckData(cassette_position As Integer)
 	JSONResponse$ = JSONResponse$ + ",'start':" + Str$(0) + ",'end':" + Str$(NUM_PUCKS - 1)
 	JSONResponse$ = JSONResponse$ + ",'value':["
 	For puckIndex = 0 To NUM_PUCKS - 1
-		JSONResponse$ = JSONResponse$ + GTPuckStatusString$(g_PuckStatus(cassette_position, puckIndex)) + ","
+		JSONResponse$ = JSONResponse$ + Str$(g_PuckStatus(cassette_position, puckIndex)) + "," ''GTPuckStatusString$
 	Next
 	JSONResponse$ = JSONResponse$ + "]}"
 
