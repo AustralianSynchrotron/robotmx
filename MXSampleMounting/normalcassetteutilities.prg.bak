@@ -97,7 +97,7 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	EndIf
 	
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'cassette_sample_distance', 'position':" + GTCassettePosition$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + "}"
+	msg$ = "{'set':'cassette_sample_distance', 'position':'" + GTCassettePosition$(cassette_position) + "', 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + "}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	msg$ = "{'set':'cassette_port_status', 'position':" + GTCassettePosition$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + GTPortStatusString$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)

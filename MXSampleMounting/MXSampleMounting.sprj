@@ -1,12 +1,12 @@
-ENVT0100,LM:2016/01/15 04:08:32:875,DS:0000008416,CS:08468,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/01/15 04:52:31:140,DS:0000008471,CS:11797,MA:00-0C-29-B8-F2-20,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
-	sPath="c:\\EPSONRC60\\projects\\MXSampleMounting\\"
+	sPath="C:\\EpsonRC60\\Projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="1/15/2016 3:08:27 PM"
-	bBuildComplete=True
+	sLastModified="1/15/2016 3:52:31 PM"
+	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
 	bClearControllerProject=False
@@ -117,7 +117,7 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile19 {
@@ -494,4 +494,7 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=0
+nGuiBuilderFileCount=1
+GuiBuilderFile1 {
+	sName="MXSampleMounting.gui"
+}

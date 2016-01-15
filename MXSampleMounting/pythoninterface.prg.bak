@@ -355,8 +355,7 @@ Function debugJSONCalib(cassette_position As Integer)
 		For rowIndex = 1 To NUM_ROWS - 2
 			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_UNKNOWN
 		Next
-		rowIndex = NUM_ROWS - 1
-		g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = -5.678
+		g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = -5.678
 		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
 	Next
 

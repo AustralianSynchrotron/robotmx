@@ -1,12 +1,12 @@
-ENVT0100,LM:2016/01/15 04:08:31:750,DS:0000008418,CS:12548,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/01/15 04:41:57:343,DS:0000008416,CS:08730,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="1/15/2016 3:08:27 PM"
-	bBuildComplete=False
+	sLastModified="1/15/2016 3:41:50 PM"
+	bBuildComplete=True
 	bFirstBuildComplete=True
 	bRebuildRequired=False
 	bClearControllerProject=False
@@ -117,7 +117,7 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile19 {

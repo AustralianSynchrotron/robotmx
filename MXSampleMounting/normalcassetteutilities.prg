@@ -99,7 +99,7 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	'' Client Update after probing decision has been made
 	msg$ = "{'set':'cassette_sample_distance', 'position':'" + GTCassettePosition$(cassette_position) + "', 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + "}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-	msg$ = "{'set':'cassette_port_status', 'position':" + GTCassettePosition$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + GTPortStatusString$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "}"
+	msg$ = "{'set':'cassette_port_status', 'position':" + GTCassettePosition$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "}" ''GTPortStatusString$
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 		
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
