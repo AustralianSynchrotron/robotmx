@@ -182,11 +182,11 @@ Function JSONDataRequest
 			For jsonDataToSendStrIndex = 1 To Len(RequestTokens$(1))
 				Select UCase$(Mid$(RequestTokens$(1), jsonDataToSendStrIndex, 1))
 					Case "P"
-						jsonDataToSend = CASSETTE_PUCKs_STATUS
+						jsonDataToSend = puck_states
 					Case "S"
-						jsonDataToSend = Cassette_PORTs_STATUS
+						jsonDataToSend = port_states
 					Case "D"
-						jsonDataToSend = Cassette_DISTANCE_ERRORs
+						jsonDataToSend = sample_distances
 					Default
 						Exit Function
 				Send

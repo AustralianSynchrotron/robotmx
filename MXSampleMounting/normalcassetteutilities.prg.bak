@@ -97,9 +97,9 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	EndIf
 	
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'cassette_sample_distance', 'position':'" + GTCassettePosition$(cassette_position) + "', 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + "}"
+	msg$ = "{'set':'sample_distances', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-	msg$ = "{'set':'cassette_port_status', 'position':" + GTCassettePosition$(cassette_position) + ", 'col':'" + GTcolumnName$(columnIndex) + "', 'row':" + Str$(rowIndex + 1) + ", 'value':" + GTPortStatusString$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "}"
+	msg$ = "{'set':'port_states', 'position':" + GTCassettePosition$(cassette_position) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 		
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
@@ -139,7 +139,7 @@ Function GTProbeSpecificPortsInCassette(cassette_position As Integer) As Boolean
 		'' Initial check through probe request string to check whether there is a request by user, to probe any port in this column
 		probeThisColumn = False
 		For rowIndex = 0 To probeStringLengthToCheck - 1 Step rowsToStep
-			PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), columnIndex * NUM_ROWS + rowIndex + 1, 1)
+			PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex) + 1, 1)
 			If PortProbeRequestChar$ = "1" Then
 				probeThisColumn = True
 				'' If a port is requested to probe, we don't have to check further, just exit for this for loop and start probing
@@ -182,7 +182,7 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 		
 		For rowIndex = 0 To resetStringLengthToCheck - 1
 			'' Reset the cassette ports corresponding to 1's in probeRequestString
-			PortResetRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), columnIndex * NUM_ROWS + rowIndex + 1, 1)
+			PortResetRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex), 1)
 			If (PortResetRequestChar$ = "1") Then
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
 				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
@@ -204,11 +204,11 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 		'' This condition is reached only if the cassette is nether a normal cassette nor a calibration cassette
 		'' Or this function (GTResetSpecificPortsInCassette) is called before probing CassetteType
 		'' So reset all the ports to unknown
-		For ColumnIndex = 0 To NUM_COLUMNS - 1
+		For columnIndex = 0 To NUM_COLUMNS - 1
 			For rowIndex = 0 To NUM_ROWS - 1
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
-				g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = 0.0
-				g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_UNKNOWN
+				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
+				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
 			Next
 		Next
 	EndIf

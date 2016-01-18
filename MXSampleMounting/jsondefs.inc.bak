@@ -1,4 +1,4 @@
-#define SAMPLE_PORT_STATUS 0
-#define SAMPLE_DISTANCE_ERROR 1
-#define PUCK_STATUS 2
+#define port_states 0
+#define sample_distances 1
+#define puck_states 2
 

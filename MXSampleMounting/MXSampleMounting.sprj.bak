@@ -1,14 +1,14 @@
-ENVT0100,LM:2016/01/15 04:41:57:343,DS:0000008416,CS:08730,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/01/18 03:43:12:000,DS:0000008470,CS:00342,MA:00-0C-29-B8-F2-20,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
-	sPath="c:\\EPSONRC60\\projects\\MXSampleMounting\\"
+	sPath="C:\\EpsonRC60\\Projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="1/15/2016 3:41:50 PM"
-	bBuildComplete=True
+	sLastModified="1/18/2016 2:43:09 PM"
+	bBuildComplete=False
 	bFirstBuildComplete=True
-	bRebuildRequired=False
+	bRebuildRequired=True
 	bClearControllerProject=False
 	bClearGlobalPreserves=False
 }
@@ -132,7 +132,7 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 nIncludeFileCount=8
@@ -494,4 +494,7 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=0
+nGuiBuilderFileCount=1
+GuiBuilderFile1 {
+	sName="MXSampleMounting.gui"
+}

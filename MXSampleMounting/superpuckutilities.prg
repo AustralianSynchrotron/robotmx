@@ -588,10 +588,10 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	EndIf
 	
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'adaptor_sample_distance', 'position':'" + GTCassettePosition$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':" + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, portIndex), "0.000") + "}"
+	msg$ = "{'set':'sample_distances', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, portIndex), "0.000") + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-
-	msg$ = "{'set':'adaptor_port_status', 'position':'" + GTCassettePosition$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'port':" + Str$(portIndex + 1) + ", 'value':'" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + "'}" ''GTPortStatusString$
+	
+	msg$ = "{'set':'PORT_STATES', 'position':" + GTCassettePosition$(cassette_position) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
@@ -676,7 +676,7 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 			
 			For puckPortIndex = 0 To resetStringLengthToCheck - 1
 				'' Reset the superpuck ports corresponding to 1's in probeRequestString
-				PortResetRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), puckIndex * NUM_PUCK_PORTS + puckPortIndex + 1, 1)
+				PortResetRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, puckPortIndex) + 1, 1)
 				If PortResetRequestChar$ = "1" Then
 					g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 					g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN

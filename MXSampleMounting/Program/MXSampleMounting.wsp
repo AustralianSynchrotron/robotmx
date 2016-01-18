@@ -1,6 +1,6 @@
-ENVT0100,LM:2016/01/15 04:52:41:093,DS:0000005522,CS:31503,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="pythoninterface.prg"
-bMdiMaximized=False
+ENVT0100,LM:2016/01/18 03:46:52:140,DS:0000005529,CS:02067,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="normalcassetteutilities.prg"
+bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
 	sName="magnet.prg"
@@ -214,7 +214,7 @@ ProgramFile19 {
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
