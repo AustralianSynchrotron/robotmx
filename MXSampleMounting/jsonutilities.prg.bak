@@ -28,7 +28,7 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 		startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
 		endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 		
-		If dataToSend = port_states Then
+		If dataToSend = PORT_STATES Then
 			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = sample_distances Then
 			JSONResponse$ = "{'set':'sample_distances'"
@@ -44,7 +44,7 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 			columnIndex = portIndex / NUM_ROWS
 			rowIndex = portIndex - (columnIndex * NUM_ROWS)
 			
-			If dataToSend = port_states Then
+			If dataToSend = PORT_STATES Then
 				JSONResponse$ = JSONResponse$ + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "," ''GTPortStatusString$
 			ElseIf dataToSend = sample_distances Then
 				JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.00") + ","
@@ -70,7 +70,7 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 		startPortIndex = responseJSONPacketIndex * portsPerJSONPacket
 		endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 		
-		If dataToSend = port_states Then
+		If dataToSend = PORT_STATES Then
 			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = sample_distances Then
 			JSONResponse$ = "{'set':'sample_distances'"
@@ -84,7 +84,7 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 		JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'value':["
 		puckIndex = responseJSONPacketIndex
 		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-			If dataToSend = port_states Then
+			If dataToSend = PORT_STATES Then
 				JSONResponse$ = JSONResponse$ + Str$(g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex)) + ","
 			ElseIf dataToSend = sample_distances Then
 				JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.00") + ","
@@ -127,8 +127,8 @@ Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 		'' Unknown Cassette
 		String JSONResponse$
 		
-		If dataToSend = port_states Then
-			JSONResponse$ = "{'set':'port_states'"
+		If dataToSend = PORT_STATES Then
+			JSONResponse$ = "{'set':'PORT_STATES'"
 		ElseIf dataToSend = sample_distances Then
 			JSONResponse$ = "{'set':'sample_distances'"
 		ElseIf dataToSend = puck_states Then

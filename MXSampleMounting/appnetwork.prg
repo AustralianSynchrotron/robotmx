@@ -48,6 +48,8 @@ Function IsAppCmdBackground(cmd$ As String) As Boolean
 	
 	''Call application specific task
 	Select toks$(0)
+		Case "JSONDataRequest"
+			Xqt JSONDataRequest
 		Case "MyQuickTest"
 			Xqt MyQuickTest
 		Default

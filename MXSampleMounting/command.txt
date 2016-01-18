@@ -1290,4 +1290,19 @@ P999 = XY(   521.253,   52.433, -262.891,   89.498 )  /R /0
 !!Error: 2305, Cannot execute a Call statement from the command window.
 > print g_RunArgs$
 LMR PSD
+> motor On
+j>jump p1
+> jump p0
+> Go p990
+> print P*
+ X:  550.000 Y:    0.000 Z:    0.000 U:    0.000 V:    0.000 W:    0.000 /R /0
+> jump p1
+> p6 = here
+> savepoints "robot1.pts"
+> p3 = Here - X(20)
+> savepoints "robot1.pts"
+> motor On
+> move p3
+> jump p1
+> jump p0
 > 

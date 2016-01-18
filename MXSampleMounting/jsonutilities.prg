@@ -29,7 +29,7 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 		endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 		
 		If dataToSend = PORT_STATES Then
-			JSONResponse$ = "{'set':'PORT_STATES'"
+			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = sample_distances Then
 			JSONResponse$ = "{'set':'sample_distances'"
 		Else
@@ -71,7 +71,7 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 		endPortIndex = (responseJSONPacketIndex + 1) * portsPerJSONPacket - 1
 		
 		If dataToSend = PORT_STATES Then
-			JSONResponse$ = "{'set':'PORT_STATES'"
+			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = sample_distances Then
 			JSONResponse$ = "{'set':'sample_distances'"
 		Else
@@ -128,7 +128,7 @@ Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 		String JSONResponse$
 		
 		If dataToSend = PORT_STATES Then
-			JSONResponse$ = "{'set':'PORT_STATES'"
+			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = sample_distances Then
 			JSONResponse$ = "{'set':'sample_distances'"
 		ElseIf dataToSend = puck_states Then
