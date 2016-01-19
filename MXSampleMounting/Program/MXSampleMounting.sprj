@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/01/18 03:46:52:125,DS:0000008472,CS:29993,MA:00-0C-29-B8-F2-20,EI:           
+ENVT0100,LM:2016/01/19 00:29:15:902,DS:0000008471,CS:01652,MA:00-0C-29-B8-F2-20,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="C:\\EpsonRC60\\Projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="1/18/2016 2:46:52 PM"
+	sLastModified="1/19/2016 11:29:13 AM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=True
@@ -87,7 +87,7 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile13 {
@@ -127,7 +127,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile21 {

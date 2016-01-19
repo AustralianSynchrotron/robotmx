@@ -3,23 +3,6 @@
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
 
-Function GTgetCassettePosition(cassetteChar$ As String, ByRef cassette_position As Integer) As Boolean
-	cassetteChar$ = UCase$(cassetteChar$)
-	Select cassetteChar$
-		Case "L"
-			cassette_position = LEFT_CASSETTE
-		Case "M"
-			cassette_position = MIDDLE_CASSETTE
-		Case "R"
-			cassette_position = RIGHT_CASSETTE
-		Default
-			cassette_position = UNKNOWN_POSITION
-			GTgetCassettePosition = False
-			Exit Function
-	Send
-	GTgetCassettePosition = True
-Fend
-
 '' GTResetSpecificPorts can be called independent of cassette_type
 Function GTResetSpecificPorts(cassette_position As Integer)
 	'' For each cassette_position, two arrays needs to be reset (the superpuck array and the cassette array)

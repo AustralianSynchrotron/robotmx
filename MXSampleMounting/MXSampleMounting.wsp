@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/01/18 23:35:10:890,DS:0000005515,CS:28264,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="utilities.prg"
+ENVT0100,LM:2016/01/19 00:33:06:152,DS:0000005519,CS:29549,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="jsonutilities.prg"
 bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
@@ -38,7 +38,7 @@ ProgramFile3 {
 ProgramFile4 {
 	sName="utilities.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -225,7 +225,7 @@ ProgramFile20 {
 ProgramFile21 {
 	sName="jsonutilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0

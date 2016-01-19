@@ -184,9 +184,11 @@ Function JSONDataRequest
 					Case "P"
 						jsonDataToSend = puck_states
 					Case "S"
-						jsonDataToSend = port_states
+						jsonDataToSend = PORT_STATES
 					Case "D"
 						jsonDataToSend = sample_distances
+					Case "C"
+						jsonDataToSend = cassette_type
 					Default
 						Exit Function
 				Send

@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/01/18 03:46:52:140,DS:0000005529,CS:02067,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="normalcassetteutilities.prg"
+ENVT0100,LM:2016/01/19 00:33:06:152,DS:0000005519,CS:29549,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="jsonutilities.prg"
 bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
@@ -214,7 +214,7 @@ ProgramFile19 {
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -225,7 +225,7 @@ ProgramFile20 {
 ProgramFile21 {
 	sName="jsonutilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -368,8 +368,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=433
-		nTop=333
+		nLeft=710
+		nTop=455
 		nWidth=470
 		nHeight=342
 	}
@@ -377,8 +377,8 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=537
-		nTop=208
+		nLeft=323
+		nTop=275
 		nWidth=827
 		nHeight=530
 	}

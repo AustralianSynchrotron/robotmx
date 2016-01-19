@@ -1,4 +1,5 @@
-#define port_states 0
-#define sample_distances 1
-#define puck_states 2
+#define PORT_STATES 0
+#define SAMPLE_DISTANCES 1
+#define PUCK_STATES 2
+#define CASSETTE_TYPE 3
 

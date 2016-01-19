@@ -6,7 +6,7 @@
 #include "superpuckdefs.inc"
 
 Global Preserve Integer g_CassetteType(NUM_CASSETTES)
-
+Global Preserve Real g_min_height_errors(NUM_CASSETTES) '' To store minimum height error from the concluded g_CassetteType
 
 Function GTCassetteType$(cassetteType As Integer) As String
 	If cassetteType = CALIBRATION_CASSETTE Then
@@ -136,6 +136,7 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 		UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 	EndIf
 	
+	g_min_height_errors(cassette_position) = min_height_error
 	'' Client Update after probing decision has been made
 	msg$ = "{'set':'cassette_type', 'position':'" + GTCassettePosition$(cassette_position) + "', 'min_height_error':" + Str$(min_height_error) + ", 'value':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
