@@ -2,4 +2,4 @@
 #define SAMPLE_DISTANCES 1
 #define PUCK_STATES 2
 #define CASSETTE_TYPE 3
-
+#define SAMPLE_STATE 4

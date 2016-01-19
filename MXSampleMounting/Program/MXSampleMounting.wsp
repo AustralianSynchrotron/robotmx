@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/01/19 00:33:06:152,DS:0000005519,CS:29549,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="jsonutilities.prg"
+ENVT0100,LM:2016/01/19 22:29:13:388,DS:0000005520,CS:30237,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="samplemounting.prg"
 bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
@@ -203,7 +203,7 @@ ProgramFile18 {
 ProgramFile19 {
 	sName="samplemounting.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -225,7 +225,7 @@ ProgramFile20 {
 ProgramFile21 {
 	sName="jsonutilities.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0

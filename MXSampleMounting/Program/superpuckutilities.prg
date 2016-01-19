@@ -3,6 +3,7 @@
 #include "mxrobotdefs.inc"
 #include "genericdefs.inc"
 #include "superpuckdefs.inc"
+#include "mountingdefs.inc"
 
 Real m_SP_Alpha(NUM_PUCKS)
 Real m_SP_Puck_Radius(NUM_PUCKS)
@@ -729,4 +730,111 @@ Function GTsetSPMountStandbyPoints(cassette_position As Integer, puckIndex As In
 	EndIf
 
 Fend
+
+Function GTMoveToSPMountPortStandbyPoint(cassette_position As Integer, puckIndex As Integer, puckPortIndex As Integer)
+	'' This move should be called only after picking magnet from cradle
+	
+	GTsetSPMountStandbyPoints(cassette_position, puckIndex, puckPortIndex, PORT_MOUNT_READY_DISTANCE)
+		
+	Integer SPStandbyPoint, SPStandbyToPortStandbyArcPoint, SPSecondaryArcPoint, puckPortStandbyPoint
+	SPStandbyPoint = 50
+	SPStandbyToPortStandbyArcPoint = 51
+	SPSecondaryArcPoint = 55
+	puckPortStandbyPoint = 52 '' destination point
+	
+	''Check the following whether toolsets need to be changed before moving
+	Move P(SPStandbyPoint)
+	
+	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
+	If CheckPoint(SPStandbyToPortStandbyArcPoint) And CheckPoint(SPSecondaryArcPoint) Then
+		Arc P(SPStandbyToPortStandbyArcPoint), P(SPSecondaryArcPoint) CP
+	EndIf
+
+	Move P(puckPortStandbyPoint)
+Fend
+
+Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, standbyPoint As Integer, ByRef portStatusBeforePickerCheck As Integer)
+	'' Start from Port Standby Point and return to StandbyPoint, with Sample if present
+	'' Using Picker check, sample status in SP Port
+	
+	Tool PICKER_TOOL
+	LimZ g_Jump_LimZ_LN2
+
+	Real maxDistanceToScan
+	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK
+		
+	GTsetRobotSpeedMode(PROBE_SPEED)
+	
+	String msg$
+	If ForceTouch(DIRECTION_CAVITY_HEAD, maxDistanceToScan, False) Then
+		Real distancePuckSurfacetoHere
+		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
+		
+		'' Distance error from perfect sample position
+		Real distErrorFromPerfectSamplePos
+		distErrorFromPerfectSamplePos = distancePuckSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_PUCK
+		
+		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
+			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
+			'' Whether the picker got the sample or not is unknown
+			portStatusBeforePickerCheck = PORT_ERROR
+			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR
+			msg$ = "GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
+			'' Picker has got the sample
+			portStatusBeforePickerCheck = PORT_OCCUPIED
+			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED
+			msg$ = "GTPickerCheckSPPortStatus: ForceTouch detected sample at " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		Else
+			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
+			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			portStatusBeforePickerCheck = PORT_VACANT
+			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
+			msg$ = "GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		EndIf
+	Else
+		''There is no sample (or ForceTouch failure)
+		portStatusBeforePickerCheck = PORT_VACANT
+		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
+		msg$ = "GTPickerCheckSPPortStatus: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	EndIf
+		
+	Move P(standbyPoint)
+
+	If portStatusBeforePickerCheck = PORT_OCCUPIED Then
+		'' Because we are using picker to probe, after moving back to standby point, port will be vacant
+		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
+	EndIf
+	
+	''CLIENT_UPDATE after moving back to standbyPoint
+	msg$ = "{'set':'port_states', 'position':" + GTCassettePosition$(cassette_position) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	
+	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
+	GTLoadPreviousRobotSpeedMode
+Fend
+
+Function GTMoveBackToSPStandbyPoint
+	'' This move should be called only at port standbypoint after picking sample from port
+		
+	Integer SPStandbyPoint, SPStandbyToPortStandbyArcPoint, SPSecondaryArcPoint, puckPortStandbyPoint
+	SPStandbyPoint = 50
+	SPStandbyToPortStandbyArcPoint = 51
+	SPSecondaryArcPoint = 55
+	puckPortStandbyPoint = 52 '' destination point
+	
+	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
+	If CheckPoint(SPStandbyToPortStandbyArcPoint) And CheckPoint(SPSecondaryArcPoint) Then
+		Move P(SPSecondaryArcPoint) CP
+		Arc P(SPStandbyToPortStandbyArcPoint), P(SPStandbyPoint)
+	Else
+		Move P(SPStandbyPoint)
+	EndIf
+
+Fend
+
 

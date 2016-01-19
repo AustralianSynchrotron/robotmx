@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/01/19 00:29:15:902,DS:0000008471,CS:01652,MA:00-0C-29-B8-F2-20,EI:           
+ENVT0100,LM:2016/01/19 22:27:23:966,DS:0000008490,CS:01610,MA:00-0C-29-B8-F2-20,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="C:\\EpsonRC60\\Projects\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="1/19/2016 11:29:13 AM"
+	sLastModified="1/20/2016 9:27:23 AM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=True
@@ -32,102 +32,102 @@ nRobotCount=1
 nProgramFileCount=21
 ProgramFile1 {
 	sName="magnet.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile5 {
 	sName="network.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile6 {
 	sName="force.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile7 {
 	sName="appnetwork.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile9 {
 	sName="setupcassette.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile10 {
 	sName="cassettetype.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile13 {
 	sName="setuppoints.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile14 {
 	sName="numericmanipulations.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile15 {
 	sName="robotspeed.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile17 {
 	sName="initialization.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile21 {

@@ -138,7 +138,7 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 	
 	g_min_height_errors(cassette_position) = min_height_error
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'cassette_type', 'position':'" + GTCassettePosition$(cassette_position) + "', 'min_height_error':" + Str$(min_height_error) + ", 'value':[" + GTCassetteType$(g_CassetteType(cassette_position)) + ",]}"
+	msg$ = "{'set':'cassette_type', 'position':'" + GTCassettePosition$(cassette_position) + "', 'min_height_error':" + Str$(min_height_error) + ", 'value':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 Fend
 

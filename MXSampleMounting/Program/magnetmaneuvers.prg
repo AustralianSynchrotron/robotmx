@@ -194,7 +194,7 @@ Function GTTwistOffMagnet
 	''Move safe distance before twistoff so that there is no overpress of sample due to magnet radius
 	Move RealPos +X(twistMagnetRadiusSafeDistanceX) +Y(twistMagnetRadiusSafeDistanceY)
 	
-	''Perform the twistoff, (If the following XY move added, then the back of the magnet head's backedge hits the port edge)
+	''Perform the twistoff, (If the following XY move is not added, then the back of the magnet head's backedge hits the port edge)
 	Move RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates)
 Fend
 

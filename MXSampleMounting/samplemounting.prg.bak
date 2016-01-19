@@ -1,4 +1,6 @@
+#include "mxrobotdefs.inc"
 #include "networkdefs.inc"
+#include "genericdefs.inc"
 #include "mountingdefs.inc"
 
 Global Preserve Integer g_InterestedCassettePosition
@@ -120,65 +122,287 @@ Function GTsetInterestPoint(cassette_position As Integer, puckColumnIndex As Int
 			GTsetInterestPoint = True
 		EndIf
 	EndIf
+	
+	String msg$
+	msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 Fend
 
-Function GTMoveToSPMountPortStandbyPoint(cassette_position As Integer, puckIndex As Integer, puckPortIndex As Integer)
-	'' This move should be called only after picking magnet from cradle
-	
-	GTsetSPMountStandbyPoints(cassette_position, puckIndex, puckPortIndex, PORT_MOUNT_READY_DISTANCE)
-		
-	Integer SPStandbyPoint, SPStandbyToPortStandbyArcPoint, SPSecondaryArcPoint, puckPortStandbyPoint
-	SPStandbyPoint = 50
-	SPStandbyToPortStandbyArcPoint = 51
-	SPSecondaryArcPoint = 55
-	puckPortStandbyPoint = 52 '' destination point
-	
-	''Check the following whether toolsets need to be changed before moving
-	Move P(SPStandbyPoint)
-	
-	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
-	If CheckPoint(SPStandbyToPortStandbyArcPoint) And CheckPoint(SPSecondaryArcPoint) Then
-		Arc P(SPStandbyToPortStandbyArcPoint), P(SPSecondaryArcPoint) CP
-	EndIf
-
-	Move P(puckPortStandbyPoint)
-Fend
-
-Function GTMoveToCASMountPortStandbyPoint(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer)
-	'' This move should be called only after picking magnet from cradle
-	
-	GTsetCassetteMountStandbyPoints(cassette_position, rowIndex, columnIndex, PORT_MOUNT_READY_DISTANCE)
-	
-	Integer cassetteStandbyPoint, casStandbyToPortStandbyArcPoint, portStandbyPoint
-	cassetteStandbyPoint = 50
-	casStandbyToPortStandbyArcPoint = 51
-	portStandbyPoint = 52
-	
-	''Check the following whether toolsets need to be changed before moving
-	Move P(cassetteStandbyPoint)
-	
-	'' Arc is not required is cassetteStandbyPoint to portStandbyPoint is less than 5degrees in angle
-	If Abs(CU(P(portStandbyPoint)) - CU(P(cassetteStandbyPoint)) > 5.0) Then
-		Arc P(casStandbyToPortStandbyArcPoint), P(portStandbyPoint)
-	Else
-		Move P(portStandbyPoint)
-	EndIf
-Fend
-
-Function GTMountInterestedPort
+Function GTMoveToInterestPortStandbyPoint
 	'' GTMoveTo<___>MountPortStandbyPoint sets the standby points and intermediate points
 	If (g_CassetteType(g_InterestedCassettePosition) = NORMAL_CASSETTE) Or (g_CassetteType(g_InterestedCassettePosition) = CALIBRATION_CASSETTE) Then
 		GTMoveToCASMountPortStandbyPoint(g_InterestedCassettePosition, g_InterestedRowPuckPortIndex, g_InterestedPuckColumnIndex)
 	ElseIf g_CassetteType(g_InterestedCassettePosition) = SUPERPUCK_CASSETTE Then
 		GTMoveToSPMountPortStandbyPoint(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)
 	EndIf
+Fend
+
+Function GetSampleFromInterestPort As Boolean
+	Integer portStandbyPoint
+	Integer portStatusBeforePickerCheck
 	
+	portStandbyPoint = 52
+
+	If (g_CassetteType(g_InterestedCassettePosition) = NORMAL_CASSETTE) Or (g_CassetteType(g_InterestedCassettePosition) = CALIBRATION_CASSETTE) Then
+		GTPickerCheckCASPortStatus(g_InterestedCassettePosition, g_InterestedRowPuckPortIndex, g_InterestedPuckColumnIndex, portStandbyPoint, ByRef portStatusBeforePickerCheck)
+	ElseIf g_CassetteType(g_InterestedCassettePosition) = SUPERPUCK_CASSETTE Then
+		GTPickerCheckSPPortStatus(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex, portStandbyPoint, ByRef portStatusBeforePickerCheck)
+	EndIf
+
+	GetSampleFromInterestPort = False
+	If portStatusBeforePickerCheck = PORT_OCCUPIED Then
+		g_InterestedSampleStatus = SAMPLE_IN_PICKER
+		GetSampleFromInterestPort = True
+	ElseIf portStatusBeforePickerCheck = PORT_VACANT Then
+		g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
+	Else
+		''If portStatusBeforePickerCheck = PORT_ERROR Then
+		g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
+	EndIf
+	
+	String msg$
+	msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+Fend
+
+Function GTMoveBackToCassetteStandbyPoint
+	'' GTMoveTo<___>MountPortStandbyPoint sets the standby points and intermediate points
+	If (g_CassetteType(g_InterestedCassettePosition) = NORMAL_CASSETTE) Or (g_CassetteType(g_InterestedCassettePosition) = CALIBRATION_CASSETTE) Then
+		GTMoveBackToCASStandbyPoint
+	ElseIf g_CassetteType(g_InterestedCassettePosition) = SUPERPUCK_CASSETTE Then
+		GTMoveBackToSPStandbyPoint
+	EndIf
+Fend
+
+Function GTMoveCassetteStandbyToCradle
+	Tool 0
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+	
+	Real desiredX, desiredY, desiredZ
+	desiredX = (CX(P4) + CX(RealPos)) / 2.0
+	desiredY = (CY(P4) + CY(RealPos)) / 2.0
+	
+	'' desiredZ = maximum of CZ(P4) and CZ(RealPos)
+	If CZ(P4) > CZ(RealPos) Then
+		desiredZ = CZ(P4)
+	Else
+		desiredZ = CZ(RealPos)
+	EndIf
+	
+	LimZ desiredZ + 5.0
+	
+	P49 = XY(desiredX, desiredY, desiredZ, CU(RealPos)) /R
+	
+	Move P49
+	Jump P4
+	
+	LimZ g_Jump_LimZ_LN2
+Fend
+
+Function GTCheckSampleInCradle As Boolean
+	'' Starts from P3
+	
+	GTCheckSampleInCradle = False
+	String msg$
+	If g_InterestedSampleStatus = SAMPLE_IN_CRADLE Then
+	
+		'' use cavity to side touch the dumbbell to determine whether sample is on the dumbbell
 		
+		If Not Close_Gripper Then
+			UpdateClient(TASK_MSG, "GTCheckSampleInCradle:Close_Gripper failed", INFO_LEVEL)
+			Exit Function
+		EndIf
+	
+		Move P93 +U(90)
+		Go P93
+		
+		Real maxDistanceToScan
+		maxDistanceToScan = Dist(P93, P5)
+		
+		If ForceTouch(DIRECTION_MAGNET_TO_CAVITY, maxDistanceToScan, False) Then
+			Real distanceP93toHere
+			distanceP93toHere = Dist(P93, RealPos)
+			
+			'' Distance error from perfect sample position
+			Real distErrorFromP5
+			distErrorFromP5 = maxDistanceToScan - distanceP93toHere ''maxDistanceToScan = Dist(P93, P5)
+			
+			If distErrorFromP5 < TOLERANCE_FOR_SAMPLE_IN_PICKER Then
+				''This condition means ForceTouch could not find sample in dumbbell
+				'' Whether the picker got the sample from cassette port or not is unknown
+				g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
+				msg$ = "GTCheckSampleInCradle: ForceTouch on sample in cradle moved " + Str$(distErrorFromP5) + "mm beyond expected sample surface."
+				UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+			Else
+				'' Sample still on picker (on cradle)
+				g_InterestedSampleStatus = SAMPLE_IN_CRADLE
+				msg$ = "GTCheckSampleInCradle: ForceTouch detected sample in cradle with distance error =" + Str$(distErrorFromP5) + "."
+				UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+				GTCheckSampleInCradle = True
+			EndIf
+		Else
+			''There is no sample (or ForceTouch failure)
+			g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
+			msg$ = "GTCheckSampleInCradle: ForceTouch failed to detect sample in cradle even after travelling maximum scan distance!"
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		EndIf
+		
+		Move P93
+	Else
+		msg$ = "GTCheckSampleInCradle: g_InterestedSampleStatus is not SAMPLE_IN_CRADLE! This function is called before sample is brought to cradle."
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	EndIf
+Fend
+
+Function GTCavityGripSampleFromPicker As Boolean
+	''GripSample in Cavity From Picker of dumbbell in cradle
+	''Starts from P3
+
+	GTCavityGripSampleFromPicker = False
+	
+	''GTCheckSampleInCradle closes gripper before checking
+	If GTCheckSampleInCradle Then
+		If Not Open_Gripper Then
+			UpdateClient(TASK_MSG, "GTCavityGripSampleFromPicker:Open_Gripper failed", ERROR_LEVEL)
+			Exit Function
+		EndIf
+		
+		Arc P15, P16
+
+		If Not Close_Gripper Then
+			UpdateClient(TASK_MSG, "GTCavityGripSampleFromPicker:Close_Gripper failed", ERROR_LEVEL)
+			Exit Function
+		EndIf
+		
+		GTTwistOffMagnet
+		
+		g_InterestedSampleStatus = SAMPLE_IN_CAVITY
+		String msg$
+		msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
+		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+		GTCavityGripSampleFromPicker = True
+	EndIf
+Fend
+
+Function GTMoveToGoniometer As Boolean
+
+	If Not Close_Gripper Then
+		UpdateClient(TASK_MSG, "GTMoveToGoniometer:Close_Gripper failed", ERROR_LEVEL)
+		GTMoveToGoniometer = False
+		Exit Function
+	EndIf
+	
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+	Move P2 CP
+	Move P18 CP
+	Arc P28, P38 CP
+	Move P22
+
+	GTMoveToGoniometer = True
+Fend
+
+Function GTReleaseSampleToGonio As Boolean
+	''Releases sample from cavity to Goniometer
+	''starts from P22
+	GTReleaseSampleToGonio = False
+
+	Move P24
+	Move P21
+	
+	If Not Open_Gripper Then
+		UpdateClient(TASK_MSG, "GTReleaseSampleToGonio:Open_Gripper failed", ERROR_LEVEL)
+		Exit Function
+	EndIf
+		
+	g_InterestedSampleStatus = SAMPLE_IN_GONIO
+	String msg$
+	msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	'' if tongConflict code not included here
+	
+	Move P23
+
+	'' move closer to robot to avoid directly above sample and disturbing the air
+	'' move away from goniometer by 40mm while raising to P22
+	Move P22 +X(40.0 * g_goniometer_cosValue) +Y(40.0 * g_goniometer_sinValue)
+	
+	'' Close_Gripper check is not required because it is moving to heater after this step anyway
+	Close_Gripper
+	
+	GTReleaseSampleToGonio = True
+Fend
+
+Function GTMoveGoniometerToDewarSide As Boolean
+
+	If Not Close_Gripper Then
+		UpdateClient(TASK_MSG, "GTMoveGoniometerToDewarSide:Close_Gripper failed", ERROR_LEVEL)
+		GTMoveGoniometerToDewarSide = False
+		Exit Function
+	EndIf
+	
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+	Move P38 CP
+	Arc P28, P18
+
+	GTMoveGoniometerToDewarSide = True
+Fend
+
+
+Function GTMountInterestedPort As Boolean
+	'' GTMountInterestedPort should start with dumbbell in gripper usually from P4
+	
+	GTMountInterestedPort = False
+
+	'' GTMoveToInterestPortStandbyPoint sets the standby points and intermediate points
+	GTMoveToInterestPortStandbyPoint
+	
+	If Not GetSampleFromInterestPort Then
+		g_RunResult$ = "GetSampleFromInterestPort failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+		
+	GTMoveBackToCassetteStandbyPoint
+	GTMoveCassetteStandbyToCradle
+	
+	String msg$
+
 	'' Put dumbbell in Cradle
-	If Not GTReturnMagnet Then
+	If GTReturnMagnet Then
+		g_InterestedSampleStatus = SAMPLE_IN_CRADLE
+		msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
+		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	Else
 		g_RunResult$ = "GTReturnMagnet failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
+	
+	''GripSample in Cavity From Picker of dumbbell in cradle
+	If Not GTCavityGripSampleFromPicker Then
+		g_RunResult$ = "GTCavityGripSampleFromPicker failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	If Not GTMoveToGoniometer Then
+		g_RunResult$ = "GTMoveToGoniometer failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	If Not GTReleaseSampleToGonio Then
+		g_RunResult$ = "GTReleaseSampleToGonio failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	If Not GTMoveGoniometerToDewarSide Then
+		g_RunResult$ = "GTMoveGoniometerToDewarSide failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	GTMountInterestedPort = True
 Fend
 

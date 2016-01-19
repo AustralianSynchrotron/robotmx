@@ -3,6 +3,7 @@
 #include "mxrobotdefs.inc"
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
+#include "mountingdefs.inc"
 
 Global Preserve Real g_CASSampleDistanceError(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
 Global Preserve Integer g_CAS_PortStatus(NUM_CASSETTES, NUM_ROWS, NUM_COLUMNS)
@@ -238,6 +239,109 @@ Function GTsetCassetteMountStandbyPoints(cassette_position As Integer, rowIndex 
 	GTSetCircumferencePointFromU(cassette_position, g_UForNormalStandby(cassette_position), standby_circle_radius, ZoffsetFromBottom, cassetteStandbyPoint)
 	GTSetCircumferencePointFromU(cassette_position, uAngleOfPassingArcPoint, standby_circle_radius, ZoffsetFromBottom, casStandbyToPortStandbyArcPoint)
 	GTSetCircumferencePointFromU(cassette_position, adjustedUPointingTowardsPort, standby_circle_radius, ZoffsetFromBottom, portStandbyPoint)
+Fend
+
+Function GTMoveToCASMountPortStandbyPoint(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer)
+	'' This move should be called only after picking magnet from cradle
+	
+	GTsetCassetteMountStandbyPoints(cassette_position, rowIndex, columnIndex, PORT_MOUNT_READY_DISTANCE)
+	
+	Integer cassetteStandbyPoint, casStandbyToPortStandbyArcPoint, portStandbyPoint
+	cassetteStandbyPoint = 50
+	casStandbyToPortStandbyArcPoint = 51
+	portStandbyPoint = 52
+	
+	''Check the following whether toolsets need to be changed before moving
+	Move P(cassetteStandbyPoint)
+	
+	'' Arc is not required is cassetteStandbyPoint to portStandbyPoint is less than 5degrees in angle
+	If Abs(CU(P(portStandbyPoint)) - CU(P(cassetteStandbyPoint)) > 5.0) Then
+		Arc P(casStandbyToPortStandbyArcPoint), P(portStandbyPoint)
+	Else
+		Move P(portStandbyPoint)
+	EndIf
+Fend
+
+Function GTPickerCheckCASPortStatus(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer, standbyPoint As Integer, ByRef portStatusBeforePickerCheck As Integer)
+	'' Start from Port Standby Point and return to StandbyPoint, with Sample if present
+	'' Using Picker, check sample status in CAS Port
+	
+	Tool PICKER_TOOL
+	LimZ g_Jump_LimZ_LN2
+			
+	Real maxDistanceToScan
+	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_CAS + TOLERANCE_FROM_PIN_DEEP_IN_CAS
+	
+	GTsetRobotSpeedMode(PROBE_SPEED)
+	
+	String msg$
+	If ForceTouch(DIRECTION_CAVITY_HEAD, maxDistanceToScan, False) Then
+		Real distanceCASSurfacetoHere
+		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
+		
+		'' Distance error from perfect sample position
+		Real distErrorFromPerfectSamplePos
+		distErrorFromPerfectSamplePos = distanceCASSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_CAS
+
+		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
+			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
+			''Whether the picker got the sample or not is unknown
+			portStatusBeforePickerCheck = PORT_ERROR
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_ERROR
+			msg$ = "GTPickerCheckCASPortStatus: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
+			''Picker has got the sample
+			portStatusBeforePickerCheck = PORT_OCCUPIED
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_OCCUPIED
+			msg$ = "GTPickerCheckCASPortStatus: ForceTouch detected Sample at " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		Else
+			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
+			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			portStatusBeforePickerCheck = PORT_VACANT
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
+			msg$ = "GTPickerCheckCASPortStatus: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		EndIf
+	Else
+		'' There is no sample (or ForceTouch failure)
+		portStatusBeforePickerCheck = PORT_VACANT
+		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
+		msg$ = "GTPickerCheckCASPortStatus: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	EndIf
+		
+	Move P(standbyPoint)
+
+	If portStatusBeforePickerCheck = PORT_OCCUPIED Then
+		'' Because we are using picker to probe, after moving back to standby point, port will be vacant
+		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
+	EndIf
+
+	''CLIENT_UPDATE after moving back to standbyPoint
+	msg$ = "{'set':'port_states', 'position':" + GTCassettePosition$(cassette_position) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+
+	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
+	GTLoadPreviousRobotSpeedMode
+Fend
+
+
+Function GTMoveBackToCASStandbyPoint
+	'' This move should be called only at port standbypoint after picking sample from port		
+	
+	Integer cassetteStandbyPoint, casStandbyToPortStandbyArcPoint, portStandbyPoint
+	cassetteStandbyPoint = 50
+	casStandbyToPortStandbyArcPoint = 51
+	portStandbyPoint = 52
+	
+	'' Arc is not required is cassetteStandbyPoint to portStandbyPoint is less than 5degrees in angle
+	If Abs(CU(P(portStandbyPoint)) - CU(P(cassetteStandbyPoint)) > 5.0) Then
+		Arc P(casStandbyToPortStandbyArcPoint), P(cassetteStandbyPoint)
+	Else
+		Move P(cassetteStandbyPoint)
+	EndIf
 Fend
 
 

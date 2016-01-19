@@ -181,14 +181,19 @@ Function JSONDataRequest
 
 			For jsonDataToSendStrIndex = 1 To Len(RequestTokens$(1))
 				Select UCase$(Mid$(RequestTokens$(1), jsonDataToSendStrIndex, 1))
-					Case "P"
+					Case "A"
 						jsonDataToSend = puck_states
-					Case "S"
+					Case "P"
 						jsonDataToSend = PORT_STATES
 					Case "D"
-						jsonDataToSend = sample_distances
+						jsonDataToSend = PORT_DISTANCES
 					Case "C"
-						jsonDataToSend = cassette_type
+						jsonDataToSend = CASSETTE_TYPE
+					Case "S"
+						jsonDataToSend = SAMPLE_STATE
+						String JSONmsg$
+						JSONmsg$ = "{'set':'sample_state', 'position':'" + GTCassettePosition$(g_InterestedCassettePosition) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
+						UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
 					Default
 						Exit Function
 				Send
@@ -304,7 +309,11 @@ Function GTMountSamplePort
 		Exit Function
 	EndIf
 	
-	GTMountInterestedPort
+	If Not GTMountInterestedPort Then
+		g_RunResult$ = "Error in GTMountSamplePort->GTMountInterestedPort: Check log for further details"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
 	
 	g_RunResult$ = "success GTMountSamplePort"
     Print "GTMountSamplePort finished at ", Date$, " ", Time$
@@ -317,10 +326,10 @@ Function debugJSONNormal(cassette_position As Integer)
 	
 	For cassetteIndex = 0 To NUM_CASSETTES - 1
 		g_CassetteType(cassetteIndex) = UNKNOWN_CASSETTE
-		For ColumnIndex = 0 To NUM_COLUMNS - 1
+		For columnIndex = 0 To NUM_COLUMNS - 1
 			For rowIndex = 0 To NUM_ROWS - 1
-				g_CASSampleDistanceError(cassetteIndex, rowIndex, ColumnIndex) = -1.234
-                g_CAS_PortStatus(cassetteIndex, rowIndex, ColumnIndex) = PORT_VACANT
+				g_CASSampleDistanceError(cassetteIndex, rowIndex, columnIndex) = -1.234
+                g_CAS_PortStatus(cassetteIndex, rowIndex, columnIndex) = PORT_VACANT
 			Next
 		Next
 	Next

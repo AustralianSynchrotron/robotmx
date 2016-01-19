@@ -40,7 +40,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	GTJumpHomeToCoolingPointAndWait = True
 Fend
 
-Function GTIsMagnetInGripper() As Boolean
+Function GTIsMagnetInGripper As Boolean
 	String msg$
 	GTIsMagnetInGripper = False
 
