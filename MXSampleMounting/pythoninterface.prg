@@ -191,9 +191,7 @@ Function JSONDataRequest
 						jsonDataToSend = CASSETTE_TYPE
 					Case "S"
 						jsonDataToSend = SAMPLE_STATE
-						String JSONmsg$
-						JSONmsg$ = "{'set':'sample_state', 'position':'" + GTCassettePosition$(g_InterestedCassettePosition) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
-						UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
+						GTsendSampleStateJSON
 					Default
 						Exit Function
 				Send

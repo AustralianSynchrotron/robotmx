@@ -123,9 +123,7 @@ Function GTsetInterestPoint(cassette_position As Integer, puckColumnIndex As Int
 		EndIf
 	EndIf
 	
-	String msg$
-	msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
-	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	GTsendSampleStateJSON
 Fend
 
 Function GTMoveToInterestPortStandbyPoint
@@ -160,9 +158,7 @@ Function GetSampleFromInterestPort As Boolean
 		g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
 	EndIf
 	
-	String msg$
-	msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
-	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	GTsendSampleStateJSON
 Fend
 
 Function GTMoveBackToCassetteStandbyPoint
@@ -277,9 +273,7 @@ Function GTCavityGripSampleFromPicker As Boolean
 		GTTwistOffMagnet
 		
 		g_InterestedSampleStatus = SAMPLE_IN_CAVITY
-		String msg$
-		msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
-		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+		GTsendSampleStateJSON
 		GTCavityGripSampleFromPicker = True
 	EndIf
 Fend
@@ -315,9 +309,8 @@ Function GTReleaseSampleToGonio As Boolean
 	EndIf
 		
 	g_InterestedSampleStatus = SAMPLE_IN_GONIO
-	String msg$
-	msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
-	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	GTsendSampleStateJSON
+	
 	'' if tongConflict code not included here
 	
 	Move P23
@@ -370,8 +363,7 @@ Function GTMountInterestedPort As Boolean
 	'' Put dumbbell in Cradle
 	If GTReturnMagnet Then
 		g_InterestedSampleStatus = SAMPLE_IN_CRADLE
-		msg$ = "{'set':'sample_state', 'position':" + GTCassettePosition$(g_InterestedCassettePosition) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
-		UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+		GTsendSampleStateJSON
 	Else
 		g_RunResult$ = "GTReturnMagnet failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)

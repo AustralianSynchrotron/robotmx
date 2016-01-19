@@ -162,3 +162,9 @@ Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 	EndIf
 Fend
 
+Function GTsendSampleStateJSON
+	String JSONmsg$
+	JSONmsg$ = "{'set':'sample_state', 'position':'" + GTCassettePosition$(g_InterestedCassettePosition) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
+	UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
+Fend
+
