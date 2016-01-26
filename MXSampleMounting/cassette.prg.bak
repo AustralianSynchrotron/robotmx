@@ -2,6 +2,9 @@
 #include "networkdefs.inc"
 #include "forcedefs.inc"
 
+
+''Useful comment
+
 ''================================
 '' module variable
 ''================================
@@ -149,8 +152,8 @@ Function CassetteXY() As Boolean
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             Exit Function
         EndIf
-        CXYTouch(CXYIndex, 1) = CX(Here)
-        CXYTouch(CXYIndex, 2) = CY(Here)
+        CXYTouch(CXYIndex, 1) = CX(RealPos)
+        CXYTouch(CXYIndex, 2) = CY(RealPos)
         
         SetFastSpeed
         Move P51
@@ -158,10 +161,10 @@ Function CassetteXY() As Boolean
         ''arc to next point        
         If CXYIndex < 4 Then
             CXYDirection = DegToRad(90 * (CXYIndex + 2))
-            P51 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(Here) + 90))
+            P51 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 90))
 
             CXYDirection = DegToRad(90 * (CXYIndex + 1.5))
-            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(Here) + 45))
+            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 45))
             Hand P51, CassetteOrientation
             Hand P52, CassetteOrientation
             Arc P52, P51
@@ -171,7 +174,7 @@ Function CassetteXY() As Boolean
 		    P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
 
             CXYDirection = DegToRad(90 * 3.5)
-            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(Here) - 135))
+            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) - 135))
             Hand P51, CassetteOrientation
             Hand P52, CassetteOrientation
             Arc P52, P51
@@ -200,7 +203,7 @@ Function CassetteXY() As Boolean
         msg$ = "touch point[" + Str$(CXYIndex) + "]" + "to center distance=" + Str$(CXYNewX)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print "CXYNewX -CXYRadius=", Abs(CXYNewX - CXYRadius)
-        If Abs(CXYNewX - CXYRadius) > 1 Then
+        If Abs(CXYNewX - CXYRadius) > 2 Then
             g_RunResult$ = "cassette cal: failed, toolset calibration is way too off"
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET
@@ -268,10 +271,10 @@ Function CassetteZ() As Boolean
             Exit Function
         EndIf
         
-        CCZTouch(CCZIndex) = CZ(Here)
-        msg$ = "picker touch at Z=" + Str$(CZ(Here))
+        CCZTouch(CCZIndex) = CZ(RealPos)
+        msg$ = "picker touch at Z=" + Str$(CZ(RealPos))
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-        Print #LOG_FILE_NO, "picker touched at (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ")"
+        Print #LOG_FILE_NO, "picker touched at (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ")"
     Next
     CassetteZ = True
     
@@ -403,11 +406,11 @@ Function CalCassetteAngle(ByVal cutOutZ As Real) As Boolean
             Exit Function
         EndIf
         
-        msg$ = "Touched edge at (" + Str$(CX(Here)) + ", " + Str$(CY(Here)) + ")"
+        msg$ = "Touched edge at (" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ")"
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-        Print #LOG_FILE_NO, "Touched edge at (", CX(Here), ", ", CY(Here), ")"
-        CCATouch(CCAIndex, 1) = CX(Here)
-        CCATouch(CCAIndex, 2) = CY(Here)
+        Print #LOG_FILE_NO, "Touched edge at (", CX(RealPos), ", ", CY(RealPos), ")"
+        CCATouch(CCAIndex, 1) = CX(RealPos)
+        CCATouch(CCAIndex, 2) = CY(RealPos)
         
         ''move back to standby point
         SetFastSpeed
@@ -503,15 +506,15 @@ Function NorCassetteAngle(ByVal XCenter As Real, ByVal YCentre As Real) As Boole
 			Exit Function
 		EndIf
         Move P53
-        Print #LOG_FILE_NO, "start at A1:(", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+        Print #LOG_FILE_NO, "start at A1:(", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     
         ''find Y    
         If Not g_FlagAbort Then
             CutMiddleWithArguments FORCE_YTORQUE, 0, GetForceThreshold(FORCE_YTORQUE), 6, 12
-            Print #LOG_FILE_NO, "after cut middle for Y (", CX(Here), ", ", CY(Here), ", ", CZ(Here), ", ", CU(Here), ")"
+            Print #LOG_FILE_NO, "after cut middle for Y (", CX(RealPos), ", ", CY(RealPos), ", ", CZ(RealPos), ", ", CU(RealPos), ")"
     
             ''calculate new angle and adjust our U
-            CCAInRad = Atan((CY(Here) - YCentre) / (CX(Here) - XCenter))
+            CCAInRad = Atan((CY(RealPos) - YCentre) / (CX(RealPos) - XCenter))
             Select CCAIndex
             Case 1
                 AFromYEdge = RadToDeg(CCAInRad)
@@ -633,9 +636,9 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
         ''we are sitting at the center top of the cassette
         g_HoldMagnet = True
         Tool 1
-        CenterX = CX(Here)
-        CenterY = CY(Here)
-        BottomZ = CZ(Here) - 142
+        CenterX = CX(RealPos)
+        CenterY = CY(RealPos)
+        BottomZ = CZ(RealPos) - 142
         Angle = 0
     EndIf
 

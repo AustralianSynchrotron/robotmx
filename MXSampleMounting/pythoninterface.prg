@@ -6,7 +6,25 @@
 
 Global String g_PortsRequestString$(NUM_CASSETTES)
 
-Function debugProbeNormal(cassette_position As Integer)
+Function debugProbeAllCassettes
+	Integer cassetteIndex
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		g_PortsRequestString$(cassetteIndex) = ""
+	Next
+	
+	Integer rowIndex, ColumnIndex
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		For ColumnIndex = 0 To NUM_COLUMNS - 1
+			For rowIndex = 0 To NUM_ROWS - 1
+				g_PortsRequestString$(cassetteIndex) = g_PortsRequestString$(cassetteIndex) + "1"
+			Next
+		Next
+	Next
+
+	ProbeCassettes
+Fend
+
+Function debugProbeCassette(cassette_position As Integer)
 	Integer cassetteIndex
 	For cassetteIndex = 0 To NUM_CASSETTES - 1
 		g_PortsRequestString$(cassetteIndex) = ""
@@ -324,10 +342,10 @@ Function debugJSONNormal(cassette_position As Integer)
 	
 	For cassetteIndex = 0 To NUM_CASSETTES - 1
 		g_CassetteType(cassetteIndex) = UNKNOWN_CASSETTE
-		For columnIndex = 0 To NUM_COLUMNS - 1
+		For ColumnIndex = 0 To NUM_COLUMNS - 1
 			For rowIndex = 0 To NUM_ROWS - 1
-				g_CASSampleDistanceError(cassetteIndex, rowIndex, columnIndex) = -1.234
-                g_CAS_PortStatus(cassetteIndex, rowIndex, columnIndex) = PORT_VACANT
+				g_CASSampleDistanceError(cassetteIndex, rowIndex, ColumnIndex) = -1.234
+                g_CAS_PortStatus(cassetteIndex, rowIndex, ColumnIndex) = PORT_VACANT
 			Next
 		Next
 	Next

@@ -36,8 +36,8 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	
 	Real CAScolumnAngleOffset, Uangle, adjustedU
 	CAScolumnAngleOffset = (columnIndex * 360.0) / NUM_COLUMNS
-	Uangle = g_AngleOfFirstColumn(cassette_position) + g_AngleOffset(cassette_position) + CAScolumnAngleOffset + 180
-	adjustedU = GTadjustUAngle(cassette_position, Uangle)
+	Uangle = g_AngleOfFirstColumn(cassette_position) + g_AngleOffset(cassette_position) + CAScolumnAngleOffset + 180 ''180 is for robot to point towards port
+	adjustedU = GTadjustUAngle(cassette_position, UAngle)
 
 	Real ZoffsetFromBottom
 	ZoffsetFromBottom = (CASSETTE_A1_HEIGHT + CASSETTE_ROW_HEIGHT * rowIndex) * CASSETTE_SHRINK_FACTOR
@@ -98,9 +98,9 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	EndIf
 	
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'sample_distances', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ",]}"
+	msg$ = "{'set':'sample_distances', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.000") + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-	msg$ = "{'set':'port_states', 'position':" + GTCassettePosition$(cassette_position) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ",]}"
+	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 		
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
@@ -223,13 +223,14 @@ Function GTsetCassetteMountStandbyPoints(cassette_position As Integer, rowIndex 
 	Real standby_circle_radius
 	standby_circle_radius = CASSETTE_RADIUS * CASSETTE_SHRINK_FACTOR + standbyDistanceFromCASSurface
 
-	Real uPointingTowardsPort, adjustedUPointingTowardsPort
-	uPointingTowardsPort = g_AngleOfFirstColumn(cassette_position) + g_AngleOffset(cassette_position) + (columnIndex * 360.0) / NUM_COLUMNS
+	
+	Real CAScolumnAngleOffset, uPointingTowardsPort, adjustedUPointingTowardsPort
+	CAScolumnAngleOffset = (columnIndex * 360.0) / NUM_COLUMNS
+	uPointingTowardsPort = g_AngleOfFirstColumn(cassette_position) + g_AngleOffset(cassette_position) + CAScolumnAngleOffset + 180 ''180 is for robot to point towards port
 	adjustedUPointingTowardsPort = GTadjustUAngle(cassette_position, uPointingTowardsPort)
 
 	Real uAngleOfPassingArcPoint
 	uAngleOfPassingArcPoint = (g_AngleOfFirstColumn(cassette_position) + adjustedUPointingTowardsPort) /2.0
-
 
 	Integer cassetteStandbyPoint, casStandbyToPortStandbyArcPoint, portStandbyPoint
 	cassetteStandbyPoint = 50
@@ -251,11 +252,13 @@ Function GTMoveToCASMountPortStandbyPoint(cassette_position As Integer, rowIndex
 	casStandbyToPortStandbyArcPoint = 51
 	portStandbyPoint = 52
 	
+	GTsetRobotSpeedMode(PROBE_SPEED)
+
 	''Check the following whether toolsets need to be changed before moving
 	Move P(cassetteStandbyPoint)
 	
 	'' Arc is not required is cassetteStandbyPoint to portStandbyPoint is less than 5degrees in angle
-	If Abs(CU(P(portStandbyPoint)) - CU(P(cassetteStandbyPoint)) > 5.0) Then
+	If Abs(CU(P(portStandbyPoint)) - CU(P(cassetteStandbyPoint))) > 5.0 Then
 		Arc P(casStandbyToPortStandbyArcPoint), P(portStandbyPoint)
 	Else
 		Move P(portStandbyPoint)
@@ -265,19 +268,18 @@ Fend
 Function GTPickerCheckCASPortStatus(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer, standbyPoint As Integer, ByRef portStatusBeforePickerCheck As Integer)
 	'' Start from Port Standby Point and return to StandbyPoint, with Sample if present
 	'' Using Picker, check sample status in CAS Port
-	
 	Tool PICKER_TOOL
 	LimZ g_Jump_LimZ_LN2
 			
 	Real maxDistanceToScan
-	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_CAS + TOLERANCE_FROM_PIN_DEEP_IN_CAS
+	maxDistanceToScan = PORT_MOUNT_READY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_CAS + TOLERANCE_FROM_PIN_DEEP_IN_CAS
 	
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	String msg$
 	If ForceTouch(DIRECTION_CAVITY_HEAD, maxDistanceToScan, False) Then
 		Real distanceCASSurfacetoHere
-		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
+		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PORT_MOUNT_READY_DISTANCE
 		
 		'' Distance error from perfect sample position
 		Real distErrorFromPerfectSamplePos
@@ -320,7 +322,7 @@ Function GTPickerCheckCASPortStatus(cassette_position As Integer, rowIndex As In
 	EndIf
 
 	''CLIENT_UPDATE after moving back to standbyPoint
-	msg$ = "{'set':'port_states', 'position':" + GTCassettePosition$(cassette_position) + ", 'start':'" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ",]}"
+	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, ColumnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
@@ -330,15 +332,16 @@ Fend
 
 Function GTMoveBackToCASStandbyPoint
 	'' This move should be called only at port standbypoint after picking sample from port		
-	
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+
 	Integer cassetteStandbyPoint, casStandbyToPortStandbyArcPoint, portStandbyPoint
 	cassetteStandbyPoint = 50
 	casStandbyToPortStandbyArcPoint = 51
 	portStandbyPoint = 52
 	
 	'' Arc is not required is cassetteStandbyPoint to portStandbyPoint is less than 5degrees in angle
-	If Abs(CU(P(portStandbyPoint)) - CU(P(cassetteStandbyPoint)) > 5.0) Then
-		Arc P(casStandbyToPortStandbyArcPoint), P(portStandbyPoint)
+	If Abs(CU(P(portStandbyPoint)) - CU(P(cassetteStandbyPoint))) > 5.0 Then
+		Arc P(casStandbyToPortStandbyArcPoint), P(cassetteStandbyPoint)
 	Else
 		Move P(cassetteStandbyPoint)
 	EndIf

@@ -1,170 +1,170 @@
-ENVT0100,LM:2016/01/19 22:48:45:450,DS:0000005519,CS:29549,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="jsonutilities.prg"
+ENVT0100,LM:2016/01/22 08:06:11:496,DS:0000005440,CS:26647,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="superpuckutilities.prg"
 bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
 	sName="magnet.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile5 {
 	sName="network.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile6 {
 	sName="force.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile7 {
 	sName="appnetwork.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile9 {
 	sName="setupcassette.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile10 {
 	sName="cassettetype.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
-		nLeft=309
-		nTop=149
-		nWidth=773
-		nHeight=390
+		nLeft=0
+		nTop=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile13 {
 	sName="setuppoints.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile14 {
 	sName="numericmanipulations.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=683
-		nHeight=520
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile15 {
 	sName="robotspeed.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile16 {
@@ -180,113 +180,113 @@ ProgramFile16 {
 }
 ProgramFile17 {
 	sName="initialization.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=869
-		nHeight=564
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bOpened=True
-	nWinState=2
+	bOpened=False
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 nIncludeFileCount=8
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 IncludeFile2 {
 	sName="networkdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 IncludeFile3 {
 	sName="forcedefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 IncludeFile4 {
 	sName="genericdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 IncludeFile5 {
 	sName="cassettedefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 IncludeFile6 {
@@ -302,24 +302,24 @@ IncludeFile6 {
 }
 IncludeFile7 {
 	sName="mountingdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 IncludeFile8 {
 	sName="jsondefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=0
+		nHeight=0
 	}
 }
 nPointFileCount=1
@@ -330,16 +330,16 @@ PointFile1 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=123
-		nHeight=34
+		nWidth=0
+		nHeight=0
 	}
 }
 sActiveWindow="main.prg"
 CmdWindow {
 	bOpened=False
 	Window {
-		nLeft=33
-		nTop=11
+		nLeft=395
+		nTop=-15
 		nWidth=897
 		nHeight=406
 	}
@@ -348,8 +348,8 @@ CmdWindow {
 RunWindow {
 	bOpened=False
 	Window {
-		nLeft=52
-		nTop=27
+		nLeft=49
+		nTop=23
 		nWidth=674
 		nHeight=378
 	}
@@ -368,8 +368,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=710
-		nTop=455
+		nLeft=369
+		nTop=213
 		nWidth=470
 		nHeight=342
 	}
@@ -377,8 +377,8 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=323
-		nTop=275
+		nLeft=762
+		nTop=70
 		nWidth=827
 		nHeight=530
 	}

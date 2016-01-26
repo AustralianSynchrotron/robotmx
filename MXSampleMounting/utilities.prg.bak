@@ -2464,9 +2464,11 @@ Function ToDewarClearFrame As Boolean
 	''Home side of dewar
 	If (xpos > HOME_SIDEX) Then
 		closestp = GetClosestPoint(ByRef diff)
-	    Print diff
-	    Print isCloseToPoint(1)
-	    If (diff > 1) Then
+	    Print "diff=" + Str$(diff)
+	    Print "closestp=" + Str$(closestp)
+	    ''Jump to p1 if not there already
+	    If ((diff > 1 And closestp = 1) Or closestp <> 1) Then
+	    	Print "Jump p1"
 		    Jump P1
 	    EndIf
 	EndIf

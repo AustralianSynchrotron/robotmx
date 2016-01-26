@@ -1,4 +1,0 @@
-=======================================================
-Cassette calibration at 2016/01/18 18:03:46
-Bad input for one cassette, should be one of rlm
-index= 1, cassette letter=1

@@ -1,0 +1,9 @@
+=======================================================
+Cassette calibration at 2016/01/20 11:10:42
+left cassetteinital calibration
+Center (Z= -289.198) XY position ( 15.8653,  465.983)
+Center (Z= -184.199) XY position ( 15.7033,  465.928)
+distance between center of top row and bottomt row:  0.170951
+Center (Z= -243.199) XY position ( 15.7974,  465.967)
+picker touched at ( 15.8001,  494.968,  -170.195)
+Z failed

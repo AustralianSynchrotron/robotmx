@@ -3,6 +3,7 @@
 #include "genericdefs.inc"
 #include "mountingdefs.inc"
 
+Global Preserve Integer g_dumbbellStatus
 Global Preserve Integer g_InterestedCassettePosition
 Global Preserve Integer g_InterestedPuckColumnIndex
 Global Preserve Integer g_InterestedRowPuckPortIndex
@@ -195,17 +196,17 @@ Function GTMoveCassetteStandbyToCradle
 	LimZ g_Jump_LimZ_LN2
 Fend
 
-Function GTCheckSampleInCradle As Boolean
+Function GTCheckSampleInCradlePicker As Boolean
 	'' Starts from P3
 	
-	GTCheckSampleInCradle = False
+	GTCheckSampleInCradlePicker = False
 	String msg$
-	If g_InterestedSampleStatus = SAMPLE_IN_CRADLE Then
+	If g_InterestedSampleStatus = SAMPLE_IN_PICKER And g_dumbbellStatus = DUMBBELL_IN_CRADLE Then
 	
 		'' use cavity to side touch the dumbbell to determine whether sample is on the dumbbell
 		
 		If Not Close_Gripper Then
-			UpdateClient(TASK_MSG, "GTCheckSampleInCradle:Close_Gripper failed", INFO_LEVEL)
+			UpdateClient(TASK_MSG, "GTCheckSampleInCradlePicker:Close_Gripper failed", INFO_LEVEL)
 			Exit Function
 		EndIf
 	
@@ -213,39 +214,43 @@ Function GTCheckSampleInCradle As Boolean
 		Go P93
 		
 		Real maxDistanceToScan
-		maxDistanceToScan = Dist(P93, P5)
+		maxDistanceToScan = Dist(P93, P16)
 		
 		If ForceTouch(DIRECTION_MAGNET_TO_CAVITY, maxDistanceToScan, False) Then
 			Real distanceP93toHere
 			distanceP93toHere = Dist(P93, RealPos)
 			
-			'' Distance error from perfect sample position
-			Real distErrorFromP5
-			distErrorFromP5 = maxDistanceToScan - distanceP93toHere ''maxDistanceToScan = Dist(P93, P5)
+			'' Distance of cavity edge from P16 
+			Real distanceFromP16
+			distanceFromP16 = maxDistanceToScan - distanceP93toHere ''maxDistanceToScan = Dist(P93, P16)
 			
-			If distErrorFromP5 < TOLERANCE_FOR_SAMPLE_IN_PICKER Then
+			''magnetHeadPositionError in mm from perfect magnet head position if sample is on cradle
+			Real magnetHeadPositionError
+			magnetHeadPositionError = distanceFromP16 - (MAGNET_HEAD_RADIUS + CAVITY_RADIUS)
+			
+			If magnetHeadPositionError < TOLERANCE_FOR_SAMPLE_IN_PICKER Then
 				''This condition means ForceTouch could not find sample in dumbbell
 				'' Whether the picker got the sample from cassette port or not is unknown
 				g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
-				msg$ = "GTCheckSampleInCradle: ForceTouch on sample in cradle moved " + Str$(distErrorFromP5) + "mm beyond expected sample surface."
+				msg$ = "GTCheckSampleInCradlePicker: ForceTouch on sample in cradle moved " + Str$(magnetHeadPositionError) + "mm beyond expected sample surface."
 				UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 			Else
 				'' Sample still on picker (on cradle)
-				g_InterestedSampleStatus = SAMPLE_IN_CRADLE
-				msg$ = "GTCheckSampleInCradle: ForceTouch detected sample in cradle with distance error =" + Str$(distErrorFromP5) + "."
+				''g_InterestedSampleStatus = SAMPLE_IN_PICKER
+				msg$ = "GTCheckSampleInCradlePicker: ForceTouch detected sample in cradle with distance error =" + Str$(magnetHeadPositionError) + "."
 				UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-				GTCheckSampleInCradle = True
+				GTCheckSampleInCradlePicker = True
 			EndIf
 		Else
 			''There is no sample (or ForceTouch failure)
 			g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
-			msg$ = "GTCheckSampleInCradle: ForceTouch failed to detect sample in cradle even after travelling maximum scan distance!"
+			msg$ = "GTCheckSampleInCradlePicker: ForceTouch failed to detect sample in cradle even after travelling maximum scan distance!"
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		EndIf
 		
 		Move P93
 	Else
-		msg$ = "GTCheckSampleInCradle: g_InterestedSampleStatus is not SAMPLE_IN_CRADLE! This function is called before sample is brought to cradle."
+		msg$ = "GTCheckSampleInCradlePicker: g_InterestedSampleStatus is not SAMPLE_IN_PICKER on Cradle! This function is called before sample is brought to cradle."
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	EndIf
 Fend
@@ -256,8 +261,8 @@ Function GTCavityGripSampleFromPicker As Boolean
 
 	GTCavityGripSampleFromPicker = False
 	
-	''GTCheckSampleInCradle closes gripper before checking
-	If GTCheckSampleInCradle Then
+	''GTCheckSampleInCradlePicker closes gripper before checking
+	''If GTCheckSampleInCradlePicker Then
 		If Not Open_Gripper Then
 			UpdateClient(TASK_MSG, "GTCavityGripSampleFromPicker:Open_Gripper failed", ERROR_LEVEL)
 			Exit Function
@@ -270,12 +275,12 @@ Function GTCavityGripSampleFromPicker As Boolean
 			Exit Function
 		EndIf
 		
-		GTTwistOffMagnet
+		TwistRelease
 		
 		g_InterestedSampleStatus = SAMPLE_IN_CAVITY
 		GTsendSampleStateJSON
 		GTCavityGripSampleFromPicker = True
-	EndIf
+	''EndIf
 Fend
 
 Function GTMoveToGoniometer As Boolean
@@ -289,7 +294,8 @@ Function GTMoveToGoniometer As Boolean
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	Move P2 CP
 	Move P18 CP
-	Arc P28, P38 CP
+	''Arc P28, P38 CP
+	Move P38 CP
 	Move P22
 
 	GTMoveToGoniometer = True
@@ -299,6 +305,9 @@ Function GTReleaseSampleToGonio As Boolean
 	''Releases sample from cavity to Goniometer
 	''starts from P22
 	GTReleaseSampleToGonio = False
+
+	'' Probe speed is the slowest speed so use it around GONIO
+	GTsetRobotSpeedMode(PROBE_SPEED)
 
 	Move P24
 	Move P21
@@ -335,7 +344,8 @@ Function GTMoveGoniometerToDewarSide As Boolean
 	
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	Move P38 CP
-	Arc P28, P18
+	Move P18
+	''Arc P28, P18
 
 	GTMoveGoniometerToDewarSide = True
 Fend
@@ -345,7 +355,10 @@ Function GTMountInterestedPort As Boolean
 	'' GTMountInterestedPort should start with dumbbell in gripper usually from P4
 	
 	GTMountInterestedPort = False
-
+	
+	Tool PICKER_TOOL
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+	
 	'' GTMoveToInterestPortStandbyPoint sets the standby points and intermediate points
 	GTMoveToInterestPortStandbyPoint
 	
@@ -360,8 +373,7 @@ Function GTMountInterestedPort As Boolean
 	
 	'' Put dumbbell in Cradle
 	If GTReturnMagnet Then
-		g_InterestedSampleStatus = SAMPLE_IN_CRADLE
-		GTsendSampleStateJSON
+		g_dumbbellStatus = DUMBBELL_IN_CRADLE
 	Else
 		g_RunResult$ = "GTReturnMagnet failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)

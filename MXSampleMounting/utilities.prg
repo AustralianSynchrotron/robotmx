@@ -963,8 +963,8 @@ Function UToDumbBellAngle(ByVal currentU As Real) As Real
     
     currentToolset = Tool
     If Tool <> 0 Then
-        P50 = TLSet(currentToolset)
-        currentU = currentU - CU(P50)
+        ''P50 = TLSet(currentToolset)
+        currentU = currentU - CU(TLSet(currentToolset))
     EndIf
 
     UToDumbBellAngle = currentU - g_U4MagnetHolder + g_MagnetTransportAngle

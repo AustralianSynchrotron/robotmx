@@ -2,6 +2,7 @@
 #include "genericdefs.inc"
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
+#include "mountingdefs.inc"
 #include "jsondefs.inc"
 
 Function GTgetPortIndexFromCassetteVars(cassette_position As Integer, columnPuckIndex As Integer, rowPuckPortIndex As Integer) As Integer
@@ -162,9 +163,40 @@ Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 	EndIf
 Fend
 
+'' Sends the state of the sample
 Function GTsendSampleStateJSON
+	String SampleLocationString$
+    SampleLocationString$ = "'" + GTCassettePosition$(g_InterestedCassettePosition) + "',"
+    SampleLocationString$ = SampleLocationString$ + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex))
+
 	String JSONmsg$
-	JSONmsg$ = "{'set':'sample_state', 'position':'" + GTCassettePosition$(g_InterestedCassettePosition) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex)) + ", 'value':" + Str$(g_InterestedSampleStatus) + "}"
+	JSONmsg$ = "{'set':'sample_locations', 'value':{"
+	Select g_InterestedSampleStatus
+		Case SAMPLE_IN_PICKER
+			JSONmsg$ = JSONmsg$ + "'picker':(" + SampleLocationString$ + "),"
+			JSONmsg$ = JSONmsg$ + "'placer':(),"
+			JSONmsg$ = JSONmsg$ + "'cavity':(),"
+			JSONmsg$ = JSONmsg$ + "'goniometer':()"
+		Case SAMPLE_IN_PLACER
+			JSONmsg$ = JSONmsg$ + "'picker':(),"
+			JSONmsg$ = JSONmsg$ + "'placer':(" + SampleLocationString$ + "),"
+			JSONmsg$ = JSONmsg$ + "'cavity':(),"
+			JSONmsg$ = JSONmsg$ + "'goniometer':()"
+		Case SAMPLE_IN_CAVITY
+			JSONmsg$ = JSONmsg$ + "'picker':(),"
+			JSONmsg$ = JSONmsg$ + "'placer':(),"
+			JSONmsg$ = JSONmsg$ + "'cavity':(" + SampleLocationString$ + "),"
+			JSONmsg$ = JSONmsg$ + "'goniometer':()"
+		Case SAMPLE_IN_GONIO
+			JSONmsg$ = JSONmsg$ + "'picker':(),"
+			JSONmsg$ = JSONmsg$ + "'placer':(),"
+			JSONmsg$ = JSONmsg$ + "'cavity':(),"
+			JSONmsg$ = JSONmsg$ + "'goniometer':(" + SampleLocationString$ + ")"
+		Default
+			Exit Function
+	Send
+	JSONmsg$ = JSONmsg$ + "}}"
+
 	UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
 Fend
 

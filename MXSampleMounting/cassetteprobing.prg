@@ -3,7 +3,7 @@
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
 
-'' GTResetSpecificPorts can be called independent of CASSETTE_TYPE
+'' GTResetSpecificPorts can be called independent of cassette_type
 Function GTResetSpecificPorts(cassette_position As Integer)
 	'' For each cassette_position, two arrays needs to be reset (the superpuck array and the cassette array)
 
@@ -71,7 +71,7 @@ Function GTProbeCassetteType(cassette_position As Integer) As Boolean
 	GTProbeCassetteType = True
 Fend
 
-'' This function is called independent of CASSETTE_TYPE after probing
+'' This function is called independent of cassette_type after probing
 Function GTProbeSpecificPorts(cassette_position As Integer) As Boolean
 	GTProbeSpecificPorts = False '' If the function breaks before finishing completely, return false
 
