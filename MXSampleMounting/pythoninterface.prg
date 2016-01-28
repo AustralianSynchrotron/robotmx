@@ -285,7 +285,7 @@ Function GTMountSamplePort
 		Send
 
 		columnOrPuckChar$ = Mid$(RequestTokens$(1), 1, 1)
-		rowOrPuckPortChar$ = Mid$(RequestTokens$(2), 1, 1)
+		rowOrPuckPortChar$ = RequestTokens$(2)
 		
 		If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
 			If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then

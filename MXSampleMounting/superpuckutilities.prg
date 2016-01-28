@@ -714,7 +714,7 @@ Function GTsetSPMountStandbyPoints(cassette_position As Integer, puckIndex As In
 	puckPortStandbyPoint = 52 '' destination point
 
 	GTSetCircumferencePointFromU(cassette_position, g_UForPuckStandby(cassette_position), standby_circle_radius, ZoffsetFromBottom, SPStandbyPoint)
-	GTsetSPPortPoint(cassette_position, puckPortIndex, puckIndex, standbyDistanceFromSPSurface, puckPortStandbyPoint)
+    GTsetSPPortPoint(cassette_position, puckPortIndex, puckIndex, standbyDistanceFromSPSurface, puckPortStandbyPoint)
 
 	If Abs(CU(P(puckPortStandbyPoint)) - CU(P(SPStandbyPoint))) < 10.0 Then
 		'' Set SPStandbyToPortStandbyArcPoint and SPSecondaryArcPoint as zero 
@@ -746,7 +746,7 @@ Function GTMoveToSPMountPortStandbyPoint(cassette_position As Integer, puckIndex
 	Move P(SPStandbyPoint)
 	
 	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
-	If CheckPoint(SPStandbyToPortStandbyArcPoint) And CheckPoint(SPSecondaryArcPoint) Then
+	If GTCheckPoint(SPStandbyToPortStandbyArcPoint) And GTCheckPoint(SPSecondaryArcPoint) Then
 		Arc P(SPStandbyToPortStandbyArcPoint), P(SPSecondaryArcPoint) CP
 	EndIf
 
@@ -828,7 +828,7 @@ Function GTMoveBackToSPStandbyPoint
 	puckPortStandbyPoint = 52 '' destination point
 	
 	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
-	If CheckPoint(SPStandbyToPortStandbyArcPoint) And CheckPoint(SPSecondaryArcPoint) Then
+	If GTCheckPoint(SPStandbyToPortStandbyArcPoint) And GTCheckPoint(SPSecondaryArcPoint) Then
 		Move P(SPSecondaryArcPoint) CP
 		Arc P(SPStandbyToPortStandbyArcPoint), P(SPStandbyPoint)
 	Else
