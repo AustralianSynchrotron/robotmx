@@ -20,8 +20,8 @@
 
 #define PROBE_ADAPTOR_DISTANCE 3.0
 
-#define UNDERPRESS_DISTANCE_FOR_PUCK -0.8
-#define OVERPRESS_DISTANCE_FOR_PUCK 0.8
+#define UNDERPRESS_DISTANCE_FOR_PUCK -0.9
+#define OVERPRESS_DISTANCE_FOR_PUCK 0.9
 
 '' Distance from puck surface to sample surface if pin deep in puck
 #define SAMPLE_DIST_PIN_DEEP_IN_PUCK 2.5

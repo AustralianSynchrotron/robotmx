@@ -1,12 +1,12 @@
-ENVT0100,LM:2016/01/28 02:55:29:821,DS:0000008458,CS:16657,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/01/31 22:24:57:118,DS:0000008458,CS:07689,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="C:\\EpsonRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="1/28/2016 1:55:28 PM"
-	bBuildComplete=True
+	sLastModified="2/1/2016 9:24:45 AM"
+	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
 	bClearControllerProject=False

@@ -18,7 +18,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
     EndIf
    
    	Motor On
-   	''Power High ''For debugging use low power mode
+   	Power High ''For debugging use low power mode
    	
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
@@ -94,7 +94,7 @@ Function GTCheckAndPickMagnet As Boolean
 	
 	Tool 0
 	
-	If GTIsMagnetInGripper Then
+	If GTIsMagnetInGripper Then ''CheckMagnet
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong.", INFO_LEVEL)
 	Else
 		Jump P3 '' Cooling Point in front of cradle
