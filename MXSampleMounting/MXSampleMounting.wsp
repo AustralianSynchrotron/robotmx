@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/01/31 22:27:02:853,DS:0000005488,CS:26383,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="superpuckdefs.inc"
+ENVT0100,LM:2016/02/01 13:04:02:406,DS:0000005489,CS:06656,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="samplemounting.prg"
 bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
@@ -203,7 +203,7 @@ ProgramFile18 {
 ProgramFile19 {
 	sName="samplemounting.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -292,7 +292,7 @@ IncludeFile5 {
 IncludeFile6 {
 	sName="superpuckdefs.inc"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0

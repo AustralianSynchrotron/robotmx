@@ -837,4 +837,68 @@ Function GTMoveBackToSPStandbyPoint
 
 Fend
 
+''' *** Dismounting *** '''
+Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, standbyPoint As Integer)
+	String msg$
+	Tool PLACER_TOOL
+	LimZ g_Jump_LimZ_LN2
+
+	Real maxDistanceToScan
+	maxDistanceToScan = PORT_MOUNT_READY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK
+		
+	GTsetRobotSpeedMode(PROBE_SPEED)
+
+	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
+	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
+		
+		Real distancePuckSurfacetoHere
+		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PORT_MOUNT_READY_DISTANCE
+		
+		'' Distance error from perfect sample position
+		Real distErrorFromPerfectSamplePos
+		distErrorFromPerfectSamplePos = distancePuckSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_PUCK
+		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = distErrorFromPerfectSamplePos
+		
+		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
+			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
+			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR
+			msg$ = "GTprobeSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
+			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED
+			msg$ = "GTprobeSPPort: ForceTouch detected Sample at " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		Else
+			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
+			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
+			msg$ = "GTprobeSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		EndIf
+
+		GTTwistOffMagnet
+	Else
+		''There is no sample (or ForceTouch failure)
+		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
+		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
+		msg$ = "GTprobeSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+
+		Move P(standbyPoint)
+	EndIf
+	
+	'' Client Update after probing decision has been made
+	msg$ = "{'set':'sample_distances', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, portIndex), "0.000") + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	
+	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	
+	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
+	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
+	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
+
+	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
+	GTLoadPreviousRobotSpeedMode
+Fend
 

@@ -307,7 +307,7 @@ Function GTReleaseSampleToGonio As Boolean
 	GTReleaseSampleToGonio = False
 
 	'' Probe speed is the slowest speed so use it around GONIO
-	GTsetRobotSpeedMode(SPEED_PROBE)
+	GTsetRobotSpeedMode(PROBE_SPEED)
 
 	Move P24
 	Move P21
@@ -406,5 +406,151 @@ Function GTMountInterestedPort As Boolean
 	EndIf
 	
 	GTMountInterestedPort = True
+Fend
+
+''' *** Dismounting Code Starts Here *** '''
+Function GTCavityGripSampleFromGonio As Boolean
+	''GripSample in Cavity From Goniometer
+	''Starts from P22
+
+	GTCavityGripSampleFromGonio = False
+	
+	Move P23
+	
+	If Not Open_Gripper Then
+		UpdateClient(TASK_MSG, "GTCavityGripSampleFromGonio:Open_Gripper failed", ERROR_LEVEL)
+		Exit Function
+	EndIf
+
+	'' if tongConflict code not included here
+
+	Move P21
+
+	If Not Close_Gripper Then
+		UpdateClient(TASK_MSG, "GTCavityGripSampleFromGonio:Close_Gripper failed", ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	TwistRelease
+	
+	g_InterestedSampleStatus = SAMPLE_IN_CAVITY
+	GTsendSampleStateJSON
+	
+	Move P22
+	
+	GTCavityGripSampleFromGonio = True
+Fend
+
+Function GTMoveGoniometerToPlacer
+	If Not Close_Gripper Then
+		UpdateClient(TASK_MSG, "GTMoveGoniometerToPlacer:Close_Gripper failed", ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+	
+	Move P38 CP
+	Arc P28, P18 CP
+	Move P27 :Z(0)
+	
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+
+	Move P27
+Fend
+
+Function GTReleaseSampleToPlacer As Boolean
+	''Releases sample from cavity to Placer on cradle
+	''starts from P27
+	GTReleaseSampleToPlacer = False
+
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+
+	Move P26
+	
+	If Not Open_Gripper Then
+		UpdateClient(TASK_MSG, "GTReleaseSampleToPlacer:Open_Gripper failed", ERROR_LEVEL)
+		Exit Function
+	EndIf
+		
+	g_InterestedSampleStatus = SAMPLE_IN_PLACER
+	GTsendSampleStateJSON
+	
+	Arc P25, P94 CP
+
+	'' move to
+	Move P3
+	
+	GTReleaseSampleToPlacer = True
+Fend
+
+Function GTPutSampleIntoInterestPort
+	Integer portStandbyPoint
+	portStandbyPoint = 52
+
+	If (g_CassetteType(g_InterestedCassettePosition) = NORMAL_CASSETTE) Or (g_CassetteType(g_InterestedCassettePosition) = CALIBRATION_CASSETTE) Then
+		GTPutSampleIntoCASPort(g_InterestedCassettePosition, g_InterestedRowPuckPortIndex, g_InterestedPuckColumnIndex, portStandbyPoint)
+	ElseIf g_CassetteType(g_InterestedCassettePosition) = SUPERPUCK_CASSETTE Then
+		GTPutSampleIntoSPPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex, portStandbyPoint)
+	EndIf
+Fend
+
+Function GTDismountToInterestedPort As Boolean
+	'' GTDismountToInterestedPort should start without dumbbell in gripper usually from P18
+	
+	GTDismountToInterestedPort = False
+
+	Tool 0
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+	
+	If Not GTMoveToGoniometer Then
+		g_RunResult$ = "GTMoveToGoniometer failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	
+	'' Probe speed is the slowest speed so use it around GONIO
+	GTsetRobotSpeedMode(PROBE_SPEED)
+	
+	''GripSample in Cavity From Goniometer
+	If Not GTCavityGripSampleFromGonio Then
+		g_RunResult$ = "GTCavityGripSampleFromGonio failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	GTMoveGoniometerToPlacer
+		
+	If Not GTReleaseSampleToPlacer Then
+		g_RunResult$ = "GTReleaseSampleToPlacer failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	If Not GTPickMagnet Then
+		g_RunResult$ = "GTPickMagnet failed!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+		
+	Tool PLACER_TOOL
+	'' GTMoveToInterestPortStandbyPoint sets the standby points and intermediate points
+	GTMoveToInterestPortStandbyPoint
+	
+	GTPutSampleIntoInterestPort
+		
+	GTMoveBackToCassetteStandbyPoint
+	GTMoveCassetteStandbyToCradle
+	
+	'' Put dumbbell in Cradle
+	If GTReturnMagnet Then
+		g_dumbbellStatus = DUMBBELL_IN_CRADLE
+	Else
+		g_RunResult$ = "GTReturnMagnet failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	GTDismountToInterestedPort = True
 Fend
 

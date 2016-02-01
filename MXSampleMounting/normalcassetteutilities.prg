@@ -37,7 +37,7 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	Real CAScolumnAngleOffset, Uangle, adjustedU
 	CAScolumnAngleOffset = (columnIndex * 360.0) / NUM_COLUMNS
 	Uangle = g_AngleOfFirstColumn(cassette_position) + g_AngleOffset(cassette_position) + CAScolumnAngleOffset + 180 ''180 is for robot to point towards port
-	adjustedU = GTadjustUAngle(cassette_position, UAngle)
+	adjustedU = GTadjustUAngle(cassette_position, Uangle)
 
 	Real ZoffsetFromBottom
 	ZoffsetFromBottom = (CASSETTE_A1_HEIGHT + CASSETTE_ROW_HEIGHT * rowIndex) * CASSETTE_SHRINK_FACTOR
@@ -289,28 +289,28 @@ Function GTPickerCheckCASPortStatus(cassette_position As Integer, rowIndex As In
 			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
 			''Whether the picker got the sample or not is unknown
 			portStatusBeforePickerCheck = PORT_ERROR
-			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_ERROR
-			msg$ = "GTPickerCheckCASPortStatus: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
+			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_ERROR
+			msg$ = "GTPickerCheckCASPortStatus: ForceTouch on " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
 			''Picker has got the sample
 			portStatusBeforePickerCheck = PORT_OCCUPIED
-			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_OCCUPIED
-			msg$ = "GTPickerCheckCASPortStatus: ForceTouch detected Sample at " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
+			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
+			msg$ = "GTPickerCheckCASPortStatus: ForceTouch detected Sample at " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		Else
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			portStatusBeforePickerCheck = PORT_VACANT
-			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
-			msg$ = "GTPickerCheckCASPortStatus: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
+			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_VACANT
+			msg$ = "GTPickerCheckCASPortStatus: ForceTouch on " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		EndIf
 	Else
 		'' There is no sample (or ForceTouch failure)
 		portStatusBeforePickerCheck = PORT_VACANT
-		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
-		msg$ = "GTPickerCheckCASPortStatus: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
+		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_VACANT
+		msg$ = "GTPickerCheckCASPortStatus: ForceTouch failed to detect " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	EndIf
 		
@@ -318,7 +318,7 @@ Function GTPickerCheckCASPortStatus(cassette_position As Integer, rowIndex As In
 
 	If portStatusBeforePickerCheck = PORT_OCCUPIED Then
 		'' Because we are using picker to probe, after moving back to standby point, port will be vacant
-		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
+		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_VACANT
 	EndIf
 
 	''CLIENT_UPDATE after moving back to standbyPoint
@@ -347,4 +347,68 @@ Function GTMoveBackToCASStandbyPoint
 	EndIf
 Fend
 
+''' *** Dismounting *** '''
+
+Function GTPutSampleIntoCASPort(cassette_position As Integer, rowIndex As Integer, columnIndex As Integer, standbyPoint As Integer)
+	String msg$
+	
+	Tool PLACER_TOOL
+	LimZ g_Jump_LimZ_LN2
+			
+	Real maxDistanceToScan
+	maxDistanceToScan = PORT_MOUNT_READY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_CAS + TOLERANCE_FROM_PIN_DEEP_IN_CAS
+	
+	GTsetRobotSpeedMode(PROBE_SPEED)
+	
+	g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
+
+		Real distanceCASSurfacetoHere
+		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PORT_MOUNT_READY_DISTANCE
+		
+		'' Distance error from perfect sample position
+		Real distErrorFromPerfectSamplePos
+		distErrorFromPerfectSamplePos = distanceCASSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_CAS
+		g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = distErrorFromPerfectSamplePos
+
+		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
+			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_ERROR
+			msg$ = "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_OCCUPIED
+			msg$ = "GTprobeCassettePort: ForceTouch detected Sample at " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		Else
+			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
+			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_VACANT
+			msg$ = "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		EndIf
+		
+		GTTwistOffMagnet
+	Else
+		'' There is no sample (or ForceTouch failure)
+		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_VACANT
+		g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_CAS
+		msg$ = "GTprobeCassettePort: ForceTouch failed to detect " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		Move P(standbyPoint)
+	EndIf
+	
+	'' Client Update after probing decision has been made
+	msg$ = "{'set':'sample_distances', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, ColumnIndex, rowIndex)) + ", 'value':[" + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex), "0.000") + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, ColumnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex)) + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+		
+	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
+	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
+	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
+	
+	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
+	GTLoadPreviousRobotSpeedMode
+Fend
 

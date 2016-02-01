@@ -14,7 +14,7 @@ Function debugProbeAllCassettes
 	
 	Integer rowIndex, ColumnIndex
 	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		For ColumnIndex = 0 To NUM_COLUMNS - 1
+		For columnIndex = 0 To NUM_COLUMNS - 1
 			For rowIndex = 0 To NUM_ROWS - 1
 				g_PortsRequestString$(cassetteIndex) = g_PortsRequestString$(cassetteIndex) + "1"
 			Next
@@ -332,6 +332,114 @@ Function GTMountSamplePort
 	EndIf
 	
 	g_RunResult$ = "success GTMountSamplePort"
+    Print "GTMountSamplePort finished at ", Date$, " ", Time$
+Fend
+
+
+Function GTDismountSample
+	Cls
+    Print "GTDismountSample entered at ", Date$, " ", Time$
+    
+    ''Ensure moves are not restricted to XY plane for probe
+    g_OnlyAlongAxis = False
+
+	''init result
+    g_RunResult$ = ""
+    
+	'' Initialize all constants
+	If Not GTInitialize Then
+		g_RunResult$ = "error GTInitialize failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+    EndIf
+	
+	If Not GTJumpHomeToGonioDewarSide Then
+		g_RunResult$ = "GTJumpHomeToGonioDewarSide failed"
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	String RequestTokens$(0)
+	Integer RequestArgC
+    
+    ''parse argument from global
+    ParseStr g_RunArgs$, RequestTokens$(), " "
+    ''check argument
+    RequestArgC = UBound(RequestTokens$) + 1
+
+
+	String cassetteChar$
+	Integer cassette_position
+	String columnOrPuckChar$
+	Integer columnPuckIndex
+	String rowOrPuckPortChar$
+	Integer rowPuckPortIndex
+
+
+    If RequestArgC = 3 Then
+		cassetteChar$ = Mid$(RequestTokens$(0), 1, 1)
+		Select UCase$(cassetteChar$)
+			Case "L"
+				cassette_position = LEFT_CASSETTE
+			Case "M"
+				cassette_position = MIDDLE_CASSETTE
+			Case "R"
+				cassette_position = RIGHT_CASSETTE
+			Default
+				cassette_position = UNKNOWN_CASSETTE
+				g_RunResult$ = "GTDismountSample: Invalid Cassette Position supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+		Send
+
+		columnOrPuckChar$ = Mid$(RequestTokens$(1), 1, 1)
+		rowOrPuckPortChar$ = RequestTokens$(2)
+		
+		If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+			If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
+				g_RunResult$ = "GTDismountSample: Invalid Column Name supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+			
+			rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
+			If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_ROWS - 1 Then
+				g_RunResult$ = "GTDismountSample: Invalid Row Position supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+		ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+			If Not GTParsePuckIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
+				g_RunResult$ = "GTDismountSample: Invalid Puck Name supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+			rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
+			If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_PUCK_PORTS - 1 Then
+				g_RunResult$ = "GTDismountSample: Invalid Puck Port supplied in g_RunArgs$"
+				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				Exit Function
+			EndIf
+		Else
+			g_RunResult$ = "GTDismountSample: Invalid CassetteType Detected! Please probe this cassette again"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			Exit Function
+		EndIf
+	EndIf
+	
+	If Not GTsetInterestPoint(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
+		g_RunResult$ = "GTDismountSample: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	If Not GTDismountToInterestedPort Then
+		g_RunResult$ = "Error in GTDismountSample->GTDismountToInterestedPort: Check log for further details"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	g_RunResult$ = "success GTDismountSample"
     Print "GTMountSamplePort finished at ", Date$, " ", Time$
 Fend
 
