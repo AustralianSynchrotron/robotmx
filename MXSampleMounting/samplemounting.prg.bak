@@ -3,7 +3,6 @@
 #include "genericdefs.inc"
 #include "mountingdefs.inc"
 
-Global Preserve Integer g_dumbbellStatus
 Global Preserve Integer g_InterestedCassettePosition
 Global Preserve Integer g_InterestedPuckColumnIndex
 Global Preserve Integer g_InterestedRowPuckPortIndex
@@ -337,9 +336,7 @@ Function GTMountInterestedPort As Boolean
 	GTMoveCassetteStandbyToCradle
 	
 	'' Put dumbbell in Cradle
-	If GTReturnMagnet Then
-		g_dumbbellStatus = DUMBBELL_IN_CRADLE
-	Else
+	If Not GTReturnMagnet Then
 		g_RunResult$ = "GTReturnMagnet failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
@@ -420,8 +417,6 @@ Function GTCavityGripSampleFromGonio As Boolean
 		UpdateClient(TASK_MSG, "GTCavityGripSampleFromGonio:Close_Gripper failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
-	
-	TwistRelease ''check whether this is required
 	
 	g_InterestedSampleStatus = SAMPLE_IN_CAVITY
 	GTsendSampleStateJSON
@@ -534,9 +529,7 @@ Function GTDismountToInterestedPort As Boolean
 	GTMoveCassetteStandbyToCradle
 	
 	'' Put dumbbell in Cradle and go Home (P0)
-	If GTReturnMagnetAndGoHome Then
-		g_dumbbellStatus = DUMBBELL_IN_CRADLE
-	Else
+	If Not GTReturnMagnetAndGoHome Then
 		g_RunResult$ = "GTReturnMagnet failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function

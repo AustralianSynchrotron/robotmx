@@ -7,10 +7,17 @@
 
 #define CLOSE_DISTANCE 10
 
+Global Preserve Integer g_dumbbellStatus
+
 Function GTStartRobot
 	'' This is the only function in GT domain which starts the motors and sets the power
-	Motor On
-   	Power Low ''For debugging use low power mode
+	If Motor = Off Then
+		Motor On
+	   	Power Low ''For debugging use low power mode
+
+		''Set dumbbell status to unknown whenever motors are started from off state
+		g_dumbbellStatus = DUMBBELL_STATUS_UNKNOWN
+	EndIf
    	
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
@@ -92,7 +99,7 @@ Function GTIsMagnetInGripper As Boolean
             UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		EndIf
 	Else
-		msg$ = "IsMagnetInTong: ForceTouch failed to detect magnet in tong even after travelling maximum scan distance!"
+		msg$ = "IsMagnetInTong: ForceTouch did not detect magnet in tong even after travelling maximum scan distance!"
         UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	EndIf
 	
@@ -124,6 +131,8 @@ Function GTPickMagnet As Boolean
 		Exit Function
 	EndIf
 
+	g_dumbbellStatus = DUMBBELL_IN_GRIPPER
+
 	Move P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
 
 	GTPickMagnet = True
@@ -132,12 +141,32 @@ Fend
 Function GTCheckAndPickMagnet As Boolean
 	GTCheckAndPickMagnet = False
 	
-	If GTIsMagnetInGripper Then ''CheckMagnet
+	If g_dumbbellStatus = DUMBBELL_MISSING Then
+		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:g_dumbbellStatus says DUMBBELL_MISSING. Please check the robot.", ERROR_LEVEL)
+		Exit Function
+	ElseIf g_dumbbellStatus = DUMBBELL_IN_GRIPPER Then
+		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:g_dumbbellStatus is DUMBBELL_IN_GRIPPER", INFO_LEVEL)
+	ElseIf g_dumbbellStatus = DUMBBELL_IN_CRADLE Then
+		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:g_dumbbellStatus is DUMBBELL_IN_CRADLE", INFO_LEVEL)
+		If Not GTPickMagnet Then
+			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTPickMagnet failed!", ERROR_LEVEL)
+			Exit Function
+		EndIf
+	ElseIf GTIsMagnetInGripper Then ''CheckMagnet
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong.", INFO_LEVEL)
 	Else
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper did not find magnet on tong.", INFO_LEVEL)
 		If Not GTPickMagnet Then
 			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTPickMagnet failed!", ERROR_LEVEL)
+			Exit Function
+		EndIf
+		
+		If GTIsMagnetInGripper Then ''CheckMagnet
+			g_dumbbellStatus = DUMBBELL_IN_GRIPPER '' assert again
+			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
+		Else
+			g_dumbbellStatus = DUMBBELL_MISSING
+			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
@@ -170,6 +199,8 @@ Function GTReturnMagnet As Boolean
 	''	GTUpdateClient(TASK_FAILURE_REPORT, MID_LEVEL_FUNCTION, "GTReturnMagnet:Close_Gripper failed")
 	''	Exit Function
 	''EndIf
+	
+	g_dumbbellStatus = DUMBBELL_IN_CRADLE
 	
 	GTReturnMagnet = True
 Fend

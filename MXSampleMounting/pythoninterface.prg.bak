@@ -14,7 +14,7 @@ Function debugProbeAllCassettes
 	
 	Integer rowIndex, ColumnIndex
 	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		For ColumnIndex = 0 To NUM_COLUMNS - 1
+		For columnIndex = 0 To NUM_COLUMNS - 1
 			For rowIndex = 0 To NUM_ROWS - 1
 				g_PortsRequestString$(cassetteIndex) = g_PortsRequestString$(cassetteIndex) + "1"
 			Next
@@ -47,7 +47,7 @@ Function debugProbeCalib(cassette_position As Integer)
 	Next
 	
 	Integer rowIndex, ColumnIndex
-	For ColumnIndex = 0 To NUM_COLUMNS - 1
+	For columnIndex = 0 To NUM_COLUMNS - 1
 		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
 		For rowIndex = 1 To NUM_ROWS - 2
 			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
@@ -223,7 +223,6 @@ Function JSONDataRequest
 Fend
 
 Function GTMountSamplePort
-	Cls
     Print "GTMountSamplePort entered at ", Date$, " ", Time$
     
     ''Ensure moves are not restricted to XY plane for probe
@@ -239,21 +238,7 @@ Function GTMountSamplePort
 		Exit Function
 	EndIf
 	
-	GTStartRobot
 	
-	If Not GTJumpHomeToCoolingPointAndWait Then
-		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
-        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
-	EndIf
-
-	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
-	If Not GTCheckAndPickMagnet Then
-		g_RunResult$ = "GTCheckAndPickMagnet: Grabbing magnet failed"
-    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
-	EndIf
-		
 	
 	String RequestTokens$(0)
 	Integer RequestArgC
@@ -329,6 +314,22 @@ Function GTMountSamplePort
 		Exit Function
 	EndIf
 	
+	''Only after all the input checks are successful start moving the robot
+	GTStartRobot
+	
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+
+	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
+	If Not GTCheckAndPickMagnet Then
+		g_RunResult$ = "GTCheckAndPickMagnet: Grabbing magnet failed"
+    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
 	If Not GTMountInterestedPort Then
 		g_RunResult$ = "Error in GTMountSamplePort->GTMountInterestedPort: Check log for further details"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
@@ -340,7 +341,6 @@ Function GTMountSamplePort
 Fend
 
 Function GTDismountSample
-	Cls
     Print "GTDismountSample entered at ", Date$, " ", Time$
     
     ''Ensure moves are not restricted to XY plane for probe
@@ -355,19 +355,6 @@ Function GTDismountSample
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
     EndIf
-	
-	GTStartRobot
-	''If Not GTJumpHomeToCoolingPointAndWait Then
-	''	g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
-    ''   UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-	''	Exit Function
-	''EndIf
-	
-	''If Not GTJumpHomeToGonioDewarSide Then
-	''	g_RunResult$ = "GTJumpHomeToGonioDewarSide failed"
-    ''  UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-	''	Exit Function
-	''EndIf
 	
 	String RequestTokens$(0)
 	Integer RequestArgC
@@ -437,12 +424,41 @@ Function GTDismountSample
 		EndIf
 	EndIf
 	
-	If Not GTsetInterestPoint(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		g_RunResult$ = "GTDismountSample: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
+	If Not GTsetDismountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
+		g_RunResult$ = "GTDismountSample->GTsetDismountPort: Sample already Present in Port or Invalid Port Position supplied in g_RunArgs$"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
+	''Only after all the input checks are successful start moving the robot
+	GTStartRobot
+	''If Not GTJumpHomeToCoolingPointAndWait Then
+	''	g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
+    ''   UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	''	Exit Function
+	''EndIf
+	
+	''If Not GTJumpHomeToGonioDewarSide Then
+	''	g_RunResult$ = "GTJumpHomeToGonioDewarSide failed"
+    ''  UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	''	Exit Function
+	''EndIf
+	
+	'' if magnet is in gripper, put it in Cradle
+	If g_dumbbellStatus = DUMBBELL_IN_GRIPPER Then
+		If Not GTReturnMagnet Then
+			g_RunResult$ = "GTDismountSample->GTReturnMagnet failed"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			Exit Function
+		EndIf
+	ElseIf g_dumbbellStatus <> DUMBBELL_IN_CRADLE Then
+		g_dumbbellStatus = DUMBBELL_MISSING
+		g_RunResult$ = "Error in GTDismountSample: Dumbbell not in cradle! It is missing!!!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+
+
 	If Not GTDismountToInterestedPort Then
 		g_RunResult$ = "Error in GTDismountSample->GTDismountToInterestedPort: Check log for further details"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
@@ -549,4 +565,19 @@ Function debugJSONPuck(cassette_position As Integer, puckIndexToProbe As Integer
 Fend
 
 
+Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer)
+	Cls
+	debugProbePuck(cassette_position, puckIndex)
+	
+	Integer puckPortIndex
+	For puckPortIndex = 1 To NUM_PUCK_PORTS
+		g_RunArgs$ = GTCassetteName$(cassette_position) + " "
+		g_RunArgs$ = g_RunArgs$ + GTpuckName$(puckIndex) + " "
+		g_RunArgs$ = g_RunArgs$ + Str$(puckPortIndex)
+		
+		GTMountSamplePort
+		
+		GTDismountSample
+	Next
+Fend
 

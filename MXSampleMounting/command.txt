@@ -714,4 +714,39 @@ r 0
  X:  -48.412 Y:  517.520 Z:    7.071 U:   26.903 V:    0.000 W:    0.000 /R /0
 > go p1
 > jump p0
+> print g_runargs$
+right_cassette A 16
+> 
+r a 1
+> g_RunArgs$ = "R A 1"
+> ol 
+> jump p1
+> jump p4
+> tool
+	   0
+> motor On
+> tool
+	   0
+> move p27
+> To
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 3
+> reset error
+> 
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 3
+> Tool 2
+> Print g_InterestedCassettePosition
+ 2
+> Print g_InterestedPuckColumnIndex
+ 0
+> g_InterestedRowPuckPortIndex = 0
+> tool
+	   0
+> 
+ 15
+>  g_SP_PortStatus(2,0,0) = -1 
+> 
+ 1
 > 

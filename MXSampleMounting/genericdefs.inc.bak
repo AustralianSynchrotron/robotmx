@@ -70,12 +70,6 @@
 #define OUTSIDE_LN2_MOVE_DEACCEL 60
 #define OUTSIDE_LN2_MOVE_SPEED 72
 
-'' Dumbbell Status
-#define DUMBBELL_STATUS_UNKNOWN 0
-#define DUMBBELL_IN_CRADLE 1
-#define DUMBBELL_IN_GRIPPER 2
-#define DUMBBELL_MISSING 3
-
 ''X Edge of dewar on goniometer side
 ''Below are world coordinates in mm
 #define GONIO_SIDEX -165

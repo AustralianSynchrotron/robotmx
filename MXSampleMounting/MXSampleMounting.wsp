@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/02/02 02:24:24:718,DS:0000005481,CS:11611,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Command"
+ENVT0100,LM:2016/02/02 05:55:57:381,DS:0000005489,CS:30066,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="magnetmaneuvers.prg"
 bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
@@ -336,17 +336,17 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=395
 		nTop=-15
 		nWidth=897
 		nHeight=406
 	}
-	nWinState=2
+	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
@@ -368,8 +368,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=551
-		nTop=291
+		nLeft=87
+		nTop=69
 		nWidth=470
 		nHeight=342
 	}
