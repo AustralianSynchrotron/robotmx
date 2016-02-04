@@ -672,5 +672,46 @@ r 0
 > 
 !!Error: 3205, Point is not specified.
 > 
-> g_runArgs$ = "l 0"
+> g_runArgs$ = "r a 1"
+> Print Here
+ X: -361.729 Y:  342.833 Z:  -13.229 U:  265.503 V:    0.000 W:    0.000 /R /0
+> Print P18
+ X: -361.729 Y:  342.833 Z:  -13.229 U:  265.503 V:    0.000 W:    0.000 /R /0
+> Print P38
+ X: -348.608 Y:  329.713 Z:  -13.229 U:  265.503 V:    0.000 W:    0.000 /R /0
+> Print P22
+ X: -348.608 Y: -372.053 Z:   -1.000 U:  265.978 V:    0.000 W:    0.000 /R /0
+> Print Dist(RealPos, P18) < 10
+ -1
+> Print P1
+ X:  285.997 Y:  383.958 Z:  -11.751 U:   62.138 V:    0.000 W:    0.000 /R /0
+> Print P0
+ X:  521.253 Y:   52.433 Z: -262.891 U:   89.498 V:    0.000 W:    0.000 /R /0
+> reset error
+> motor On 
+> move p26
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 2
+> reset error
+> motor On
+> 
+ X:  285.997 Y:  383.958 Z:  -11.751 U:   62.138 V:    0.000 W:    0.000 /R /0
+> 
+ 0.00023834990466024
+> 
+> 
+> 
+> jump p2
+> reset error
+> motor onr
+!!Error: 3100, Syntax error.
+> motor On
+> move p24
+> move p22
+> 
+> jump p1
+!!Error: 4005, Current point position is above the specified LimZ value.
+> print p*
+ X:  -48.412 Y:  517.520 Z:    7.071 U:   26.903 V:    0.000 W:    0.000 /R /0
+> go p1
+> jump p0
 > 

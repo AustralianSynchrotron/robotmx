@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/02/01 13:04:02:406,DS:0000005489,CS:06656,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="samplemounting.prg"
+ENVT0100,LM:2016/02/02 02:24:24:718,DS:0000005481,CS:11611,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Command"
 bMdiMaximized=True
 nProgramFileCount=21
 ProgramFile1 {
@@ -203,7 +203,7 @@ ProgramFile18 {
 ProgramFile19 {
 	sName="samplemounting.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -224,13 +224,13 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 nIncludeFileCount=8
@@ -343,7 +343,7 @@ CmdWindow {
 		nWidth=897
 		nHeight=406
 	}
-	nWinState=0
+	nWinState=2
 }
 RunWindow {
 	bOpened=False
@@ -368,8 +368,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=369
-		nTop=213
+		nLeft=551
+		nTop=291
 		nWidth=470
 		nHeight=342
 	}
@@ -377,8 +377,8 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=262
-		nTop=144
+		nLeft=263
+		nTop=145
 		nWidth=827
 		nHeight=530
 	}

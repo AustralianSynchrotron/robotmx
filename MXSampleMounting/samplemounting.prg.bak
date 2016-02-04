@@ -103,9 +103,9 @@ Function GTSetGoniometerPoints(dx As Real, dy As Real, dz As Real, du As Real) A
 	GTSetGoniometerPoints = True
 Fend
 
-Function GTsetInterestPoint(cassette_position As Integer, puckColumnIndex As Integer, rowPuckPortIndex As Integer) As Boolean
+Function GTsetMountPort(cassette_position As Integer, puckColumnIndex As Integer, rowPuckPortIndex As Integer) As Boolean
 	'' This function returns false if the port supplied is Invalid or if there is no sample in that port
-	GTsetInterestPoint = False
+	GTsetMountPort = False
 	
 	g_InterestedCassettePosition = cassette_position
 	g_InterestedPuckColumnIndex = puckColumnIndex
@@ -115,12 +115,12 @@ Function GTsetInterestPoint(cassette_position As Integer, puckColumnIndex As Int
 	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
 		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_OCCUPIED Then
 			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
-			GTsetInterestPoint = True
+			GTsetMountPort = True
 		EndIf
 	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_OCCUPIED Then
 			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
-			GTsetInterestPoint = True
+			GTsetMountPort = True
 		EndIf
 	EndIf
 	
@@ -283,24 +283,6 @@ Function GTCavityGripSampleFromPicker As Boolean
 	''EndIf
 Fend
 
-Function GTMoveToGoniometer As Boolean
-
-	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTMoveToGoniometer:Close_Gripper failed", ERROR_LEVEL)
-		GTMoveToGoniometer = False
-		Exit Function
-	EndIf
-	
-	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
-	Move P2 CP
-	Move P18 CP
-	''Arc P28, P38 CP
-	Move P38 CP
-	Move P22
-
-	GTMoveToGoniometer = True
-Fend
-
 Function GTReleaseSampleToGonio As Boolean
 	''Releases sample from cavity to Goniometer
 	''starts from P22
@@ -333,23 +315,6 @@ Function GTReleaseSampleToGonio As Boolean
 	
 	GTReleaseSampleToGonio = True
 Fend
-
-Function GTMoveGoniometerToDewarSide As Boolean
-
-	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTMoveGoniometerToDewarSide:Close_Gripper failed", ERROR_LEVEL)
-		GTMoveGoniometerToDewarSide = False
-		Exit Function
-	EndIf
-	
-	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
-	Move P38 CP
-	Move P18
-	''Arc P28, P18
-
-	GTMoveGoniometerToDewarSide = True
-Fend
-
 
 Function GTMountInterestedPort As Boolean
 	'' GTMountInterestedPort should start with dumbbell in gripper usually from P4
@@ -409,6 +374,31 @@ Function GTMountInterestedPort As Boolean
 Fend
 
 ''' *** Dismounting Code Starts Here *** '''
+
+Function GTsetDismountPort(cassette_position As Integer, puckColumnIndex As Integer, rowPuckPortIndex As Integer) As Boolean
+	'' This function returns false if the port supplied is Invalid or if there is no sample in that port
+	GTsetDismountPort = False
+	
+	g_InterestedCassettePosition = cassette_position
+	g_InterestedPuckColumnIndex = puckColumnIndex
+	g_InterestedRowPuckPortIndex = rowPuckPortIndex
+	g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
+	
+	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_VACANT Then
+			g_InterestedSampleStatus = SAMPLE_IN_GONIO
+			GTsetDismountPort = True
+		EndIf
+	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_VACANT Then
+			g_InterestedSampleStatus = SAMPLE_IN_GONIO
+			GTsetDismountPort = True
+		EndIf
+	EndIf
+	
+	GTsendSampleStateJSON
+Fend
+
 Function GTCavityGripSampleFromGonio As Boolean
 	''GripSample in Cavity From Goniometer
 	''Starts from P22
@@ -431,10 +421,12 @@ Function GTCavityGripSampleFromGonio As Boolean
 		Exit Function
 	EndIf
 	
-	TwistRelease
+	TwistRelease ''check whether this is required
 	
 	g_InterestedSampleStatus = SAMPLE_IN_CAVITY
 	GTsendSampleStateJSON
+	
+	Move P24
 	
 	Move P22
 	
@@ -507,8 +499,7 @@ Function GTDismountToInterestedPort As Boolean
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
-	
-	
+		
 	'' Probe speed is the slowest speed so use it around GONIO
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
@@ -542,8 +533,8 @@ Function GTDismountToInterestedPort As Boolean
 	GTMoveBackToCassetteStandbyPoint
 	GTMoveCassetteStandbyToCradle
 	
-	'' Put dumbbell in Cradle
-	If GTReturnMagnet Then
+	'' Put dumbbell in Cradle and go Home (P0)
+	If GTReturnMagnetAndGoHome Then
 		g_dumbbellStatus = DUMBBELL_IN_CRADLE
 	Else
 		g_RunResult$ = "GTReturnMagnet failed"

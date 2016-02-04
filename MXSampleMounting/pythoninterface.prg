@@ -14,7 +14,7 @@ Function debugProbeAllCassettes
 	
 	Integer rowIndex, ColumnIndex
 	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		For columnIndex = 0 To NUM_COLUMNS - 1
+		For ColumnIndex = 0 To NUM_COLUMNS - 1
 			For rowIndex = 0 To NUM_ROWS - 1
 				g_PortsRequestString$(cassetteIndex) = g_PortsRequestString$(cassetteIndex) + "1"
 			Next
@@ -102,6 +102,8 @@ Function ProbeCassettes
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
+	
+	GTStartRobot
 	
 	If Not GTJumpHomeToCoolingPointAndWait Then
 		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
@@ -237,6 +239,8 @@ Function GTMountSamplePort
 		Exit Function
 	EndIf
 	
+	GTStartRobot
+	
 	If Not GTJumpHomeToCoolingPointAndWait Then
 		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
         UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
@@ -319,8 +323,8 @@ Function GTMountSamplePort
 		EndIf
 	EndIf
 	
-	If Not GTsetInterestPoint(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		g_RunResult$ = "GTMountSamplePort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
+	If Not GTsetMountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
+		g_RunResult$ = "GTMountSamplePort->GTsetMountPort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
@@ -334,7 +338,6 @@ Function GTMountSamplePort
 	g_RunResult$ = "success GTMountSamplePort"
     Print "GTMountSamplePort finished at ", Date$, " ", Time$
 Fend
-
 
 Function GTDismountSample
 	Cls
@@ -353,11 +356,18 @@ Function GTDismountSample
 		Exit Function
     EndIf
 	
-	If Not GTJumpHomeToGonioDewarSide Then
-		g_RunResult$ = "GTJumpHomeToGonioDewarSide failed"
-        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
-	EndIf
+	GTStartRobot
+	''If Not GTJumpHomeToCoolingPointAndWait Then
+	''	g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
+    ''   UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	''	Exit Function
+	''EndIf
+	
+	''If Not GTJumpHomeToGonioDewarSide Then
+	''	g_RunResult$ = "GTJumpHomeToGonioDewarSide failed"
+    ''  UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	''	Exit Function
+	''EndIf
 	
 	String RequestTokens$(0)
 	Integer RequestArgC
@@ -427,8 +437,8 @@ Function GTDismountSample
 		EndIf
 	EndIf
 	
-	If Not GTsetInterestPoint(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		g_RunResult$ = "GTDismountSample: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
+	If Not GTsetDismountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
+		g_RunResult$ = "GTDismountSample->GTsetDismountPort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf

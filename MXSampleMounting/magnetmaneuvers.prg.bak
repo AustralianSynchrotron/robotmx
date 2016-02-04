@@ -7,23 +7,31 @@
 
 #define CLOSE_DISTANCE 10
 
+Function GTStartRobot
+	'' This is the only function in GT domain which starts the motors and sets the power
+	Motor On
+   	Power Low ''For debugging use low power mode
+   	
+	Tool 0
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+Fend
+
 Function GTJumpHomeToCoolingPointAndWait As Boolean
 	String msg$
 	
 	GTJumpHomeToCoolingPointAndWait = False
 
+	If (CX(RealPos) > 0) And (CX(P1) * CY(RealPos) < CX(RealPos) * CY(P1)) Then
+		''The above condition checks whether the robot is in the region before P1 containing P0 
+		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
+		'' CX(RealPos) > 0 checks whether the robot is in first quadrant (near home and not near goni)
+		Jump P1
+	EndIf
+	
 	If Not Open_Lid Then
 		UpdateClient(TASK_MSG, "GTJumpHomeToCoolingPointAndWait:Open_Lid failed", ERROR_LEVEL)
         Exit Function
     EndIf
-   
-   	Motor On
-   	Power High ''For debugging use low power mode
-   	
-	Tool 0
-	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
-
-	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
 	
 	Jump P3
 	
@@ -94,16 +102,24 @@ Function GTPickMagnet As Boolean
 
 	Tool 0
 	
-	Jump P3 '' Cooling Point in front of cradle
+	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
+		Move P3
+	Else
+		Jump P3 '' Cooling Point in front of cradle		
+	EndIf
+
 	If Not Open_Gripper Then
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:Open_Gripper failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
+	
 	Move P6 '' gripper catches the magnet in cradle
+
 	If Not Close_Gripper Then
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:Close_Gripper failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
+
 	Move P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
 
 	GTPickMagnet = True
@@ -130,7 +146,11 @@ Function GTReturnMagnet As Boolean
 	
 	Tool 0
 	
-	Jump P4 '' point directly above cradle
+	If Dist(RealPos, P4) < CLOSE_DISTANCE Then
+		Move P4
+	Else
+		Jump P4 '' this point is directly above cradle
+	EndIf
 
 	Move P6 '' gripper catches the magnet in cradle
 	
@@ -210,26 +230,71 @@ Function GTTwistOffMagnet
 	Move RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates)
 Fend
 
+''' *** Goniometer Mount/Dismount Moves *** '''
 Function GTJumpHomeToGonioDewarSide As Boolean
 	String msg$
-	
-	GTJumpHomeToGonioDewarSide = False
 
+	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
+		
 	If Not Open_Lid Then
 		UpdateClient(TASK_MSG, "GTJumpHomeToGonioDewarSide:Open_Lid failed", ERROR_LEVEL)
+		GTJumpHomeToGonioDewarSide = False
         Exit Function
     EndIf
    
-   	Motor On
-   	Power High ''For debugging use low power mode
-   	
-	Tool 0
-	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
-
-	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
-	
 	Jump P18
 	
 	GTJumpHomeToGonioDewarSide = True
+Fend
+
+Function GTMoveToGoniometer As Boolean
+	GTMoveToGoniometer = False
+
+	If Not Close_Gripper Then
+		UpdateClient(TASK_MSG, "GTMoveToGoniometer:Close_Gripper failed", ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	Tool 0
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+	
+	If (CX(RealPos) > 0) And (CX(P1) * CY(RealPos) < CX(RealPos) * CY(P1)) Then
+		''The above condition checks whether the robot is in the region before P1 containing P0 
+		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
+		'' CX(RealPos) > 0 checks whether the robot is in first quadrant (near home and not near goni)
+		Jump P1
+	EndIf
+	
+	If Dist(RealPos, P4) < CLOSE_DISTANCE Then
+		'' This function is called when Robot is at P4, during MountSample
+		Move P2 CP
+		Move P18 CP
+	Else
+        Jump P18
+	EndIf
+
+	''Arc P28, P38 CP
+	Move P38 CP
+	Move P22
+	'' Only if P22 is reached return True
+
+	GTMoveToGoniometer = True
+Fend
+
+
+Function GTMoveGoniometerToDewarSide As Boolean
+
+	If Not Close_Gripper Then
+		UpdateClient(TASK_MSG, "GTMoveGoniometerToDewarSide:Close_Gripper failed", ERROR_LEVEL)
+		GTMoveGoniometerToDewarSide = False
+		Exit Function
+	EndIf
+	
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+	Move P38 CP
+	Move P18
+	''Arc P28, P18
+
+	GTMoveGoniometerToDewarSide = True
 Fend
 
