@@ -48,11 +48,9 @@ Function GTsetRobotSpeedMode(speed_mode As Byte)
 			SetProbeSpeed
 			
 		Case INSIDE_LN2_SPEED
-			''SetProbeSpeed ''For debugging use slow speed
 			SetInsideLN2Speed
 			
 		Case OUTSIDE_LN2_SPEED
-			''SetProbeSpeed ''For debugging use slow speed
 			SetOutsideLN2Speed
 	Send
 Fend

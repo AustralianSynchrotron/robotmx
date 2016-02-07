@@ -470,14 +470,14 @@ Function GTReleaseSampleToPlacer As Boolean
 	GTReleaseSampleToPlacer = True
 Fend
 
-Function GTPutSampleIntoInterestPort
+Function GTPutSampleIntoInterestPort As Boolean
 	Integer portStandbyPoint
 	portStandbyPoint = 52
 
 	If (g_CassetteType(g_InterestedCassettePosition) = NORMAL_CASSETTE) Or (g_CassetteType(g_InterestedCassettePosition) = CALIBRATION_CASSETTE) Then
-		GTPutSampleIntoCASPort(g_InterestedCassettePosition, g_InterestedRowPuckPortIndex, g_InterestedPuckColumnIndex, portStandbyPoint)
+		GTPutSampleIntoInterestPort = GTPutSampleIntoCASPort(g_InterestedCassettePosition, g_InterestedRowPuckPortIndex, g_InterestedPuckColumnIndex, portStandbyPoint)
 	ElseIf g_CassetteType(g_InterestedCassettePosition) = SUPERPUCK_CASSETTE Then
-		GTPutSampleIntoSPPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex, portStandbyPoint)
+		GTPutSampleIntoInterestPort = GTPutSampleIntoSPPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex, portStandbyPoint)
 	EndIf
 Fend
 
@@ -522,8 +522,12 @@ Function GTDismountToInterestedPort As Boolean
 	Tool PLACER_TOOL
 	'' GTMoveToInterestPortStandbyPoint sets the standby points and intermediate points
 	GTMoveToInterestPortStandbyPoint
-	
-	GTPutSampleIntoInterestPort
+		
+	If Not GTPutSampleIntoInterestPort Then
+		g_RunResult$ = "GTDismountToInterestedPort->GTPutSampleIntoInterestPort failed! Check log for further details."
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
 		
 	GTMoveBackToCassetteStandbyPoint
 	GTMoveCassetteStandbyToCradle

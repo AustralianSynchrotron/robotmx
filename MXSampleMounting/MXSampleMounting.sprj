@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/02/02 05:42:01:662,DS:0000008457,CS:06776,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/02/04 08:40:35:203,DS:0000008545,CS:07232,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="C:\\EpsonRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="2/2/2016 4:42:00 PM"
+	sLastModified="2/4/2016 7:37:16 PM"
 	bBuildComplete=True
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -29,7 +29,7 @@ UserErrorsFile {
 	nChecksum=0
 }
 nRobotCount=1
-nProgramFileCount=21
+nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
 	bCompiled=True
@@ -132,6 +132,11 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
+	bCompiled=True
+	bStoreInController=True
+}
+ProgramFile22 {
+	sName="debugTests.prg"
 	bCompiled=True
 	bStoreInController=True
 }

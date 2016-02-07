@@ -212,7 +212,7 @@ Fend
 ''This function is a wrapper for SendMessageWait, and SPELCOM_Event
 ''Do not call from ReceiveSendLoop, it must be separate thread
 Function UpdateClient(receiver As Integer, msg$ As String, level As Integer)
-	Print msg$ '' used for debugging
+	Print msg$
 	''Print message locally if within specified g_PrintLevel
 	If (receiver = TASK_MSG And (g_PrintLevel And level > 0)) Then
 		Print msg$

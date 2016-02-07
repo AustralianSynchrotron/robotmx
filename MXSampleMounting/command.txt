@@ -746,7 +746,201 @@ r a 1
 	   0
 > 
  15
->  g_SP_PortStatus(2,0,0) = -1 
+>  g_SP_PortStatus(2,0,2) = -1
+> Speed
+Low Power Mode
+	  72
+	  72	  72
+> jump p18
+jump p1> 
+> jump p1
+> jump p0
+> power High
+> power
+!!Error: 3216, High/Low was not specified.
+> speed
+	  72
+	  72	  72
+> power()
+!!Error: 3100, Syntax error.
+> print power
+ 1
+> jump  p18
+> jump p1
+> jump p0
+> jump p18
+> jump p1
+> power High
+> jump p0
+> 
+> 
 > 
  1
+> 
+> 
+ 1
+> reset error
+> motor On
+t> ool
+!!Error: 3100, Syntax error.
+> tool
+	   0
+> Print g_RunArgs$
+0 0 0 0 0
+> 
+r a 3
+> jump p1
+> jump p0
+> 
+0 0 0 0 0
+> g_RunARgs$ = "r a 1"
+> 
+> 
+> Print Power
+ 0
+> Print High
+ 1
+> Print Low
+ 0
+> Jump p1
+> Print Here
+ X: -351.508 Y: -359.925 Z: -142.457 U:  261.704 V:    0.000 W:    0.000 /R /0
+> Print P21
+ X: -327.789 Y: -377.050 Z: -142.423 U:  266.015 V:    0.000 W:    0.000 /R /0
+> 
+> Go Here :U(270)
+> Print Here
+ X: -329.042 Y: -376.560 Z: -142.014 U:  271.797 V:    0.000 W:    0.000 /R /0
+> Print P21
+ X: -329.153 Y: -377.666 Z: -142.437 U:  271.815 V:    0.000 W:    0.000 /R /0
+> Print P21
+ X: -329.102 Y: -377.666 Z: -142.466 U:  271.711 V:    0.000 W:    0.000 /R /0
+> Print P21
+ X: -329.120 Y: -377.686 Z: -142.451 U:  271.732 V:    0.000 W:    0.000 /R /0
+> savepoints "robot1.pts"
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> Jump P18
+> 
+> Jump P1
+> Jump P0
+> print power
+ 1
+> jump p0
+> g_runargs$ = "r d"
+> 
+right_cassette A 11
+> jump p1
+> jump p3
+> tool
+	   0
+> move p6
+> jump p3
+> Print Here
+ X:  251.707 Y:  236.774 Z:   -4.129 U:  156.313 V:    0.000 W:    0.000 /R /0
+> P450 = Here
+> savepoints "robot1.pts"
+> Tool
+	   2
+> Tool 0
+> Print Here
+ X:  274.561 Y:  244.089 Z:   -4.406 U:  -22.867 V:    0.000 W:    0.000 /R /0
+> move home
+!!Error: 3205, Point is not specified.
+> move p0
+> move p0
+> tool 2
+> move XY(251.707, 236.774, 0, Uangle)
+!!Error: 3100, Syntax error.
+> move p450
+> print here
+ X:  251.707 Y:  236.774 Z:   -4.129 U:  156.313 V:    0.000 W:    0.000 /R /0
+> Print sin(degtorad(156.313))
+ 0.40174000905935
+> move here -Y(4.017)
+> 
+ -0.91575376882707
+> move Here -X(9)
+> move Here +X(9)
+> move P0
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
+!!Error: 3100, Syntax error.
+> 
+!!Error: 3100, Syntax error.
+> 
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p0
+> Print g_BottomZ(2)
+ -307.51
+> 
+ -307.478
+> 
+ -307.479
+> 
+!!Error: 3100, Syntax error.
+> Print Here
+ X:  292.011 Y:  232.864 Z: -182.366 U:  -25.727 V:    0.000 W:    0.000 /R /0
+> motor On
+> move p0
+> move p0
+> move p0
+> 
+> jump p1
+> tool 0
+> 
+> jump p6
+> 
+> move p3
+> 
+> jump p1
+
+> > jump p0
+!!Error: 3100, Syntax error.
+> jump p0
+> 
+!!Error: 3100, Syntax error.
+> 
+> g_dumbbellStatus = 0
+> 
+> 
+!!Error: 3207, Formula is missing.
+> Print g_point
+ 0
+> 
+ 0
+> 
+ 50
+> Print CX(P(g_point))
+ 521.253
+> 
+ 17.7599
+> jump p1
+> 
+> jump p0
+> g_dumbbellStatus = 0
+> 
+> 
+> 
+> jump p6
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 1
+> motor On
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 1
+> reset error
+> motor On
+> move p0
+> jump p1
+> tool 0
+> jump p6
+> move p3
+> jump p1
+j> ump 
+!!Error: 3100, Syntax error.
+> jump p0
+> tool
+	   0
 > 

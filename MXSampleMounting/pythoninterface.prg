@@ -6,86 +6,6 @@
 
 Global String g_PortsRequestString$(NUM_CASSETTES)
 
-Function debugProbeAllCassettes
-	Integer cassetteIndex
-	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		g_PortsRequestString$(cassetteIndex) = ""
-	Next
-	
-	Integer rowIndex, ColumnIndex
-	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		For columnIndex = 0 To NUM_COLUMNS - 1
-			For rowIndex = 0 To NUM_ROWS - 1
-				g_PortsRequestString$(cassetteIndex) = g_PortsRequestString$(cassetteIndex) + "1"
-			Next
-		Next
-	Next
-
-	ProbeCassettes
-Fend
-
-Function debugProbeCassette(cassette_position As Integer)
-	Integer cassetteIndex
-	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		g_PortsRequestString$(cassetteIndex) = ""
-	Next
-	
-	Integer rowIndex, ColumnIndex
-	For ColumnIndex = 0 To NUM_COLUMNS - 1
-		For rowIndex = 0 To NUM_ROWS - 1
-			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
-		Next
-	Next
-
-	ProbeCassettes
-Fend
-
-Function debugProbeCalib(cassette_position As Integer)
-	Integer cassetteIndex
-	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		g_PortsRequestString$(cassetteIndex) = ""
-	Next
-	
-	Integer rowIndex, ColumnIndex
-	For columnIndex = 0 To NUM_COLUMNS - 1
-		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
-		For rowIndex = 1 To NUM_ROWS - 2
-			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
-		Next
-		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
-	Next
-
-	ProbeCassettes
-Fend
-
-Function debugProbePuck(cassette_position As Integer, puckIndexToProbe As Integer)
-
-	Integer cassetteIndex
-	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		g_PortsRequestString$(cassetteIndex) = ""
-	Next
-		
-	Integer puckIndex, puckPortIndex
-	For puckIndex = PUCK_A To puckIndexToProbe - 1
-		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
-		Next
-	Next
-
-	puckIndex = puckIndexToProbe
-	For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-		g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
-	Next
-
-	For puckIndex = puckIndexToProbe + 1 To PUCK_D
-		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "0"
-		Next
-	Next
-	
-	ProbeCassettes
-Fend
-
 Function ProbeCassettes
 	Cls
     Print "GTProbeCassettes entered at ", Date$, " ", Time$
@@ -222,8 +142,8 @@ Function JSONDataRequest
     EndIf
 Fend
 
-Function GTMountSamplePort
-    Print "GTMountSamplePort entered at ", Date$, " ", Time$
+Function MountSamplePort
+    Print "MountSamplePort entered at ", Date$, " ", Time$
     
     ''Ensure moves are not restricted to XY plane for probe
     g_OnlyAlongAxis = False
@@ -268,7 +188,7 @@ Function GTMountSamplePort
 				cassette_position = RIGHT_CASSETTE
 			Default
 				cassette_position = UNKNOWN_CASSETTE
-				g_RunResult$ = "GTMountSamplePort: Invalid Cassette Position supplied in g_RunArgs$"
+				g_RunResult$ = "MountSamplePort: Invalid Cassette Position supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 		Send
@@ -278,38 +198,38 @@ Function GTMountSamplePort
 		
 		If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
 			If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
-				g_RunResult$ = "GTMountSamplePort: Invalid Column Name supplied in g_RunArgs$"
+				g_RunResult$ = "MountSamplePort: Invalid Column Name supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 			
 			rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
 			If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_ROWS - 1 Then
-				g_RunResult$ = "GTMountSamplePort: Invalid Row Position supplied in g_RunArgs$"
+				g_RunResult$ = "MountSamplePort: Invalid Row Position supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 		ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 			If Not GTParsePuckIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
-				g_RunResult$ = "GTMountSamplePort: Invalid Puck Name supplied in g_RunArgs$"
+				g_RunResult$ = "MountSamplePort: Invalid Puck Name supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 			rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
 			If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_PUCK_PORTS - 1 Then
-				g_RunResult$ = "GTMountSamplePort: Invalid Puck Port supplied in g_RunArgs$"
+				g_RunResult$ = "MountSamplePort: Invalid Puck Port supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 		Else
-			g_RunResult$ = "GTMountSamplePort: Invalid CassetteType Detected! Please probe this cassette again"
+			g_RunResult$ = "MountSamplePort: Invalid CassetteType Detected! Please probe this cassette again"
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
 	
 	If Not GTsetMountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		g_RunResult$ = "GTMountSamplePort->GTsetMountPort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
+		g_RunResult$ = "MountSamplePort->GTsetMountPort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
@@ -331,17 +251,17 @@ Function GTMountSamplePort
 	EndIf
 	
 	If Not GTMountInterestedPort Then
-		g_RunResult$ = "Error in GTMountSamplePort->GTMountInterestedPort: Check log for further details"
+		g_RunResult$ = "Error in MountSamplePort->GTMountInterestedPort: Check log for further details"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
-	g_RunResult$ = "success GTMountSamplePort"
-    Print "GTMountSamplePort finished at ", Date$, " ", Time$
+	g_RunResult$ = "success MountSamplePort"
+    Print "MountSamplePort finished at ", Date$, " ", Time$
 Fend
 
-Function GTDismountSample
-    Print "GTDismountSample entered at ", Date$, " ", Time$
+Function DismountSample
+    Print "DismountSample entered at ", Date$, " ", Time$
     
     ''Ensure moves are not restricted to XY plane for probe
     g_OnlyAlongAxis = False
@@ -384,7 +304,7 @@ Function GTDismountSample
 				cassette_position = RIGHT_CASSETTE
 			Default
 				cassette_position = UNKNOWN_CASSETTE
-				g_RunResult$ = "GTDismountSample: Invalid Cassette Position supplied in g_RunArgs$"
+				g_RunResult$ = "DismountSample: Invalid Cassette Position supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 		Send
@@ -394,38 +314,38 @@ Function GTDismountSample
 		
 		If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
 			If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
-				g_RunResult$ = "GTDismountSample: Invalid Column Name supplied in g_RunArgs$"
+				g_RunResult$ = "DismountSample: Invalid Column Name supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 			
 			rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
 			If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_ROWS - 1 Then
-				g_RunResult$ = "GTDismountSample: Invalid Row Position supplied in g_RunArgs$"
+				g_RunResult$ = "DismountSample: Invalid Row Position supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 		ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 			If Not GTParsePuckIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
-				g_RunResult$ = "GTDismountSample: Invalid Puck Name supplied in g_RunArgs$"
+				g_RunResult$ = "DismountSample: Invalid Puck Name supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 			rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
 			If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_PUCK_PORTS - 1 Then
-				g_RunResult$ = "GTDismountSample: Invalid Puck Port supplied in g_RunArgs$"
+				g_RunResult$ = "DismountSample: Invalid Puck Port supplied in g_RunArgs$"
 				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 				Exit Function
 			EndIf
 		Else
-			g_RunResult$ = "GTDismountSample: Invalid CassetteType Detected! Please probe this cassette again"
+			g_RunResult$ = "DismountSample: Invalid CassetteType Detected! Please probe this cassette again"
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
 	
 	If Not GTsetDismountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		g_RunResult$ = "GTDismountSample->GTsetDismountPort: Sample already Present in Port or Invalid Port Position supplied in g_RunArgs$"
+		g_RunResult$ = "DismountSample->GTsetDismountPort: Sample already Present in Port or Invalid Port Position supplied in g_RunArgs$"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
@@ -444,140 +364,21 @@ Function GTDismountSample
 	''	Exit Function
 	''EndIf
 	
-	'' if magnet is in gripper, put it in Cradle
-	If g_dumbbellStatus = DUMBBELL_IN_GRIPPER Then
-		If Not GTReturnMagnet Then
-			g_RunResult$ = "GTDismountSample->GTReturnMagnet failed"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-			Exit Function
-		EndIf
-	ElseIf g_dumbbellStatus <> DUMBBELL_IN_CRADLE Then
-		g_dumbbellStatus = DUMBBELL_MISSING
-		g_RunResult$ = "Error in GTDismountSample: Dumbbell not in cradle! It is missing!!!"
+	If Not GTCheckMagnetForDismount Then
+		g_RunResult$ = "Error in DismountSample->GTCheckMagnetForDismount: Check log for further details"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 
 
 	If Not GTDismountToInterestedPort Then
-		g_RunResult$ = "Error in GTDismountSample->GTDismountToInterestedPort: Check log for further details"
+		g_RunResult$ = "Error in DismountSample->GTDismountToInterestedPort: Check log for further details"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
-	g_RunResult$ = "success GTDismountSample"
-    Print "GTMountSamplePort finished at ", Date$, " ", Time$
+	g_RunResult$ = "success DismountSample"
+    Print "DismountSample finished at ", Date$, " ", Time$
 Fend
 
-
-Function debugJSONNormal(cassette_position As Integer)
-	Integer cassetteIndex
-	Integer rowIndex, ColumnIndex
-	
-	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		g_CassetteType(cassetteIndex) = UNKNOWN_CASSETTE
-		For ColumnIndex = 0 To NUM_COLUMNS - 1
-			For rowIndex = 0 To NUM_ROWS - 1
-				g_CASSampleDistanceError(cassetteIndex, rowIndex, ColumnIndex) = -1.234
-                g_CAS_PortStatus(cassetteIndex, rowIndex, ColumnIndex) = PORT_VACANT
-			Next
-		Next
-	Next
-	
-	g_CassetteType(cassette_position) = NORMAL_CASSETTE
-	For ColumnIndex = 0 To NUM_COLUMNS - 1
-		For rowIndex = 0 To NUM_ROWS - 1
-			g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = -5.678
-			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
-		Next
-	Next
-
-	JSONDataRequest
-Fend
-
-Function debugJSONCalib(cassette_position As Integer)
-	Integer cassetteIndex
-	Integer rowIndex, ColumnIndex
-	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		g_CassetteType(cassetteIndex) = UNKNOWN_CASSETTE
-		For ColumnIndex = 0 To NUM_COLUMNS - 1
-			For rowIndex = 1 To NUM_ROWS - 2
-				g_CASSampleDistanceError(cassetteIndex, rowIndex, ColumnIndex) = -1.234
-				g_CAS_PortStatus(cassetteIndex, rowIndex, ColumnIndex) = PORT_VACANT
-			Next
-		Next
-	Next
-	
-	g_CassetteType(cassette_position) = CALIBRATION_CASSETTE
-	For ColumnIndex = 0 To NUM_COLUMNS - 1
-		g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = -5.678
-		rowIndex = 0
-		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
-		For rowIndex = 1 To NUM_ROWS - 2
-			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_UNKNOWN
-		Next
-		g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = -5.678
-		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
-	Next
-
-	JSONDataRequest
-Fend
-
-Function debugJSONPuck(cassette_position As Integer, puckIndexToProbe As Integer)
-	Integer cassetteIndex
-	Integer puckIndex, puckPortIndex
-	
-	For cassetteIndex = 0 To NUM_CASSETTES - 1
-		g_CassetteType(cassetteIndex) = UNKNOWN_CASSETTE
-		For puckIndex = 0 To NUM_PUCKS - 1
-			g_PuckStatus(cassetteIndex, puckIndex) = PUCK_ABSENT
-			For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-				g_SPSampleDistanceError(cassetteIndex, puckIndex, puckPortIndex) = -1.234
-				g_SP_PortStatus(cassetteIndex, puckIndex, puckPortIndex) = PORT_VACANT
-			Next
-		Next
-	Next
-	
-	g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE
-	For puckIndex = PUCK_A To puckIndexToProbe - 1
-		g_PuckStatus(cassette_position, puckIndex) = PUCK_ABSENT
-		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-			g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = -1.234
-			g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_VACANT
-		Next
-	Next
-
-	puckIndex = puckIndexToProbe
-	g_PuckStatus(cassette_position, puckIndex) = PUCK_PRESENT
-	For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-		g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = -5.678
-		g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_OCCUPIED
-	Next
-
-	For puckIndex = puckIndexToProbe + 1 To PUCK_D
-		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
-			g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = -9.012
-			g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_VACANT
-		Next
-	Next
-	
-	JSONDataRequest
-Fend
-
-
-Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer)
-	Cls
-	''debugProbePuck(cassette_position, puckIndex)
-	
-	Integer puckPortIndex
-	For puckPortIndex = 1 To NUM_PUCK_PORTS
-		g_RunArgs$ = GTCassetteName$(cassette_position) + " "
-		g_RunArgs$ = g_RunArgs$ + GTpuckName$(puckIndex) + " "
-		g_RunArgs$ = g_RunArgs$ + Str$(puckPortIndex)
-		
-		GTMountSamplePort
-		
-		GTDismountSample
-	Next
-Fend
 
