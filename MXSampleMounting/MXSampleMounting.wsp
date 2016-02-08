@@ -1,16 +1,16 @@
-ENVT0100,LM:2016/02/04 08:40:12:796,DS:0000005572,CS:15712,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2016/02/08 23:03:28:781,DS:0000005610,CS:11031,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="superpuckutilities.prg"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile2 {
@@ -26,13 +26,13 @@ ProgramFile2 {
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile4 {
@@ -103,7 +103,7 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="cassettetype.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -125,24 +125,24 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bOpened=False
-	nWinState=0
+	bOpened=True
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile13 {
 	sName="setuppoints.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile14 {
@@ -180,24 +180,24 @@ ProgramFile16 {
 }
 ProgramFile17 {
 	sName="initialization.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile19 {
@@ -347,7 +347,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=395
 		nTop=-15
@@ -357,7 +357,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0

@@ -97,7 +97,7 @@ Function GTInitMagnetPoints() As Boolean
 		Exit Function
 	EndIf
 	
-	'' Set Angled Placer Tool for probing ports with uangle rotated by 30
+	'' Set Angled Placer Tool for probing ports
 	P51 = TLSet(PLACER_TOOL) -Y(MAGNET_HEAD_RADIUS) +U(30)
 	TLSet ANGLED_PLACER_TOOL, P51
 	

@@ -1,14 +1,14 @@
-ENVT0100,LM:2016/02/04 08:40:35:203,DS:0000008545,CS:07232,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/02/08 23:03:15:906,DS:0000008601,CS:03677,MA:00-0C-29-B8-F2-20,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
-	sPath="C:\\EpsonRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
+	sPath="C:\\EpsonRC60\\Projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="2/4/2016 7:37:16 PM"
-	bBuildComplete=True
+	sLastModified="2/9/2016 10:03:03 AM"
+	bBuildComplete=False
 	bFirstBuildComplete=True
-	bRebuildRequired=False
+	bRebuildRequired=True
 	bClearControllerProject=False
 	bClearGlobalPreserves=False
 }
@@ -87,12 +87,12 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile13 {
 	sName="setuppoints.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile14 {
@@ -499,4 +499,7 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=0
+nGuiBuilderFileCount=1
+GuiBuilderFile1 {
+	sName="MXSampleMounting.gui"
+}

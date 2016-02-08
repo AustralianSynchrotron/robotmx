@@ -10,7 +10,14 @@
 Global Preserve Integer g_dumbbellStatus
 
 Function GTStartRobot
-	'' This is the only function in GT domain which starts the motors and sets the power
+	'' This is the only function in GT domain which starts the motors and sets the power   	
+	
+   	If Not CheckEnvironment Then
+   		Motor Off
+		UpdateClient(TASK_MSG, "GTStartRobot:CheckEnvironment failed. So the robot motors are stopped, it can't move.", ERROR_LEVEL)
+        Exit Function
+   	EndIf
+   	
 	If Motor = Off Then
 		Motor On
 
@@ -115,7 +122,7 @@ Function GTPickMagnet As Boolean
 	Tool 0
 	
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
-		Move P3
+		Go P3
 	Else
 		Jump P3 '' Cooling Point in front of cradle		
 	EndIf
@@ -224,7 +231,7 @@ Function GTReturnMagnet As Boolean
 	Tool 0
 	
 	If Dist(RealPos, P4) < CLOSE_DISTANCE Then
-		Move P4
+		Go P4
 	Else
 		Jump P4 '' this point is directly above cradle
 	EndIf
@@ -376,4 +383,5 @@ Function GTMoveGoniometerToDewarSide As Boolean
 
 	GTMoveGoniometerToDewarSide = True
 Fend
+
 

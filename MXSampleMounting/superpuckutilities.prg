@@ -474,7 +474,7 @@ Fend
 
 Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpToStandbyPoint As Boolean)
 	String msg$
-	Tool PLACER_TOOL
+	Tool ANGLED_PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 	
 	Integer standbyPoint
@@ -529,16 +529,15 @@ Fend
 
 Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, jumpToStandbyPoint As Boolean)
 	String msg$
-	Tool PLACER_TOOL
+	Tool ANGLED_PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 
-	Integer standbyPoint
+	Integer standbyPoint, destinationPoint
 	standbyPoint = 52
+	destinationPoint = 53
 	
 	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, PROBE_STANDBY_DISTANCE, standbyPoint)
-
-	Real maxDistanceToScan
-	maxDistanceToScan = PROBE_STANDBY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK
+	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, -PROBE_DISTANCE_FROM_PUCK_SURFACE, destinationPoint)
 	
 	If jumpToStandbyPoint Then
 		Jump P(standbyPoint)
@@ -550,7 +549,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	GTsetRobotSpeedMode(PROBE_SPEED)
 
 	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
-	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
+	If GTForceTouch(DIRECTION_CAVITY_TAIL, destinationPoint, False) Then
 		
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE

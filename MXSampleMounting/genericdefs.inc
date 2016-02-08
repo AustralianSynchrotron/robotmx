@@ -18,6 +18,7 @@
 #define UNIVERSAL_TOOL 0
 #define PICKER_TOOL 1
 #define PLACER_TOOL 2
+#define ANGLED_PLACER_TOOL 4
 
 '' PORT Status
 #define PORT_OCCUPIED -1

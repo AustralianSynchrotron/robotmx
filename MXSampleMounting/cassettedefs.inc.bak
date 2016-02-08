@@ -8,5 +8,5 @@
 #define SAMPLE_DIST_PIN_DEEP_IN_CAS 3.2
 '' Distance error tolerance when pin is not sitting deep in cassette port
 #define TOLERANCE_FROM_PIN_DEEP_IN_CAS 1.0
-'' Probe distance from puck surface to sample: PROBE_DISTANCE_FROM_CAS_SURFACE = 3.2 + 1.0 = 4.2
+'' PROBE_DISTANCE_FROM_CAS_SURFACE = 3.2 + 1.0 = 4.2
 #define PROBE_DISTANCE_FROM_CAS_SURFACE (SAMPLE_DIST_PIN_DEEP_IN_CAS + TOLERANCE_FROM_PIN_DEEP_IN_CAS)
