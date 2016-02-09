@@ -373,8 +373,7 @@ Function GTMoveToGoniometer As Boolean
         Jump P18
 	EndIf
 
-	''Arc P28, P38 CP
-	Move P38 CP
+	Arc P28, P38 CP
 	Move P22
 	'' Only if P22 is reached return True
 
@@ -392,8 +391,8 @@ Function GTMoveGoniometerToDewarSide As Boolean
 	
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	Move P38 CP
-	Move P18
-	''Arc P28, P18
+	Arc P28, P18
+	''Move P18
 
 	GTMoveGoniometerToDewarSide = True
 Fend

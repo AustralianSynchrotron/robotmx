@@ -41,63 +41,32 @@ Function GTSetGoniometerPoints(dx As Real, dy As Real, dz As Real, du As Real) A
 		GTSetGoniometerPoints = False
 		Exit Function
 	EndIf
-	
+		
 	'' Setup P28 and P38 so that we can move smoothly from P18 to P22 using ARC
 	'' i.e. ARC P18-P28-P38, then move to P22
 	Real ArcToGonioDX, ArcToGonioDY
-	ArcToGonioDX = Abs(CX(P22) - CX(P18))
-	ArcToGonioDY = Abs(CY(P22) - CY(P18))
+	ArcToGonioDX = CX(P22) - CX(P18)
+	ArcToGonioDY = CY(P22) - CY(P18)
 	
-	'' we will move along axes and will move the shorter distance first
-	Real arcMidX, arcMidY, arcMidZ, arcMidU
-	Real arcEndX, arcEndY, arcEndZ, arcEndU
-	Real sin45
-	sin45 = Sin(DegToRad(45))
-	
-	If (ArcToGonioDX > ArcToGonioDY) Then
-		If (CX(P18) > CX(P22)) And (CY(P18) > CY(P22)) Then
-			arcMidX = CX(P18) - (1.0 - sin45) * (CY(P18) - CY(P22))
-			arcEndX = CX(P18) - (CY(P18) - CY(P22))
-		ElseIf (CX(P18) > CX(P22)) And (CY(P18) < CY(P22)) Then
-			arcMidX = CX(P18) + (1.0 - sin45) * (CY(P18) - CY(P22))
-			arcEndX = CX(P18) + (CY(P18) - CY(P22)) ''check
-		ElseIf (CX(P18) < CX(P22)) And (CY(P18) > CY(P22)) Then
-			arcMidX = CX(P18) + (1.0 - sin45) * (CY(P18) - CY(P22))
-			arcEndX = CX(P18) + (CY(P18) - CY(P22))
-		ElseIf (CX(P18) < CX(P22)) And (CY(P18) < CY(P22)) Then
-			arcMidX = CX(P18) - (1.0 - sin45) * (CY(P18) - CY(P22))
-			arcEndX = CX(P18) - (CY(P18) - CY(P22))
+	''have to arc, moving exceeds arm limit.
+	''1-0.707=0.293
+	If Abs(ArcToGonioDX) > Abs(ArcToGonioDY) Then
+		If ArcToGonioDX * ArcToGonioDY > 0 Then
+			P38 = P18 +X(ArcToGonioDY) +Y(ArcToGonioDY)
+			P28 = P18 +X(0.293 * ArcToGonioDY) +Y(0.707 * ArcToGonioDY)
+		Else
+			P38 = P18 -X(ArcToGonioDY) +Y(ArcToGonioDY)
+			P28 = P18 -X(0.293 * ArcToGonioDY) +Y(0.707 * ArcToGonioDY)
 		EndIf
-
-		arcMidY = CY(P18) - sin45 * (CY(P18) - CY(P22))
-		arcEndY = CY(P22)
- 	Else
-		If (CX(P18) > CX(P22)) And (CY(P18) > CY(P22)) Then
-			arcMidY = CY(P18) - (1.0 - sin45) * (CX(P18) - CX(P22))
-			arcEndY = CY(P18) - (CX(P18) - CX(P22))
-		ElseIf (CX(P18) > CX(P22)) And (CY(P18) < CY(P22)) Then
-			arcMidY = CY(P18) + (1.0 - sin45) * (CX(P18) - CX(P22))
-			arcEndY = CY(P18) + (CX(P18) - CX(P22))
-		ElseIf (CX(P18) < CX(P22)) And (CY(P18) > CY(P22)) Then
-			arcMidY = CY(P18) + (1.0 - sin45) * (CX(P18) - CX(P22))
-			arcEndY = CY(P18) + (CX(P18) - CX(P22))
-		ElseIf (CX(P18) < CX(P22)) And (CY(P18) < CY(P22)) Then
-			arcMidY = CY(P18) - (1.0 - sin45) * (CX(P18) - CX(P22))
-			arcEndY = CY(P18) - (CX(P18) - CX(P22))
+	Else
+		If ArcToGonioDX * ArcToGonioDY > 0 Then
+			P38 = P18 +X(ArcToGonioDX) +Y(ArcToGonioDX)
+			P28 = P18 +X(0.707 * ArcToGonioDX) +Y(0.293 * ArcToGonioDX)
+		Else
+			P38 = P18 +X(ArcToGonioDX) -Y(ArcToGonioDX)
+			P28 = P18 +X(0.707 * ArcToGonioDX) -Y(0.293 * ArcToGonioDX)
 		EndIf
-
-		arcMidX = CX(P18) - sin45 * (CX(P18) - CX(P22))
-		arcEndX = CX(P22)
 	EndIf
-	
-	arcMidZ = CZ(P18)
-	arcMidU = (CU(P18) + CU(P22)) / 2.0
-	arcEndZ = CZ(P18)
-	arcEndU = CU(P22)
-
-	'' Assign the values to P28 and P38
-	P28 = XY(arcMidX, arcMidY, arcMidZ, arcMidU)
-	P38 = XY(arcEndX, arcEndY, arcEndZ, arcEndU)
 
 	GTSetGoniometerPoints = True
 Fend
@@ -379,6 +348,8 @@ Function GTMoveGoniometerToPlacer
 	
 	Move P38 CP
 	Arc P28, P18 CP
+	''Move P18 CP
+	
 	Move P27 :Z(0)
 	
 	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
@@ -431,7 +402,7 @@ Function GTDismountToInterestedPort As Boolean
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	
 	If Not GTMoveToGoniometer Then
-		g_RunResult$ = "GTMoveToGoniometer failed"
+		g_RunResult$ = "GTDismountToInterestedPort->GTMoveToGoniometer failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
@@ -441,7 +412,7 @@ Function GTDismountToInterestedPort As Boolean
 	
 	''GripSample in Cavity From Goniometer
 	If Not GTCavityGripSampleFromGonio Then
-		g_RunResult$ = "GTCavityGripSampleFromGonio failed"
+		g_RunResult$ = "GTDismountToInterestedPort->GTCavityGripSampleFromGonio failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
@@ -449,17 +420,17 @@ Function GTDismountToInterestedPort As Boolean
 	GTMoveGoniometerToPlacer
 		
 	If Not GTReleaseSampleToPlacer Then
-		g_RunResult$ = "GTReleaseSampleToPlacer failed"
+		g_RunResult$ = "GTDismountToInterestedPort->GTReleaseSampleToPlacer failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+			
+	If Not GTPickMagnet Then
+		g_RunResult$ = "GTDismountToInterestedPort->GTPickMagnet failed!"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
-	If Not GTPickMagnet Then
-		g_RunResult$ = "GTPickMagnet failed!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
-	EndIf
-		
 	Tool PLACER_TOOL
 	'' GTMoveToInterestPortStandbyPoint sets the standby points and intermediate points
 	GTMoveToInterestPortStandbyPoint
@@ -469,7 +440,7 @@ Function GTDismountToInterestedPort As Boolean
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
-		
+	
 	GTMoveBackToCassetteStandbyPoint
 	GTMoveCassetteStandbyToCradle
 	
@@ -481,5 +452,62 @@ Function GTDismountToInterestedPort As Boolean
 	EndIf
 	
 	GTDismountToInterestedPort = True
+Fend
+
+''*** Manually TroubleShooting Mounting/Dismounting errors ***
+
+''This function puts the sample on placer (in cradle) back into interested port (Used when there are errors in mounting)
+Function PutCradlePlacerSampleIntoPort As Boolean
+	PutCradlePlacerSampleIntoPort = False
+	
+	Tool 0
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+	
+	If Not GTPickMagnet Then
+		g_RunResult$ = "PutCradlePlacerSampleIntoPort->GTPickMagnet failed!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	Tool PLACER_TOOL
+	'' GTMoveToInterestPortStandbyPoint sets the standby points and intermediate points
+	GTMoveToInterestPortStandbyPoint
+		
+	If Not GTPutSampleIntoInterestPort Then
+		g_RunResult$ = "PutCradlePlacerSampleIntoPort->GTPutSampleIntoInterestPort failed! Check log for further details."
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	PutCradlePlacerSampleIntoPort = True
+Fend
+
+Function TransportSamplePickerToPlacer As Boolean
+	TransportSamplePickerToPlacer = False
+	
+	'' Put dumbbell in Cradle
+	If Not GTReturnMagnet Then
+		g_RunResult$ = "TransportSamplePickerToPlacer->GTReturnMagnet failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	''GripSample in Cavity From Picker of dumbbell in cradle
+	If Not GTCavityGripSampleFromPicker Then
+		g_RunResult$ = "TransportSamplePickerToPlacer->GTCavityGripSampleFromPicker failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+
+	''Arc via Cool Point to Placer Standby Point
+	Arc P3, P27 CP
+	
+	If Not GTReleaseSampleToPlacer Then
+		g_RunResult$ = "TransportSamplePickerToPlacer->GTReleaseSampleToPlacer failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	TransportSamplePickerToPlacer = True
 Fend
 

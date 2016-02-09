@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/02/09 08:56:32:890,DS:0000005635,CS:32315,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/02/09 20:56:25:718,DS:0000005638,CS:20523,MA:00-0C-29-B8-F2-20,EI:           
 sActiveChild="magnetmaneuvers.prg"
 bMdiMaximized=True
 nProgramFileCount=22
@@ -205,8 +205,8 @@ ProgramFile19 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=0
+		nLeft=539
+		nTop=89
 		nWidth=452
 		nHeight=260
 	}
