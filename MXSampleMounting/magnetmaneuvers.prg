@@ -85,7 +85,7 @@ Function GTIsMagnetInGripper As Boolean
 	EndIf
 	
 	Real maxDistanceToScan
-	maxDistanceToScan = DISTANCE_P3_TO_P6 + MAGNET_PROBE_DISTANCE_TOLERANCE
+	maxDistanceToScan = DISTANCE_P3_TO_P6 ''+ MAGNET_PROBE_DISTANCE_TOLERANCE
 	
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
@@ -93,7 +93,8 @@ Function GTIsMagnetInGripper As Boolean
 	If ForceTouch(DIRECTION_CAVITY_TO_MAGNET, maxDistanceToScan, False) Then
 		'' Distance error from perfect magnet position
 		Real distErrorFromPerfectMagnetPoint
-		distErrorFromPerfectMagnetPoint = Dist(P(standbyPoint), RealPos) - (DISTANCE_P3_TO_P6 - (MAGNET_AXIS_TO_CRADLE_EDGE + MAGNET_HEAD_RADIUS))
+		''distErrorFromPerfectMagnetPoint = Dist(P(standbyPoint), RealPos) - (DISTANCE_P3_TO_P6 - (MAGNET_AXIS_TO_CRADLE_EDGE + MAGNET_HEAD_RADIUS))
+		distErrorFromPerfectMagnetPoint = Abs(CX(P(standbyPoint)) - CX(RealPos)) - (DISTANCE_P3_TO_P6 - (MAGNET_AXIS_TO_CRADLE_EDGE + MAGNET_HEAD_RADIUS))
 		
 		If distErrorFromPerfectMagnetPoint < -MAGNET_PROBE_DISTANCE_TOLERANCE Then
 			msg$ = "IsMagnetInTong: ForceTouch stopped " + Str$(distErrorFromPerfectMagnetPoint) + "mm before reaching theoretical magnet position."
@@ -335,7 +336,11 @@ Function GTJumpHomeToGonioDewarSide As Boolean
         Exit Function
     EndIf
    
-	Jump P18
+   	If (Dist(RealPos, P18) < CLOSE_DISTANCE) Then ''Required in StressTestSuperPuck
+   		Go P18 ''Required in StressTestSuperPuck
+   	Else
+		Jump P18
+	EndIf
 	
 	GTJumpHomeToGonioDewarSide = True
 Fend
@@ -362,6 +367,8 @@ Function GTMoveToGoniometer As Boolean
 		'' This function is called when Robot is at P4, during MountSample
 		Move P2 CP
 		Move P18 CP
+	ElseIf Dist(RealPos, P18) < CLOSE_DISTANCE Then ''Required in StressTestSuperPuck
+		Go P18 ''Required in StressTestSuperPuck
 	Else
         Jump P18
 	EndIf

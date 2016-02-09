@@ -195,65 +195,6 @@ Function GTMoveCassetteStandbyToCradle
 	LimZ g_Jump_LimZ_LN2
 Fend
 
-Function GTCheckSampleInCradlePicker As Boolean
-	'' Starts from P3
-	
-	GTCheckSampleInCradlePicker = False
-	String msg$
-	If g_InterestedSampleStatus = SAMPLE_IN_PICKER And g_dumbbellStatus = DUMBBELL_IN_CRADLE Then
-	
-		'' use cavity to side touch the dumbbell to determine whether sample is on the dumbbell
-		
-		If Not Close_Gripper Then
-			UpdateClient(TASK_MSG, "GTCheckSampleInCradlePicker:Close_Gripper failed", INFO_LEVEL)
-			Exit Function
-		EndIf
-	
-		Move P93 +U(90)
-		Go P93
-		
-		Real maxDistanceToScan
-		maxDistanceToScan = Dist(P93, P16)
-		
-		If ForceTouch(DIRECTION_MAGNET_TO_CAVITY, maxDistanceToScan, False) Then
-			Real distanceP93toHere
-			distanceP93toHere = Dist(P93, RealPos)
-			
-			'' Distance of cavity edge from P16 
-			Real distanceFromP16
-			distanceFromP16 = maxDistanceToScan - distanceP93toHere ''maxDistanceToScan = Dist(P93, P16)
-			
-			''magnetHeadPositionError in mm from perfect magnet head position if sample is on cradle
-			Real magnetHeadPositionError
-			magnetHeadPositionError = distanceFromP16 - (MAGNET_HEAD_RADIUS + CAVITY_RADIUS)
-			
-			If magnetHeadPositionError < TOLERANCE_FOR_SAMPLE_IN_PICKER Then
-				''This condition means ForceTouch could not find sample in dumbbell
-				'' Whether the picker got the sample from cassette port or not is unknown
-				g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
-				msg$ = "GTCheckSampleInCradlePicker: ForceTouch on sample in cradle moved " + Str$(magnetHeadPositionError) + "mm beyond expected sample surface."
-				UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
-			Else
-				'' Sample still on picker (on cradle)
-				''g_InterestedSampleStatus = SAMPLE_IN_PICKER
-				msg$ = "GTCheckSampleInCradlePicker: ForceTouch detected sample in cradle with distance error =" + Str$(magnetHeadPositionError) + "."
-				UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-				GTCheckSampleInCradlePicker = True
-			EndIf
-		Else
-			''There is no sample (or ForceTouch failure)
-			g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
-			msg$ = "GTCheckSampleInCradlePicker: ForceTouch failed to detect sample in cradle even after travelling maximum scan distance!"
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-		EndIf
-		
-		Move P93
-	Else
-		msg$ = "GTCheckSampleInCradlePicker: g_InterestedSampleStatus is not SAMPLE_IN_PICKER on Cradle! This function is called before sample is brought to cradle."
-		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-	EndIf
-Fend
-
 Function GTCavityGripSampleFromPicker As Boolean
 	''GripSample in Cavity From Picker of dumbbell in cradle
 	''Starts from P3

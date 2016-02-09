@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/02/09 03:14:24:812,DS:0000008547,CS:01876,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/02/09 08:48:56:812,DS:0000008547,CS:13933,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="C:\\EpsonRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="2/9/2016 2:14:23 PM"
+	sLastModified="2/9/2016 7:48:50 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -107,7 +107,7 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile17 {
@@ -137,7 +137,7 @@ ProgramFile21 {
 }
 ProgramFile22 {
 	sName="debugTests.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 nIncludeFileCount=8

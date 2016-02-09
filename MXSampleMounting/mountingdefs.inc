@@ -3,6 +3,7 @@
 
 #define PORT_MOUNT_READY_DISTANCE 26.0
 #define TOLERANCE_FOR_SAMPLE_IN_PICKER 1.0
+#define PICKR_TOLERANCE_IN_SP_PORT_DEPTH 1.2 ''Used in mounting (GetSampleFromInterestPort)
 
 #define SAMPLE_STATUS_UNKNOWN 0
 #define SAMPLE_IN_CASSETTE 1

@@ -193,7 +193,11 @@ Function GTsendSampleStateJSON
 			JSONmsg$ = JSONmsg$ + "'cavity':(),"
 			JSONmsg$ = JSONmsg$ + "'goniometer':(" + SampleLocationString$ + ")"
 		Default
-			Exit Function
+			''Sample is either in cassette or it is lost
+			JSONmsg$ = JSONmsg$ + "'picker':(),"
+			JSONmsg$ = JSONmsg$ + "'placer':(),"
+			JSONmsg$ = JSONmsg$ + "'cavity':(),"
+			JSONmsg$ = JSONmsg$ + "'goniometer':()"
 	Send
 	JSONmsg$ = JSONmsg$ + "}}"
 

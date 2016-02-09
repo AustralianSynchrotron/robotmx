@@ -8,7 +8,7 @@ Global Preserve Integer g_InterestedPuckColumnIndex
 Global Preserve Integer g_InterestedRowPuckPortIndex
 Global Preserve Integer g_InterestedSampleStatus
 
-Function GTGonioReachable() As Boolean
+Function GTGonioReachable As Boolean
 	'' Check if robot can reach goniometer
 	GTGonioReachable = True
 Fend

@@ -3,6 +3,7 @@
 #include "superpuckdefs.inc"
 #include "forcedefs.inc"
 #include "mxrobotdefs.inc"
+#include "networkdefs.inc"
 
 Function debugProbeAllCassettes
 	Integer cassetteIndex
@@ -196,17 +197,26 @@ Function debugJSONPuck(cassette_position As Integer, puckIndexToProbe As Integer
 Fend
 
 ''' *** Mount/Dismount *** '''
-Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer)
+Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer, startPortIndex As Integer)
 	Cls
 	''debugProbePuck(cassette_position, puckIndex)
 	
 	Integer puckPortIndex
-	For puckPortIndex = 1 To NUM_PUCK_PORTS
+	For puckPortIndex = startPortIndex To NUM_PUCK_PORTS
 		g_RunArgs$ = GTCassetteName$(cassette_position) + " "
 		g_RunArgs$ = g_RunArgs$ + GTpuckName$(puckIndex) + " "
 		g_RunArgs$ = g_RunArgs$ + Str$(puckPortIndex)
 		
 		MountSamplePort
+		
+		''if Here is not within 10mm from P18, it tells us that there was an error in mounting
+		If Not (Dist(P18, Here) < 10) Then
+			If Not GTIsMagnetInGripper Then
+				'' This means either sample is on picker or dumbbell lost
+				UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed!", ERROR_LEVEL)
+				Exit Function
+			EndIf
+		EndIf
 		
 		DismountSample
 	Next

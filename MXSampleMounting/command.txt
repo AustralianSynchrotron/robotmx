@@ -958,6 +958,98 @@ j> ump
 > jump p3
 > print g_onlyalongaxis
  0
-> g_RunArgs$="r d"
+> g_RunArgs$="r a 1"
 > 
 > 
+> 
+> power
+!!Error: 3216, High/Low was not specified.
+> speed
+	  48
+	  48	  486
+!!Error: 3100, Syntax error.
+> 
+> 
+	  36
+	  36	  36
+> accel
+	  36	  36
+	  36	  36
+	  36	  36
+> Print Here
+ X:   97.069 Y:  374.556 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> 
+ X:  103.166 Y:  375.039 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> Print P52
+ X:   83.229 Y:  373.460 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> Print P52
+ X:   83.229 Y:  373.460 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> Print Here
+ X:   97.411 Y:  374.583 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> jump p6
+> move p3
+> Print Here
+ X:  103.166 Y:  375.039 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> Print P52
+ X:   83.229 Y:  373.460 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> Print Here
+ X:   96.848 Y:  374.538 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> motor Off
+> 
+> 
+> Print g_SP_portStatus(2,2,2)
+ -1
+> jump p18
+> spee
+!!Error: 3100, Syntax error.
+> speed
+	   5
+	   5	   5
+> 
+Low Power Mode
+	   5
+	   5	   5
+> power High
+> Accel 60, 60
+> Speed 72
+> Speed
+	  72
+	  72	  72
+> 
+> 
+> Print Here
+ X:   97.503 Y:  374.590 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> Print P52
+ X:   83.229 Y:  373.460 Z: -223.020 U:   95.357 V:    0.000 W:    0.000 /R /0
+> 97.503-83.229
+!!Error: 3100, Syntax error.
+> Jump P18
+> Jump P22
+> Jump P18
+> Move P18
+> Move P22
+> speed
+	  72
+	  72	  72
+> jump p18
+> jump p1
+> jump p0
+> move p1
+> speedS
+	   50.000
+	   50.000	   50.000
+> Go P0
+> Move P1
+> Move P0
+> Go P1
+> Print g_RunArgs$
+right_cassette C 10
+> 
+right_cassette C 7
+> 
+right_cassette C 3
+> g_SP_PortStatus(2,2,8) = -1
+> 
+> g_runargs$="r d"
+> g_runargs$ = "r C 9"
+> g

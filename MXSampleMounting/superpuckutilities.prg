@@ -152,8 +152,9 @@ Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer,
 	
 	GTsetRobotSpeedMode(PROBE_SPEED)
 		
-	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
-	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, True) Then
+	''Calibration not required in positioning move because just before probing puck we have calibrated the ForceSensor
+	''ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	If Not ForceTouch(DIRECTION_CAVITY_TAIL, scanDistance, False) Then
 		UpdateClient(TASK_MSG, "GTSPpositioningMove failed: error in ForceTouch!", ERROR_LEVEL)
 		GTSPpositioningMove = False
 		Exit Function
@@ -474,6 +475,8 @@ Fend
 
 Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpToStandbyPoint As Boolean)
 	String msg$
+
+	''Angled Placer tool is used to avoid cavity tail hitting superpuck while probing ports leading to false sample sensing
 	Tool ANGLED_PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 	
@@ -529,6 +532,8 @@ Fend
 
 Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, jumpToStandbyPoint As Boolean)
 	String msg$
+
+	''Angled Placer tool is used to avoid cavity tail hitting superpuck while probing ports leading to false sample sensing
 	Tool ANGLED_PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 
@@ -760,7 +765,7 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 	LimZ g_Jump_LimZ_LN2
 
 	Real maxDistanceToScan
-	maxDistanceToScan = PORT_MOUNT_READY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK
+	maxDistanceToScan = PORT_MOUNT_READY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + PICKR_TOLERANCE_IN_SP_PORT_DEPTH
 		
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
@@ -773,14 +778,14 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distancePuckSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		
-		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
+		If distErrorFromPerfectSamplePos < -PICKR_TOLERANCE_IN_SP_PORT_DEPTH Then
 			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
 			'' Whether the picker got the sample or not is unknown
 			portStatusBeforePickerCheck = PORT_ERROR
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR
 			msg$ = "GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
-		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
+		ElseIf distErrorFromPerfectSamplePos < PICKR_TOLERANCE_IN_SP_PORT_DEPTH Then
 			'' Picker has got the sample
 			portStatusBeforePickerCheck = PORT_OCCUPIED
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED
