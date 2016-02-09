@@ -25,7 +25,7 @@ Function GTStartRobot
 		g_dumbbellStatus = DUMBBELL_STATUS_UNKNOWN
 	EndIf
    	
-   	Power Low ''For debugging use low power mode
+   	Power High ''For debugging use low power mode
    		   	
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
@@ -301,6 +301,13 @@ Function GTTwistOffMagnet
 			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle + 90))
 			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle + 90))
 		Case PLACER_TOOL
+			twistAngleInGlobalCoordinates = -twistOffAngle ''degrees
+			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))
+			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))
+		Case ANGLED_PLACER_TOOL
+			''The angles in this condition have a small mathematical error.
+			''The following is copied from PLACER_TOOL. Although not mathematically perfect, (-90) works.
+			''For mathematical perfection we need to offset CU(Tlset(ANGLED_PLACER_TOOL)) for all angles below
 			twistAngleInGlobalCoordinates = -twistOffAngle ''degrees
 			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))
 			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))

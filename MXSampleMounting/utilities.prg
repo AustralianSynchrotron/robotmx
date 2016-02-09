@@ -2739,8 +2739,9 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
 	''Force too big check
 	Integer FTHThresHoldM
 	
-	msg$ = "+ForceTouch " + Str$(forceName) + ", " + Str$(destinationPoint)
+	msg$ = "+ForceTouch " + Str$(forceName) + ", P" + Str$(destinationPoint)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	Print "DestinationPoint: ", P(destinationPoint)
 	
     GTForceTouch = False
     
@@ -2759,9 +2760,9 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
 
     ''get destination position from the destination point number
     FTHDestP(1) = CX(P(destinationPoint))
-	FTHDestP(2) = CX(P(destinationPoint))
-	FTHDestP(3) = CX(P(destinationPoint))
-	FTHDestP(4) = CX(P(destinationPoint))
+	FTHDestP(2) = CY(P(destinationPoint))
+	FTHDestP(3) = CZ(P(destinationPoint))
+	FTHDestP(4) = CU(P(destinationPoint))
       
     ''try move with trigger first, if failed, we will scan with steps.
     FTHThreshold = GetTouchThreshold(forceName)
@@ -2837,6 +2838,8 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
         If FTHNumSteps > 0 Then
            msg$ = "ForceTouch: Failed using move with trigger.  Trying step scan instead"
            UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		   Print "CurrentPos: ", Here
+		   Print "X: ", FTHDestP(1), "Y: ", FTHDestP(2), "Z: ", FTHDestP(3), "U: ", FTHDestP(4)
            FTHThreshold = GetTouchThreshold(forceName)
            If Not ForceScan(forceName, FTHThreshold, ByRef FTHDestP(), FTHNumSteps, False) Then
          	  UpdateClient(TASK_MSG, "not touched within the range", WARNING_LEVEL)

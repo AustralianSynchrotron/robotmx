@@ -25,8 +25,8 @@
 
 '' Distance from puck surface to sample surface if pin deep in puck
 #define SAMPLE_DIST_PIN_DEEP_IN_PUCK 2.5
-#define TOLERANCE_FROM_PIN_DEEP_IN_PUCK 0.6
-'' Probe distance from puck surface to sample: PROBE_DISTANCE_FROM_PUCK_SURFACE = 2.5 + 0.6 = 3.1
+#define TOLERANCE_FROM_PIN_DEEP_IN_PUCK 0.8
+'' Probe distance from puck surface to sample: PROBE_DISTANCE_FROM_PUCK_SURFACE = 2.5 + 0.8 = 3.3
 #define PROBE_DISTANCE_FROM_PUCK_SURFACE (SAMPLE_DIST_PIN_DEEP_IN_PUCK + TOLERANCE_FROM_PIN_DEEP_IN_PUCK)
 
 #define PROBE_DISTANCE_TOLERANCE 0.4

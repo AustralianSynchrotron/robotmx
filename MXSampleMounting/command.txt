@@ -943,4 +943,21 @@ j> ump
 > jump p0
 > tool
 	   0
+> tool
+	   4
+> move p52
+> move p53
+> print g_onlyalongaxis
+ 0
+> g_dumbbellStatus = 1
+> jump p1
+> jump p3
+> tool 0
+> jump p3
+> tool 0
+> jump p3
+> print g_onlyalongaxis
+ 0
+> g_RunArgs$="r d"
+> 
 > 
