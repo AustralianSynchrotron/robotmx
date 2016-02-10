@@ -402,7 +402,7 @@ Function GTDismountToInterestedPort As Boolean
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	
 	If Not GTMoveToGoniometer Then
-		g_RunResult$ = "GTMoveToGoniometer failed"
+		g_RunResult$ = "GTDismountToInterestedPort->GTMoveToGoniometer failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf

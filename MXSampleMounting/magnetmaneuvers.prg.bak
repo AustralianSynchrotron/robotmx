@@ -25,7 +25,7 @@ Function GTStartRobot
 		g_dumbbellStatus = DUMBBELL_STATUS_UNKNOWN
 	EndIf
    	
-   	Power High ''For debugging use low power mode
+   	Power Low ''For debugging use low power mode
    		   	
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
@@ -373,7 +373,7 @@ Function GTMoveToGoniometer As Boolean
         Jump P18
 	EndIf
 
-	''Arc P28, P38 CP
+	Arc P28, P38 CP
 	Move P22
 	'' Only if P22 is reached return True
 

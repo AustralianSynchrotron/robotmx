@@ -277,6 +277,7 @@ Function GTPickerCheckCASPortStatus(cassette_position As Integer, rowIndex As In
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	String msg$
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_HEAD, maxDistanceToScan, False) Then
 		Real distanceCASSurfacetoHere
 		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PORT_MOUNT_READY_DISTANCE
@@ -362,6 +363,7 @@ Function GTPutSampleIntoCASPort(cassette_position As Integer, rowIndex As Intege
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 
 		Real distanceCASSurfacetoHere

@@ -199,10 +199,10 @@ Fend
 ''' *** Mount/Dismount *** '''
 Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer, startPortIndex As Integer)
 	Cls
-	''debugProbePuck(cassette_position, puckIndex)
+	debugProbePuck(cassette_position, puckIndex)
 	
 	Integer puckPortIndex
-	For puckPortIndex = 1 To NUM_PUCK_PORTS
+	For puckPortIndex = startPortIndex To NUM_PUCK_PORTS
 		g_RunArgs$ = GTCassetteName$(cassette_position) + " "
 		g_RunArgs$ = g_RunArgs$ + GTpuckName$(puckIndex) + " "
 		g_RunArgs$ = g_RunArgs$ + Str$(puckPortIndex)

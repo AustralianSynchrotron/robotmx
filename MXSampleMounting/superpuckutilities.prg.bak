@@ -765,11 +765,12 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 	LimZ g_Jump_LimZ_LN2
 
 	Real maxDistanceToScan
-	maxDistanceToScan = PORT_MOUNT_READY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + PICKER_TOLERANCE_FOR_SAMPLE_DEPTH
+	maxDistanceToScan = PORT_MOUNT_READY_DISTANCE + SAMPLE_DIST_PIN_DEEP_IN_PUCK + PICKR_TOLERANCE_IN_SP_PORT_DEPTH
 		
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	String msg$
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_HEAD, maxDistanceToScan, False) Then
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PORT_MOUNT_READY_DISTANCE
@@ -778,14 +779,14 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distancePuckSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		
-		If distErrorFromPerfectSamplePos < -PICKER_TOLERANCE_FOR_SAMPLE_DEPTH Then
+		If distErrorFromPerfectSamplePos < -PICKR_TOLERANCE_IN_SP_PORT_DEPTH Then
 			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
 			'' Whether the picker got the sample or not is unknown
 			portStatusBeforePickerCheck = PORT_ERROR
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR
 			msg$ = "GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
-		ElseIf distErrorFromPerfectSamplePos < PICKER_TOLERANCE_FOR_SAMPLE_DEPTH Then
+		ElseIf distErrorFromPerfectSamplePos < PICKR_TOLERANCE_IN_SP_PORT_DEPTH Then
 			'' Picker has got the sample
 			portStatusBeforePickerCheck = PORT_OCCUPIED
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED

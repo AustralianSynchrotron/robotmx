@@ -770,6 +770,7 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	String msg$
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_HEAD, maxDistanceToScan, False) Then
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PORT_MOUNT_READY_DISTANCE
@@ -854,6 +855,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 	GTsetRobotSpeedMode(PROBE_SPEED)
 
 	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
+	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 		
 		Real distancePuckSurfacetoHere

@@ -1043,6 +1043,8 @@ Low Power Mode
 > Move P0
 > Go P1
 > Print g_RunArgs$
+right_cassette C 1
+> 
 right_cassette C 10
 > 
 right_cassette C 7
@@ -1051,5 +1053,31 @@ right_cassette C 3
 > g_SP_PortStatus(2,2,8) = -1
 > 
 > g_runargs$="r d"
+> tool
+	   2
+> tool 0
+> jump p6
+> move p4
+> reset error
+> 
 > g_runargs$ = "r C 9"
-> g
+> Print P52
+ X:   -0.000 Y:  -26.000 Z:    0.000 U:   90.000 V:    0.000 W:    0.000 /R /0
+> Print P35
+ X:  -92.785 Y:  392.085 Z: -307.576 U:    3.919 V:    0.000 W:    0.000 /R /0
+> Print P22
+ X: -352.344 Y: -370.903 Z:   -1.000 U:  269.969 V:    0.000 W:    0.000 /R /0
+> Print P27
+ X:  121.180 Y:  367.293 Z: -223.642 U:   95.368 V:    0.000 W:    0.000 /R /0
+> 
+!!Error: 7007, Specified point number was not defined. Specify a teach point number.
+> Print g_UForPuckStandby(1)
+ 0
+> reset error
+> 
+ 0
+> 
+!!Error: 3100, Syntax error.
+> Tool 2
+> 
+> 
