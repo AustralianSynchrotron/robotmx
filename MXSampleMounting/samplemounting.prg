@@ -391,6 +391,8 @@ Function GTPutSampleIntoInterestPort As Boolean
 	ElseIf g_CassetteType(g_InterestedCassettePosition) = SUPERPUCK_CASSETTE Then
 		GTPutSampleIntoInterestPort = GTPutSampleIntoSPPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex, portStandbyPoint)
 	EndIf
+	
+	GTsendSampleStateJSON
 Fend
 
 Function GTDismountToInterestedPort As Boolean

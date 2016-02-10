@@ -21,6 +21,7 @@ Real m_adaptorAngleError(NUM_CASSETTES, NUM_PUCKS)
 Global Preserve Integer g_PuckStatus(NUM_CASSETTES, NUM_PUCKS)
 Global Preserve Real g_SPSampleDistanceError(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
 Global Preserve Integer g_SP_PortStatus(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
+Global Preserve Real g_SP_PortForce(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
 
 Function initSuperPuckConstants()
 	m_SP_Alpha(PUCK_A) = 45.0
@@ -555,6 +556,8 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 
 	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
 	If GTForceTouch(DIRECTION_CAVITY_TAIL, destinationPoint, False) Then
+		''Record Port Force immediately after ForceTouch
+		g_SP_PortForce(cassette_position, puckIndex, portIndex) = g_InitialTouchForce
 		
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE

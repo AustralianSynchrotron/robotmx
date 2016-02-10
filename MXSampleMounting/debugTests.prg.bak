@@ -5,6 +5,60 @@
 #include "mxrobotdefs.inc"
 #include "networkdefs.inc"
 
+Function testTong
+		
+	Real distArray(20)
+
+	GTInitialize
+	
+	Real Uangle
+	Uangle = 156.313
+	Real sinVal, cosVal
+	sinVal = Sin(DegToRad(Uangle))
+	cosVal = Cos(DegToRad(Uangle))
+
+	'' The XY and U coordinates for Robot P1 post (manually checked) for placer tool
+	P450 = XY(251.707, 236.774, 0, Uangle) /R /0
+	'' The XY and U coordinates for Robot P1 post (manually checked) for picker tool	
+	''P450 = XY(292.011, 232.864, 0, -25.727) /R /0
+	
+	Real standbyDistance
+	standbyDistance = 10
+
+	Power Low
+	GTsetRobotSpeedMode(PROBE_SPEED)
+	Tool PLACER_TOOL
+	
+	P453 = P450 -X(standbyDistance * cosVal) -Y(standbyDistance * sinVal)
+	Jump P453
+
+	Real maxDistanceToScan
+	maxDistanceToScan = standbyDistance + 3.0 '' Tolerance
+	
+	Integer standbyPoint
+	standbyPoint = 456
+
+	ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY)
+
+	Integer zIndex
+	For zIndex = 0 To 20
+		P(standbyPoint) = P453 '':Z(zIndex * -10.0)
+		Move P(standbyPoint)
+		
+		If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
+			'' Distance from perfect position
+			distArray(zIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
+		EndIf
+	Next
+	
+	For zIndex = 0 To 20
+		Print distArray(zIndex)
+	Next
+	
+	Move P0
+Fend
+
+
 Function debugProbeAllCassettes
 	Integer cassetteIndex
 	For cassetteIndex = 0 To NUM_CASSETTES - 1
@@ -197,9 +251,10 @@ Function debugJSONPuck(cassette_position As Integer, puckIndexToProbe As Integer
 Fend
 
 ''' *** Mount/Dismount *** '''
-Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer, startPortIndex As Integer)
-	Cls
-	debugProbePuck(cassette_position, puckIndex)
+Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer, startPortIndex As Integer) As Boolean
+	StressTestSuperPuck = False
+
+	''debugProbePuck(cassette_position, puckIndex)
 	
 	Integer puckPortIndex
 	For puckPortIndex = startPortIndex To NUM_PUCK_PORTS
@@ -220,58 +275,23 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		
 		DismountSample
 	Next
+	
+	StressTestSuperPuck = True
 Fend
 
-Function testTong
-		
-	Real distArray(20)
-
-	GTInitialize
+Function StressTestSuperPucks
+	Cls
 	
-	Real Uangle
-	Uangle = 156.313
-	Real sinVal, cosVal
-	sinVal = Sin(DegToRad(Uangle))
-	cosVal = Cos(DegToRad(Uangle))
-
-	'' The XY and U coordinates for Robot P1 post (manually checked) for placer tool
-	P450 = XY(251.707, 236.774, 0, Uangle) /R /0
-	'' The XY and U coordinates for Robot P1 post (manually checked) for picker tool	
-	''P450 = XY(292.011, 232.864, 0, -25.727) /R /0
 	
-	Real standbyDistance
-	standbyDistance = 10
-
-	Power Low
-	GTsetRobotSpeedMode(PROBE_SPEED)
-	Tool PLACER_TOOL
 	
-	P453 = P450 -X(standbyDistance * cosVal) -Y(standbyDistance * sinVal)
-	Jump P453
-
-	Real maxDistanceToScan
-	maxDistanceToScan = standbyDistance + 3.0 '' Tolerance
-	
-	Integer standbyPoint
-	standbyPoint = 456
-
-	ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY)
-
-	Integer zIndex
-	For zIndex = 0 To 20
-		P(standbyPoint) = P453 '':Z(zIndex * -10.0)
-		Move P(standbyPoint)
-		
-		If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
-			'' Distance from perfect position
-			distArray(zIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
-		EndIf
+	Integer cassette_position, puckIndex
+	For cassette_position = 0 To NUM_CASSETTES - 1
+		For puckIndex = 0 To NUM_PUCKS - 1
+			If Not StressTestSuperPuck(cassette_position, puckIndex, 1) Then
+				UpdateClient(TASK_MSG, "StressTestSuperPuck failed!", ERROR_LEVEL)
+				Exit Function
+			EndIf
+		Next
 	Next
-	
-	For zIndex = 0 To 20
-		Print distArray(zIndex)
-	Next
-	
-	Move P0
 Fend
 

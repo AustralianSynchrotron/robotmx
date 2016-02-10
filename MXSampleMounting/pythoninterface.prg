@@ -121,22 +121,26 @@ Function JSONDataRequest
 
 			For jsonDataToSendStrIndex = 1 To Len(RequestTokens$(1))
 				Select UCase$(Mid$(RequestTokens$(1), jsonDataToSendStrIndex, 1))
+					Case "C"
+						jsonDataToSend = CASSETTE_TYPE
 					Case "A"
-						jsonDataToSend = puck_states
+						jsonDataToSend = PUCK_STATES
 					Case "P"
 						jsonDataToSend = PORT_STATES
 					Case "D"
 						jsonDataToSend = SAMPLE_DISTANCES
-					Case "C"
-						jsonDataToSend = CASSETTE_TYPE
+					Case "F"
+						jsonDataToSend = PORT_FORCES
 					Case "S"
 						jsonDataToSend = SAMPLE_STATE
 						GTsendSampleStateJSON
+						GoTo endOfThisForLoop
 					Default
 						Exit Function
 				Send
 				
 				GTsendCassetteData(jsonDataToSend, cassette_position)
+				endOfThisForLoop:
 			Next
 		Next
     EndIf

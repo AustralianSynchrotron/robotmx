@@ -206,6 +206,7 @@ Global Integer g_CutMiddleFailed
 Global Real g_CurrentP(4)
 ''Global Real g_CurrentF(6)  ''to use this one, need to make sure index is positive
 Global Double g_CurrentSingleF
+Global Real g_InitialTouchForce	''used to find the force detected ForceTouch before ForceScan or FineTune is called
 
 ''for IOMonitor: VB program use this counter to make sure IOMonitor is running
 Global Preserve Long g_IOMCounter
@@ -761,16 +762,17 @@ Function ForceCross(forceName As Integer, threshold As Real, scanDistance As Rea
 Fend
 ''touch. It must start from a neutral place for that force.
 ''the robot may come back to the starting place to do force sensor reset
-Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVal fineTune As Boolean) As Boolean
+Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Integer, ByVal fineTune As Boolean) As Boolean
 	String msg$
     Boolean ForceTouchSatisfied
 	''Force too big check
 	Integer FTHThresHoldM
 	
-	msg$ = "+ForceTouch " + Str$(forceName) + ", " + Str$(scanDistance)
+	msg$ = "+ForceTouch " + Str$(forceName) + ", P" + Str$(destinationPoint)
     UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
+	Print "DestinationPoint: ", P(destinationPoint)
 	
-    ForceTouch = False
+    GTForceTouch = False
     
     ''Set force too big threshold multiplier
     If (forceName <> -3) Then
@@ -785,19 +787,19 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
     
     GetCurrentPosition(ByRef FTHInitP())
 
-    ''get destination position from the scan distance
-    CalculateStepSize(forceName, scanDistance, CU(RealPos), ByRef FTHDestP())
-    FTHDestP(1) = FTHDestP(1) + CX(RealPos)
-    FTHDestP(2) = FTHDestP(2) + CY(RealPos)
-    FTHDestP(3) = FTHDestP(3) + CZ(RealPos)
-    FTHDestP(4) = FTHDestP(4) + CU(RealPos)
+    ''get destination position from the destination point number
+    FTHDestP(1) = CX(P(destinationPoint))
+	FTHDestP(2) = CY(P(destinationPoint))
+	FTHDestP(3) = CZ(P(destinationPoint))
+	FTHDestP(4) = CU(P(destinationPoint))
       
     ''try move with trigger first, if failed, we will scan with steps.
     FTHThreshold = GetTouchThreshold(forceName)
     
     ''Read force before doing a move till force
     g_CurrentSingleF = ReadForce(forceName)
-    
+    g_InitialTouchForce = g_CurrentSingleF
+
     ''Exit if force too big before moving
     If ForcePassedThreshold(forceName, g_CurrentSingleF, (FTHThresHoldM * FTHThreshold)) Then
     	''Force too big before moving
@@ -833,6 +835,7 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
     	''Read current force
     	g_CurrentSingleF = ReadForce(forceName)
     EndIf
+    g_InitialTouchForce = g_CurrentSingleF
     
     ''Read position after moving till force
     GetCurrentPosition(ByRef g_CurrentP())
@@ -866,6 +869,8 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
         If FTHNumSteps > 0 Then
            msg$ = "ForceTouch: Failed using move with trigger.  Trying step scan instead"
            UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		   Print "CurrentPos: ", Here
+		   Print "X: ", FTHDestP(1), "Y: ", FTHDestP(2), "Z: ", FTHDestP(3), "U: ", FTHDestP(4)
            FTHThreshold = GetTouchThreshold(forceName)
            If Not ForceScan(forceName, FTHThreshold, ByRef FTHDestP(), FTHNumSteps, False) Then
          	  UpdateClient(TASK_MSG, "not touched within the range", WARNING_LEVEL)
@@ -896,7 +901,7 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
         EndIf
     EndIf
     
-    ForceTouch = True
+    GTForceTouch = True
     ''OK, RealPos it is
     GetCurrentPosition(ByRef g_CurrentP())
     g_CurrentSingleF = ReadForce(forceName)
@@ -909,6 +914,21 @@ Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVa
     If g_FlagAbort Then
         GenericMove(ByRef FTHInitP(), False)
     EndIf
+Fend
+
+''GTForceTouch is more fundamental than ForceTouch
+''In order to reduce duplication of code, GTForceTouch is called inside ForceTouch
+Function ForceTouch(ByVal forceName As Integer, ByVal scanDistance As Real, ByVal fineTune As Boolean) As Boolean
+    ''get destination position from the scan distance
+    CalculateStepSize(forceName, scanDistance, CU(RealPos), ByRef FTHDestP())
+    FTHDestP(1) = FTHDestP(1) + CX(RealPos)
+    FTHDestP(2) = FTHDestP(2) + CY(RealPos)
+    FTHDestP(3) = FTHDestP(3) + CZ(RealPos)
+    FTHDestP(4) = FTHDestP(4) + CU(RealPos)
+
+	''P111 is used as a temporary point only for calling GTForceTouch
+	P111 = XY(FTHDestP(1), FTHDestP(2), FTHDestP(3), FTHDestP(4))
+    ForceTouch = GTForceTouch(forceName, 111, fineTune)
 Fend
 Function SetUltraSlowSpeed
     Accel VERY_SLOW_GO_ACCEL, VERY_SLOW_GO_DEACCEL
@@ -2733,155 +2753,4 @@ Function StringPoint$(point As Integer)
 	StringPoint$ = Str$(CX(P(point))) + ", " + Str$(CY(P(point))) + ", " + Str$(CZ(P(point))) + ", " + Str$(CU(P(point)))
 Fend
 
-Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Integer, ByVal fineTune As Boolean) As Boolean
-	String msg$
-    Boolean ForceTouchSatisfied
-	''Force too big check
-	Integer FTHThresHoldM
-	
-	msg$ = "+ForceTouch " + Str$(forceName) + ", P" + Str$(destinationPoint)
-    UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-	Print "DestinationPoint: ", P(destinationPoint)
-	
-    GTForceTouch = False
-    
-    ''Set force too big threshold multiplier
-    If (forceName <> -3) Then
-    	FTHThresHoldM = 5
-    Else
-    	''Force increases much faster in z
-    	FTHThresHoldM = 250
-    	SetUltraSlowSpeed
-    EndIf
-    
-    ForceTouchSatisfied = False
-    
-    GetCurrentPosition(ByRef FTHInitP())
-
-    ''get destination position from the destination point number
-    FTHDestP(1) = CX(P(destinationPoint))
-	FTHDestP(2) = CY(P(destinationPoint))
-	FTHDestP(3) = CZ(P(destinationPoint))
-	FTHDestP(4) = CU(P(destinationPoint))
-      
-    ''try move with trigger first, if failed, we will scan with steps.
-    FTHThreshold = GetTouchThreshold(forceName)
-    
-    ''Read force before doing a move till force
-    g_CurrentSingleF = ReadForce(forceName)
-    
-    ''Exit if force too big before moving
-    If ForcePassedThreshold(forceName, g_CurrentSingleF, (FTHThresHoldM * FTHThreshold)) Then
-    	''Force too big before moving
-        msg$ = "ForceTouch: Force too big before moving.  Exiting ForceTouch"
-    	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
-        Exit Function
-	EndIf
-	
-	''Exit if force satisfies threshold before moving
-    If ForcePassedThreshold(forceName, g_CurrentSingleF, FTHThreshold) Then
-    	''Force beyond requested threshold before moving
-        msg$ = "ForceTouch: Force beyond threshold before moving.  Exiting ForceTouch"
-    	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
-        Exit Function
-	EndIf
-    
-    If g_FlagAbort Then
-    	GenericMove(ByRef FTHInitP(), False)
-        Exit Function
-    EndIf
-
-    ''set up trigger
-    SetupForceTrigger(forceName, FTHThreshold)
-    ''move  
-    GenericMove(ByRef FTHDestP(), True)
-    
-    If (g_FSForceTriggerStatus <> 0) Then
-       	''Trigger occured
-    	''Read force that caused trigger
-    	g_CurrentSingleF = g_FSTriggeredForces(Abs(forceName))
-    Else
-    	''Trigger did not occur
-    	''Read current force
-    	g_CurrentSingleF = ReadForce(forceName)
-    EndIf
-    
-    ''Read position after moving till force
-    GetCurrentPosition(ByRef g_CurrentP())
-    
-    ''Check forces
-    If ForcePassedThreshold(forceName, g_CurrentSingleF, (FTHThresHoldM * FTHThreshold)) Then
-       	''Force too big
-       	msg$ = "ForceTouch: Force too big at destination @ " + Str$(g_CurrentSingleF)
-        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
-        Exit Function
-    ElseIf ForcePassedThreshold(forceName, g_CurrentSingleF, (FTHThreshold)) Then
-       	''Force satisfies threshold, and is not too big
-       	msg$ = "ForceTouch: Force satisfies threshold condition @ " + Str$(g_CurrentSingleF)
-        UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
-        ForceTouchSatisfied = True
-    Else
-       	''Force does not satisfy threshold
-       	msg$ = "ForceTouch: Force does not satisfy threshold condition @ " + Str$(g_CurrentSingleF)
-        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-        msg$ = "ForceTouch: Threshold is " + Str$(FTHThreshold)
-        UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-    EndIf
-    
-    ''check to see if we need to step-scan to it if moving with force trigger not work
-    If Not ForceTouchSatisfied Then
-        ''prepare to step-scan
-        GetCurrentPosition(ByRef g_CurrentP())
-        
-        FTHNumSteps = HypDistance(ByRef g_CurrentP(), ByRef FTHDestP()) / GetTouchStepSize(forceName)
-        ''Try step scan only if num steps > 0
-        If FTHNumSteps > 0 Then
-           msg$ = "ForceTouch: Failed using move with trigger.  Trying step scan instead"
-           UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-		   Print "CurrentPos: ", Here
-		   Print "X: ", FTHDestP(1), "Y: ", FTHDestP(2), "Z: ", FTHDestP(3), "U: ", FTHDestP(4)
-           FTHThreshold = GetTouchThreshold(forceName)
-           If Not ForceScan(forceName, FTHThreshold, ByRef FTHDestP(), FTHNumSteps, False) Then
-         	  UpdateClient(TASK_MSG, "not touched within the range", WARNING_LEVEL)
-		      If g_FlagAbort Then
-		         GenericMove(ByRef FTHInitP(), False)
-		      EndIf
-              Exit Function
-           EndIf
-        Else
-           msg$ = "ForceTouch: Arrived at destination and force did not satisfy threshold, exit"
-           UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-           Exit Function
-        EndIf
-    EndIf
-    
-    If fineTune Then
-    	''save fine tune start position: we will come back to this position after we reset
-        ''the force sensor in case it needs to.
-        GetCurrentPosition(ByRef FTHMidP())
-    	msg$ = "ForceTouch FineTune"
-		UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-        FTHThreshold = GetTouchMin(forceName)
-        FTHFineTuneDistance = GetTouchStepSize(forceName) * 4
-        If Not ForceCross(-forceName, FTHThreshold, FTHFineTuneDistance, 40, True) Then
-        	''Failed.  Move to initial position and exit
-            GenericMove(ByRef FTHInitP(), False)
-            Exit Function
-        EndIf
-    EndIf
-    
-    GTForceTouch = True
-    ''OK, RealPos it is
-    GetCurrentPosition(ByRef g_CurrentP())
-    g_CurrentSingleF = ReadForce(forceName)
-	
-	UpdateClient(TASK_MSG, "ForceTouched at P:", DEBUG_LEVEL)
-	PrintPosition(ByRef g_CurrentP())
-	msg$ = " force :" + Str$(g_CurrentSingleF)
-	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
-
-    If g_FlagAbort Then
-        GenericMove(ByRef FTHInitP(), False)
-    EndIf
-Fend
 

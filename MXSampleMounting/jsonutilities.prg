@@ -33,6 +33,8 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = SAMPLE_DISTANCES Then
 			JSONResponse$ = "{'set':'sample_distances'"
+		ElseIf dataToSend = PORT_FORCES Then
+			JSONResponse$ = "{'set':'port_forces'"
 		Else
 			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
 			Exit Function
@@ -42,13 +44,15 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 		JSONResponse$ = JSONResponse$ + ",'type':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'"
 		JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'value':["
 		For portIndex = startPortIndex To endPortIndex
-			columnIndex = portIndex / NUM_ROWS
-			rowIndex = portIndex - (columnIndex * NUM_ROWS)
+			ColumnIndex = portIndex / NUM_ROWS
+			rowIndex = portIndex - (ColumnIndex * NUM_ROWS)
 			
 			If dataToSend = PORT_STATES Then
-				JSONResponse$ = JSONResponse$ + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "," ''GTPortStatusString$
+				JSONResponse$ = JSONResponse$ + Str$(g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex)) + "," ''GTPortStatusString$
 			ElseIf dataToSend = SAMPLE_DISTANCES Then
-				JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.00") + ","
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex), "0.00") + ","
+			ElseIf dataToSend = PORT_FORCES Then
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_CAS_PortForce(cassette_position, rowIndex, ColumnIndex), "0.00") + ","
 			EndIf
 		Next
 		JSONResponse$ = JSONResponse$ + "]}"
@@ -75,6 +79,8 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = SAMPLE_DISTANCES Then
 			JSONResponse$ = "{'set':'sample_distances'"
+		ElseIf dataToSend = PORT_FORCES Then
+			JSONResponse$ = "{'set':'port_forces'"
 		Else
 			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
 			Exit Function
@@ -89,6 +95,8 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 				JSONResponse$ = JSONResponse$ + Str$(g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex)) + ","
 			ElseIf dataToSend = SAMPLE_DISTANCES Then
 				JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.00") + ","
+			ElseIf dataToSend = PORT_FORCES Then
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_SP_PortForce(cassette_position, puckIndex, puckPortIndex), "0.00") + ","
 			EndIf
 		Next
 		JSONResponse$ = JSONResponse$ + "]}"
@@ -134,21 +142,23 @@ Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 			GTsendNormalCassetteData(dataToSend, cassette_position)
 		EndIf
 	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		If dataToSend = puck_states Then
-			GTsendPuckData(cassette_position)
-		ElseIf dataToSend = CASSETTE_TYPE Then
+		If dataToSend = CASSETTE_TYPE Then
 			GTsendCassetteType(cassette_position)
+		ElseIf dataToSend = PUCK_STATES Then
+			GTsendPuckData(cassette_position)
 		Else
 			GTsendSuperPuckData(dataToSend, cassette_position)
 		EndIf
 	Else
-		'' Unknown Cassette
+		'' Unknown Cassette Type
 		String JSONResponse$
 		If dataToSend = PORT_STATES Then
 			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = SAMPLE_DISTANCES Then
 			JSONResponse$ = "{'set':'sample_distances'"
-		ElseIf dataToSend = puck_states Then
+		ElseIf dataToSend = PORT_FORCES Then
+			JSONResponse$ = "{'set':'port_forces'"
+		ElseIf dataToSend = PUCK_STATES Then
 			JSONResponse$ = "{'set':'puck_states'"
 		Else
 			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
