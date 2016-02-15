@@ -25,7 +25,7 @@ Function GTStartRobot
 		g_dumbbellStatus = DUMBBELL_STATUS_UNKNOWN
 	EndIf
    	
-   	Power Low ''For debugging use low power mode
+   	Power High ''For debugging use low power mode
    		   	
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
@@ -142,8 +142,9 @@ Function GTPickMagnet As Boolean
 
 	g_dumbbellStatus = DUMBBELL_IN_GRIPPER
 
-	Move P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
-
+	''Move P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
+	Jump P3
+	
 	GTPickMagnet = True
 Fend
 

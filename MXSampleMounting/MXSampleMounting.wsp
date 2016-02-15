@@ -1,10 +1,10 @@
-ENVT0100,LM:2016/02/10 22:39:57:859,DS:0000005638,CS:17224,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="debugTests.prg"
+ENVT0100,LM:2016/02/15 01:46:04:390,DS:0000005647,CS:11591,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Command"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -15,7 +15,7 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -26,7 +26,7 @@ ProgramFile2 {
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -37,7 +37,7 @@ ProgramFile3 {
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -48,7 +48,7 @@ ProgramFile4 {
 }
 ProgramFile5 {
 	sName="network.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -59,7 +59,7 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -81,7 +81,7 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -103,7 +103,7 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="cassettetype.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -114,7 +114,7 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -158,7 +158,7 @@ ProgramFile14 {
 }
 ProgramFile15 {
 	sName="robotspeed.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -191,7 +191,7 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -202,7 +202,7 @@ ProgramFile18 {
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=539
@@ -213,7 +213,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -224,7 +224,7 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -236,7 +236,7 @@ ProgramFile21 {
 ProgramFile22 {
 	sName="debugTests.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -247,7 +247,7 @@ ProgramFile22 {
 nIncludeFileCount=8
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -258,7 +258,7 @@ IncludeFile1 {
 }
 IncludeFile2 {
 	sName="networkdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -302,7 +302,7 @@ IncludeFile5 {
 }
 IncludeFile6 {
 	sName="superpuckdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -313,7 +313,7 @@ IncludeFile6 {
 }
 IncludeFile7 {
 	sName="mountingdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -324,7 +324,7 @@ IncludeFile7 {
 }
 IncludeFile8 {
 	sName="jsondefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -347,7 +347,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=395
 		nTop=-15
@@ -357,7 +357,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
@@ -406,8 +406,8 @@ Macros {
 RobotMgr {
 	bOpened=False
 	Window {
-		nLeft=384
-		nTop=37
+		nLeft=93
+		nTop=23
 		nWidth=690
 		nHeight=485
 	}

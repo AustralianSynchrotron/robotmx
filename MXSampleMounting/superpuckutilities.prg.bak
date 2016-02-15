@@ -557,7 +557,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
 	If GTForceTouch(DIRECTION_CAVITY_TAIL, destinationPoint, False) Then
 		''Record Port Force immediately after ForceTouch
-		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = g_InitialTouchForce
+		g_SP_PortForce(cassette_position, puckIndex, portIndex) = g_InitialTouchForce
 		
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
@@ -688,6 +688,7 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 				If PortResetRequestChar$ = "1" Then
 					g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 					g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
+					g_SP_PortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
 				EndIf
 			Next
 		Next

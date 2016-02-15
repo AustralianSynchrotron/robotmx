@@ -1080,4 +1080,81 @@ right_cassette C 3
 !!Error: 3100, Syntax error.
 > Tool 2
 > 
+> print g_runargs$
+0 0 0 0 0
+> g_runargs$ = "lmr asdfc"
+> 
+> tool
+	   4
+> Print P50
+ X:   54.042 Y:  429.098 Z: -278.407 U:  135.000 V:    0.000 W:    0.000 /R /0
+> Print Here
+ X:   98.428 Y:  403.048 Z: -213.650 U:  228.387 V:    0.000 W:    0.000 /R /0
+> Print P4
+ X:  103.369 Y:  406.033 Z: -193.187 U:   95.526 V:    0.000 W:    0.000 /R /0
+> reset error
+> motor On
+> reset error
+> print g_SP_PortStatus(1,2,2)
+ 2
+> 
+ -1
+> 
+!!Error: 3207, Formula is missing.
+> tool
+	   1
+> tool 0
+> Print CU(Here)
+ 170.214
+> Move P3 :U(170.214)
+!!Error: 2309, Cannot execute a motion command while the safeguard is open.
+> power
+!!Error: 3216, High/Low was not specified.
+> speed
+Low Power Mode
+	   1
+	   1	   1
+> EncReset 4
+> 
+!!Error: 2234, Cannot reset the encoder with motor in the on state.
+> Motor Off
+> jump p1
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> move p0
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> reset error
+> move p0
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p0
+!!Error: 4037, The point attribute of the current and target point positions differ for executing a CP control command.
+> print here
+ X:  525.417 Y:   88.009 Z:  -62.010 U:   57.488 V:    0.000 W:    0.000 /L /0
+> print p0
+ X:  521.253 Y:   52.433 Z: -262.891 U:   89.498 V:    0.000 W:    0.000 /R /0
+> go p00
+ X:  521.253 Y:   52.433 Z: -262.891 U:   89.498 V:    0.000 W:    0.000 /R /0
+> move here +X(-10) +Y(-10)
+> move Here +X(300)
+> 
+> 
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> 
+> 
+> reset error
+> motor On
+> 
+> 
+> 
+> 
+> 
+!!Error: 4007, Coordinates conversion error. The end/mid point is out of the motion area. Jogging to the out of the motion area.
+> 
+> 
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor on
 > 

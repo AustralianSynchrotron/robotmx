@@ -266,9 +266,15 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		
 		''if Here is not within 10mm from P18, it tells us that there was an error in mounting
 		If Not (Dist(P18, Here) < 10) Then
+			If Not GTCheckAndPickMagnet Then
+				'' This means either sample is on picker or dumbbell lost
+				UpdateClient(TASK_MSG, "StressTestSuperPuck:GTCheckAndPickMagnet failed!", ERROR_LEVEL)
+				Exit Function
+			EndIf
+				
 			If Not GTIsMagnetInGripper Then
 				'' This means either sample is on picker or dumbbell lost
-				UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed!", ERROR_LEVEL)
+				UpdateClient(TASK_MSG, "StressTestSuperPuck:GTIsMagnetInGripper failed!", ERROR_LEVEL)
 				Exit Function
 			EndIf
 		EndIf
@@ -283,7 +289,7 @@ Function StressTestSuperPucks
 	Cls
 	
 	Integer cassette_position, puckIndex
-	For cassette_position = 0 To NUM_CASSETTES - 1
+	For cassette_position = MIDDLE_CASSETTE To NUM_CASSETTES - 1
 		For puckIndex = 0 To NUM_PUCKS - 1
 			If Not StressTestSuperPuck(cassette_position, puckIndex, 1) Then
 				UpdateClient(TASK_MSG, "StressTestSuperPuck failed!", ERROR_LEVEL)

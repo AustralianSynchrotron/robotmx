@@ -13,7 +13,7 @@ Function GTParseColumnIndex(columnChar$ As String, ByRef columnIndex As Integer)
 	columnChar$ = UCase$(columnChar$)
 	columnIndex = Asc(columnChar$) - Asc("A")
 	
-	If (columnIndex < 0) Or (columnIndex > NUM_COLUMNS - 1) Then
+	If (ColumnIndex < 0) Or (ColumnIndex > NUM_COLUMNS - 1) Then
 		columnIndex = UNKNOWN_POSITION
 		GTParseColumnIndex = False
 		Exit Function
@@ -191,6 +191,7 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
 				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
 				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+				g_CAS_PortForce(cassette_position, rowIndex, columnIndex) = 0.0
 			EndIf
 		Next
 	Next
@@ -202,6 +203,7 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
 				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
 				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+				g_CAS_PortForce(cassette_position, rowIndex, columnIndex) = 0.0
 			Next
 		Next
 	ElseIf g_CassetteType(cassette_position) <> NORMAL_CASSETTE Then
@@ -213,6 +215,7 @@ Function GTResetSpecificPortsInCassette(cassette_position As Integer)
 				''UpdateClient(TASK_MSG, "GTResetSpecificPortsInCassette->GTprobeCassettePort(" + GTCassetteName$(cassette_position) + ",row=" + Str$(rowIndex + 1) + ",col=" + GTcolumnName$(columnIndex) + ")", INFO_LEVEL)
 				g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = 0.0
 				g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+				g_CAS_PortForce(cassette_position, rowIndex, columnIndex) = 0.0
 			Next
 		Next
 	EndIf

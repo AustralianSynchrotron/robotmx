@@ -688,6 +688,7 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 				If PortResetRequestChar$ = "1" Then
 					g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 					g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
+					g_SP_PortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
 				EndIf
 			Next
 		Next
@@ -700,6 +701,7 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 			For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
 				g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 				g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
+				g_SP_PortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
 			Next
 		Next
 	EndIf
