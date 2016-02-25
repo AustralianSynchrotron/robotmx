@@ -104,43 +104,50 @@ Function JSONDataRequest
 	Integer cassette_position
 
 	Integer jsonDataToSend, jsonDataToSendStrIndex
-    If RequestArgC = 2 Then
-    	For strIndex = 1 To Len(RequestTokens$(0))
-			cassetteChar$ = Mid$(RequestTokens$(0), strIndex, 1)
-
-			Select UCase$(cassetteChar$)
-				Case "L"
-					cassette_position = LEFT_CASSETTE
+    If RequestArgC > 0 Then
+    	For jsonDataToSendStrIndex = 1 To Len(RequestTokens$(0))
+			Select UCase$(Mid$(RequestTokens$(0), jsonDataToSendStrIndex, 1))
+				Case "C"
+					jsonDataToSend = CASSETTE_TYPE
+				Case "A"
+					jsonDataToSend = PUCK_STATES
+				Case "P"
+					jsonDataToSend = PORT_STATES
+				Case "D"
+					jsonDataToSend = SAMPLE_DISTANCES
+				Case "F"
+					jsonDataToSend = PORT_FORCES
+				Case "S"
+					jsonDataToSend = SAMPLE_STATE
+					GTsendSampleStateJSON
+					GoTo endOfThisForLoop
 				Case "M"
-					cassette_position = MIDDLE_CASSETTE
-				Case "R"
-					cassette_position = RIGHT_CASSETTE
+					jsonDataToSend = MAGNET_STATE
+					GTsendMagnetStateJSON
+					GoTo endOfThisForLoop
 				Default
-					cassette_position = UNKNOWN_CASSETTE
+					Exit Function
 			Send
-
-			For jsonDataToSendStrIndex = 1 To Len(RequestTokens$(1))
-				Select UCase$(Mid$(RequestTokens$(1), jsonDataToSendStrIndex, 1))
-					Case "C"
-						jsonDataToSend = CASSETTE_TYPE
-					Case "A"
-						jsonDataToSend = PUCK_STATES
-					Case "P"
-						jsonDataToSend = PORT_STATES
-					Case "D"
-						jsonDataToSend = SAMPLE_DISTANCES
-					Case "F"
-						jsonDataToSend = PORT_FORCES
-					Case "S"
-						jsonDataToSend = SAMPLE_STATE
-						GTsendSampleStateJSON
-						GoTo endOfThisForLoop
+			
+			For strIndex = 1 To Len(RequestTokens$(1))
+				cassetteChar$ = Mid$(RequestTokens$(1), strIndex, 1)
+	
+				Select UCase$(cassetteChar$)
+					Case "L"
+						cassette_position = LEFT_CASSETTE
+					Case "M"
+						cassette_position = MIDDLE_CASSETTE
+					Case "R"
+						cassette_position = RIGHT_CASSETTE
 					Default
-						Exit Function
+						cassette_position = UNKNOWN_CASSETTE
+						UpdateClient(TASK_MSG, "Invalid cassette position in g_RunArgs$!", ERROR_LEVEL)
+						''Exit Function '' Donot exit function because python doesn't know the error unless we send JSON data
 				Send
-				
 				GTsendCassetteData(jsonDataToSend, cassette_position)
-	endOfThisForLoop: Next
+			Next
+
+			endOfThisForLoop:
 		Next
     EndIf
 Fend

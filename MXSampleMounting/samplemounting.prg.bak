@@ -226,7 +226,7 @@ Function GTReleaseSampleToGonio As Boolean
 Fend
 
 Function GTMountInterestedPort As Boolean
-	'' GTMountInterestedPort should start with dumbbell in gripper usually from P4
+	'' GTMountInterestedPort should start with dumbbell in gripper usually from P3
 	
 	GTMountInterestedPort = False
 	
@@ -276,6 +276,8 @@ Function GTMountInterestedPort As Boolean
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
+	
+	GTGoHome
 	
 	GTMountInterestedPort = True
 Fend
@@ -391,6 +393,8 @@ Function GTPutSampleIntoInterestPort As Boolean
 	ElseIf g_CassetteType(g_InterestedCassettePosition) = SUPERPUCK_CASSETTE Then
 		GTPutSampleIntoInterestPort = GTPutSampleIntoSPPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex, portStandbyPoint)
 	EndIf
+	
+	GTsendSampleStateJSON
 Fend
 
 Function GTDismountToInterestedPort As Boolean

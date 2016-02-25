@@ -9,26 +9,9 @@
 
 Global Preserve Integer g_dumbbellStatus
 
-Function GTStartRobot
-	'' This is the only function in GT domain which starts the motors and sets the power   	
-	
-   	If Not CheckEnvironment Then
-   		Motor Off
-		UpdateClient(TASK_MSG, "GTStartRobot:CheckEnvironment failed. So the robot motors are stopped, it can't move.", ERROR_LEVEL)
-        Exit Function
-   	EndIf
-   	
-	If Motor = Off Then
-		Motor On
-
-		''Set dumbbell status to unknown whenever motors are started from off state
-		g_dumbbellStatus = DUMBBELL_STATUS_UNKNOWN
-	EndIf
-   	
-   	Power Low ''For debugging use low power mode
-   		   	
-	Tool 0
-	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+Function GTsetDumbbellStatus(status As Integer)
+	g_dumbbellStatus = status
+	GTsendMagnetStateJSON
 Fend
 
 Function GTJumpHomeToCoolingPointAndWait As Boolean
@@ -140,7 +123,7 @@ Function GTPickMagnet As Boolean
 		Exit Function
 	EndIf
 
-	g_dumbbellStatus = DUMBBELL_IN_GRIPPER
+	GTsetDumbbellStatus(DUMBBELL_IN_GRIPPER)
 
 	''Move P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
 	Jump P3
@@ -173,10 +156,10 @@ Function GTCheckAndPickMagnet As Boolean
 		
 		'' Second check to determine whether magnet is missing
 		If GTIsMagnetInGripper Then ''CheckMagnet
-			g_dumbbellStatus = DUMBBELL_IN_GRIPPER '' assert again
+			GTsetDumbbellStatus(DUMBBELL_IN_GRIPPER) '' assert again
 			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
 		Else
-			g_dumbbellStatus = DUMBBELL_MISSING
+			GTsetDumbbellStatus(DUMBBELL_MISSING)
 			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
 			Exit Function
 		EndIf
@@ -209,7 +192,7 @@ Function GTCheckMagnetForDismount As Boolean
 		
 		'' Second check to determine whether magnet is missing
 		If GTIsMagnetInGripper Then ''CheckMagnet
-			g_dumbbellStatus = DUMBBELL_IN_GRIPPER '' assert again
+			GTsetDumbbellStatus(DUMBBELL_IN_GRIPPER) '' assert again
 			UpdateClient(TASK_MSG, "GTCheckMagnetForDismount:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
 	
 			If Not GTReturnMagnet Then
@@ -218,7 +201,7 @@ Function GTCheckMagnetForDismount As Boolean
 				Exit Function
 			EndIf
 		Else
-			g_dumbbellStatus = DUMBBELL_MISSING
+			GTsetDumbbellStatus(DUMBBELL_MISSING)
 			UpdateClient(TASK_MSG, "GTCheckMagnetForDismount:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
 			Exit Function
 		EndIf
@@ -253,9 +236,26 @@ Function GTReturnMagnet As Boolean
 	''	Exit Function
 	''EndIf
 	
-	g_dumbbellStatus = DUMBBELL_IN_CRADLE
+	GTsetDumbbellStatus(DUMBBELL_IN_CRADLE)
 	
 	GTReturnMagnet = True
+Fend
+
+Function GTGoHome As Boolean
+	LimZ 0
+	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+	
+	If (Dist(RealPos, P18) > CLOSE_DISTANCE) And (CX(RealPos) < 0) And (CX(P18) * CY(RealPos) > CX(RealPos) * CY(P18)) Then
+		''The above condition checks whether the robot is in the region after P18 containing gonio 
+		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) >  Atan(CY(P18)/CX(P18)) checks the angle made by realpos > angle of P18
+		'' CX(RealPos) < 0 checks whether the robot is in second or third quadrant (near goni and not near home)
+		'' Also checks Dist(RealPos, P18) > CLOSE_DISTANCE because if it is close we just jump to p1 directly (we don't have to jump to p18)
+		Jump P18
+	EndIf
+	
+	Jump P1
+	Jump P0
+	Close_Lid
 Fend
 
 Function GTReturnMagnetAndGoHome As Boolean
@@ -267,11 +267,7 @@ Function GTReturnMagnetAndGoHome As Boolean
 	EndIf
 
 	'' Return Home and Close Lid
-	LimZ 0
-	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
-	Jump P1
-	Jump P0
-	Close_Lid
+	GTGoHome
 	
 	GTReturnMagnetAndGoHome = True
 Fend
@@ -362,6 +358,12 @@ Function GTMoveToGoniometer As Boolean
 		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
 		'' CX(RealPos) > 0 checks whether the robot is in first quadrant (near home and not near goni)
 		Jump P1
+		
+		''This function starts from P0 in Dismounting, so open lid before dismounting
+		If Not Open_Lid Then
+			UpdateClient(TASK_MSG, "GTMoveToGoniometer:Open_Lid failed", ERROR_LEVEL)
+	        Exit Function
+	    EndIf
 	EndIf
 	
 	If Dist(RealPos, P4) < CLOSE_DISTANCE Then

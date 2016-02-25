@@ -214,3 +214,11 @@ Function GTsendSampleStateJSON
 	UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
 Fend
 
+'' Sends the state of the magnet/dumbbell
+Function GTsendMagnetStateJSON
+	String JSONmsg$
+	JSONmsg$ = "{'set':'magnet_state', 'value':" + Str$(g_dumbbellStatus) + "}"
+	UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
+Fend
+
+

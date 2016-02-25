@@ -601,6 +601,9 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	
 	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+
+	msg$ = "{'set':'port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortForce(cassette_position, puckIndex, portIndex)) + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
 	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
@@ -701,6 +704,7 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 			For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
 				g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 				g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
+				g_SP_PortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
 			Next
 		Next
 	EndIf
@@ -774,13 +778,12 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	String msg$
+	Real distErrorFromPerfectSamplePos		'' Distance error from perfect sample position
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_HEAD, maxDistanceToScan, False) Then
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PORT_MOUNT_READY_DISTANCE
 		
-		'' Distance error from perfect sample position
-		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distancePuckSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		
 		If distErrorFromPerfectSamplePos < -PICKR_TOLERANCE_IN_SP_PORT_DEPTH Then
@@ -808,6 +811,7 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 		''There is no sample (or ForceTouch failure)
 		portStatusBeforePickerCheck = PORT_VACANT
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
+				distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTPickerCheckSPPortStatus: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	EndIf
@@ -821,6 +825,8 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 	EndIf
 	
 	''CLIENT_UPDATE after moving back to standbyPoint
+	msg$ = "{'set':'mount_distance', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + FmtStr$(distErrorFromPerfectSamplePos, "0.000") + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
@@ -858,6 +864,9 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 		
 	GTsetRobotSpeedMode(PROBE_SPEED)
 
+
+
+	Real distErrorFromPerfectSamplePos		'' Distance error from perfect sample position
 	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
@@ -865,10 +874,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PORT_MOUNT_READY_DISTANCE
 		
-		'' Distance error from perfect sample position
-		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distancePuckSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_PUCK
-		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = distErrorFromPerfectSamplePos
 		
 		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
 			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
@@ -892,7 +898,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 	Else
 		''There is no sample (or ForceTouch failure)
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
-		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
+		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 
@@ -900,9 +906,8 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 	EndIf
 	
 	'' Client Update after probing decision has been made
-	msg$ = "{'set':'sample_distances', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, portIndex), "0.000") + ",]}"
+	msg$ = "{'set':'dismount_distance', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + FmtStr$(distErrorFromPerfectSamplePos, "0.000") + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-	
 	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	

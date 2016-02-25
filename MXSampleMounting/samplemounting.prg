@@ -226,7 +226,7 @@ Function GTReleaseSampleToGonio As Boolean
 Fend
 
 Function GTMountInterestedPort As Boolean
-	'' GTMountInterestedPort should start with dumbbell in gripper usually from P4
+	'' GTMountInterestedPort should start with dumbbell in gripper usually from P3
 	
 	GTMountInterestedPort = False
 	
@@ -276,6 +276,9 @@ Function GTMountInterestedPort As Boolean
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
+	
+	''Return Home
+	GTGoHome
 	
 	GTMountInterestedPort = True
 Fend

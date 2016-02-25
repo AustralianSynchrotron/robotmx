@@ -150,7 +150,7 @@ Function GTsendCassetteData(dataToSend As Integer, cassette_position As Integer)
 			GTsendSuperPuckData(dataToSend, cassette_position)
 		EndIf
 	Else
-		'' Unknown Cassette
+		'' Unknown Cassette Type
 		String JSONResponse$
 		If dataToSend = PORT_STATES Then
 			JSONResponse$ = "{'set':'port_states'"
@@ -213,4 +213,12 @@ Function GTsendSampleStateJSON
 
 	UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
 Fend
+
+'' Sends the state of the magnet/dumbbell
+Function GTsendMagnetStateJSON
+	String JSONmsg$
+	JSONmsg$ = "{'set':'magnet_location', 'value':" + Str$(g_dumbbellStatus) + "}"
+	UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
+Fend
+
 
