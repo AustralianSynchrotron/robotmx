@@ -1,10 +1,10 @@
-ENVT0100,LM:2016/02/24 12:37:06:203,DS:0000005651,CS:31353,MA:00-1C-42-5E-3B-C7,EI:           
-sActiveChild="samplemounting.prg"
+ENVT0100,LM:2016/02/25 18:43:41:625,DS:0000005649,CS:26114,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -15,7 +15,7 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -26,7 +26,7 @@ ProgramFile2 {
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -37,7 +37,7 @@ ProgramFile3 {
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -48,7 +48,7 @@ ProgramFile4 {
 }
 ProgramFile5 {
 	sName="network.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -70,7 +70,7 @@ ProgramFile6 {
 }
 ProgramFile7 {
 	sName="appnetwork.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -92,13 +92,13 @@ ProgramFile8 {
 }
 ProgramFile9 {
 	sName="setupcassette.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile10 {
@@ -114,7 +114,7 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -169,7 +169,7 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -191,7 +191,7 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -202,8 +202,8 @@ ProgramFile18 {
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bOpened=True
-	nWinState=2
+	bOpened=False
+	nWinState=0
 	Window {
 		nLeft=539
 		nTop=89
@@ -213,7 +213,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -224,7 +224,7 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -269,7 +269,7 @@ IncludeFile2 {
 }
 IncludeFile3 {
 	sName="forcedefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -313,7 +313,7 @@ IncludeFile6 {
 }
 IncludeFile7 {
 	sName="mountingdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -324,7 +324,7 @@ IncludeFile7 {
 }
 IncludeFile8 {
 	sName="jsondefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -336,7 +336,7 @@ IncludeFile8 {
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -347,7 +347,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=395
 		nTop=-15
@@ -357,7 +357,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0

@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/02/24 12:10:57:437,DS:0000008559,CS:15200,MA:00-1C-42-5E-3B-C7,EI:           
+ENVT0100,LM:2016/02/25 12:21:39:671,DS:0000008547,CS:09041,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
-	sPath="C:\\EpsonRC60\\Projects\\MXSampleMounting\\"
+	sPath="c:\\EPSONRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="2/24/2016 11:09:29 PM"
+	sLastModified="2/25/2016 11:21:39 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=True
@@ -107,7 +107,7 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile17 {
@@ -499,7 +499,4 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=1
-GuiBuilderFile1 {
-	sName="MXSampleMounting.gui"
-}
+nGuiBuilderFileCount=0

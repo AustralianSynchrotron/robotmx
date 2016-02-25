@@ -82,7 +82,7 @@ Function ForceInit
 	EndIf
 	''Start force sensing acquisition @28000KHz averaging 1000 samples
 	''Takes around 1/25 sec to read single sample at this rate
-	If FSStartAcquisition(28000, 2000) Then
+	If FSStartAcquisition(28000, 1000) Then
         Print "Force acquisition start ok"
     Else
     	''force sensing intialize fail

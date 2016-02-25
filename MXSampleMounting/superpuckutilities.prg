@@ -448,7 +448,7 @@ Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, pu
 	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + ActualOffsetsFromCassetteCenter(1)
 	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + ActualOffsetsFromCassetteCenter(2)
 
-	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
+	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, u) /R
 Fend
 
 Function GTsetSPPuckProbeStandbyPoint(cassette_position As Integer, puckIndex As Integer, standbyPointNum As Integer, ByRef scanDistance As Real)
@@ -544,7 +544,16 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	
 	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, PROBE_STANDBY_DISTANCE, standbyPoint)
 	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, -PROBE_DISTANCE_FROM_PUCK_SURFACE, destinationPoint)
-	
+
+	''remove after debug - start
+	msg$ = "GTprobeSPPort:Pos for (" + Str$(cassette_position) + "," + Str$(puckIndex) + "," + Str$(portIndex) + ")"
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	msg$ = "GTprobeSPPort:Pos standbyPoint =" + StringPoint$(standbyPoint)
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	msg$ = "GTprobeSPPort:Pos destinationPoint =" + StringPoint$(destinationPoint)
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	''remove after debug - end
+
 	If jumpToStandbyPoint Then
 		Jump P(standbyPoint)
 		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
@@ -556,6 +565,11 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 
 	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
 	If GTForceTouch(DIRECTION_CAVITY_TAIL, destinationPoint, False) Then
+		''remove after debug - start
+		msg$ = "GTprobeSPPort:Pos after ForceTouch =" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos))
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		''remove after debug - end
+		
 		''Record Port Force immediately after ForceTouch
 		g_SP_PortForce(cassette_position, puckIndex, portIndex) = g_InitialTouchForce
 		
@@ -586,6 +600,11 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 
 		GTTwistOffMagnet
 	Else
+		''remove after debug - start
+		msg$ = "GTprobeSPPort:Pos after ForceTouch =" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos))
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		''remove after debug - end
+			
 		''There is no sample (or ForceTouch failure)
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK

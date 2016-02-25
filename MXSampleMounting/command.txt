@@ -1157,4 +1157,36 @@ Low Power Mode
 > 
 !!Error: 4031, Cannot execute a motion command when the motor is in the off state.
 > motor on
+> jump p3
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> print g_dumbbellStatus
+ 0
+> tool 0
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> Print g_tiltDX(2)
+ -0.0010279
+> 
+ 0.00369212
+> 
+ -0.000990387
+> 
+ 0
+> Print g_tiltDY(0)
+ -0.00685715
+> 
+ -0.00549985
+> 
+ -0.0036563
+> Print g_runargs$
+D R
+> g_runargs$="d lmr"
+> 
 > 

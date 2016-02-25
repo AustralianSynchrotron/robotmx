@@ -41,8 +41,6 @@ Function GTStartRobot
 
 		''Set dumbbell status to unknown whenever motors are started from off state
 		GTsetDumbbellStatus(DUMBBELL_STATUS_UNKNOWN)
-		g_dumbbellStatus =
-		GTsendMagnetStateJSON
 	EndIf
    	
    	Power Low ''For debugging use low power mode

@@ -286,7 +286,7 @@ Function ForceCalibrateAndCheck(thresholdx As Double, thresholdy As Double) As B
 		EndIf
 		''Only attempt 10 times
 		i = i + 1
-		If (i > 9) Then
+		If (i > 19) Then
  			msg$ = "After " + Str$(i) + " calibration attempts"
 			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 			UpdateClient(TASK_MSG, "Force sensor noise level too high", ERROR_LEVEL)
