@@ -206,7 +206,8 @@ Global Integer g_CutMiddleFailed
 Global Real g_CurrentP(4)
 ''Global Real g_CurrentF(6)  ''to use this one, need to make sure index is positive
 Global Double g_CurrentSingleF
-Global Real g_InitialTouchForce	''used to find the force detected ForceTouch before ForceScan or FineTune is called
+Global Real g_InitialForceTouchTrigger	''used to find the force detected in GTForceTouch before ForceScan or FineTune is called
+Global Real g_FinalTouchForce ''used to find the force detected in GTForceTouch at the end of the function
 
 ''for IOMonitor: VB program use this counter to make sure IOMonitor is running
 Global Preserve Long g_IOMCounter
@@ -798,7 +799,7 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
     
     ''Read force before doing a move till force
     g_CurrentSingleF = ReadForce(forceName)
-    g_InitialTouchForce = g_CurrentSingleF
+    g_InitialForceTouchTrigger = g_CurrentSingleF
 
     ''Exit if force too big before moving
     If ForcePassedThreshold(forceName, g_CurrentSingleF, (FTHThresHoldM * FTHThreshold)) Then
@@ -835,7 +836,7 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
     	''Read current force
     	g_CurrentSingleF = ReadForce(forceName)
     EndIf
-    g_InitialTouchForce = g_CurrentSingleF
+    g_InitialForceTouchTrigger = g_CurrentSingleF
     
     ''Read position after moving till force
     GetCurrentPosition(ByRef g_CurrentP())
@@ -905,6 +906,7 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
     ''OK, RealPos it is
     GetCurrentPosition(ByRef g_CurrentP())
     g_CurrentSingleF = ReadForce(forceName)
+	g_FinalTouchForce = g_CurrentSingleF
 	
 	UpdateClient(TASK_MSG, "ForceTouched at P:", DEBUG_LEVEL)
 	PrintPosition(ByRef g_CurrentP())

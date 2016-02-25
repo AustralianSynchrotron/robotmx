@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/02/25 18:43:41:625,DS:0000005649,CS:26114,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/02/25 21:45:50:203,DS:0000005646,CS:29820,MA:00-80-4C-A4-84-A0,EI:           
 sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=22
@@ -147,13 +147,13 @@ ProgramFile13 {
 }
 ProgramFile14 {
 	sName="numericmanipulations.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile15 {
@@ -169,7 +169,7 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -191,7 +191,7 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -202,7 +202,7 @@ ProgramFile18 {
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=539
@@ -213,7 +213,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -224,7 +224,7 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -324,7 +324,7 @@ IncludeFile7 {
 }
 IncludeFile8 {
 	sName="jsondefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0

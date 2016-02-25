@@ -1187,6 +1187,23 @@ Low Power Mode
  -0.0036563
 > Print g_runargs$
 D R
-> g_runargs$="d lmr"
+> g_runargs$="dtf lmr"
 > 
+> 
+> 
+> 
+> 
+> Print "g_Perfect_LeftCassette_Angle=", g_Perfect_LeftCassette_Angle
+Print "g_Perfect_MiddleCassette_Angle=", g_Perfect_MiddleCassette_Angle
+Print "g_Perfect_RightCassette_Angle=", g_Perfect_RightCassette_Angle
+
+> 
+> Print "g_Perfect_LeftCassette_Angle=", g_Perfect_LeftCassette_Angle
+g_Perfect_LeftCassette_Angle= 90
+> 
+Print "g_Perfect_MiddleCassette_Angle=", g_Perfect_MiddleCassette_Angle
+g_Perfect_MiddleCassette_Angle= 180
+> 
+Print "g_Perfect_RightCassette_Angle=", g_Perfect_RightCassette_Angle
+g_Perfect_RightCassette_Angle= -90
 > 

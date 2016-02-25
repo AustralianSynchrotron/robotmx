@@ -33,8 +33,10 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = SAMPLE_DISTANCES Then
 			JSONResponse$ = "{'set':'sample_distances'"
-		ElseIf dataToSend = PORT_FORCES Then
-			JSONResponse$ = "{'set':'port_forces'"
+		ElseIf dataToSend = TRIGGER_PORT_FORCES Then
+			JSONResponse$ = "{'set':'trigger_port_forces'"
+		ElseIf dataToSend = FINAL_PORT_FORCES Then
+			JSONResponse$ = "{'set':'final_port_forces'"
 		Else
 			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
 			Exit Function
@@ -44,15 +46,17 @@ Function GTsendNormalCassetteData(dataToSend As Integer, cassette_position As In
 		JSONResponse$ = JSONResponse$ + ",'type':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'"
 		JSONResponse$ = JSONResponse$ + ",'start':" + Str$(startPortIndex) + ",'value':["
 		For portIndex = startPortIndex To endPortIndex
-			ColumnIndex = portIndex / NUM_ROWS
-			rowIndex = portIndex - (ColumnIndex * NUM_ROWS)
+			columnIndex = portIndex / NUM_ROWS
+			rowIndex = portIndex - (columnIndex * NUM_ROWS)
 			
 			If dataToSend = PORT_STATES Then
-				JSONResponse$ = JSONResponse$ + Str$(g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex)) + "," ''GTPortStatusString$
+				JSONResponse$ = JSONResponse$ + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + "," ''GTPortStatusString$
 			ElseIf dataToSend = SAMPLE_DISTANCES Then
-				JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex), "0.00") + ","
-			ElseIf dataToSend = PORT_FORCES Then
-				JSONResponse$ = JSONResponse$ + FmtStr$(g_CAS_PortForce(cassette_position, rowIndex, ColumnIndex), "0.00") + ","
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex), "0.00") + ","
+			ElseIf dataToSend = TRIGGER_PORT_FORCES Then
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_CAS_TriggerPortForce(cassette_position, rowIndex, columnIndex), "0.00") + ","
+			ElseIf dataToSend = FINAL_PORT_FORCES Then
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_CAS_FinalPortForce(cassette_position, rowIndex, columnIndex), "0.00") + ","
 			EndIf
 		Next
 		JSONResponse$ = JSONResponse$ + "]}"
@@ -79,8 +83,10 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 			JSONResponse$ = "{'set':'port_states'"
 		ElseIf dataToSend = SAMPLE_DISTANCES Then
 			JSONResponse$ = "{'set':'sample_distances'"
-		ElseIf dataToSend = PORT_FORCES Then
-			JSONResponse$ = "{'set':'port_forces'"
+		ElseIf dataToSend = TRIGGER_PORT_FORCES Then
+			JSONResponse$ = "{'set':'trigger_port_forces'"
+		ElseIf dataToSend = FINAL_PORT_FORCES Then
+			JSONResponse$ = "{'set':'final_port_forces'"
 		Else
 			UpdateClient(TASK_MSG, "Invalid dataToSend Request!", ERROR_LEVEL)
 			Exit Function
@@ -95,8 +101,10 @@ Function GTsendSuperPuckData(dataToSend As Integer, cassette_position As Integer
 				JSONResponse$ = JSONResponse$ + Str$(g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex)) + ","
 			ElseIf dataToSend = SAMPLE_DISTANCES Then
 				JSONResponse$ = JSONResponse$ + FmtStr$(g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex), "0.00") + ","
-			ElseIf dataToSend = PORT_FORCES Then
-				JSONResponse$ = JSONResponse$ + FmtStr$(g_SP_PortForce(cassette_position, puckIndex, puckPortIndex), "0.00") + ","
+			ElseIf dataToSend = TRIGGER_PORT_FORCES Then
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_SP_TriggerPortForce(cassette_position, puckIndex, puckPortIndex), "0.00") + ","
+			ElseIf dataToSend = FINAL_PORT_FORCES Then
+				JSONResponse$ = JSONResponse$ + FmtStr$(g_SP_FinalPortForce(cassette_position, puckIndex, puckPortIndex), "0.00") + ","
 			EndIf
 		Next
 		JSONResponse$ = JSONResponse$ + "]}"
@@ -217,7 +225,7 @@ Fend
 '' Sends the state of the magnet/dumbbell
 Function GTsendMagnetStateJSON
 	String JSONmsg$
-	JSONmsg$ = "{'set':'magnet_location', 'value':" + Str$(g_dumbbellStatus) + "}"
+	JSONmsg$ = "{'set':'magnet_state', 'value':" + Str$(g_dumbbellStatus) + "}"
 	UpdateClient(CLIENT_UPDATE, JSONmsg$, INFO_LEVEL)
 Fend
 

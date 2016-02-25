@@ -21,7 +21,8 @@ Real m_adaptorAngleError(NUM_CASSETTES, NUM_PUCKS)
 Global Preserve Integer g_PuckStatus(NUM_CASSETTES, NUM_PUCKS)
 Global Preserve Real g_SPSampleDistanceError(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
 Global Preserve Integer g_SP_PortStatus(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
-Global Preserve Real g_SP_PortForce(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
+Global Preserve Real g_SP_TriggerPortForce(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
+Global Preserve Real g_SP_FinalPortForce(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
 
 Function initSuperPuckConstants()
 	m_SP_Alpha(PUCK_A) = 45.0
@@ -448,7 +449,7 @@ Function GTsetSPPortPoint(cassette_position As Integer, portIndex As Integer, pu
 	AbsoluteYafterTiltAjdust = g_CenterY(cassette_position) + ActualOffsetsFromCassetteCenter(1)
 	AbsoluteZafterTiltAjdust = g_BottomZ(cassette_position) + ActualOffsetsFromCassetteCenter(2)
 
-	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, u) /R
+	P(pointNum) = XY(AbsoluteXafterTiltAjdust, AbsoluteYafterTiltAjdust, AbsoluteZafterTiltAjdust, U) /R
 Fend
 
 Function GTsetSPPuckProbeStandbyPoint(cassette_position As Integer, puckIndex As Integer, standbyPointNum As Integer, ByRef scanDistance As Real)
@@ -571,7 +572,8 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		''remove after debug - end
 		
 		''Record Port Force immediately after ForceTouch
-		g_SP_PortForce(cassette_position, puckIndex, portIndex) = g_InitialTouchForce
+		g_SP_TriggerPortForce(cassette_position, puckIndex, portIndex) = g_InitialForceTouchTrigger
+		g_SP_FinalPortForce(cassette_position, puckIndex, portIndex) = g_FinalTouchForce
 		
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
@@ -621,9 +623,12 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortStatus(cassette_position, puckIndex, portIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 
-	msg$ = "{'set':'port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_PortForce(cassette_position, puckIndex, portIndex)) + ",]}"
+	msg$ = "{'set':'trigger_port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_TriggerPortForce(cassette_position, puckIndex, portIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
+	msg$ = "{'set':'final_port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_FinalPortForce(cassette_position, puckIndex, portIndex)) + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
 	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
 	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
@@ -710,7 +715,8 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 				If PortResetRequestChar$ = "1" Then
 					g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 					g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
-					g_SP_PortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
+					g_SP_TriggerPortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
+					g_SP_FinalPortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
 				EndIf
 			Next
 		Next
@@ -723,7 +729,8 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 			For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
 				g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 				g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
-				g_SP_PortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
+				g_SP_TriggerPortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
+				g_SP_FinalPortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
 			Next
 		Next
 	EndIf

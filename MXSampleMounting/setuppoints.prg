@@ -16,8 +16,8 @@ Global Real g_goniometer_sinValue
 Function GTCheckPoint(pointNum As Integer) As Boolean
 	String msg$
 	
-	msg$ = "GTCheckPoint(P" + Str$(pointNum) + ")"
-	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	''msg$ = "GTCheckPoint(P" + Str$(pointNum) + ")"
+	''UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	If (Not PDef(P(pointNum))) Then
 		msg$ = "GTCheckPoint: P" + Str$(pointNum) + " is not defined yet!"
 		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
@@ -27,8 +27,8 @@ Function GTCheckPoint(pointNum As Integer) As Boolean
 		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 		GTCheckPoint = False
 	Else
-		msg$ = "GTCheckPoint: P" + Str$(pointNum) + " is Valid."
-		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		''msg$ = "GTCheckPoint: P" + Str$(pointNum) + " is Valid."
+		''UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		GTCheckPoint = True
 	EndIf
 Fend

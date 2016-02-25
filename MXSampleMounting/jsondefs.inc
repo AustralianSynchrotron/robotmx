@@ -3,6 +3,7 @@
 #define PUCK_STATES 2
 #define CASSETTE_TYPE 3
 #define SAMPLE_STATE 4
-#define PORT_FORCES 5
-#define MAGNET_STATE 6
+#define TRIGGER_PORT_FORCES 5
+#define FINAL_PORT_FORCES 6
+#define MAGNET_STATE 7
 

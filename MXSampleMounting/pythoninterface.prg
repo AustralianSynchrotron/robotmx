@@ -163,8 +163,10 @@ Function JSONDataRequest
 					jsonDataToSend = PORT_STATES
 				Case "D"
 					jsonDataToSend = SAMPLE_DISTANCES
+				Case "T"
+					jsonDataToSend = TRIGGER_PORT_FORCES
 				Case "F"
-					jsonDataToSend = PORT_FORCES
+					jsonDataToSend = FINAL_PORT_FORCES
 				Case "S"
 					jsonDataToSend = SAMPLE_STATE
 					GTsendSampleStateJSON

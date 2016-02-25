@@ -21,7 +21,8 @@ Real m_adaptorAngleError(NUM_CASSETTES, NUM_PUCKS)
 Global Preserve Integer g_PuckStatus(NUM_CASSETTES, NUM_PUCKS)
 Global Preserve Real g_SPSampleDistanceError(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
 Global Preserve Integer g_SP_PortStatus(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
-Global Preserve Real g_SP_PortForce(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
+Global Preserve Real g_SP_TriggerPortForce(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
+Global Preserve Real g_SP_FinalPortForce(NUM_CASSETTES, NUM_PUCKS, NUM_PUCK_PORTS)
 
 Function initSuperPuckConstants()
 	m_SP_Alpha(PUCK_A) = 45.0
@@ -571,7 +572,8 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		''remove after debug - end
 		
 		''Record Port Force immediately after ForceTouch
-		g_SP_PortForce(cassette_position, puckIndex, portIndex) = g_InitialTouchForce
+		g_SP_TriggerPortForce(cassette_position, puckIndex, portIndex) = g_InitialForceTouchTrigger
+		g_SP_FinalPortForce(cassette_position, puckIndex, portIndex) = g_FinalTouchForce
 		
 		Real distancePuckSurfacetoHere
 		distancePuckSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
@@ -591,11 +593,6 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 			msg$ = "GTprobeSPPort: ForceTouch detected Sample at " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		Else
-			''remove after debug - start
-			msg$ = "GTprobeSPPort:Pos after ForceTouch =" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos))
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-			''remove after debug - end
-			
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
@@ -605,6 +602,11 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 
 		GTTwistOffMagnet
 	Else
+		''remove after debug - start
+		msg$ = "GTprobeSPPort:Pos after ForceTouch =" + Str$(CX(RealPos)) + ", " + Str$(CY(RealPos)) + ", " + Str$(CZ(RealPos)) + ", " + Str$(CU(RealPos))
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		''remove after debug - end
+			
 		''There is no sample (or ForceTouch failure)
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
@@ -710,7 +712,8 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 				If PortResetRequestChar$ = "1" Then
 					g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 					g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
-					g_SP_PortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
+					g_SP_TriggerPortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
+					g_SP_FinalPortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
 				EndIf
 			Next
 		Next
@@ -723,7 +726,8 @@ Function GTResetSpecificPortsInSuperPuck(cassette_position As Integer)
 			For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
 				g_SPSampleDistanceError(cassette_position, puckIndex, puckPortIndex) = 0.0
 				g_SP_PortStatus(cassette_position, puckIndex, puckPortIndex) = PORT_UNKNOWN
-				g_SP_PortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
+				g_SP_TriggerPortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
+				g_SP_FinalPortForce(cassette_position, puckIndex, puckPortIndex) = 0.0
 			Next
 		Next
 	EndIf

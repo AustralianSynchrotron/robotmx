@@ -4,4 +4,5 @@
 #define CASSETTE_TYPE 3
 #define SAMPLE_STATE 4
 #define PORT_FORCES 5
+#define MAGNET_STATE 6
 
