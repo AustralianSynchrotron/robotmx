@@ -19,6 +19,8 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	
 	GTJumpHomeToCoolingPointAndWait = False
 
+	Tool 0
+	
 	If (CX(RealPos) > 0) And (CX(P1) * CY(RealPos) < CX(RealPos) * CY(P1)) Then
 		''The above condition checks whether the robot is in the region before P1 containing P0 
 		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
@@ -31,7 +33,12 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
         Exit Function
     EndIf
 	
-	Jump P3
+	''This following condition check allows GTJumpHomeToCoolingPointAndWait to start from P3 
+	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
+		Go P3
+	Else
+		Jump P3
+	EndIf
 	
 	'' for testing only, should be put inside the below if statement
 	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
@@ -98,6 +105,8 @@ Function GTIsMagnetInGripper As Boolean
 	GTLoadPreviousRobotSpeedMode
 	
 	Move P(standbyPoint)
+	
+	Move P3 ''because this function is called in several places, I didnot like it to end at standbyPoint
 Fend
 
 Function GTPickMagnet As Boolean
@@ -112,14 +121,14 @@ Function GTPickMagnet As Boolean
 	EndIf
 
 	If Not Open_Gripper Then
-		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:Open_Gripper failed", ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTPickMagnet:Open_Gripper failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	Move P6 '' gripper catches the magnet in cradle
 
 	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:Close_Gripper failed", ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTPickMagnet:Close_Gripper failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 
@@ -183,6 +192,11 @@ Function GTCheckMagnetForDismount As Boolean
 		'' This and the following checks whether magnet is in cradle or gripper and sets g_dumbbellStatus accordingly
 		'' Bit of a lengthy process but because this is called only once when robot is restarted, I am sticking with this
 		UpdateClient(TASK_MSG, "GTCheckMagnetForDismount:GTIsMagnetInGripper found magnet on tong.", INFO_LEVEL)
+		If Not GTReturnMagnet Then
+			g_RunResult$ = "GTCheckMagnetForDismount->GTReturnMagnet failed"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			Exit Function
+		EndIf
 	Else
 		UpdateClient(TASK_MSG, "GTCheckMagnetForDismount:GTIsMagnetInGripper did not find magnet on tong.", INFO_LEVEL)
 		If Not GTPickMagnet Then
@@ -243,6 +257,7 @@ Fend
 
 Function GTGoHome As Boolean
 	LimZ 0
+	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	
 	If (Dist(RealPos, P18) > CLOSE_DISTANCE) And (CX(RealPos) < 0) And (CX(P18) * CY(RealPos) > CX(RealPos) * CY(P18)) Then
@@ -373,6 +388,7 @@ Function GTMoveToGoniometer As Boolean
 	ElseIf Dist(RealPos, P18) < CLOSE_DISTANCE Then ''Required in StressTestSuperPuck
 		Go P18 ''Required in StressTestSuperPuck
 	Else
+		'' This allows us to call GTMoveToGoniometer from P3
         Jump P18
 	EndIf
 

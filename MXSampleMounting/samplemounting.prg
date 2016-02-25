@@ -449,13 +449,6 @@ Function GTDismountToInterestedPort As Boolean
 	GTMoveBackToCassetteStandbyPoint
 	GTMoveCassetteStandbyToCradle
 	
-	'' Put dumbbell in Cradle and go Home (P0)
-	If Not GTReturnMagnetAndGoHome Then
-		g_RunResult$ = "GTReturnMagnet failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
-	EndIf
-	
 	GTDismountToInterestedPort = True
 Fend
 

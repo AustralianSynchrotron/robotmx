@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/02/24 10:28:11:156,DS:0000005656,CS:32534,MA:00-1C-42-5E-3B-C7,EI:           
-sActiveChild="superpuckutilities.prg"
+ENVT0100,LM:2016/02/24 12:37:06:203,DS:0000005651,CS:31353,MA:00-1C-42-5E-3B-C7,EI:           
+sActiveChild="samplemounting.prg"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
@@ -126,7 +126,7 @@ ProgramFile11 {
 ProgramFile12 {
 	sName="superpuckutilities.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -203,7 +203,7 @@ ProgramFile18 {
 ProgramFile19 {
 	sName="samplemounting.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=539
 		nTop=89
@@ -336,7 +336,7 @@ IncludeFile8 {
 nPointFileCount=1
 PointFile1 {
 	sName="robot1.pts"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0

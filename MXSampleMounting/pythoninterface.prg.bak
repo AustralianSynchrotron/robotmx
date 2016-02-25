@@ -3,6 +3,7 @@
 #include "cassettedefs.inc"
 #include "superpuckdefs.inc"
 #include "jsondefs.inc"
+#include "mountingdefs.inc"
 
 Global String g_PortsRequestString$(NUM_CASSETTES)
 
