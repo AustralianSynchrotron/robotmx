@@ -13,7 +13,7 @@ Function GTParseColumnIndex(columnChar$ As String, ByRef columnIndex As Integer)
 	columnChar$ = UCase$(columnChar$)
 	columnIndex = Asc(columnChar$) - Asc("A")
 	
-	If (columnIndex < 0) Or (columnIndex > NUM_COLUMNS - 1) Then
+	If (ColumnIndex < 0) Or (ColumnIndex > NUM_COLUMNS - 1) Then
 		columnIndex = UNKNOWN_POSITION
 		GTParseColumnIndex = False
 		Exit Function
@@ -374,6 +374,7 @@ Function GTPutSampleIntoCASPort(cassette_position As Integer, rowIndex As Intege
 	
 	Real distErrorFromPerfectSamplePos		'' Distance error from perfect sample position
 	g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
+	g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN ''If error in ForceTouch, then sample might be lost
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 

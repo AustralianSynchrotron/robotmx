@@ -868,6 +868,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 
 	Real distErrorFromPerfectSamplePos		'' Distance error from perfect sample position
 	g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_UNKNOWN
+	g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN ''If error in ForceTouch, then sample might be lost
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 		
@@ -883,6 +884,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED
+			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
 			msg$ = "GTPutSampleIntoSPPort: ForceTouch detected Sample at " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 			GTPutSampleIntoSPPort = True

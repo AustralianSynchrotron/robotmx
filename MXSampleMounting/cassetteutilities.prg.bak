@@ -3,6 +3,24 @@
 
 '' This .prg file contains generic cassette utilities i.e. routines used by normal, calibration and superpuck cassettes
 
+
+Function GTParseCassettePosition(cassetteChar$ As String, ByRef cassette_position As Integer) As Boolean
+	Select UCase$(cassetteChar$)
+		Case "L"
+			cassette_position = LEFT_CASSETTE
+		Case "M"
+			cassette_position = MIDDLE_CASSETTE
+		Case "R"
+			cassette_position = RIGHT_CASSETTE
+		Default
+			cassette_position = UNKNOWN_CASSETTE
+			UpdateClient(TASK_MSG, "GTParseCassettePosition: Invalid Cassette Position supplied!", ERROR_LEVEL)
+			GTParseCassettePosition = False
+			Exit Function
+	Send
+	GTParseCassettePosition = True
+Fend
+
 Function GTCassettePosition$(cassette_position As Integer) As String
 	If cassette_position = LEFT_CASSETTE Then
 		GTCassettePosition$ = "left"

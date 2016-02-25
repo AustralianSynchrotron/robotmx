@@ -811,7 +811,7 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 		''There is no sample (or ForceTouch failure)
 		portStatusBeforePickerCheck = PORT_VACANT
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
-				distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
+		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTPickerCheckSPPortStatus: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	EndIf
@@ -883,6 +883,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED
+			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
 			msg$ = "GTPutSampleIntoSPPort: ForceTouch detected Sample at " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 			GTPutSampleIntoSPPort = True
