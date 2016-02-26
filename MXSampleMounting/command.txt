@@ -1187,7 +1187,13 @@ Low Power Mode
  -0.0036563
 > Print g_runargs$
 D R
-> g_runargs$="dtf lmr"
+> g_runargs$="dtf r"
+> reset error
+> motor On
+> 
+> 
+> 
+> 
 > 
 > 
 > 

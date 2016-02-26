@@ -95,9 +95,9 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		GTTwistOffMagnet
 	Else
 		'' There is no sample (or ForceTouch failure)
-		g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_VACANT
-		g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_CAS
-		msg$ = "GTprobeCassettePort: ForceTouch failed to detect " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
+		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
+		g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_CAS
+		msg$ = "GTprobeCassettePort: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		Move P(standbyPoint)
 	EndIf
@@ -107,7 +107,9 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, rowIndex, columnIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-	msg$ = "{'set':'port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_PortForce(cassette_position, rowIndex, columnIndex)) + ",]}"
+	msg$ = "{'set':'trigger_port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_TriggerPortForce(cassette_position, rowIndex, columnIndex)) + ",]}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
+	msg$ = "{'set':'final_port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex)) + ", 'value':[" + Str$(g_CAS_FinalPortForce(cassette_position, rowIndex, columnIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port

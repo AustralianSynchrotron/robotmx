@@ -298,4 +298,21 @@ Function StressTestSuperPucks
 		Next
 	Next
 Fend
+''Find Port Centers
+Function debugAllPucksFindCenters(cassette_position As Integer)
+
+	Integer cassetteIndex
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		g_PortsRequestString$(cassetteIndex) = ""
+	Next
+		
+	Integer puckIndex, puckPortIndex
+	For puckIndex = PUCK_A To PUCK_D
+		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
+		Next
+	Next
+	
+	FindPortCenters
+Fend
 

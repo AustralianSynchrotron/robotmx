@@ -1,14 +1,14 @@
-ENVT0100,LM:2016/02/25 21:05:57:578,DS:0000008546,CS:27706,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/02/26 05:11:29:912,DS:0000008551,CS:21104,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="2/26/2016 8:05:57 AM"
+	sLastModified="2/26/2016 4:07:31 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
-	bRebuildRequired=True
+	bRebuildRequired=False
 	bClearControllerProject=False
 	bClearGlobalPreserves=False
 }
@@ -67,7 +67,7 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile9 {
@@ -77,7 +77,7 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="cassettetype.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile11 {
@@ -87,7 +87,7 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile13 {
@@ -127,7 +127,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile21 {

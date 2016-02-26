@@ -826,7 +826,12 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
     SetupForceTrigger(forceName, FTHThreshold)
     ''move  
     GenericMove(ByRef FTHDestP(), True)
-    
+     ''Read the force again to check whether the triggered force was stable
+    ''Wait 0.1
+    g_CurrentSingleF = ReadForce(forceName)
+	g_FinalTouchForce = g_CurrentSingleF
+	''
+	
     If (g_FSForceTriggerStatus <> 0) Then
        	''Trigger occured
     	''Read force that caused trigger
@@ -837,7 +842,7 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
     	g_CurrentSingleF = ReadForce(forceName)
     EndIf
     g_InitialForceTouchTrigger = g_CurrentSingleF
-    
+	
     ''Read position after moving till force
     GetCurrentPosition(ByRef g_CurrentP())
     
@@ -887,6 +892,13 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
         EndIf
     EndIf
     
+    ''debug starts
+   
+    ''fineTuning is executed if user requested it or 
+    ''if the difference between initial touch force and the force read now is greater than FTHThreshold/2
+    ''fineTune = fineTune Or (Abs(g_InitialForceTouchTrigger - g_CurrentSingleF) > (FTHThreshold / 2.0))
+    ''debug ends
+    
     If fineTune Then
     	''save fine tune start position: we will come back to this position after we reset
         ''the force sensor in case it needs to.
@@ -906,7 +918,7 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
     ''OK, RealPos it is
     GetCurrentPosition(ByRef g_CurrentP())
     g_CurrentSingleF = ReadForce(forceName)
-	g_FinalTouchForce = g_CurrentSingleF
+	''g_FinalTouchForce = g_CurrentSingleF	''uncomment after debug
 	
 	UpdateClient(TASK_MSG, "ForceTouched at P:", DEBUG_LEVEL)
 	PrintPosition(ByRef g_CurrentP())

@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/02/25 21:45:50:203,DS:0000005646,CS:29820,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2016/02/26 07:17:07:943,DS:0000005661,CS:06404,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="superpuckdefs.inc"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
@@ -82,7 +82,7 @@ ProgramFile7 {
 ProgramFile8 {
 	sName="cassetteprobing.prg"
 	bOpened=False
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -104,12 +104,12 @@ ProgramFile9 {
 ProgramFile10 {
 	sName="cassettetype.prg"
 	bOpened=False
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 ProgramFile11 {
@@ -247,7 +247,7 @@ ProgramFile22 {
 nIncludeFileCount=8
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -302,8 +302,8 @@ IncludeFile5 {
 }
 IncludeFile6 {
 	sName="superpuckdefs.inc"
-	bOpened=False
-	nWinState=0
+	bOpened=True
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -404,7 +404,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=93
 		nTop=23

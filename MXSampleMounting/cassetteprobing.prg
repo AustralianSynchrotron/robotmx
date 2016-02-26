@@ -28,7 +28,8 @@ Function GTProbeCassetteType(cassette_position As Integer) As Boolean
 	standbyPointNum = 52
 	
 	Tool PICKER_TOOL
-	
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+
 	GTSetScanCassetteTopStandbyPoint(cassette_position, standbyPointNum, 0, ByRef scanZdistance)
 	
 	If GTScanCassetteTop(standbyPointNum, scanZdistance, ByRef cassette_top_Z_value) Then

@@ -638,6 +638,8 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 Fend
 
 Function GTProbeSpecificPortsInSuperPuck(cassette_position As Integer) As Boolean
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+
 	'' Check whether it is really a superpuck adaptor
 	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 		Integer probeStringLengthToCheck
@@ -945,5 +947,176 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
 	GTLoadPreviousRobotSpeedMode
+Fend
+
+Function GTfindSPPortWall(forceName As Integer, assumedPortCenterPoint As Integer, portWallPointNum As Integer) As Boolean
+	GTfindSPPortWall = False
+	
+	Real portRadius, scanDistance
+	portRadius = 6.30
+	scanDistance = portRadius ''(portRadius - MAGNET_HEAD_RADIUS) + 0.4
+	
+	Move P(assumedPortCenterPoint)
+	
+	String msg$
+	If ForceTouch(forceName, scanDistance, False) Then
+		P(portWallPointNum) = RealPos
+		
+		msg$ = "GTfindSPPortWall:Pos of Wall" + Str$(portWallPointNum - 200) + " after ForceTouch =" + StringPoint$(portWallPointNum)
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		
+		''Record Port Force immediately after ForceTouch
+		''g_SP_TriggerPortForce(cassette_position, puckIndex, portIndex) = g_InitialForceTouchTrigger
+		''g_SP_FinalPortForce(cassette_position, puckIndex, portIndex) = g_FinalTouchForce
+		
+	Else
+		msg$ = "GTfindSPPortWall:ForceTouch failed to find wall even after travelling maximum distance"
+		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	GTfindSPPortWall = True
+Fend
+
+Function GTfindSPPortCenter(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, jumpToStandbyPoint As Boolean)
+	String msg$
+
+	''Angled Placer tool is used to avoid cavity tail hitting superpuck while probing ports leading to false sample sensing
+	Tool ANGLED_PLACER_TOOL
+	LimZ g_Jump_LimZ_LN2
+
+	Integer standbyPoint, assumedPortCenterPoint, realPortCenterPoint
+	standbyPoint = 52
+	assumedPortCenterPoint = 53
+	realPortCenterPoint = 207
+	
+	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, PROBE_STANDBY_DISTANCE, standbyPoint)
+	GTsetSPPortPoint(cassette_position, portIndex, puckIndex, -PROBE_DISTANCE_FROM_PUCK_SURFACE, assumedPortCenterPoint)
+
+	msg$ = "GTfindSPPortCenter:Pos for (" + Str$(cassette_position) + "," + Str$(puckIndex) + "," + Str$(portIndex) + ")"
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	msg$ = "GTfindSPPortCenter:Pos standbyPoint =" + StringPoint$(standbyPoint)
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	msg$ = "GTfindSPPortCenter:Pos assumedPortCenterPoint =" + StringPoint$(assumedPortCenterPoint)
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+
+	If jumpToStandbyPoint Then
+		Jump P(standbyPoint)
+		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
+	Else
+		Move P(standbyPoint)
+	EndIf
+		
+	GTsetRobotSpeedMode(PROBE_SPEED)
+
+	Real portLeftWallPoint, portRightWallPoint, portTopWallPoint, portBottomWallPoint
+	portLeftWallPoint = 201
+	portRightWallPoint = 202
+	portTopWallPoint = 203
+	portBottomWallPoint = 204
+	
+	If Not GTfindSPPortWall(DIRECTION_CAVITY_TO_MAGNET, assumedPortCenterPoint, portLeftWallPoint) Then
+		msg$ = "GTfindSPPortCenter:Finding Left Wall failed!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		GoTo BackoutofPortandExitFunction
+	EndIf
+	
+	If Not GTfindSPPortWall(DIRECTION_MAGNET_TO_CAVITY, assumedPortCenterPoint, portRightWallPoint) Then
+		msg$ = "GTfindSPPortCenter:Finding Right Wall failed!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		GoTo BackoutofPortandExitFunction
+	EndIf
+
+	P(realPortCenterPoint) = (P(portLeftWallPoint) + P(portRightWallPoint))
+	P(realPortCenterPoint) = XY(CX(P(realPortCenterPoint)) / 2.0, CY(P(realPortCenterPoint)) / 2.0, CZ(P(realPortCenterPoint)) / 2.0, CU(P(realPortCenterPoint)) / 2.0)
+
+	''Finding Top Wall keeps failing due to BigForce detected in ForceTouch
+	''If Not GTfindSPPortWall(FORCE_ZFORCE, assumedPortCenterPoint, portTopWallPoint) Then
+	''	msg$ = "GTfindSPPortCenter:Finding Top Wall failed!"
+	''	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	''	GoTo BackoutofPortandExitFunction
+	''EndIf
+
+	If Not GTfindSPPortWall(-FORCE_ZFORCE, realPortCenterPoint, portBottomWallPoint) Then
+		msg$ = "GTfindSPPortCenter:Finding Bottom Wall failed!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		GoTo BackoutofPortandExitFunction
+	EndIf
+
+	''P(realPortCenterPoint) = (P(portLeftWallPoint) + P(portRightWallPoint) + P(portTopWallPoint) + P(portBottomWallPoint))
+	''P(realPortCenterPoint) = XY(CX(P(realPortCenterPoint)) / 4.0, CY(P(realPortCenterPoint)) / 4.0, CZ(P(realPortCenterPoint)) / 4.0, CU(P(realPortCenterPoint)) / 4.0)
+
+	msg$ = "GTfindSPPortCenter:Pos realPortCenterPoint =" + StringPoint$(realPortCenterPoint)
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+
+BackoutofPortandExitFunction:
+	'' previous robot speed is restored straightaway to save some time.
+	GTLoadPreviousRobotSpeedMode
+	
+	Move P(assumedPortCenterPoint)
+	Move P(standbyPoint)
+Fend
+
+Function GTFindPortCentersInSuperPuck(cassette_position As Integer) As Boolean
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+
+	'' Check whether it is really a superpuck adaptor
+	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		Integer probeStringLengthToCheck
+		Integer puckIndex, puckPortIndex
+		String PortProbeRequestChar$
+		Boolean probeThisPuck
+		For puckIndex = 0 To NUM_PUCKS - 1
+			'' probeStringLengthToCheck is also the number of ports in this puck to check
+			probeStringLengthToCheck = Len(g_PortsRequestString$(cassette_position)) - puckIndex * NUM_PUCK_PORTS
+			If NUM_PUCK_PORTS < probeStringLengthToCheck Then probeStringLengthToCheck = NUM_PUCK_PORTS
+
+			'' Initial check through probe request string to check whether there is a request by user, to probe any port in this puck
+			probeThisPuck = False
+			For puckPortIndex = 0 To probeStringLengthToCheck - 1
+				PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), puckIndex * NUM_PUCK_PORTS + puckPortIndex + 1, 1)
+				If PortProbeRequestChar$ = "1" Then
+					probeThisPuck = True
+					'' If a port is requested to probe, we don't have to check further, just exit for this for loop and start probing
+					Exit For
+				EndIf
+			Next
+			
+			'' If there is a request to probe a port in this puck
+			If probeThisPuck Then
+				UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck->GTprobeSPPuck(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")", INFO_LEVEL)
+				GTprobeSPPuck(cassette_position, puckIndex, True)
+			
+				If g_PuckStatus(cassette_position, puckIndex) = PUCK_PRESENT Then
+					''Run adaptor angle correction for this puck only if puck is present, this reduces time to finish probing
+					UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")", INFO_LEVEL)
+					If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex, False) Then
+						g_RunResult$ = "error GTFindPortCentersInSuperPuck->GTprobeAdaptorAngleCorrection!"
+						UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
+						GTFindPortCentersInSuperPuck = False
+						Exit Function
+					EndIf
+			
+					For puckPortIndex = 0 To probeStringLengthToCheck - 1
+						'' Probe the superpuck ports corresponding to 1's in probeRequestString
+						PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), puckIndex * NUM_PUCK_PORTS + puckPortIndex + 1, 1)
+						If PortProbeRequestChar$ = "1" Then
+							''UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck->GTprobeSPPort(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + "," + Str$(puckPortIndex + 1) + ")", INFO_LEVEL)
+							GTfindSPPortCenter(cassette_position, puckIndex, puckPortIndex, False)
+						EndIf
+					Next
+					'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
+					Move P52 '' P52 is used as standbyPoint throughout GT domain
+					
+				EndIf
+			EndIf
+		Next
+	Else
+		UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck failed: " + GTCassetteName$(cassette_position) + " is not SuperPuck Adaptor!", ERROR_LEVEL)
+		GTFindPortCentersInSuperPuck = False
+		Exit Function
+	EndIf
+
+	GTFindPortCentersInSuperPuck = True
 Fend
 

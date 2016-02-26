@@ -395,4 +395,84 @@ Function DismountSample
     Print "DismountSample finished at ", Date$, " ", Time$
 Fend
 
+''Find Centers
+Function FindPortCenters
+	Cls
+    Print "FindPortCenters entered at ", Date$, " ", Time$
+    
+    ''Ensure moves are not restricted to XY plane for probe
+    g_OnlyAlongAxis = False
+
+	''init result
+    g_RunResult$ = ""
+    
+	'' Initialize all constants
+	If Not GTInitialize Then
+		g_RunResult$ = "error GTInitialize failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	GTStartRobot
+	
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
+        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+
+	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
+	If Not GTCheckAndPickMagnet Then
+		g_RunResult$ = "GTCheckAndPickMagnet: Grabbing magnet failed"
+    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+		
+	Integer cassette_position
+	Integer probeStringLengthToCheck
+	String PortProbeRequestChar$
+	Integer portIndex
+	Boolean probeThisCassette
+	
+	For cassette_position = 0 To NUM_CASSETTES - 1
+		probeThisCassette = False
+	
+		'' Here probeStingLengthToCheck is also the number of ports to probe
+		probeStringLengthToCheck = Len(g_PortsRequestString$(cassette_position))
+		If MAXIMUM_NUM_PORTS < probeStringLengthToCheck Then probeStringLengthToCheck = MAXIMUM_NUM_PORTS
+		For portIndex = 0 To probeStringLengthToCheck - 1
+			PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), portIndex + 1, 1)
+			If PortProbeRequestChar$ = "1" Then
+				''If even 1 port has to be probed, set probeThisCassette to True
+				probeThisCassette = True
+				Exit For
+			EndIf
+		Next
+		
+		If probeThisCassette Then
+			If GTProbeCassetteType(cassette_position) Then
+				If Not GTFindPortCentersInSuperPuck(cassette_position) Then
+					g_RunResult$ = "error GTFindPortCentersInSuperPuck Failed"
+					UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+					Exit Function
+				EndIf
+			Else
+				'' Instead of exit function, can also be changed to check the next cassette	(Next)
+				Exit Function
+			EndIf
+		EndIf
+
+	Next
+	
+	'' Return Magnet To Cradle And Go to Home Position
+	g_RunResult$ = "progress GTReturnMagnetAndGoHome"
+	If Not GTReturnMagnetAndGoHome Then
+		g_RunResult$ = "GTReturnMagnetAndGoHome failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
+	g_RunResult$ = "success FindPortCenters"
+    Print "FindPortCenters finished at ", Date$, " ", Time$
+Fend
 

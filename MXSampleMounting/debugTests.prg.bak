@@ -5,10 +5,6 @@
 #include "mxrobotdefs.inc"
 #include "networkdefs.inc"
 
-Function AAA
-	Move Here -X(300)
-Fend
-
 Function testTong
 		
 	Real distArray(20)
@@ -301,5 +297,22 @@ Function StressTestSuperPucks
 			EndIf
 		Next
 	Next
+Fend
+''Find Port Centers
+Function debugAllPucksFindCenters(cassette_position As Integer)
+
+	Integer cassetteIndex
+	For cassetteIndex = 0 To NUM_CASSETTES - 1
+		g_PortsRequestString$(cassetteIndex) = ""
+	Next
+		
+	Integer puckIndex, puckPortIndex
+	For puckIndex = PUCK_A To PUCK_D
+		For puckPortIndex = 0 To NUM_PUCK_PORTS - 1
+			g_PortsRequestString$(cassette_position) = g_PortsRequestString$(cassette_position) + "1"
+		Next
+	Next
+	
+	ProbeCassettes
 Fend
 

@@ -121,6 +121,8 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 Fend
 
 Function GTProbeSpecificPortsInCassette(cassette_position As Integer) As Boolean
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+
 	Integer columnIndex, rowIndex
 	Integer probeStringLengthToCheck
 	Integer rowsToStep
@@ -149,7 +151,7 @@ Function GTProbeSpecificPortsInCassette(cassette_position As Integer) As Boolean
 		'' Initial check through probe request string to check whether there is a request by user, to probe any port in this column
 		probeThisColumn = False
 		For rowIndex = 0 To probeStringLengthToCheck - 1 Step rowsToStep
-			PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), GTgetPortIndexFromCassetteVars(cassette_position, ColumnIndex, rowIndex) + 1, 1)
+			PortProbeRequestChar$ = Mid$(g_PortsRequestString$(cassette_position), GTgetPortIndexFromCassetteVars(cassette_position, columnIndex, rowIndex) + 1, 1)
 			If PortProbeRequestChar$ = "1" Then
 				probeThisColumn = True
 				'' If a port is requested to probe, we don't have to check further, just exit for this for loop and start probing
