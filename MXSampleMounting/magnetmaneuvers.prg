@@ -63,12 +63,20 @@ Function GTIsMagnetInGripper As Boolean
 	Close_Gripper
 
 	Real probeDistanceFromCradleCenter
-	''probeDistanceFromCradleCenter = ((MAGNET_LENGTH /2) + (CRADLE_WIDTH /2) - (MAGNET_HEAD_THICKNESS /2)) * CASSETTE_SHRINK_FACTOR ''Picker based probe
-	probeDistanceFromCradleCenter = (-(MAGNET_LENGTH / 2) - (CRADLE_WIDTH / 2) + (3 * MAGNET_HEAD_THICKNESS / 2)) * CASSETTE_SHRINK_FACTOR ''Placer based probe
+	probeDistanceFromCradleCenter = ((MAGNET_LENGTH /2) + (CRADLE_WIDTH /2) - (MAGNET_HEAD_THICKNESS /2)) * CASSETTE_SHRINK_FACTOR ''Picker based probe
+	''probeDistanceFromCradleCenter = (-(MAGNET_LENGTH / 2) - (CRADLE_WIDTH / 2) + (3 * MAGNET_HEAD_THICKNESS / 2)) * CASSETTE_SHRINK_FACTOR ''Placer based probe
+	
 	Integer standbyPoint
 	standbyPoint = 52
 	P(standbyPoint) = P3 -X(probeDistanceFromCradleCenter * g_dumbbell_Perfect_cosValue) -Y(probeDistanceFromCradleCenter * g_dumbbell_Perfect_sinValue)
 
+	''remove after debugging - starts
+	'' In Low Power Mode, GTIsMagnetInGripper fails to detect magnet in gripper sometimes so this snippet runs it always in high power mode
+	Integer prevPowerMode
+	prevPowerMode = Power
+	Power High
+	''remove after debugging - ends
+	
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
 		Go P(standbyPoint)
 	Else
@@ -78,8 +86,8 @@ Function GTIsMagnetInGripper As Boolean
 	Real maxDistanceToScan
 	maxDistanceToScan = DISTANCE_P3_TO_P6 ''+ MAGNET_PROBE_DISTANCE_TOLERANCE
 	
-	''GTsetRobotSpeedMode(PROBE_SPEED)
-	GTsetRobotSpeedMode(SUPERSLOW_SPEED)
+	GTsetRobotSpeedMode(PROBE_SPEED)
+	''GTsetRobotSpeedMode(SUPERSLOW_SPEED)
 	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_TO_MAGNET, maxDistanceToScan, False) Then
@@ -110,6 +118,11 @@ Function GTIsMagnetInGripper As Boolean
 	Move P(standbyPoint)
 	
 	Move P3 ''because this function is called in several places, I didnot like it to end at standbyPoint
+	
+	
+	''remove after debugging - starts
+	Power prevPowerMode
+	''remove after debugging - ends
 Fend
 
 Function GTPickMagnet As Boolean
@@ -167,14 +180,15 @@ Function GTCheckAndPickMagnet As Boolean
 		EndIf
 		
 		'' Second check to determine whether magnet is missing
-		''If GTIsMagnetInGripper Then ''CheckMagnet
-		''	GTsetDumbbellStatus(DUMBBELL_IN_GRIPPER) '' assert again
-		''	UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
-		''Else
-		''	GTsetDumbbellStatus(DUMBBELL_MISSING)
-		''	UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
-		''	Exit Function
-		''EndIf
+		If GTIsMagnetInGripper Then ''CheckMagnet
+			GTsetDumbbellStatus(DUMBBELL_IN_GRIPPER) '' assert again
+			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
+		Else
+			GTsetDumbbellStatus(DUMBBELL_MISSING)
+			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
+			GTGoHome
+			Exit Function
+		EndIf
 	EndIf
 	
 	GTCheckAndPickMagnet = True
@@ -320,13 +334,6 @@ Function GTTwistOffMagnet
 			twistAngleInGlobalCoordinates = -twistOffAngle ''degrees
 			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))
 			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))
-		Case ANGLED_PLACER_TOOL
-			''The angles in this condition have a small mathematical error.
-			''The following is copied from PLACER_TOOL. Although not mathematically perfect, (-90) works.
-			''For mathematical perfection we need to offset CU(Tlset(ANGLED_PLACER_TOOL)) for all angles below
-			twistAngleInGlobalCoordinates = -twistOffAngle ''degrees
-			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))
-			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))
 		Case PORT_JAM_RECHECK_TOOL
 			twistAngleInGlobalCoordinates = -twistOffAngle ''degrees
 			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))
@@ -336,11 +343,24 @@ Function GTTwistOffMagnet
 			Exit Function
 	Send
 		
+	
+	''remove after debugging - starts
+	'' In Low Power Mode, GTTwistOffMagnet fails sometimes so this snippet runs it always in high power mode
+	Integer prevPowerMode
+	prevPowerMode = Power
+	Power High
+	''remove after debugging - ends
+	
 	''Move safe distance before twistoff so that there is no overpress of sample due to magnet radius
 	Move RealPos +X(twistMagnetRadiusSafeDistanceX) +Y(twistMagnetRadiusSafeDistanceY)
 	
 	''Perform the twistoff, (If the following XY move is not added, then the back of the magnet head's backedge hits the port edge)
 	Move RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates)
+	
+	
+	''remove after debugging - starts
+	Power prevPowerMode
+	''remove after debugging - ends
 Fend
 
 ''' *** Goniometer Mount/Dismount Moves *** '''
@@ -399,8 +419,7 @@ Function GTMoveToGoniometer As Boolean
         Jump P18
 	EndIf
 
-	Arc P28, P38 CP
-	Move P22
+	Move P22 CP
 	'' Only if P22 is reached return True
 
 	GTMoveToGoniometer = True
@@ -416,9 +435,7 @@ Function GTMoveGoniometerToDewarSide As Boolean
 	EndIf
 	
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
-	Move P38 CP
-	Arc P28, P18
-	''Move P18
+	Move P18 CP
 
 	GTMoveGoniometerToDewarSide = True
 Fend

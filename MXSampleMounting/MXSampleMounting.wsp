@@ -1,6 +1,6 @@
-ENVT0100,LM:2016/03/01 01:01:23:265,DS:0000005803,CS:18752,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Command"
-bMdiMaximized=False
+ENVT0100,LM:2016/03/01 07:44:56:406,DS:0000005801,CS:06722,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="debugTests.prg"
+bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
@@ -37,7 +37,7 @@ ProgramFile3 {
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -81,7 +81,7 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -103,7 +103,7 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="cassettetype.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -114,7 +114,7 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -136,7 +136,7 @@ ProgramFile12 {
 }
 ProgramFile13 {
 	sName="setuppoints.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -158,7 +158,7 @@ ProgramFile14 {
 }
 ProgramFile15 {
 	sName="robotspeed.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -174,13 +174,13 @@ ProgramFile16 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=804
+		nHeight=570
 	}
 }
 ProgramFile17 {
 	sName="initialization.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -191,7 +191,7 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -202,13 +202,13 @@ ProgramFile18 {
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=539
-		nTop=89
-		nWidth=452
-		nHeight=260
+		nLeft=49
+		nTop=48
+		nWidth=828
+		nHeight=535
 	}
 }
 ProgramFile20 {
@@ -235,8 +235,8 @@ ProgramFile21 {
 }
 ProgramFile22 {
 	sName="debugTests.prg"
-	bOpened=False
-	nWinState=0
+	bOpened=True
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -302,7 +302,7 @@ IncludeFile5 {
 }
 IncludeFile6 {
 	sName="superpuckdefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -360,15 +360,15 @@ sActiveWindow="main.prg"
 CmdWindow {
 	bOpened=True
 	Window {
-		nLeft=19
-		nTop=38
+		nLeft=647
+		nTop=72
 		nWidth=897
 		nHeight=406
 	}
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=164
-		nTop=168
+		nLeft=358
+		nTop=230
 		nWidth=470
 		nHeight=342
 	}

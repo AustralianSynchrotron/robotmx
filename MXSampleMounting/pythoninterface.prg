@@ -109,6 +109,7 @@ Function ProbeCassettes
 		
 		If probeThisCassette Then
 			If GTProbeCassetteType(cassette_position) Then
+				'' Only if the cassette type is known at cassette_position start probing inside the cassette
             	''only the ports that are to be probed are reset to unknown before probing.
             	''GTResetSpecificPorts is only called here because the user might forget to call it before probing
 				GTResetSpecificPorts(cassette_position)
@@ -117,9 +118,6 @@ Function ProbeCassettes
 					UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 					Exit Function
 				EndIf
-			Else
-				'' Instead of exit function, can also be changed to check the next cassette	(Next)
-				Exit Function
 			EndIf
 		EndIf
 
@@ -224,6 +222,12 @@ Function MountSamplePort
 		
 		''Only after all the input checks are successful start moving the robot
 		GTStartRobot
+		
+		If Not GTJumpHomeToCoolingPointAndWait Then
+			g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
+		    UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			Exit Function
+		EndIf
 		
 		If Not GTCheckMagnetForDismount Then
 			g_RunResult$ = "Error in MountSamplePort->GTCheckMagnetForDismount: Check log for further details"
@@ -370,13 +374,18 @@ Function DismountSample
 	
 	''Only after all the input checks are successful start moving the robot
 	GTStartRobot
-	
+
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
+	    UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+	EndIf
+		
 	If Not GTCheckMagnetForDismount Then
 		g_RunResult$ = "Error in DismountSample->GTCheckMagnetForDismount: Check log for further details"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
-
 
 	If Not GTDismountToInterestedPort Then
 		g_RunResult$ = "Error in DismountSample->GTDismountToInterestedPort: Check log for further details"
@@ -451,14 +460,12 @@ Function FindPortCenters
 		
 		If probeThisCassette Then
 			If GTProbeCassetteType(cassette_position) Then
+				'' Only if the cassette type is known at cassette_position start probing inside the cassette
 				If Not GTFindPortCentersInSuperPuck(cassette_position) Then
 					g_RunResult$ = "error GTFindPortCentersInSuperPuck Failed"
 					UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 					Exit Function
 				EndIf
-			Else
-				'' Instead of exit function, can also be changed to check the next cassette	(Next)
-				Exit Function
 			EndIf
 		EndIf
 

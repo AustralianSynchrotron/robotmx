@@ -41,7 +41,7 @@ Function GTStartRobot
 	EndIf
    	
 
-	''Always check for dumbbell status before you move robot
+	''Always check for dumbbell status before you move robot inside dewar
 	GTsetDumbbellStatus(DUMBBELL_STATUS_UNKNOWN)
 		
    	Power High ''For debugging use low power mode

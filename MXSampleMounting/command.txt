@@ -1410,4 +1410,122 @@ P111 = XY(   110.143,  417.910, -204.662,   95.170 )  /R /0
 > motor On
 > jump p6
 > move p3
+> Print CX(P22)-CX(P18)
+ 8.8578491210938
+> Print (CY(P22) - CY(P18))
+ -716.45358276367
+> Print P22
+ X: -357.577 Y: -378.988 Z:   -1.000 U:  272.617 V:    0.000 W:    0.000 /R /0
+> Print P18
+ X: -366.435 Y:  337.466 Z:   -7.422 U:  272.406 V:    0.000 W:    0.000 /R /0
+> Print P38
+ X: -357.577 Y:  328.608 Z:   -7.422 U:  272.406 V:    0.000 W:    0.000 /R /0
+> Print P18 +X(8.8578491210938) -Y(8.857849121093)
+ X: -357.577 Y:  328.608 Z:   -7.422 U:  272.406 V:    0.000 W:    0.000 /R /0
 > 
+ X: -360.172 Y:  334.870 Z:   -7.422 U:  272.406 V:    0.000 W:    0.000 /R /0
+> 
+ X: -360.172 Y:  547.386 Z:   -7.422 U:  272.406 V:    0.000 W:    0.000 /R /0
+> print p28
+ X: -360.172 Y:  334.870 Z:   -7.422 U:  272.406 V:    0.000 W:    0.000 /R /0
+> 
+ X: -357.577 Y: 1053.919 Z:   -7.422 U:  272.406 V:    0.000 W:    0.000 /R /0
+> 
+ -716.45358276367
+> 
+!!Error: 3100, Syntax error.
+> reset error
+> motor On
+> tool
+	   2
+> tool 0
+> jump p6
+> move p3
+> jump p18
+> jump p28
+> 
+> move p18
+> 
+> move p38
+> 
+> move P22
+> 
+> 
+> 
+> move p24
+> 
+> 
+> move p21
+> 
+> 
+> move p23
+> 
+> 
+> print g_goniometer_sinValue
+ 0.997241
+> 
+ -0.0742354
+> Move P22 +Y(40)
+> 
+> 
+> jump p18
+> jump p1
+> 
+> 
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> reset error
+> motor On
+> 
+> 
+> jump p0
+> 
+> 
+> 
+> Print CX(P0)
+ 405.75
+> Print CX(P1) * CY(P0)
+ 51147.658181435
+> Print CX(p0) * CY(p1)
+ 170721.706884
+> jump p1
+> 
+> jump p0
+> 
+> 
+> 
+> jump p18
+> jump p1
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> reset error
+> power Low
+> 
+> motor On
+> jump p1
+> jump p6
+> print p6
+ X:  110.324 Y:  415.974 Z: -204.606 U:   95.070 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  365.087 Y:  362.029 Z:   11.781 U:  315.061 V:    0.000 W:    0.000 /R /0
+> print p*
+ X:   35.147 Y:  469.854 Z:   11.805 U:  385.865 V:    0.000 W:    0.000 /R /0
+> print P*
+ X:  115.510 Y:  456.792 Z:   11.788 U:  447.430 V:    0.000 W:    0.000 /R /0
+> print p*
+ X:  107.067 Y:  457.434 Z:   -6.926 U:  106.110 V:    0.000 W:    0.000 /R /0
+> print p*
+ X:   93.239 Y:  417.070 Z: -158.373 U:   95.728 V:    0.000 W:    0.000 /R /0
+> p6 = here
+> p3 = p6 - X(20)
+> savepoints "robot1.pts"
+> motor On
+> move p3
+> speed 5
+> jump p1
+> jump p0
+> g_RunArgs$ = "1 0"
+> 
+> g_RunArgs$ = "lmr 0"

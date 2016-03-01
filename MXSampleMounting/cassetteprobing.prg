@@ -18,6 +18,8 @@ Function GTResetSpecificPorts(cassette_position As Integer)
 Fend
 
 Function GTProbeCassetteType(cassette_position As Integer) As Boolean
+	GTProbeCassetteType = False
+		
 	Integer standbyPointNum
 	Real scanZdistance
 	Real cassette_top_Z_value, scanned_cassette_height
@@ -36,40 +38,54 @@ Function GTProbeCassetteType(cassette_position As Integer) As Boolean
 		scanned_cassette_height = cassette_top_Z_value - g_BottomZ(cassette_position)
 		msg$ = "GTProbeCassetteType->GTScanCassetteTop completed.  Detected Cassette Height = " + Str$(scanned_cassette_height)
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-	Else
-		g_RunResult$ = "error GTProbeCassetteType->GTScanCassetteTop"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		GTProbeCassetteType = False
-		Exit Function
-	EndIf
+		
+		guessedCassetteType = GTCassetteTypeFromHeight(cassette_position, scanned_cassette_height, ByRef guessedCassetteType_height_error)
 
-	If Not GTCassetteTypeFromHeight(cassette_position, scanned_cassette_height, ByRef guessedCassetteType, ByRef guessedCassetteType_height_error) Then
-		If guessedCassetteType_height_error > MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY Then
-			g_RunResult$ = "GTProbeCassetteType->GTCassetteTypeFromHeight failed: guessedCassetteType_height_error > MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY!"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-			GTProbeCassetteType = False
-			Exit Function
-		Else
-			UpdateClient(TASK_MSG, "GTProbeCassetteType->GTCassetteTypeFromHeight: guessedCassetteType_height_error < MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY. Starting comprehensive scan for Cassette Type", INFO_LEVEL)
+		If guessedCassetteType_height_error < ACCPT_ERROR_IN_CASSETTE_HEIGHT Then
+			g_CassetteType(cassette_position) = guessedCassetteType
+			msg$ = "GTScanCassetteTop completed. GTCassetteTypeFromHeight reports " + GTCassetteName$(cassette_position) + " CassetteType=" + GTCassetteType$(guessedCassetteType) + " with height_error=" + Str$(guessedCassetteType_height_error)
+			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+			GTProbeCassetteType = True
+		ElseIf guessedCassetteType_height_error < MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY Then
+			UpdateClient(TASK_MSG, "GTProbeCassetteType->GTCassetteTypeFromHeight: guessedCassetteType_height_error < MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY. Starting Average Cassette Height scan for Cassette Type", INFO_LEVEL)
+			
 			Real averageCassetteHeight
-			If GTfindAverageCassetteHeight(cassette_position, scanned_cassette_height, guessedCassetteType, ByRef averageCassetteHeight) Then
-				If Not GTCassetteTypeFromHeight(cassette_position, averageCassetteHeight, ByRef guessedCassetteType, ByRef guessedCassetteType_height_error) Then
-					g_RunResult$ = "error GTProbeCassetteType->GTCassetteTypeFromHeight: averageHeight > ACCPT_ERROR_IN_CASSETTE_HEIGHT"
-					UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-					GTProbeCassetteType = False
-					Exit Function
+            If GTfindAverageCassetteHeight(cassette_position, scanned_cassette_height, guessedCassetteType, ByRef averageCassetteHeight) Then
+				msg$ = "GTProbeCassetteType-GTfindAverageCassetteHeight completed.  Detected Average Cassette Height = " + Str$(averageCassetteHeight)
+				UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+
+				guessedCassetteType = GTCassetteTypeFromHeight(cassette_position, averageCassetteHeight, ByRef guessedCassetteType_height_error)
+				If guessedCassetteType_height_error < ACCPT_ERROR_IN_CASSETTE_HEIGHT Then
+					g_CassetteType(cassette_position) = guessedCassetteType
+					msg$ = "GTfindAverageCassetteHeight completed. GTCassetteTypeFromHeight reports " + GTCassetteName$(cassette_position) + " CassetteType=" + GTCassetteType$(guessedCassetteType) + " with height_error=" + Str$(guessedCassetteType_height_error)
+					UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+					GTProbeCassetteType = True
+				Else
+					g_CassetteType(cassette_position) = UNKNOWN_CASSETTE
+					msg$ = "error GTfindAverageCassetteHeight for " + GTCassetteName$(cassette_position) + " found min_height_error=" + Str$(guessedCassetteType_height_error) + ">ACCPT_ERROR_IN_CASSETTE_HEIGHT =" + Str$(ACCPT_ERROR_IN_CASSETTE_HEIGHT)
+					UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 				EndIf
 			Else
-				g_RunResult$ = "error GTProbeCassetteType->GTfindAverageCassetteHeight!"
 				UpdateClient(TASK_MSG, "GTProbeCassetteType failed: error in GTfindAverageCassetteHeight!", ERROR_LEVEL)
-				GTProbeCassetteType = False
-				Exit Function
+				g_CassetteType(cassette_position) = UNKNOWN_CASSETTE
 			EndIf
+		Else
+			g_CassetteType(cassette_position) = UNKNOWN_CASSETTE
+			msg$ = "GTProbeCassetteType->GTCassetteTypeFromHeight failed: guessedCassetteType_height_error > MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY!"
+			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 		EndIf
+	Else
+		''May be Cassette Not found in this position
+		g_CassetteType(cassette_position) = UNKNOWN_CASSETTE
+		msg$ = "GTProbeCassetteType->GTScanCassetteTop could not find the cassette top. " + GTCassetteName$(cassette_position) + " may be absent."
+		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 	EndIf
+
+	g_min_height_errors(cassette_position) = guessedCassetteType_height_error
 	
-	g_RunResult$ = "normal OK"
-	GTProbeCassetteType = True
+	'' Client Update after probing decision has been made
+	msg$ = "{'set':'cassette_type', 'position':'" + GTCassettePosition$(cassette_position) + "', 'min_height_error':" + Str$(guessedCassetteType_height_error) + ", 'value':'" + GTCassetteType$(g_CassetteType(cassette_position)) + "'}"
+	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 Fend
 
 '' This function is called independent of cassette_type after probing

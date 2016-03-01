@@ -126,7 +126,7 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 	EndIf
 	
 	GTCassetteTypeFromHeight = guessedCassetteType
-Fend
+	Fend
 
 Function GTsetfindAvgHeightStandbyPoint(cassette_position As Integer, pointNum As Integer, index As Integer, guessedCassetteType As Integer, ByRef scanZdistance As Real)
 	If guessedCassetteType = SUPERPUCK_CASSETTE Then

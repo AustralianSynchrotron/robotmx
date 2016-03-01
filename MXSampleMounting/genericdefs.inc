@@ -18,10 +18,7 @@
 #define UNIVERSAL_TOOL 0
 #define PICKER_TOOL 1
 #define PLACER_TOOL 2
-#define ANGLED_PLACER_TOOL 4	''Angled Placer tool is used to avoid cavity tail hitting superpuck while probing ports leading to false sample sensing
-#define PORT_JAM_RECHECK_TOOL 5
-#define ANGLED_PLACER_ANGLE 0   '' Angle in degrees used to avoid cavity tail hitting superpuck
-
+#define PORT_JAM_RECHECK_TOOL 4
 
 '' PORT Status
 #define PORT_OCCUPIED -1

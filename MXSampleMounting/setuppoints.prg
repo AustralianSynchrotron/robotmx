@@ -96,14 +96,7 @@ Function GTInitMagnetPoints() As Boolean
 		GTInitMagnetPoints = False
 		Exit Function
 	EndIf
-	
-	'' Set Angled Placer Tool for probing ports with placer edge (and uangle) rotated by 30 degrees
-	''P51 = TLSet(PLACER_TOOL) -Y(MAGNET_HEAD_RADIUS) +U(30)
-	'' Set Angled Placer Tool for probing ports with placer center (and uangle) rotated by 3 degrees
-	''If this X offset is not included, then probing any sample will give this offset in Distance Errors
-	P51 = TLSet(PLACER_TOOL) -X(MAGNET_HEAD_RADIUS * Sin(DegToRad(ANGLED_PLACER_ANGLE))) +U(ANGLED_PLACER_ANGLE)
-	TLSet ANGLED_PLACER_TOOL, P51
-	
+		
 	'' Above required Points and Tools are defined. Start deriving magnet points
 	'' dumbbell Orientation in World Coordinates when dumbbell is on cradle
 	g_dumbbell_Perfect_Angle = GTAngleToPerfectOrientationAngle(CU(P6))

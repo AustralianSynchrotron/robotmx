@@ -41,32 +41,6 @@ Function GTSetGoniometerPoints(dx As Real, dy As Real, dz As Real, du As Real) A
 		GTSetGoniometerPoints = False
 		Exit Function
 	EndIf
-		
-	'' Setup P28 and P38 so that we can move smoothly from P18 to P22 using ARC
-	'' i.e. ARC P18-P28-P38, then move to P22
-	Real ArcToGonioDX, ArcToGonioDY
-	ArcToGonioDX = CX(P22) - CX(P18)
-	ArcToGonioDY = CY(P22) - CY(P18)
-	
-	''have to arc, moving exceeds arm limit.
-	''1-0.707=0.293
-	If Abs(ArcToGonioDX) > Abs(ArcToGonioDY) Then
-		If ArcToGonioDX * ArcToGonioDY > 0 Then
-			P38 = P18 +X(ArcToGonioDY) +Y(ArcToGonioDY)
-			P28 = P18 +X(0.293 * ArcToGonioDY) +Y(0.707 * ArcToGonioDY)
-		Else
-			P38 = P18 -X(ArcToGonioDY) +Y(ArcToGonioDY)
-			P28 = P18 -X(0.293 * ArcToGonioDY) +Y(0.707 * ArcToGonioDY)
-		EndIf
-	Else
-		If ArcToGonioDX * ArcToGonioDY > 0 Then
-			P38 = P18 +X(ArcToGonioDX) +Y(ArcToGonioDX)
-			P28 = P18 +X(0.707 * ArcToGonioDX) +Y(0.293 * ArcToGonioDX)
-		Else
-			P38 = P18 +X(ArcToGonioDX) -Y(ArcToGonioDX)
-			P28 = P18 +X(0.707 * ArcToGonioDX) -Y(0.293 * ArcToGonioDX)
-		EndIf
-	EndIf
 
 	GTSetGoniometerPoints = True
 Fend
@@ -349,9 +323,7 @@ Function GTMoveGoniometerToPlacer
 	
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	
-	Move P38 CP
-	Arc P28, P18 CP
-	''Move P18 CP
+   	Jump P18 CP
 	
 	Move P27 :Z(0)
 	
@@ -448,13 +420,6 @@ Function GTDismountToInterestedPort As Boolean
 	
 	GTMoveBackToCassetteStandbyPoint
 	GTMoveCassetteStandbyToCradle
-	
-	'' Put dumbbell in Cradle and go Home (P0)
-	If Not GTReturnMagnetAndGoHome Then
-		g_RunResult$ = "GTReturnMagnet failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
-	EndIf
 	
 	GTDismountToInterestedPort = True
 Fend

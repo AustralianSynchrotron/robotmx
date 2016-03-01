@@ -478,8 +478,7 @@ Fend
 Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpToStandbyPoint As Boolean)
 	String msg$
 
-	''Angled Placer tool is used to avoid cavity tail hitting superpuck while probing ports leading to false sample sensing
-	Tool ANGLED_PLACER_TOOL
+	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 	
 	Integer standbyPoint
@@ -535,8 +534,7 @@ Fend
 Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, jumpToStandbyPoint As Boolean)
 	String msg$
 
-	''Angled Placer tool is used to avoid cavity tail hitting superpuck while probing ports leading to false sample sensing
-	Tool ANGLED_PLACER_TOOL
+	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 
 	Integer standbyPoint, destinationPoint
@@ -599,7 +597,6 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 			msg$ = "GTprobeSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-			Move P(standbyPoint)
 		EndIf
 	Else
 		''remove after debug - start
@@ -612,8 +609,6 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTprobeSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-
-		Move P(standbyPoint)
 	EndIf
 	
 	'' Client Update after probing decision has been made
@@ -637,13 +632,15 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	GTLoadPreviousRobotSpeedMode
 	
 	''Recheck port by probing again if PORT_ERROR (port jam) is detected
-	Integer portRecheckMoveDirection
-	portRecheckMoveDirection = -1
-	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
-	Do While ((g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR) And (portRecheckMoveDirection <= 3))
-		GTPortJamRecheck(cassette_position, puckIndex, portIndex, False, portRecheckMoveDirection)
-		portRecheckMoveDirection = portRecheckMoveDirection + 1
-	Loop
+	If (g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR) Then
+		Integer portRecheckMoveDirection
+		portRecheckMoveDirection = -1
+		''ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) ''This seems to be resetting the force sensor to 0 even when it is hitting sample
+		Do While ((g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR) And (portRecheckMoveDirection <= 7))
+			GTPortJamRecheck(cassette_position, puckIndex, portIndex, False, portRecheckMoveDirection)
+			portRecheckMoveDirection = portRecheckMoveDirection + 1
+		Loop
+	EndIf
 	
 	Move P(standbyPoint)
 Fend
@@ -960,6 +957,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 	GTLoadPreviousRobotSpeedMode
 Fend
 
+'' *** Finding actual Port Centers ***
 Function GTfindSPPortWall(forceName As Integer, assumedPortCenterPoint As Integer, portWallPointNum As Integer) As Boolean
 	GTfindSPPortWall = False
 	
@@ -992,8 +990,7 @@ Fend
 Function GTfindSPPortCenter(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, jumpToStandbyPoint As Boolean)
 	String msg$
 
-	''Angled Placer tool is used to avoid cavity tail hitting superpuck while probing ports leading to false sample sensing
-	Tool ANGLED_PLACER_TOOL
+	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
 
 	Integer standbyPoint, assumedPortCenterPoint, realPortCenterPoint
@@ -1131,24 +1128,35 @@ Function GTFindPortCentersInSuperPuck(cassette_position As Integer) As Boolean
 	GTFindPortCentersInSuperPuck = True
 Fend
 
-''Troubleshooting Port Jams
+'' *** Troubleshooting Port Jams ***
 
 Function GTPortJamRecheck(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, calibrateFS As Boolean, moveDirection As Integer)
 	String msg$
 
+	''Get the current position before you change the toolset
+	P453 = RealPos
+	
 	Integer previousTool
 	previousTool = Tool
 	
-	''Depending on move direction move 0.2mm in that direction
+	''Depending on move direction move 0.2mm in that direction (sqrt(2) = 1.4 for 45degree travel)
 	Select moveDirection
 		Case 0
 		 P450 = TLSet(previousTool) +X(0.2) ''Left
 		Case 1
-		 P450 = TLSet(previousTool) -X(0.2) ''Right
+		 P450 = TLSet(previousTool) +X(0.14) -Z(0.14) ''Left-Down		
 		Case 2
-		 P450 = TLSet(previousTool) +Z(0.2) ''Up
-		Case 3
 		 P450 = TLSet(previousTool) -Z(0.2) ''Down
+		Case 3
+		 P450 = TLSet(previousTool) -X(0.14) -Z(0.14) ''Right-Down
+		Case 4
+		 P450 = TLSet(previousTool) -X(0.2) ''Right
+		Case 5
+		 P450 = TLSet(previousTool) -X(0.14) +Z(0.14) ''Right-Up
+		Case 6
+		 P450 = TLSet(previousTool) +Z(0.2) ''Up		 
+		Case 7
+		 P450 = TLSet(previousTool) +X(0.14) +Z(0.14) ''Left-Up	
 		Default
 		 P450 = TLSet(previousTool) ''Same Toolset as before
 	Send
@@ -1175,7 +1183,8 @@ Function GTPortJamRecheck(cassette_position As Integer, puckIndex As Integer, po
 	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	''remove after debug - end
 	
-	''Start from whereever the magnet currently is
+	''Start from whereever the magnet currently is and move with the new toolset
+	Move P453
 	''Move P(standbyPoint)
 
 	''If calibrateFS Then ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
@@ -1211,14 +1220,12 @@ Function GTPortJamRecheck(cassette_position As Integer, puckIndex As Integer, po
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED
 			msg$ = "GTPortJamRecheck: ForceTouch detected Sample at " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-			GTTwistOffMagnet
 		Else
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 			msg$ = "GTPortJamRecheck: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-			Move P(standbyPoint)
 		EndIf
 	Else
 		''remove after debug - start
@@ -1231,8 +1238,6 @@ Function GTPortJamRecheck(cassette_position As Integer, puckIndex As Integer, po
 		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTPortJamRecheck: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-
-		Move P(standbyPoint)
 	EndIf
 	
 	'' Client Update after probing decision has been made
@@ -1248,10 +1253,17 @@ Function GTPortJamRecheck(cassette_position As Integer, puckIndex As Integer, po
 	msg$ = "{'set':'final_port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_FinalPortForce(cassette_position, puckIndex, portIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 
-	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
-	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
-	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
-
+	'' SetProbeSpeed because Superslow speed is really slow for twistoff. 
+	'' Also note that this is not called from GTsetRobotSpeedMode so you cannot GTLoadPreviousRobotSpeedMode to current speed
+	SetProbeSpeed
+	If g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR Then
+		''Stay at the same position
+	ElseIf g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED Then
+		GTTwistOffMagnet
+	Else
+		Move P(standbyPoint)
+	EndIf
+	
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
 	GTLoadPreviousRobotSpeedMode
 

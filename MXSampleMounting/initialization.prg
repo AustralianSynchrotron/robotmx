@@ -44,7 +44,7 @@ Function GTStartRobot
 	''Always check for dumbbell status before you move robot inside dewar
 	GTsetDumbbellStatus(DUMBBELL_STATUS_UNKNOWN)
 		
-   	Power High ''For debugging use low power mode
+   	Power Low ''For debugging use low power mode
    		   	
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)

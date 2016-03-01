@@ -264,22 +264,32 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		
 		MountSamplePort
 		
-		''if Here is not within 10mm from P18, it tells us that there was an error in mounting
-		If Not (Dist(P18, Here) < 10) Then
-			If Not GTCheckAndPickMagnet Then
-				'' This means either sample is on picker or dumbbell lost
-				UpdateClient(TASK_MSG, "StressTestSuperPuck:GTCheckAndPickMagnet failed!", ERROR_LEVEL)
-				Exit Function
-			EndIf
-				
-			If Not GTIsMagnetInGripper Then
-				'' This means either sample is on picker or dumbbell lost
-				UpdateClient(TASK_MSG, "StressTestSuperPuck:GTIsMagnetInGripper failed!", ERROR_LEVEL)
-				Exit Function
-			EndIf
+		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
+		If Not (Dist(P0, Here) < 10) Then
+			Exit Function
 		EndIf
 		
+		''if Here is not within 10mm from P18, it tells us that there was an error in mounting
+		''If Not (Dist(P18, Here) < 10) Then
+		''	If Not GTCheckAndPickMagnet Then
+				'' This means either sample is on picker or dumbbell lost
+		''		UpdateClient(TASK_MSG, "StressTestSuperPuck:GTCheckAndPickMagnet failed!", ERROR_LEVEL)
+		''		Exit Function
+		''	EndIf
+		''		
+		''	If Not GTIsMagnetInGripper Then
+		''		'' This means either sample is on picker or dumbbell lost
+		''		UpdateClient(TASK_MSG, "StressTestSuperPuck:GTIsMagnetInGripper failed!", ERROR_LEVEL)
+		''		Exit Function
+		''	EndIf
+		''EndIf
+		
 		DismountSample
+		
+		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
+		If Not (Dist(P0, Here) < 10) Then
+			Exit Function
+		EndIf
 	Next
 	
 	StressTestSuperPuck = True
@@ -289,7 +299,7 @@ Function StressTestSuperPucks
 	Cls
 	
 	Integer cassette_position, puckIndex
-	For cassette_position = MIDDLE_CASSETTE To NUM_CASSETTES - 1
+	For cassette_position = LEFT_CASSETTE To NUM_CASSETTES - 1
 		For puckIndex = 0 To NUM_PUCKS - 1
 			If Not StressTestSuperPuck(cassette_position, puckIndex, 1) Then
 				UpdateClient(TASK_MSG, "StressTestSuperPuck failed!", ERROR_LEVEL)

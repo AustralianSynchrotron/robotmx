@@ -1,26 +1,14 @@
 =======================================================
-toolset FineTune 2016/02/11 15:13:45
-sideScale for placer  1.1499586924911
-sideScale for picker  1.1603514403105
-Old g_MagnetTransportAngle = 94.496
-new g_MagnetTransportAngle= 94.7098
-Toolset picker: ( 18.2042,  -16.0802,  0,  -0.81617)
-picker twist off toolset: ( 16.1371,  -20.7712,  0,  -0.81617)
-old picker: ( 18.9107,  -16.1618,  0,  -1.03005)
-placer twist off toolset: ( -15.4597,  -20.3211,  0.182831,  179.184)
-Toolset placer: ( -17.3922,  -15.5731,  0.182831,  179.184)
-old placer: ( -16.6835,  -15.5218,  0.182831,  178.97)
-CutMiddle  4position moved from ( 134.773,  409.889,  -221.192,  -84.4701) to ( 134.763,  410.144,  -221.191,  -84.4682), force changed from  0.34958186745644 to  0.0096795335412026
-Freedom:  0.687317
-A not match: from square:  15.7379, from individual case:  15.7319
-new a: 15.7319, b: 18.4314, c: 17.1686, theta: -0.81617
-old a: 15.8192, b: 19.1982, c: 16.4018, theta: -1.03005
-Toolset picker: ( 18.2054,  -15.9928,  0,  -0.81617)
-picker twist off toolset: ( 16.1384,  -20.6839,  0,  -0.81617)
-old picker: ( 18.2042,  -16.0802,  0,  -0.81617)
-placer twist off toolset: ( -15.4584,  -20.2337,  0.182831,  179.184)
-Toolset placer: ( -17.391,  -15.4857,  0.182831,  179.184)
-old placer: ( -17.3922,  -15.5731,  0.182831,  179.184)
-old (absolute magnet position) P56, 117.526, 425.641, -223.016, 94.4962
-new P56, 117.534, 425.693, -223.193, 94.7094 2016/02/11 15:16:08
-magnet level error:  0.24353mm
+toolset FineTune 2016/03/01 18:21:01
+sideScale for placer  1.1483893319964
+sideScale for picker  1.1098671853542
+Old g_MagnetTransportAngle = 94.9979
+new g_MagnetTransportAngle= 94.8549
+Toolset picker: ( 10.6068,  -11.2258,  0,  0.113632)
+picker twist off toolset: ( 8.61615,  -15.9497,  0,  0.113632)
+old picker: ( 11.2099,  -11.1967,  0,  0.25666)
+placer twist off toolset: ( -22.9838,  -16.0124,  0.022583,  180.114)
+Toolset placer: ( -24.9931,  -11.2964,  0.022583,  180.114)
+old placer: ( -24.3897,  -11.3562,  0.022583,  180.257)
+force too small, ignore
+failed to touch in cradle for a in P51
