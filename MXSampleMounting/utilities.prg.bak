@@ -438,8 +438,7 @@ Function InitForceConstants
     g_MinTZ = 0.05
 
     ''g_XYTouchThreshold = 1.5
-    ''g_XYTouchThreshold = 0.5
-    g_XYTouchThreshold = 1.5
+    g_XYTouchThreshold = 0.5
     g_ZTouchThreshold = 0.5
     g_UTouchThreshold = 0.1
     
@@ -761,6 +760,41 @@ Function ForceCross(forceName As Integer, threshold As Real, scanDistance As Rea
     
     ''call ForceScan
     ForceCross = ForceScan(forceName, threshold, ByRef FCDestPosition(), numSteps, fineTune)
+Fend
+Function GTForceScan(forceName As Integer, destinationPoint As Integer, fineTune As Boolean) As Boolean
+  	GTForceScan = False
+  	
+    ''prepare to step-scan
+    GetCurrentPosition(ByRef g_CurrentP())
+    
+    FTHDestP(1) = CX(P(destinationPoint))
+	FTHDestP(2) = CY(P(destinationPoint))
+	FTHDestP(3) = CZ(P(destinationPoint))
+	FTHDestP(4) = CU(P(destinationPoint))
+
+    String msg$
+    
+    FTHNumSteps = HypDistance(ByRef g_CurrentP(), ByRef FTHDestP()) / GetTouchStepSize(forceName)
+    ''Try step scan only if num steps > 0
+    If FTHNumSteps > 0 Then
+	   Print "CurrentPos: ", Here
+	   Print "X: ", FTHDestP(1), "Y: ", FTHDestP(2), "Z: ", FTHDestP(3), "U: ", FTHDestP(4)
+       FTHThreshold = GetTouchThreshold(forceName)
+    
+       If Not ForceScan(forceName, FTHThreshold, ByRef FTHDestP(), FTHNumSteps, fineTune) Then
+     	  UpdateClient(TASK_MSG, "not touched within the range", WARNING_LEVEL)
+	      If g_FlagAbort Then
+	         GenericMove(ByRef FTHInitP(), False)
+	      EndIf
+          Exit Function
+       EndIf
+    Else
+       msg$ = "GTForceScan: Arrived at destination and force did not satisfy threshold, exit"
+       UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+       Exit Function
+    EndIf
+	
+	GTForceScan = True
 Fend
 ''touch. It must start from a neutral place for that force.
 ''the robot may come back to the starting place to do force sensor reset

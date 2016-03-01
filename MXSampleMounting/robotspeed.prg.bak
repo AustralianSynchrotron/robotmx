@@ -16,6 +16,14 @@ Function GTSaveCurrentRobotSpeedMode
 	m_previous_Move_SpeedSetting = SpeedS(1); ''Print "move_speed=" + Str$(m_previous_Move_SpeedSetting);
 Fend
 
+Function SetSuperSlowSpeed
+	Accel SUPERSLOW_GO_ACCEL, SUPERSLOW_GO_DEACCEL
+    Speed SUPERSLOW_GO_SPEED
+    
+    AccelS SUPERSLOW_MOVE_ACCEL, SUPERSLOW_MOVE_DEACCEL
+    SpeedS SUPERSLOW_MOVE_SPEED
+Fend
+
 Function SetProbeSpeed
 	Accel PROBE_GO_ACCEL, PROBE_GO_DEACCEL
     Speed PROBE_GO_SPEED
@@ -48,12 +56,13 @@ Function GTsetRobotSpeedMode(speed_mode As Byte)
 			SetProbeSpeed
 			
 		Case INSIDE_LN2_SPEED
-			''SetProbeSpeed ''For debugging use slow speed
 			SetInsideLN2Speed
 			
 		Case OUTSIDE_LN2_SPEED
-			''SetProbeSpeed ''For debugging use slow speed
 			SetOutsideLN2Speed
+			
+		Case SUPERSLOW_SPEED
+			SetSuperSlowSpeed
 	Send
 Fend
 

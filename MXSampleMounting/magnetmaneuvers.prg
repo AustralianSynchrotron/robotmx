@@ -63,13 +63,14 @@ Function GTIsMagnetInGripper As Boolean
 	Close_Gripper
 
 	Real probeDistanceFromCradleCenter
-	probeDistanceFromCradleCenter = ((MAGNET_LENGTH /2) + (CRADLE_WIDTH /2) - (MAGNET_HEAD_THICKNESS /2)) * CASSETTE_SHRINK_FACTOR
+	''probeDistanceFromCradleCenter = ((MAGNET_LENGTH /2) + (CRADLE_WIDTH /2) - (MAGNET_HEAD_THICKNESS /2)) * CASSETTE_SHRINK_FACTOR ''Picker based probe
+	probeDistanceFromCradleCenter = (-(MAGNET_LENGTH / 2) - (CRADLE_WIDTH / 2) + (3 * MAGNET_HEAD_THICKNESS / 2)) * CASSETTE_SHRINK_FACTOR ''Placer based probe
 	Integer standbyPoint
 	standbyPoint = 52
 	P(standbyPoint) = P3 -X(probeDistanceFromCradleCenter * g_dumbbell_Perfect_cosValue) -Y(probeDistanceFromCradleCenter * g_dumbbell_Perfect_sinValue)
 
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
-		Move P(standbyPoint)
+		Go P(standbyPoint)
 	Else
 		Jump P(standbyPoint)
 	EndIf
@@ -77,7 +78,8 @@ Function GTIsMagnetInGripper As Boolean
 	Real maxDistanceToScan
 	maxDistanceToScan = DISTANCE_P3_TO_P6 ''+ MAGNET_PROBE_DISTANCE_TOLERANCE
 	
-	GTsetRobotSpeedMode(PROBE_SPEED)
+	''GTsetRobotSpeedMode(PROBE_SPEED)
+	GTsetRobotSpeedMode(SUPERSLOW_SPEED)
 	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If ForceTouch(DIRECTION_CAVITY_TO_MAGNET, maxDistanceToScan, False) Then
@@ -87,6 +89,7 @@ Function GTIsMagnetInGripper As Boolean
 		distErrorFromPerfectMagnetPoint = Abs(CX(P(standbyPoint)) - CX(RealPos)) - (DISTANCE_P3_TO_P6 - (MAGNET_AXIS_TO_CRADLE_EDGE + MAGNET_HEAD_RADIUS))
 		
 		If distErrorFromPerfectMagnetPoint < -MAGNET_PROBE_DISTANCE_TOLERANCE Then
+			GTIsMagnetInGripper = True
 			msg$ = "IsMagnetInTong: ForceTouch stopped " + Str$(distErrorFromPerfectMagnetPoint) + "mm before reaching theoretical magnet position."
 			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 		ElseIf distErrorFromPerfectMagnetPoint < MAGNET_PROBE_DISTANCE_TOLERANCE Then
@@ -164,14 +167,14 @@ Function GTCheckAndPickMagnet As Boolean
 		EndIf
 		
 		'' Second check to determine whether magnet is missing
-		If GTIsMagnetInGripper Then ''CheckMagnet
-			GTsetDumbbellStatus(DUMBBELL_IN_GRIPPER) '' assert again
-			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
-		Else
-			GTsetDumbbellStatus(DUMBBELL_MISSING)
-			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
-			Exit Function
-		EndIf
+		''If GTIsMagnetInGripper Then ''CheckMagnet
+		''	GTsetDumbbellStatus(DUMBBELL_IN_GRIPPER) '' assert again
+		''	UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
+		''Else
+		''	GTsetDumbbellStatus(DUMBBELL_MISSING)
+		''	UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
+		''	Exit Function
+		''EndIf
 	EndIf
 	
 	GTCheckAndPickMagnet = True
@@ -321,6 +324,10 @@ Function GTTwistOffMagnet
 			''The angles in this condition have a small mathematical error.
 			''The following is copied from PLACER_TOOL. Although not mathematically perfect, (-90) works.
 			''For mathematical perfection we need to offset CU(Tlset(ANGLED_PLACER_TOOL)) for all angles below
+			twistAngleInGlobalCoordinates = -twistOffAngle ''degrees
+			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))
+			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))
+		Case PORT_JAM_RECHECK_TOOL
 			twistAngleInGlobalCoordinates = -twistOffAngle ''degrees
 			twistMagnetHeadSafeDistanceX = MAGNET_HEAD_THICKNESS * Cos(DegToRad(currentUAngle - 90))
 			twistMagnetHeadSafeDistanceY = MAGNET_HEAD_THICKNESS * Sin(DegToRad(currentUAngle - 90))

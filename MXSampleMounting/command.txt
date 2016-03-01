@@ -1212,4 +1212,202 @@ g_Perfect_MiddleCassette_Angle= 180
 > 
 Print "g_Perfect_RightCassette_Angle=", g_Perfect_RightCassette_Angle
 g_Perfect_RightCassette_Angle= -90
+> jump p0
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
+> reset error
+> reset
+> 
+> 
+> reset
+> 
+> 
+> reset error
+> 
+> 
+> 
+> Tool
+	   5
+> Print Tool
+ 5
+> Tlset
+	Tool 1:      11.373,   -11.196,     0.000,    -0.736
+	Tool 2:     -24.224,   -10.739,     0.124,   179.264
+	Tool 3:     -22.285,   -15.484,     0.094,   179.264
+	Tool 4:     -24.224,   -10.739,     0.124,   179.264
+	Tool 5:     -24.024,   -10.739,     0.124,   179.264
+> jump p1
+> inertia
+0.0100, 0.0000
+> inertia .001, 0
+> inertia
+0.0010, 0.0000
+> motor On
+> inertia
+0.0010, 0.0000
+> inertia .01, 0
+> jump p0
+> inertia .001, 0
+> jump p0
+> jump p1
+> jump p0
+
+> > 
+!!Error: 3100, Syntax error.
+> 
+> 
+> motor On
+> jump p1
+> jump p3
+> move p6
+> tool 1
+> jump p3
+> jump p34 + Z(145)
+> inertia
+0.0010, 0.0000
+> tool 0
+> speed 5
+> jump p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> motor On
+> motor On
+> tool 0
+> jump p1
+> jump p0
+> motor On
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> power High
+> print power
+ 1
+> plist
+P0   = XY(   405.751,  174.333, -120.040,   83.882 )  /R /0   
+P1   = XY(   293.391,  420.755,   -3.381,   66.951 )  /R /0   
+P2   = XY(    90.217,  416.187,   -2.000,   95.170 )  /R /0   
+P3   = XY(    90.217,  416.187, -204.662,   95.170 )  /R /0   
+P4   = XY(   110.217,  416.187, -174.662,   95.170 )  /R /0   
+P5   = XY(   103.467,  433.862, -204.569,  -84.830 )  /R /0   
+P6   = XY(   110.217,  416.187, -204.662,   95.170 )  /R /0   
+P10  = XY(     9.313,  -15.890,    0.000,   -0.736 )  /R /0   
+P11  = XY(   -22.285,  -15.484,    0.094,  179.264 )  /R /0   
+P12  = XY(     8.359,   -1.049,    0.000,   -0.778 )  /R /0   
+P13  = XY(     8.550,   13.069,    0.000,   -0.778 )  /R /0   
+P15  = XY(    98.247,  451.362, -204.569,  -84.830 )  /R /0   
+P16  = XY(   115.747,  433.862, -204.569,  -84.830 )  /R /0   
+P17  = XY(   115.747,  443.862, -204.569,  -84.830 )  /R /0   
+P18  = XY(  -366.435,  337.466,   -7.422,  272.406 )  /R /0   
+P20  = XY(  -336.577, -383.288, -126.037,  272.617 )  /R /0   
+P21  = XY(  -336.577, -383.288, -126.037,  272.617 )  /R /0   
+P22  = XY(  -357.595, -378.724,   -1.000,  272.593 )  /R /0   
+P23  = XY(  -357.595, -383.024, -125.972,  272.593 )  /R /0   
+P24  = XY(  -336.558, -379.000, -125.974,  272.599 )  /R /0   
+P25  = XY(   110.460,  369.766, -204.765,   95.170 )  /R /0   
+P26  = XY(   127.960,  387.266, -204.765,   95.170 )  /R /0   
+P27  = XY(   127.960,  377.266, -204.765,   95.170 )  /R /0   
+P28  = XY(  -360.185,  334.875,   -7.422,  272.406 )  /R /0   
+P30  = XY(   405.751,  174.332, -120.040,   83.882 )  /R /0   
+P34  = XY(    17.437,  469.534, -287.445,    4.084 )  /R /0   left_cassette
+P35  = XY(   -92.061,  396.073, -287.754,    4.139 )  /R /0   middle_cassette
+P36  = XY(    26.602,  338.511, -288.255,    3.777 )  /R /0   right_cassette
+P38  = XY(  -357.595,  328.626,   -7.422,  272.406 )  /R /0   
+P41  = XY(    17.471,  469.819, -268.394,    0.000 )  /R /0   
+P42  = XY(   -92.236,  396.310, -268.708,    0.000 )  /R /0   
+P43  = XY(    26.617,  338.634, -269.213,    0.000 )  /R /0   
+P44  = XY(    17.367,  469.099, -163.394,    0.000 )  /R /0   
+P45  = XY(   -91.848,  395.733, -163.708,    0.000 )  /R /0   
+P46  = XY(    26.509,  338.250, -164.213,    0.000 )  /R /0   
+P50  = XY(    11.373,  -11.196,    0.000,   -0.736 )  /R /0   
+P51  = XY(   -24.224,  -10.739,    0.124,  179.264 )  /R /0   
+P52  = XY(    90.217,  416.187, -204.662,   95.170 )  /R /0   
+P56  = XY(   120.343,  428.523, -204.662,   94.434 )  /R /0   
+P60  = XY(    61.602,  323.511, -153.255, -180.000 )  /R /0   
+P76  = XY(   114.853,  433.865, -204.665,  -84.943 )  /R /0   
+P86  = XY(   110.292,  416.165, -202.887,   95.070 )  /R /0   
+P93  = XY(    80.747,  433.862, -204.569,  -84.830 )  /R /0   
+P94  = XY(    92.960,  387.266, -204.765,   95.170 )  /R /0   
+P111 = XY(   110.143,  417.910, -204.662,   95.170 )  /R /0   
+> p990 = here
+> savepoints "robot1.pts"
+> jump p990
+> inertia
+0.0010, 0.0000
+> fine
+10000, 10000, 10000, 10000
+> fine 10000,10000,100,10000
+> fine
+10000, 10000, 100, 10000
+> fine 10000,10000,10000,10000
+> inertia .1
+> inertia
+0.1000, 0.0000
+> jump here
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> reset
+> jump here
+> inertia 0
+> inertia
+0.0000, 0.0000
+> jump here
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> reset
+> jump here
+> inertia 10
+!!Error: 4002, Specified value is out of allowable range.
+> inertia 5
+!!Error: 4002, Specified value is out of allowable range.
+> inertia 2
+!!Error: 4002, Specified value is out of allowable range.
+> inertia 1
+!!Error: 4002, Specified value is out of allowable range.
+> inertia .99
+!!Error: 4002, Specified value is out of allowable range.
+> inertia .5
+!!Error: 4002, Specified value is out of allowable range.
+> inertia .2
+!!Error: 4002, Specified value is out of allowable range.
+> inertia .1
+> inertia .15
+!!Error: 4002, Specified value is out of allowable range.
+> inertia
+0.1000, 0.0000
+> inertia .1,1
+> inertia .00000
+> inertia
+0.0000, 0.0000
+> inertia .001
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> reset 
+> print p6
+ X:  110.372 Y:  416.366 Z: -204.431 U:   95.040 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  107.373 Y:  415.097 Z: -204.954 U:   95.922 V:    0.000 W:    0.000 /R /0
+> p3 = p6 - X(20)
+> savepoints "robot1.pts"
+> p6 = here
+> p3 = p6 - X(20)
+> savepoints "robot1.pts"
+> motor On
+> move p3
+> tool 0
+> jump p1
+> jump p0
+> tool 0
+> speed 5
+> motor On
+> jump p6
+> move p3
 > 

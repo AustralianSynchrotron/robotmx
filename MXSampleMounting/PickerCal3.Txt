@@ -1,8 +1,8 @@
-picker calibration at 2016/02/10 11:41:33
-touched seat at ( 105.965,  406.164) and ( 104.822,  426.164)
-touched magnet head at ( 109.78,  440.136)
-touch magnet head at Z= -211.652
-g_PickerWallToHead= 0.166687
-SUCCESS: Picker position ( 116.664,  437.564,  -223.389,  -84.5875)
-picker calibration end at 2016/02/10 11:43:22
-P16 moved from ( 116.77,  437.997,  -223.369,  -84.6193) to ( 116.664,  437.564,  -223.389,  -84.5873) 
+picker calibration at 2016/03/01 11:46:15
+touched seat at ( 104.394,  415.758) and ( 105.889,  435.756)
+touched magnet head at ( 110.856,  436.445)
+touch magnet head at Z= -193.077
+g_PickerWallToHead= -1.93681
+SUCCESS: Picker position ( 115.66,  433.889,  -204.813,  -84.1001)
+picker calibration end at 2016/03/01 11:48:04
+P16 moved from ( 115.747,  433.862,  -204.569,  -84.8304) to ( 115.66,  433.889,  -204.813,  -84.1) 

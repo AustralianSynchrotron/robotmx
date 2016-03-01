@@ -1,5 +1,6 @@
 #include "mxrobotdefs.inc"
 #include "genericdefs.inc"
+#include "robotspeed.inc"
 
 Integer m_previous_Go_Acceleration, m_previous_Go_Deceleration
 Real m_previous_Move_Acceleration, m_previous_Move_Deceleration
@@ -14,6 +15,14 @@ Function GTSaveCurrentRobotSpeedMode
 	m_previous_Move_Acceleration = AccelS(1); ''Print "move_acc=" + Str$(m_previous_Move_Acceleration);
 	m_previous_Move_Deceleration = AccelS(2); ''Print "move_dec=" + Str$(m_previous_Move_Deceleration);
 	m_previous_Move_SpeedSetting = SpeedS(1); ''Print "move_speed=" + Str$(m_previous_Move_SpeedSetting);
+Fend
+
+Function SetSuperSlowSpeed
+	Accel SUPERSLOW_GO_ACCEL, SUPERSLOW_GO_DEACCEL
+    Speed SUPERSLOW_GO_SPEED
+    
+    AccelS SUPERSLOW_MOVE_ACCEL, SUPERSLOW_MOVE_DEACCEL
+    SpeedS SUPERSLOW_MOVE_SPEED
 Fend
 
 Function SetProbeSpeed
@@ -52,6 +61,9 @@ Function GTsetRobotSpeedMode(speed_mode As Byte)
 			
 		Case OUTSIDE_LN2_SPEED
 			SetOutsideLN2Speed
+			
+		Case SUPERSLOW_SPEED
+			SetSuperSlowSpeed
 	Send
 Fend
 

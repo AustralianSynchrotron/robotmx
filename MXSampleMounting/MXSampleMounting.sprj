@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/02/26 05:11:31:912,DS:0000008546,CS:20760,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/03/01 01:01:45:031,DS:0000008617,CS:11828,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="2/26/2016 4:07:31 PM"
+	sLastModified="2/29/2016 11:07:56 PM"
 	bBuildComplete=True
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -140,7 +140,7 @@ ProgramFile22 {
 	bCompiled=True
 	bStoreInController=True
 }
-nIncludeFileCount=8
+nIncludeFileCount=9
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bStoreInController=True
@@ -171,6 +171,10 @@ IncludeFile7 {
 }
 IncludeFile8 {
 	sName="jsondefs.inc"
+	bStoreInController=True
+}
+IncludeFile9 {
+	sName="robotspeed.inc"
 	bStoreInController=True
 }
 nPointFileCount=1

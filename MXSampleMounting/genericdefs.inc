@@ -19,6 +19,7 @@
 #define PICKER_TOOL 1
 #define PLACER_TOOL 2
 #define ANGLED_PLACER_TOOL 4	''Angled Placer tool is used to avoid cavity tail hitting superpuck while probing ports leading to false sample sensing
+#define PORT_JAM_RECHECK_TOOL 5
 #define ANGLED_PLACER_ANGLE 0   '' Angle in degrees used to avoid cavity tail hitting superpuck
 
 
@@ -45,33 +46,7 @@
 #define PROBE_SPEED 0
 #define INSIDE_LN2_SPEED 1
 #define OUTSIDE_LN2_SPEED 2
-
-'' Go speed settings for Probing (Same as very slow speed)
-#define PROBE_GO_ACCEL 24
-#define PROBE_GO_DEACCEL 24
-#define PROBE_GO_SPEED 36
-'' Move speed settings for Probing (Same as very slow speed)
-#define PROBE_MOVE_ACCEL 51
-#define PROBE_MOVE_DEACCEL 51
-#define PROBE_MOVE_SPEED 72
-
-'' Go speed settings for INSIDE_LN2
-#define INSIDE_LN2_GO_ACCEL 30
-#define INSIDE_LN2_GO_DEACCEL 30
-#define INSIDE_LN2_GO_SPEED 90
-'' Move speed settings for INSIDE_LN2
-#define INSIDE_LN2_MOVE_ACCEL 150
-#define INSIDE_LN2_MOVE_DEACCEL 150
-#define INSIDE_LN2_MOVE_SPEED 200
-
-'' Go speed settings for OUTSIDE_LN2
-#define OUTSIDE_LN2_GO_ACCEL 40
-#define OUTSIDE_LN2_GO_DEACCEL 40
-#define OUTSIDE_LN2_GO_SPEED 100
-'' Move speed settings for OUTSIDE_LN2
-#define OUTSIDE_LN2_MOVE_ACCEL 4000
-#define OUTSIDE_LN2_MOVE_DEACCEL 4000
-#define OUTSIDE_LN2_MOVE_SPEED 1000
+#define SUPERSLOW_SPEED 3
 
 '' Dumbbell Status
 #define DUMBBELL_STATUS_UNKNOWN 0

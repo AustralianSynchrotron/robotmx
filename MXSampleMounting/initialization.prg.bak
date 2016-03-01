@@ -38,12 +38,13 @@ Function GTStartRobot
    	
 	If Motor = Off Then
 		Motor On
-
-		''Set dumbbell status to unknown whenever motors are started from off state
-		GTsetDumbbellStatus(DUMBBELL_STATUS_UNKNOWN)
 	EndIf
    	
-   	Power Low ''For debugging use low power mode
+
+	''Always check for dumbbell status before you move robot
+	GTsetDumbbellStatus(DUMBBELL_STATUS_UNKNOWN)
+		
+   	Power High ''For debugging use low power mode
    		   	
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
