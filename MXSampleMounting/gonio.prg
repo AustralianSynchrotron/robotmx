@@ -923,8 +923,8 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
     g_SafeToGoHome = True
 
     If g_FlagAbort Then
-        g_RunArgs$ = "beamtool: user abort"
-    	UpdateClient(TASK_MSG, g_RunArgs$, ERROR_LEVEL)
+        g_RunResult$ = "beamtool: user abort"
+    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Close #LOG_FILE_NO
         Jump P0
         Exit Function

@@ -45,8 +45,8 @@ Function GTSetupTilt(cassette_position As Integer, topPointNum As Integer, botto
 	deltaZ = CZ(P(topPointNum)) - CZ(P(bottomPointNum))
 	
 	If (deltaZ < CASSETTE_HEIGHT / 2.0) Then
-		msg$ = "GTSetupTilt: " + GTCassetteName$(cassette_position) + "'s deltaZ is less than half of Normal Cassette Height!"
-		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+		g_RunResult$ = "GTSetupTilt: " + GTCassetteName$(cassette_position) + "'s deltaZ is less than half of Normal Cassette Height!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTSetupTilt = False
 		Exit Function
 	EndIf
@@ -61,8 +61,7 @@ Function GTSetupTilt(cassette_position As Integer, topPointNum As Integer, botto
 	
 	'' Check whether tiltAngle is less than 1 degree
 	If (tiltAngle > 1) Then
-		msg$ = "GTSetupTilt: " + GTCassetteName$(cassette_position) + " has a tiltAngle of " + Str$(tiltAngle) + " degrees!"
-		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+		g_RunResult$ = "GTSetupTilt: " + GTCassetteName$(cassette_position) + " has a tiltAngle of " + Str$(tiltAngle) + " degrees!"
 		GTSetupTilt = False
 		Exit Function
 	EndIf
@@ -117,7 +116,6 @@ Function GTSetupCassetteAllProperties(cassette_position As Integer) As Boolean
 	GTSetupCoordinates cassette_position, Cassette_BottomCenterPoint
 	
 	If Not GTSetupTilt(cassette_position, Cassette_ProbeTopPoint, Cassette_ProbeBottomPoint) Then
-		UpdateClient(TASK_MSG, "GTSetupCassetteAllProperties: error in GTSetupTilt!", ERROR_LEVEL)
 		GTSetupCassetteAllProperties = False
 		Exit Function
 	EndIf

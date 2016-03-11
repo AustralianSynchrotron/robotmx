@@ -1,10 +1,10 @@
-ENVT0100,LM:2016/03/01 07:44:56:406,DS:0000005801,CS:06722,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="debugTests.prg"
+ENVT0100,LM:2016/03/09 06:52:14:758,DS:0000005783,CS:26731,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Command"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -15,7 +15,7 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -26,7 +26,7 @@ ProgramFile2 {
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -48,7 +48,7 @@ ProgramFile4 {
 }
 ProgramFile5 {
 	sName="network.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -59,18 +59,18 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=888
+		nHeight=506
 	}
 }
 ProgramFile7 {
 	sName="appnetwork.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -92,7 +92,7 @@ ProgramFile8 {
 }
 ProgramFile9 {
 	sName="setupcassette.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -213,7 +213,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -236,12 +236,12 @@ ProgramFile21 {
 ProgramFile22 {
 	sName="debugTests.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=628
+		nHeight=619
 	}
 }
 nIncludeFileCount=9
@@ -258,7 +258,7 @@ IncludeFile1 {
 }
 IncludeFile2 {
 	sName="networkdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -269,7 +269,7 @@ IncludeFile2 {
 }
 IncludeFile3 {
 	sName="forcedefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -313,7 +313,7 @@ IncludeFile6 {
 }
 IncludeFile7 {
 	sName="mountingdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -360,20 +360,20 @@ sActiveWindow="main.prg"
 CmdWindow {
 	bOpened=True
 	Window {
-		nLeft=647
-		nTop=72
-		nWidth=897
-		nHeight=406
+		nLeft=550
+		nTop=68
+		nWidth=784
+		nHeight=410
 	}
-	nWinState=0
+	nWinState=2
 }
 RunWindow {
 	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=674
-		nHeight=378
+		nWidth=717
+		nHeight=545
 	}
 	nWinState=0
 }
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=358
-		nTop=230
+		nLeft=571
+		nTop=327
 		nWidth=470
 		nHeight=342
 	}
@@ -399,8 +399,8 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=428
-		nTop=203
+		nLeft=765
+		nTop=140
 		nWidth=827
 		nHeight=530
 	}
@@ -417,8 +417,8 @@ Macros {
 RobotMgr {
 	bOpened=False
 	Window {
-		nLeft=93
-		nTop=23
+		nLeft=12
+		nTop=14
 		nWidth=690
 		nHeight=485
 	}

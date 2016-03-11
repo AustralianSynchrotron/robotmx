@@ -1,27 +1,24 @@
 =======================================================
-Cassette calibration at 2016/01/28 12:56:47
-right cassettecalibration
-Old position ( 25.6435,  333.692,  -307.401,  4.3925)
-Old Bottom ( 25.6173,  333.607,  -287.722)
-old Top ( 25.5797,  333.734,  -182.722)
-Center (Z= -288.401) XY position ( 25.6343,  333.631)
-Center (Z= -183.401) XY position ( 25.5474,  333.734)
-distance between center of top row and bottomt row:  0.134626
-Center (Z= -242.401) XY position ( 25.6094,  333.709)
-picker touched at ( 25.6102,  304.709,  -167.667)
-picker touched at ( 54.6095,  333.709,  -176.207)
-picker touched at ( 25.6113,  362.71,  -176.226)
-picker touched at ( -3.38964,  333.71,  -167.71)
-Z touched at  -167.667,  -176.207,  -176.226,  -167.71
+Cassette calibration at 2016/03/09 12:33:54
+left cassetteinital calibration
+Center (Z= -268.539) XY position ( 17.6638,  469.764)
+Center (Z= -163.54) XY position ( 17.6219,  469.095)
+distance between center of top row and bottomt row:  0.670528
+Center (Z= -222.54) XY position ( 17.6468,  469.478)
+picker touched at ( 17.6477,  498.478,  -147.489)
+picker touched at ( -11.3524,  469.478,  -156.259)
+picker touched at ( 17.6468,  440.478,  -156.484)
+picker touched at ( 46.6479,  469.478,  -147.728)
+Z touched at  -147.489,  -156.258,  -156.484,  -147.728
 calibration cassette
-average= -167.703
-BottomZ =  -307.423
-Touched edge at ( 10.6043,  356.812)
-Touched edge at ( 40.6012,  358.905)
-Touched edge at ( 48.1823,  348.704)
-Touched edge at ( 50.2366,  318.703)
-angle from horizontal edge = 3.99224
-angle from vertical edge = 3.91704
-final Angle = 3.95464
-new position ( 25.6094,  333.709,  -307.423,  3.95464)
-Cassette calibration finished OK at 2016/01/28 13:03:42
+average= -147.74
+BottomZ =  -287.46
+Touched edge at ( 32.6371,  446.416)
+Touched edge at ( 2.63515,  444.523)
+Touched edge at ( -5.37012,  454.476)
+Touched edge at ( -7.30091,  484.476)
+angle from horizontal edge = 3.61093
+angle from vertical edge = 3.68249
+final Angle = 3.64671
+new position ( 17.6468,  469.478,  -287.46,  3.64671)
+Cassette calibration finished OK at 2016/03/09 12:41:32

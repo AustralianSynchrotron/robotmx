@@ -336,26 +336,6 @@ Real FCCStandord
 Real CKMForce
 Integer CKMGripperClosed
 
-Function ForceTest
-	Double forces(7)
-	Integer i
-	String mesg$
-	FSCalibrate()
-	Do While True
-		''Read forces direct from DLL for testing purposes
-		If FSReadForces(ByRef forces()) Then
-			''Success, print result
-			''Print result
-			Print FmtStr$(forces(1), "00.000") + " " + FmtStr$(forces(2), "00.000") + " " + FmtStr$(forces(3), "00.000") + " " + FmtStr$(forces(4), "00.000") + " " + FmtStr$(forces(5), "00.000") + " " + FmtStr$(forces(6), "00.000")
-			Wait 3
-		Else
-			''Print error from api
-			FSGetErrorDesc(ByRef mesg$)
-			Print mesg$
-			Wait .5
-		EndIf
-	Loop
-Fend
 Function InitForceConstants
 
     If g_ConstantInited Then Exit Function
@@ -839,7 +819,7 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
     ''Exit if force too big before moving
     If ForcePassedThreshold(forceName, g_CurrentSingleF, (FTHThresHoldM * FTHThreshold)) Then
     	''Force too big before moving
-        msg$ = "ForceTouch: Force too big before moving.  Exiting ForceTouch"
+        msg$ = "ForceTouch: Force too big before moving @ " + Str$(g_CurrentSingleF) + ".  Exiting ForceTouch"
     	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
         Exit Function
 	EndIf
@@ -847,7 +827,7 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
 	''Exit if force satisfies threshold before moving
     If ForcePassedThreshold(forceName, g_CurrentSingleF, FTHThreshold) Then
     	''Force beyond requested threshold before moving
-        msg$ = "ForceTouch: Force beyond threshold before moving.  Exiting ForceTouch"
+        msg$ = "ForceTouch: Force beyond threshold before moving @ " + Str$(g_CurrentSingleF) + ".  Exiting ForceTouch"
     	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
         Exit Function
 	EndIf
@@ -865,7 +845,6 @@ Function GTForceTouch(ByVal forceName As Integer, ByVal destinationPoint As Inte
     ''Wait 0.1
     g_CurrentSingleF = ReadForce(forceName)
 	g_FinalTouchForce = g_CurrentSingleF
-	''
 	
     If (g_FSForceTriggerStatus <> 0) Then
        	''Trigger occured
@@ -1224,7 +1203,12 @@ Function GenericMove(ByRef position() As Real, tillForce As Boolean)
 	
 	''Try move command first default
     If tillForce Then
+    	''Wake force measure loop for move till force command
+    	ForceMeasureLoopWake
+    	''Do the move
   		Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4)) Till g_FSForceTriggerStatus <> 0
+    	''Done, put force measure loop back to sleep
+    	ForceMeasureLoopSleep
     Else
       	Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4))
     EndIf
@@ -1234,7 +1218,12 @@ Function GenericMove(ByRef position() As Real, tillForce As Boolean)
     ''Move command failed, so use go command instead
 GoInstead:
     If tillForce Then
-	    Go RealPos :U(position(4)) Till g_FSForceTriggerStatus <> 0
+        ''Wake force measure loop for move till force command
+    	ForceMeasureLoopWake
+    	''Do the move
+    	Go RealPos :U(position(4)) Till g_FSForceTriggerStatus <> 0
+    	''Done, put force measure loop back to sleep
+    	ForceMeasureLoopSleep
     Else
         Go RealPos :U(position(4))
     EndIf
@@ -1243,7 +1232,9 @@ GoInstead:
     
 errHandler:
     ''Only the tool orientation was attempted to be changed by the CP statement error
-    If Err = 4035 Then
+    If Err = 4035 Or Err = 4242 Then
+    	''Put force measure loop to sleep
+	    ForceMeasureLoopSleep
         ''Move failed, use go instead
     	EResume GoInstead
     EndIf
@@ -1255,7 +1246,12 @@ Function StepMove(ByRef stepSize() As Real, tillForce As Boolean)
 		
 	''Try move command first default
     If tillForce Then
+        ''Wake force measure loop for move till force command
+    	ForceMeasureLoopWake
+    	''Do the move
 		Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4)) Till g_FSForceTriggerStatus <> 0
+    	''Done, put force measure loop back to sleep
+    	ForceMeasureLoopSleep
     Else
         Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4))
     EndIf
@@ -1265,16 +1261,23 @@ Function StepMove(ByRef stepSize() As Real, tillForce As Boolean)
     ''Move command failed, so use go command instead
 GoInstead:
     If tillForce Then
+        ''Wake force measure loop for move till force command
+    	ForceMeasureLoopWake
+    	''Do the move
     	Go RealPos +U(stepSize(4)) Till g_FSForceTriggerStatus <> 0
+    	''Done, put force measure loop back to sleep
+    	ForceMeasureLoopSleep
     Else
-    	Go RealPos +U(stepSize(4)) Till g_FSForceTriggerStatus <> 0
+    	Go RealPos +U(stepSize(4))
     EndIf
     ''Go command successful
     Exit Function
     
 errHandler:
     ''Only the tool orientation was attempted to be changed by the CP statement error
-    If Err = 4035 Then
+    If Err = 4035 Or Err = 4242 Then
+        ''Put force measure loop to sleep
+	    ForceMeasureLoopSleep
         ''Move failed, use go instead
     	EResume GoInstead
     EndIf
@@ -2379,45 +2382,45 @@ Function CheckEnvironment As Boolean
 	CheckEnvironment = True
 	''check critical global variables
 	If g_Perfect_Cradle_Angle <> 90 Then
-		UpdateClient(TASK_MSG, "Problem detected with global variable g_Perfect_Cradle_Angle", ERROR_LEVEL)
+	    g_RunResult$ = "error Problem detected with global variable g_Perfect_Cradle_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_U4Holder <> 90 Then
-		UpdateClient(TASK_MSG, "Problem detected with global variable g_Perfect_U4Holder", ERROR_LEVEL)
+	    g_RunResult$ = "error Problem detected with global variable g_Perfect_U4Holder"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_DownStream_Angle <> 180 Then
-		UpdateClient(TASK_MSG, "Problem detected with global variable g_Perfect_DownStream_Angle", ERROR_LEVEL)
+		g_RunResult$ = "error Problem detected with global variable g_Perfect_DownStream_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_LeftCassette_Angle <> 90 Then
-		UpdateClient(TASK_MSG, "Problem detected with global variable g_Perfect_LeftCassette_Angle", ERROR_LEVEL)
+     	g_RunResult$ = "error Problem detected with global variable g_Perfect_LeftCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_MiddleCassette_Angle <> 180 Then
-		UpdateClient(TASK_MSG, "Problem detected with global variable g_Perfect_MiddleCassette_Angle", ERROR_LEVEL)
+		g_RunResult$ = "error Problem detected with global variable g_Perfect_MiddleCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_RightCassette_Angle <> -90 Then
-		UpdateClient(TASK_MSG, "Problem detected with global variable g_Perfect_RightCassette_Angle", ERROR_LEVEL)
+		g_RunResult$ = "error Problem detected with global variable g_Perfect_RightCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_MagnetTransportAngle < 80 Or g_MagnetTransportAngle > 100 Then
-		UpdateClient(TASK_MSG, "Problem detected with global variable g_MagnetTransportAngle", ERROR_LEVEL)
+	    g_RunResult$ = "error Problem detected with global variable g_MagnetTransportAngle"
 		CheckEnvironment = False
 	EndIf
 	If g_U4MagnetHolder < 80 Or g_U4MagnetHolder > 100 Then
-		UpdateClient(TASK_MSG, "Problem detected with global variable g_U4MagnetHolder", ERROR_LEVEL)
+        g_RunResult$ = "error Problem detected with global variable g_U4MagnetHolder"
 		CheckEnvironment = False
 	EndIf
 	If Not g_FSInitOK Then
-		UpdateClient(TASK_MSG, "Problem detected with force sensor", ERROR_LEVEL)
+		g_RunResult$ = "error Problem detected with force sensor"
 		CheckEnvironment = False
 	EndIf
-	If Not CheckEnvironment Then
-		UpdateClient(TASK_MSG, "Problem with global variable values, or force sensor", ERROR_LEVEL)
-		UpdateClient(TASK_MSG, "Set global variables by running SetGlobals", ERROR_LEVEL)
-		UpdateClient(TASK_MSG, "Or correct force sensor problem", ERROR_LEVEL)
+	
+	''Send any generated error mesg
+	If g_RunResult$ <> "" Then
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 	EndIf
 Fend
 Function PrintGlobals

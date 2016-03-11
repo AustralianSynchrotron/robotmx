@@ -323,7 +323,7 @@ Function GTMoveGoniometerToPlacer
 	
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	
-   	Jump P18 CP
+   	Move P18 CP
 	
 	Move P27 :Z(0)
 	

@@ -1526,6 +1526,419 @@ P111 = XY(   110.143,  417.910, -204.662,   95.170 )  /R /0
 > speed 5
 > jump p1
 > jump p0
-> g_RunArgs$ = "1 0"
+> Reset
 > 
-> g_RunArgs$ = "lmr 0"
+Motor Off
+> Motor On
+> reset
+> g_RunArgs$ = "1 0"
+> Print g_RunArgs$
+1 0
+> p6 = here
+> savepoints "robot1.pts"
+> p3 = p6 - X(20)
+> savepoints "robot1.pts"
+> print g_teachpoint
+ 999
+> print here
+ X:  355.638 Y:  301.192 Z:    2.615 U:  456.336 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  355.509 Y:  301.275 Z:    2.075 U:  451.505 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  355.262 Y:  301.403 Z:   10.034 U:  523.199 V:    0.000 W:    0.000 /R /0
+> print p*
+ X:  355.283 Y:  301.395 Z:  -38.358 U:   87.657 V:    0.000 W:    0.000 /R /0
+> p6 = here
+> p3 = p6 - X(20)
+> savepoints "robot1.pts"
+> motor On
+> jump p1
+> jump p18
+> move p20 + Y(20)
+> g_RunArgs$ = "1 0 0 0 0"
+> move here + Y(20)
+> move p18
+> jump p1
+> jump p0
+> g_RunArgs$ = "0 0 0 0 0"
+> print g_ProbeRequestString
+!!Error: 2513, Specified point label is not defined.
+> print g_ProbeRequestString$(1)
+!!Error: 3207, Formula is missing.
+> print g_PortsRequestString$
+!!Error: 3116, Array number of dimensions does not match the declaration.
+> print g_PortsRequestString$(0)
+> 
+!!Error: 3100, Syntax error.
+> motor On 
+> jump p0
+!!Error: 4005, Current point position is above the specified LimZ value.
+> move p0
+> print g_RunResult$
+error GTCheckAndPickMagnet: Dumbbell missing.  Place dumbbell in cradle
+> print g_dumbbellStatus
+ 3
+> jump p1
+> jump p0
+> reset error
+> reset
+> reset error
+> reset
+> reset error
+> reset error
+> reset error
+> reset
+> motor On
+> jump p0
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p0
+> power Low
+> power High
+> print power
+ 0
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> 
+ 1
+> 
+ 1
+> 
+ 1
+> 
+ 1
+> 
+ 1
+> 
+ 1
+> 
+ 1
+> 
+ 1
+> 
+ 1
+> 
+ 1
+> 
+ 0
+> power High
+> move p0
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> reset error
+> motor On
+> move p0
+> 
+!!Error: 2300, Robot in use. Cannot execute the motion command when other task is using the robot.
+> 
+> motor On
+> move p0
+> 
+> 
+> 
+> jump p1
+> jump p3
+> move p6
+> jump p1
+> tool
+	   2
+> tool 0
+> jump p1
+> jump p3
+> move p6
+> jump p1
+> jump p0
+> print power
+ 0
+> go p0
+> reset error
+> reset error
+> reset error
+> move p0
+> reset error
+> motor On
+> move p0
+> move p0
+> move p0
+> jump p1
+> jump p6
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> tool 0
+> jump p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+j> jump p6
+> move p3
+> jump p1
+> jump p0
+> g_RunArgs$ = "1 0"
+> tool 0
+> jump p1
+> jump p3
+> move p6
+> move p3
+> jump p1
+> jump p6
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> jump p1
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+j> jump p1
+> jump p0
+> tool 0
+> move p3
+> move p6
+> tool 0
+> move here - Y(10)
+> jump p1
+> jump p0
+> print g_RunArgs$
+1 0
+> print p6
+ X:  105.725 Y:  411.343 Z: -204.663 U:   97.205 V:    0.000 W:    0.000 /R /0
+> tool 0
+> jump p1
+> jump p6
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> motor On
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> motor On
+> jump p1
+> jump p0
+> motor On
+> move p0
+> motor On
+> move p0
+> motor On
+> move p0
+!!Error: 4035, Only the tool orientation was attempted to be changed by the CP statement.
+> jump p0
+> move p0
+> move p0
+> move p0
+> move p0
+> move p0
+> move p0
+> 
+> move p0
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> reset error
+> motor On
+> move p0
+!!Error: 4035, Only the tool orientation was attempted to be changed by the CP statement.
+> 
+> 
+> 
+> 
+> move p0
+> reset error
+> motor On
+> move p0
+!!Error: 4035, Only the tool orientation was attempted to be changed by the CP statement.
+> jump p0
+> print g_RunArgs$
+1 0
+> move p0
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> jump p1
+> jump p3
+> jump p1
+> p6 = here
+> p3 = p6 - X(20)
+> savepoints "robot1.pts"
+> motor On
+> move p3
+> jump p1
+> jump p0
+> g_RunArgs="l 0"
+!!Error: 3100, Syntax error.
+> g_RunArgs$="1 0"
+> g_RunArgs$="l 0"
+> tool 1
+> g_RunArgs$="l 1"
+> tool 1
+> tool 1
+> tool 1
+> print here
+ X:   16.832 Y:  471.095 Z: -138.901 U:   89.829 V:    0.000 W:    0.000 /R /0
+> print here
+ X:   17.799 Y:  471.116 Z: -139.396 U:   89.600 V:    0.000 W:    0.000 /R /0
+> print here
+ X:   16.161 Y:  471.244 Z: -145.417 U:   91.171 V:    0.000 W:    0.000 /R /0
+> print here
+ X:   16.199 Y:  471.217 Z: -145.512 U:   91.066 V:    0.000 W:    0.000 /R /0
+> p990 = Here
+>p990 = Here
+> savepoints "robot1.pts"
+> print p990
+ X:   16.234 Y:  471.205 Z: -145.539 U:   91.008 V:    0.000 W:    0.000 /R /0
+> tool 1
+> motor On
+> jump p990 + Z(2)
+> move p990
+> move here  + Z(20)
+> motor On
+> jump p990 + Z(2)
+> tool 1
+> jump p990 + Z(3)
+> 
+> reset error
+> motor On
+> move p0
+> jump p1
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> print g_RunArgs$
+l 1
+> jump p1
+> jump p3
+> move p6
+> tool 1
+> jump p990 + Z(3)
+> tool 1
+> jump p990 + Z(3)
+> g_RunArgs="l 1"
+!!Error: 3100, Syntax error.
+> g_RunArgs$="l 1"
+> g_RunArgs$="l 1"
+> 
+
+> tool 1
+> jump p990 + Z(3)
+> move p990
+> 
+> tool 1
+> jump p990 + Z(3)
+> tool 1
+> jump p990 + Z(3)
+> move p990
+> tool 1
+> jump p990 + Z(3)
+> move p990
+> move p990 ; Z(2)
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p990 :Z(2)
+> motor On
+> move p990
+> move p990 + Z(20)
+> p991=here
+> savepoints "robot1.pts"
+> g_RunArgs$="m 1"
+> tool 1
+> jump p990 + Z(5)
+> tool 0
+> jump p3
+> speed 5
+> jump p6
+> move p3
+> jump p1
+!!Error: 4006, Target point position is above the specified LimZ value.
+> limz 0
+> jump p1
+> jump p0
+> motor On
+> move p0
+> jump p1
+> jump p3
+> move p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p6
+> tool 1
+> jump p990 + Z(4)
+> move p990
+> g_RunArgs$="l 1"
+> tool 1
+> jump p990 + Z(3)
+> 
+!!Error: 3100, Syntax error.
+> tool 1
+> jump p990 + Z(3)
+> move p990
+> print g_RunArgs$
+l 1
+> print g_FSAverage
+ 140
+> 
+ 140
+> print g_FSAverage
+ 400
+> 
+ 140
+> tool 1
+> jump p990 + Z(3)
+> move p990
+> 
+ 140
+> print g_StopForceMeasureLoop
+ -1
+> 
+ 140
+> 
+ 140
+> print g_FSAverage
+ 140
+> 
+ 140
+> print g_FSAverage
+ 140
+> 
+ 140
+> print g_FSAverage
+ 140
+> 
+ 140
+> 
+ 140
+> tool 1
+> jump p990 + Z(3)
+> move p990
+> print g_RunArgs$
+l 1
+> tool 1
+> jump p990 + Z(3)
+> tool 1
+> jump p990+Z(3)
+> move p990
+> jump p990 +Z(3)
+> 
+> tool 1
+> move p990
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> g_RunArgs$="1 0"
+> move p3
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> reset error
+> move p3
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p3
+> jump p1
+> jump p0
+> tool 0
+> jump p0
+> g_RunArgs$="lm 0"
+> g_RunArgs$="l 0"
+> tool 1
+> jump p3 + Z(140)
+> g_RunArgs$="r 1"
+> 
+> 

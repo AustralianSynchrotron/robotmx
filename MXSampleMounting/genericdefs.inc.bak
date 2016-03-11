@@ -18,7 +18,7 @@
 #define UNIVERSAL_TOOL 0
 #define PICKER_TOOL 1
 #define PLACER_TOOL 2
-#define PORT_JAM_RECHECK_TOOL 5
+#define PORT_JAM_RECHECK_TOOL 4
 
 '' PORT Status
 #define PORT_OCCUPIED -1

@@ -4,9 +4,9 @@
 #define SUPERSLOW_GO_DEACCEL 5
 #define SUPERSLOW_GO_SPEED 1
 '' Move speed settings for Probing Recheck
-#define SUPERSLOW_MOVE_ACCEL 5
-#define SUPERSLOW_MOVE_DEACCEL 5
-#define SUPERSLOW_MOVE_SPEED 1
+#define SUPERSLOW_MOVE_ACCEL 25
+#define SUPERSLOW_MOVE_DEACCEL 25
+#define SUPERSLOW_MOVE_SPEED 10
 
 '' Go speed settings for Probing (Same as very slow speed)
 #define PROBE_GO_ACCEL 24

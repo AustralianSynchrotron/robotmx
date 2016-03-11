@@ -25,28 +25,26 @@
 ''===========================================================
 ''Australian Synchrotron force sensing
 ''Global location for storing forces measured via ATICombinedDAQFT.dll
-''Uses Epson force numbering of 1-6
-Global Double g_FSForces(NUM_FORCES)
 ''Store the forces that caused the last ForceTrigger
 Global Double g_FSTriggeredForces(NUM_FORCES)
+''Stop/start force measureloop as desired
+Boolean m_ForceMeasureLoopSleep
+''Average this many samples in ForceMeasureLoop
+Global Integer g_FSAverage
 ''Global status of force sensing trigger
 Global Integer g_FSForceTriggerStatus
 ''Global status of Australian Synchrotron force sensing
 Global Boolean g_FSInitOK
-Global Boolean g_FSCalibrateStatus
-Global Integer g_FSTriggerForceName
-Global Integer g_FSTriggerThreshold
-Global Integer g_FSTriggerCompareType
 
 ''Force sensing external methods
 Declare FSInit, ASFSDLL, "FSInit",(calibrationFile$ As String, deviceName$ As String) As Boolean
 Declare FSIsServer, ASFSDLL, "FSIsServer", As Boolean
-Declare FSStartAcquisition, ASFSDLL, "FSStartAcquisition",(sampleFrequency As Integer, average As Integer) As Boolean
+Declare FSStartAcquisition, ASFSDLL, "FSStartAcquisition",(sampleFrequency As Integer, samplestoaverage As Integer) As Boolean
 Declare FSSetTrigger, ASFSDLL, "FSSetTrigger",(forceName As Integer, threshold As Double, compareType As Integer) As Boolean
 Declare FSClearTrigger, ASFSDLL, "FSClearTrigger", As Boolean
 Declare FSIsTriggered, ASFSDLL, "FSIsTriggered", As Integer
-Declare FSCalibrate, ASFSDLL, "FSCalibrate", As Boolean
-Declare FSReadForces, ASFSDLL, "FSReadForces",(ByRef forces() As Double) As Boolean
+Declare FSCalibrate, ASFSDLL, "FSCalibrate",(samplestoaverage As Integer) As Boolean
+Declare FSReadForces, ASFSDLL, "FSReadForces",(ByRef forces() As Double, samplestoaverage As Integer) As Boolean
 Declare FSReadTriggeredForces, ASFSDLL, "FSReadTriggeredForces",(ByRef forces() As Double) As Boolean
 Declare FSStopAcquisition, ASFSDLL, "FSStopAcquisition", As Boolean
 Declare FSGetErrorDesc, ASFSDLL, "FSGetErrorDesc",(ByRef mesg$ As String) As Boolean
@@ -62,6 +60,8 @@ Function ForceInit
 	If FSInit(CALFILE, DEVICE) Then
 		''force sensing intialize ok
 		g_FSInitOK = True
+		''Put forcemeasureloop to sleep
+		m_ForceMeasureLoopSleep = True
 		Print "Force sensing initialize ok"
 	Else
 		''force sensing intialize fail
@@ -82,7 +82,7 @@ Function ForceInit
 	EndIf
 	''Start force sensing acquisition @28000KHz averaging 1000 samples
 	''Takes around 1/25 sec to read single sample at this rate
-	If FSStartAcquisition(28000, 1000) Then
+	If FSStartAcquisition(28000, 1) Then
         Print "Force acquisition start ok"
     Else
     	''force sensing intialize fail
@@ -118,82 +118,142 @@ errhandler:
 	Wait 0.1
 	EResume Next
 Fend
+Function ForceTest
+	Double forces(7)
+	Integer i
+	String mesg$
+	''FSCalibrate()
+	Do While True
+		''Read forces direct from DLL for testing purposes
+		If FSReadForces(ByRef forces(), 100) Then
+			''Success, print result
+			''Print result
+			Print FmtStr$(forces(1), "00.000") + " " + FmtStr$(forces(2), "00.000") + " " + FmtStr$(forces(3), "00.000") + " " + FmtStr$(forces(4), "00.000") + " " + FmtStr$(forces(5), "00.000") + " " + FmtStr$(forces(6), "00.000")
+			Wait 3
+		Else
+			Print "error"
+			''Print error from api
+			FSGetErrorDesc(ByRef mesg$)
+			Print mesg$
+			Wait .5
+		EndIf
+	Loop
+Fend
+''Test performance of force system
+Function ForcesTest()
+	Double fvalues(NUM_FORCES)
+	''We keep an eye on the time
+	Long entryTime
+	Long startTime
+	Long nowTime
+	Integer i
+	i = 0
+	''Wait for second tick
+	startTime = Time(2)
+	nowTime = startTime
+	Do While (nowTime = startTime)
+		Wait .001
+		nowTime = Time(2)
+	Loop
+	Print Time$
+	''Wait for second tick
+	startTime = Time(2)
+	nowTime = startTime
+	Do While (nowTime = startTime)
+		ReadForces(ByRef fvalues())
+		nowTime = Time(2)
+		i = i + 1
+	Loop
 
+	Print "In 1 second obtained " + Str$(i) + " samples"
+	''ReadForces(ByRef fvalues())
+	''Print Str$(fvalues(1)) + " " + Str$(fvalues(2)) + " " + Str$(fvalues(3))
+	Print Time$
+Fend
+Function ForceMeasureLoopSleep
+	''Set ForceMeasureLoopSleep to true
+	m_ForceMeasureLoopSleep = True
+Fend
+Function ForceMeasureLoopWake
+	''Set ForceMeasureLoopSleep to false
+	m_ForceMeasureLoopSleep = False
+	''Signal ForceMeasureLoop to wake
+	Signal FORCEMEASURELOOP_WAKE
+	''Wait till ForceMeasureLoop is acquiring
+	WaitSig FORCEMEASURELOOP_ACQUIRING
+Fend
 ''Background force measurement loop
 Function ForceMeasureLoop
+	''Uses Epson force numbering of 1-6
+	Double forces(NUM_FORCES)
 	Integer FSForceTriggerStatus_old
 	Integer i
 	''continuously update measured force variables
 	Do While 1
 		FSForceTriggerStatus_old = g_FSForceTriggerStatus
-		''Attempt to get exclusive access to g_FSForces
-	    SyncLock FSSENSING_LOCK, SIG_LOCK_TIMEOUT
-	    ''only access g_FSForces, g_FSForceTriggerStatus and g_FSTriggeredForces
-	    ''if we get the lock
-		If TW = False Then
-			''measure the forces, and populate g_FSForces with new data
-			FSReadForces(ByRef g_FSForces())
+		If m_ForceMeasureLoopSleep = False Then
+			''Acquire force data
+			FSReadForces(ByRef forces(), g_FSAverage)
 			''Update the force trigger status
 			g_FSForceTriggerStatus = FSIsTriggered()
+		    ''Print "Force measure loop alive and with new samples"
 			''Trigger occurred, make backup of force values
 			''so caller can check force that caused trigger
 			If (g_FSForceTriggerStatus <> 0 And FSForceTriggerStatus_old = 0) Then
 				For i = 1 To NUM_FORCES Step 1
-					g_FSTriggeredForces(i) = g_FSForces(i)
+					g_FSTriggeredForces(i) = forces(i)
 				Next
 			EndIf
-			''Release the lock
-			SyncUnlock FSSENSING_LOCK
-			''Give other threads a chance to get lock
-			Wait .01
+			''Signal function setting g_StopForceMeasureLoop flag
+			''That ForceMeasureLoop is acquiring force data
+			Signal FORCEMEASURELOOP_ACQUIRING
 		Else
-			Print "ForceMeasureLoop cannot get FSSENSING_LOCK"
+			WaitSig FORCEMEASURELOOP_WAKE ''Not acquiring
 		EndIf
 	Loop
 Fend
+
 ''Read a single force and return value to caller
 Function ReadForce(ByVal forceName As Integer) As Double
-    ReadForce = 0
+    ''Uses Epson force numbering of 1-6
+	Double forces(NUM_FORCES)
     Integer ForceIndex
+    ''Default return value
+    ReadForce = 0
+    ''ensure requested forceName is valid    
     ForceIndex = Abs(forceName)
-    ''ensure requested forceName is valid
     If ForceIndex <= 0 Or ForceIndex > 6 Then
         Exit Function
     EndIf
-    ''Attempt to get exclusive access to g_FSForces
-	SyncLock FSSENSING_LOCK, SIG_LOCK_TIMEOUT
-    ''only access g_FSForces if we get the lock
-	If TW = False Then
-	    ReadForce = g_FSForces(ForceIndex)
-	    SyncUnlock FSSENSING_LOCK
-	Else
-		''Failed to get the lock
-		Print "ReadForce failed to get lock for force sensing"
-	EndIf
+	''Read the forces
+	FSReadForces(ByRef forces(), 1000)
+	''Pass force to caller
+	ReadForce = forces(ForceIndex)
 Fend
 ''Read all forces and return value to caller
 Function ReadForces(ByRef returnForces() As Double)
-	Integer i
-	''Attempt to get exclusive access to g_FSForces
-	SyncLock FSSENSING_LOCK, SIG_LOCK_TIMEOUT
-	''only access g_FSForces if we get the lock
-	If TW = False Then
-	    For i = 1 To NUM_FORCES Step 1
-    		''Copy force measurements to provided variable
-	        returnForces(i) = g_FSForces(i)
-	    Next
-	    ''Release the lock
-	    SyncUnlock FSSENSING_LOCK
-	Else
-	    ''Failed to get the lock
-		Print "ReadForces failed to get lock for force sensing"
-    EndIf
+	FSReadForces(ByRef returnForces(), 1000)
 Fend
 ''Setup move until force trigger value
 Function SetupForceTrigger(ByVal forceName As Integer, ByVal threshold As Real)
-	''Print "SetupForceTrigger forceName: " + Str$(forceName) + " threshold: " + Str$(threshold)
+	''Clear previous trigger setting
     FSClearTrigger()
-
+    ''Must clear global trigger manually as g_StopForceMeasureLoop = true now
+    g_FSForceTriggerStatus = 0
+    ''Decide how much to average given forceName
+    Select Abs(forceName)
+    	Case FORCE_ZFORCE
+    		''More noise in Z, so average more
+    		g_FSAverage = 400
+    	Case FORCE_ZTORQUE
+    		''More noise in Z, so average more
+    		g_FSAverage = 400
+   		Default
+   			''Less noise in XY
+   		    ''Averaging for XY
+   			g_FSAverage = 140
+    Send
+    
     ''for torque, "less" is "greater". Will be changed if vendor fix this bug
 #ifdef FORCE_TORQUE_WRONG_DIRECTION
     Select forceName
@@ -234,6 +294,7 @@ Fend
 Function ForceCalibrateAndCheck(thresholdx As Double, thresholdy As Double) As Boolean
 	''mesg to client
 	String msg$
+	Boolean calok
 	''We keep an eye on the time
 	Long startTime
 	Long nowTime
@@ -254,7 +315,7 @@ Function ForceCalibrateAndCheck(thresholdx As Double, thresholdy As Double) As B
 	''Repeat upto 5 times
 	Do While Not done And Not g_FlagAbort
 		''Calibrate the force sensor
-		FSCalibrate()
+		calok = FSCalibrate(1000)
 		''default peak to peak variables
 		minx = 99999
 		maxx = -99999
@@ -264,7 +325,7 @@ Function ForceCalibrateAndCheck(thresholdx As Double, thresholdy As Double) As B
 	    startTime = Time(2)
 		nowTime = Time(2)
 		''Sample over roughly 1 sec to obtain force min and max data for X, Y forces
-		Do While (nowTime - startTime) < 1
+		Do While (nowTime = startTime)
 			ReadForces(ByRef forces())
 			MinMax(forces(1), ByRef minx, ByRef maxx)
 			MinMax(forces(2), ByRef miny, ByRef maxy)
@@ -286,7 +347,7 @@ Function ForceCalibrateAndCheck(thresholdx As Double, thresholdy As Double) As B
 		EndIf
 		''Only attempt 10 times
 		i = i + 1
-		If (i > 9) Then
+		If (i > 19) Then
  			msg$ = "After " + Str$(i) + " calibration attempts"
 			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 			UpdateClient(TASK_MSG, "Force sensor noise level too high", ERROR_LEVEL)

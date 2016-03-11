@@ -106,7 +106,6 @@ Boolean stored_InPos
 Boolean stored_TeachOn
 Boolean stored_SFree(NUM_JOINTS)
 Boolean stored_Brake(NUM_JOINTS)
-Double stored_Force(NUM_FORCES)
 Boolean stored_ErrorOn
 Boolean stored_AtHome
 Integer stored_closestPoint
@@ -204,7 +203,6 @@ Function SendMessage(ByRef netmsg$ As String, lock As Integer, sig As Integer, c
 	EndIf
 Fend
 Function GTInitPrintLevel()
-	''This function is only for testing
 	''The g_PrintLevel variable should be set from python layers
     g_PrintLevel = DEBUG_LEVEL + INFO_LEVEL + WARNING_LEVEL + ERROR_LEVEL
 Fend
@@ -566,7 +564,7 @@ Function IsCmdBackground As Boolean
 				PDel g_teachpoint
 			EndIf
 		Case "Teach"
-			P(g_teachpoint) = Here
+			P(g_teachpoint) = RealPos
 		Case "Quit"
 			''search for requested taskname. if found, then task is running
 			For i = USER_TASKS_START To 32 Step 1
@@ -650,9 +648,6 @@ Function IsCmdBackground As Boolean
 			TmReset BACK_TIMER
 			''Try to process recv cmd using Eval 
 			backretval = EVal(cmd$, backreply$)
-			If toks$(0) = "g_ProbeRequestString$" Then
-				Print cmd$
-			EndIf
 			If backretval = 0 Then
 				''cmd success
 				IsCmdBackground = True
@@ -959,11 +954,6 @@ SkipTaskState:
 	
 			''Check for g_RunArgs$ change of state	
 			stored_RunArgs$ = check_string_state$(g_RunArgs$, stored_RunArgs$, "g_RunArgs$:")
-	
-	        ''Check Forces change of state
-			For i = 1 To NUM_FORCES Step 1
-				stored_Force(i) = check_double_state(g_FSForces(i), stored_Force(i), "Force_GetForce(" + Str$(i) + "):", FORCE_NOISE_EGU)
-			Next
 					
 			''allow other threads to access state variables
 			SyncUnlock STATE_MSG_LOCK
@@ -1525,42 +1515,6 @@ Function task1
 		UpdateClient(TASK_MSG, "log i am doing that", INFO_LEVEL)
 	Loop
 Fend
-
-''Test performance of force system
-Function ForcesTest()
-	Double fvalues(NUM_FORCES)
-	Integer i
-	Print Time$
-	For i = 0 To 1000 Step 1
-		ReadForces(ByRef fvalues())
-		Print Str$(fvalues(1)) + " " + Str$(fvalues(2)) + " " + Str$(fvalues(3))
-	Next
-	Print Time$
-Fend
-Function EpsonForceTest()
-	Real fvalue(1000)
-	Real minf, maxf, diff
-	Integer i
-	minf = 99999
-	maxf = 0.000
-	Print Time$
-	For i = 0 To 1000 Step 1
-		fvalue(i) = Force_GetForce(3)
-		If (fvalue(i) > maxf) Then
-			maxf = fvalue(i)
-		EndIf
-		If (fvalue(i) < minf) Then
-			minf = fvalue(i)
-		EndIf
-
-	Next
-	Print Time$
-	diff = maxf - minf
-	Print "Min force = ", Str$(minf)
-	Print "Max force = ", Str$(maxf)
-	Print "P-P Force = ", Str$(diff)
-	
-Fend
 ''This is the entry point
 Function BGMain
 	Integer last_WindowsState
@@ -1593,7 +1547,7 @@ Function BGMain
 	Xqt ForceMeasureLoop, NoPause
 	
 	''Calibrate the force sensor and check its readback health
-	If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then
+	If Not ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY) Then
 		UpdateClient(TASK_MSG, "Force sensor calibration and check failed, stopping all tasks..", ERROR_LEVEL)
 		''problem with force sensor so exit
 		Exit Function

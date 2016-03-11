@@ -29,7 +29,8 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	EndIf
 	
 	If Not Open_Lid Then
-		UpdateClient(TASK_MSG, "GTJumpHomeToCoolingPointAndWait:Open_Lid failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTJumpHomeToCoolingPointAndWait open lid failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
 	
@@ -55,6 +56,7 @@ Fend
 
 Function GTIsMagnetInGripper As Boolean
 	String msg$
+	Integer prevPowerMode
 	GTIsMagnetInGripper = False
 
 	Tool 0
@@ -70,12 +72,11 @@ Function GTIsMagnetInGripper As Boolean
 	standbyPoint = 52
 	P(standbyPoint) = P3 -X(probeDistanceFromCradleCenter * g_dumbbell_Perfect_cosValue) -Y(probeDistanceFromCradleCenter * g_dumbbell_Perfect_sinValue)
 
-	''remove after debugging - starts
 	'' In Low Power Mode, GTIsMagnetInGripper fails to detect magnet in gripper sometimes so this snippet runs it always in high power mode
-	Integer prevPowerMode
+	''Backup current power setting
 	prevPowerMode = Power
+	''Set high power for this function
 	Power High
-	''remove after debugging - ends
 	
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
 		Go P(standbyPoint)
@@ -119,10 +120,8 @@ Function GTIsMagnetInGripper As Boolean
 	
 	Move P3 ''because this function is called in several places, I didnot like it to end at standbyPoint
 	
-	
-	''remove after debugging - starts
+	''Restore power setting
 	Power prevPowerMode
-	''remove after debugging - ends
 Fend
 
 Function GTPickMagnet As Boolean
@@ -137,14 +136,16 @@ Function GTPickMagnet As Boolean
 	EndIf
 
 	If Not Open_Gripper Then
-		UpdateClient(TASK_MSG, "GTPickMagnet:Open_Gripper failed", ERROR_LEVEL)
+	    g_RunResult$ = "error GTPickMagnet open gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	Move P6 '' gripper catches the magnet in cradle
 
 	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTPickMagnet:Close_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTPickMagnet close gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 
@@ -160,14 +161,13 @@ Function GTCheckAndPickMagnet As Boolean
 	GTCheckAndPickMagnet = False
 	
 	If g_dumbbellStatus = DUMBBELL_MISSING Then
-		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:g_dumbbellStatus says DUMBBELL_MISSING. Please check the robot and update g_dumbbellStatus.", ERROR_LEVEL)
+	    g_RunResult$ = "error GTCheckAndPickMagnet: Dumbbell missing.  Place dumbbell in cradle"
 		Exit Function
 	ElseIf g_dumbbellStatus = DUMBBELL_IN_GRIPPER Then
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:g_dumbbellStatus is DUMBBELL_IN_GRIPPER", INFO_LEVEL)
 	ElseIf g_dumbbellStatus = DUMBBELL_IN_CRADLE Then
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:g_dumbbellStatus is DUMBBELL_IN_CRADLE", INFO_LEVEL)
 		If Not GTPickMagnet Then
-			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTPickMagnet failed!", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	ElseIf GTIsMagnetInGripper Then ''CheckMagnet
@@ -175,7 +175,6 @@ Function GTCheckAndPickMagnet As Boolean
 	Else
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper did not find magnet on tong.", INFO_LEVEL)
 		If Not GTPickMagnet Then
-			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTPickMagnet failed!", ERROR_LEVEL)
 			Exit Function
 		EndIf
 		
@@ -185,7 +184,7 @@ Function GTCheckAndPickMagnet As Boolean
 			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
 		Else
 			GTsetDumbbellStatus(DUMBBELL_MISSING)
-			UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
+			g_RunResult$ = "error GTCheckAndPickMagnet: Dumbbell missing.  Place dumbbell in cradle"
 			GTGoHome
 			Exit Function
 		EndIf
@@ -306,6 +305,7 @@ Fend
 
 Function GTTwistOffMagnet
 	Real currentUAngle
+	Integer prevPowerMode
 	currentUAngle = CU(RealPos)
 	
 	Integer currentTool
@@ -342,14 +342,12 @@ Function GTTwistOffMagnet
 			''If other toolsets are used, do not perform twistoff moves (just return before moving)
 			Exit Function
 	Send
-		
 	
-	''remove after debugging - starts
-	'' In Low Power Mode, GTTwistOffMagnet fails sometimes so this snippet runs it always in high power mode
-	Integer prevPowerMode
+	''Twist off must be in high power mode	
+	''Save current power setting
 	prevPowerMode = Power
+	''Change to high power
 	Power High
-	''remove after debugging - ends
 	
 	''Move safe distance before twistoff so that there is no overpress of sample due to magnet radius
 	Move RealPos +X(twistMagnetRadiusSafeDistanceX) +Y(twistMagnetRadiusSafeDistanceY)
@@ -357,10 +355,8 @@ Function GTTwistOffMagnet
 	''Perform the twistoff, (If the following XY move is not added, then the back of the magnet head's backedge hits the port edge)
 	Move RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates)
 	
-	
-	''remove after debugging - starts
+	''Restore previous power setting	
 	Power prevPowerMode
-	''remove after debugging - ends
 Fend
 
 ''' *** Goniometer Mount/Dismount Moves *** '''

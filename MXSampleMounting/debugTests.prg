@@ -8,6 +8,8 @@
 Function testTong
 		
 	Real distArray(20)
+	Real largest
+	Real smallest
 
 	GTInitialize
 	
@@ -25,7 +27,7 @@ Function testTong
 	Real standbyDistance
 	standbyDistance = 10
 
-	Power Low
+	''Power Low
 	GTsetRobotSpeedMode(PROBE_SPEED)
 	Tool PLACER_TOOL
 	
@@ -33,7 +35,7 @@ Function testTong
 	Jump P453
 
 	Real maxDistanceToScan
-	maxDistanceToScan = standbyDistance + 3.0 '' Tolerance
+	maxDistanceToScan = standbyDistance + 2.0 '' Tolerance
 	
 	Integer standbyPoint
 	standbyPoint = 456
@@ -45,15 +47,31 @@ Function testTong
 		P(standbyPoint) = P453 '':Z(zIndex * -10.0)
 		Move P(standbyPoint)
 		
+		''Wait 5
+		
 		If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 			'' Distance from perfect position
-			distArray(zIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
+			distArray(zIndex) = Dist(P(standbyPoint), RealPos) - standbyDistance
+		EndIf
+	Next
+	
+	largest = -1000
+	smallest = 10000
+	For zIndex = 0 To 20
+		If (distArray(zIndex) > largest) Then
+			largest = distArray(zIndex)
+		EndIf
+		If (distArray(zIndex) < smallest) Then
+			smallest = distArray(zIndex)
 		EndIf
 	Next
 	
 	For zIndex = 0 To 20
 		Print distArray(zIndex)
 	Next
+	Print "largest=" + Str$(largest)
+	Print "smallest=" + Str$(smallest)
+	Print "Diff=" + Str$(largest - smallest)
 	
 	Move P0
 Fend
@@ -265,7 +283,7 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		MountSamplePort
 		
 		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
-		If Not (Dist(P0, Here) < 10) Then
+		If Not (Dist(P0, RealPos) < 10) Then
 			Exit Function
 		EndIf
 		
@@ -287,7 +305,7 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		DismountSample
 		
 		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
-		If Not (Dist(P0, Here) < 10) Then
+		If Not (Dist(P0, RealPos) < 10) Then
 			Exit Function
 		EndIf
 	Next

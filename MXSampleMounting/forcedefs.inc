@@ -23,8 +23,10 @@
 
 ''Australian Synchrotron force sensing
 
-''Epson lock used to serialize access to force sensing variables
-#define FSSENSING_LOCK 8
+''Epson signals used
+#define FORCEMEASURELOOP_ACQUIRING 7
+#define FORCEMEASURELOOP_WAKE 8
+
 ''The calibration file to use
 #define CALFILE "C:\\EpsonRC60\\force\\FT13559.cal"
 ''Force sensor device to use
@@ -44,9 +46,9 @@
 #define NUM_FORCES NUM_JOINTS
 
 ''Dll file location.  Copy used by VB guide and SPEL must have exact same path
-#define ASFSDLL "C:\dcs\RobotDHS-6\src\Debug\ATICombinedDAQFT.dll"
+''#define ASFSDLL "C:\dcs\RobotDHS-6\src\Debug\ATICombinedDAQFT.dll"
 
 ''Dll file location.  Used for testing SPEL side only
-''#define ASFSDLL "C:\dcs\ATICombinedDAQFT\Debug\ATICombinedDAQFT.dll"
+#define ASFSDLL "C:\dcs\ATICombinedDAQFT\Debug\ATICombinedDAQFT.dll"
 
 

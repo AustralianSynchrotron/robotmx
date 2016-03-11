@@ -434,8 +434,6 @@ Function PutCradlePlacerSampleIntoPort As Boolean
 	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
 	
 	If Not GTCheckAndPickMagnet Then
-		g_RunResult$ = "PutCradlePlacerSampleIntoPort->GTCheckAndPickMagnet failed!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	

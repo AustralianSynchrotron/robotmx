@@ -66,10 +66,10 @@ Fend
 Function GTInitBasicPoints() As Boolean
  	'' Check Points P0, P1 and P18
 	If GTCheckPoint(0) And GTCheckPoint(1) And GTCheckPoint(18) Then
-		UpdateClient(TASK_MSG, "GTInitBasicPoints completed.", INFO_LEVEL)
 		GTInitBasicPoints = True
 	Else
-		UpdateClient(TASK_MSG, "GTInitBasicPoints: error in GTCheckPoint!", ERROR_LEVEL)
+		g_RunResult$ = "error GTInitBasicPoints Basic points are not defined"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTInitBasicPoints = False
 	EndIf
 Fend
@@ -78,21 +78,24 @@ Function GTInitMagnetPoints() As Boolean
 	
  	'' Check Points P6, P16 and P26
 	If Not (GTCheckPoint(6) Or GTCheckPoint(16) Or GTCheckPoint(26)) Then
-		UpdateClient(TASK_MSG, "GTInitMagnetPoints: error in GTCheckPoint!", ERROR_LEVEL)
+		g_RunResult$ = "error GTInitMagnetPoints Magnet points are not defined"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTInitMagnetPoints = False
 		Exit Function
 	EndIf
 	
 	'' Check Points P10, P11 and P12
 	If Not (GTCheckPoint(10) Or GTCheckPoint(11) Or GTCheckPoint(12)) Then
-		UpdateClient(TASK_MSG, "GTInitMagnetPoints: error in GTCheckPoint!", ERROR_LEVEL)
+		g_RunResult$ = "error GTInitMagnetPoints Magnet points are not defined"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTInitMagnetPoints = False
 		Exit Function
 	EndIf
 	
 	'' Check Tool 1 (pickerTool) and Tool 2 (placerTool)
 	If Not (GTCheckTool(PICKER_TOOL) Or GTCheckTool(PLACER_TOOL)) Then
-		UpdateClient(TASK_MSG, "GTInitMagnetPoints: error in GTCheckTool!", ERROR_LEVEL)
+		g_RunResult$ = "error GTInitMagnetPoints Magnet toolset is not defined"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTInitMagnetPoints = False
 		Exit Function
 	EndIf
@@ -130,47 +133,47 @@ Function GTInitMagnetPoints() As Boolean
 	'' Middle point of Arc from cooling point to placer magnet
 	P25 = P26 +X(17.5 * -dumbbell_cos_plus_sin) +Y(17.5 * dumbbell_cos_minus_sin)
 	
-	
 	'' To avoid Tong touching dumbbell head (with 0.5 as additional buffer offset)
 	Real tong_dumbbell_gap
 	tong_dumbbell_gap = MAGNET_HEAD_RADIUS + CAVITY_RADIUS + 0.5
 	P5 = P16 +X(tong_dumbbell_gap * -g_dumbbell_Perfect_sinValue) +Y(tong_dumbbell_gap * g_dumbbell_Perfect_cosValue)
 	
-	UpdateClient(TASK_MSG, "GTInitMagnetPoints completed.", INFO_LEVEL)
 	GTInitMagnetPoints = True
 Fend
-
 Function GTInitCassettePoints() As Boolean
 	''Set initial value on entry
 	GTInitCassettePoints = False
 	
  	'' Check Point P6: dumbbell cradle needed to decided cassette orientation
 	If Not GTCheckPoint(6) Then
-		UpdateClient(TASK_MSG, "GTInitCassettePoints: P6 is not valid!", ERROR_LEVEL)
+		g_RunResult$ = "error P6 is not defined"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	'' Check Left Cassette Points P34, P41 and P44
 	If Not (GTCheckPoint(34) Or GTCheckPoint(41) Or GTCheckPoint(44)) Then
-		UpdateClient(TASK_MSG, "GTInitCassettePoints: left cassette points are not valid!", ERROR_LEVEL)
+		g_RunResult$ = "error GTInitCassettePoints Left cassette points are not defined"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	'' Check Middle Cassette Points P35, P42 and P45
 	If Not (GTCheckPoint(35) Or GTCheckPoint(42) Or GTCheckPoint(45)) Then
-		UpdateClient(TASK_MSG, "GTInitCassettePoints: middle cassette points are not valid!", ERROR_LEVEL)
+		g_RunResult$ = "error GTInitCassettePoints Middle Cassette points are not defined"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	'' Check Right Cassette Points P36, P43 and P46
 	If Not (GTCheckPoint(36) Or GTCheckPoint(43) Or GTCheckPoint(46)) Then
-		UpdateClient(TASK_MSG, "GTInitCassettePoints: right cassette points are not valid!", ERROR_LEVEL)
+		g_RunResult$ = "error GTInitCassettePoints Right Cassette points are not defined"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 
 	'' Setup location and required angles for each cassette
 	If Not (GTSetupCassetteAllProperties(LEFT_CASSETTE) Or GTSetupCassetteAllProperties(MIDDLE_CASSETTE) Or GTSetupCassetteAllProperties(RIGHT_CASSETTE)) Then
-		UpdateClient(TASK_MSG, "GTInitCassettePoints: error in GTSetupCassetteAllProperties!", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -188,7 +191,7 @@ Function GTInitGoniometerPoints() As Boolean
 		UpdateClient(TASK_MSG, "GTInitGoniometerPoints completed.", INFO_LEVEL)
 		GTInitGoniometerPoints = True
 	Else
-		UpdateClient(TASK_MSG, "GTInitGoniometerPoints: error in GTCheckPoint!", ERROR_LEVEL)
+		g_RunResult$ = "error GTInitGoniometerPoints P20 is not defined"
 		GTInitGoniometerPoints = False
 	EndIf
 Fend
@@ -196,36 +199,31 @@ Fend
 Function GTInitAllPoints() As Boolean
 
 	If Not GTInitBasicPoints() Then
-		g_RunResult$ = "GTInitAllPoints: error in GTInitBasicPoints!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		''Problem detected
 		GTInitAllPoints = False
 		Exit Function
 	EndIf
 	
 	If Not GTInitMagnetPoints() Then
-		g_RunResult$ = "GTInitAllPoints: error in GTInitMagnetPoints!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		''Problem detected
 		GTInitAllPoints = False
 		Exit Function
 	EndIf
 	
 	If Not GTInitCassettePoints() Then
-		g_RunResult$ = "GTInitAllPoints: error in GTInitCassettePoints!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		''Problem detected
 		GTInitAllPoints = False
 		Exit Function
 	EndIf
 	
 	If Not GTInitGoniometerPoints() Then
-		g_RunResult$ = "GTInitAllPoints: error in GTInitGoniometerPoints!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		''Problem detected
 		GTInitAllPoints = False
 		Exit Function
 	EndIf
 	
+	''Save the points derived
 	SavePoints "robot1.pts"
-	g_RunResult$ = "Success GTInitAllPoints"
-	UpdateClient(TASK_MSG, g_RunResult$, INFO_LEVEL)
 	GTInitAllPoints = True
 Fend
 

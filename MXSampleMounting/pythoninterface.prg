@@ -66,23 +66,17 @@ Function ProbeCassettes
     
 	'' Initialize all constants
 	If Not GTInitialize Then
-		g_RunResult$ = "error GTInitialize failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		''Problem detected
 		Exit Function
 	EndIf
 	
-	GTStartRobot
-	
 	If Not GTJumpHomeToCoolingPointAndWait Then
-		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
-        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		''Problem detected
 		Exit Function
 	EndIf
 
-	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
 	If Not GTCheckAndPickMagnet Then
-		g_RunResult$ = "GTCheckAndPickMagnet: Grabbing magnet failed"
-    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		''Problem detected
 		Exit Function
 	EndIf
 		
@@ -220,12 +214,7 @@ Function MountSamplePort
 			Exit Function
 		EndIf
 		
-		''Only after all the input checks are successful start moving the robot
-		GTStartRobot
-		
 		If Not GTJumpHomeToCoolingPointAndWait Then
-			g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
-		    UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
 		
@@ -288,19 +277,11 @@ Function MountSamplePort
 		Exit Function
 	EndIf
 	
-	''Only after all the input checks are successful start moving the robot
-	GTStartRobot
-	
 	If Not GTJumpHomeToCoolingPointAndWait Then
-		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
-        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 
-	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
 	If Not GTCheckAndPickMagnet Then
-		g_RunResult$ = "GTCheckAndPickMagnet: Grabbing magnet failed"
-    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -371,13 +352,8 @@ Function DismountSample
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
-	
-	''Only after all the input checks are successful start moving the robot
-	GTStartRobot
 
 	If Not GTJumpHomeToCoolingPointAndWait Then
-		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
-	    UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 		
@@ -422,18 +398,11 @@ Function FindPortCenters
 		Exit Function
 	EndIf
 	
-	GTStartRobot
-	
 	If Not GTJumpHomeToCoolingPointAndWait Then
-		g_RunResult$ = "GTJumpHomeToCoolingPointAndWait failed"
-        UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 
-	g_RunResult$ = "progress GTCheckAndPickMagnet: Grabbing Magnet from Cradle"
 	If Not GTCheckAndPickMagnet Then
-		g_RunResult$ = "GTCheckAndPickMagnet: Grabbing magnet failed"
-    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 		

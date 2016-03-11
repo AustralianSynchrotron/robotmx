@@ -1,25 +1,14 @@
 =======================================================
-toolset FineTune 2016/01/28 12:47:44
-sideScale for placer  1.1532981544733
-sideScale for picker  1.1559509783983
-Old g_MagnetTransportAngle = 94.646
-new g_MagnetTransportAngle= 94.8022
-Toolset picker: ( 17.3117,  -15.9212,  0,  0.0934906)
-picker twist off toolset: ( 15.3194,  -20.6444,  0,  0.0934906)
-old picker: ( 17.9235,  -15.969,  0,  -0.0626907)
-placer twist off toolset: ( -16.2805,  -20.696,  -0.133133,  180.094)
-Toolset placer: ( -18.2882,  -15.9792,  -0.133133,  180.094)
-old placer: ( -17.6765,  -15.93,  -0.133133,  179.937)
+toolset FineTune 2016/03/02 11:33:13
+sideScale for placer  1.1639647781849
+sideScale for picker  1.1138055920601
+Old g_MagnetTransportAngle = 94.4183
+new g_MagnetTransportAngle= 94.3554
+Toolset picker: ( 10.6255,  -11.3006,  0,  -0.400345)
+picker twist off toolset: ( 8.59259,  -16.0065,  0,  -0.400345)
+old picker: ( 11.1319,  -11.2919,  0,  -0.337517)
+placer twist off toolset: ( -23.0066,  -15.7857,  0.813721,  179.6)
+Toolset placer: ( -24.9736,  -11.0519,  0.813721,  179.6)
+old placer: ( -24.4674,  -11.0822,  0.813721,  179.663)
 force too small, ignore
-A not match: from square:  15.7888, from individual case:  15.7892
-new a: 15.7892, b: 17.2857, c: 18.3143, theta: 0.0934906
-old a: 15.9494, b: 17.9409, c: 17.6591, theta: -0.0626907
-Toolset picker: ( 17.3115,  -15.761,  0,  0.0934906)
-picker twist off toolset: ( 15.3192,  -20.4842,  0,  0.0934906)
-old picker: ( 17.3117,  -15.9212,  0,  0.0934906)
-placer twist off toolset: ( -16.2808,  -20.5358,  -0.133133,  180.094)
-Toolset placer: ( -18.2885,  -15.8191,  -0.133133,  180.094)
-old placer: ( -18.2882,  -15.9792,  -0.133133,  180.094)
-old (absolute magnet position) P56, 118.089, 424.906, -224.084, 94.6459
-new P56, 118.09, 425.02, -224.147, 94.8022 2016/01/28 12:49:50
-magnet level error:  0.18396mm
+failed to touch in cradle for a in P51

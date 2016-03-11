@@ -1,9 +1,11 @@
 #include "networkdefs.inc"
 #include "genericdefs.inc"
 
+''True if GTInitialize has been called
 Boolean m_GTInitialized
 
 Function GTInitialize() As Boolean
+	''Flag to ensure function is ran once
 	If m_GTInitialized Then
 		GTInitialize = True
 		Exit Function
@@ -12,41 +14,46 @@ Function GTInitialize() As Boolean
 		GTInitialize = False
 		m_GTInitialized = False
 	EndIf
+	
+	''Check global variable status
+	If Not CheckEnvironment Then
+		''Problem detected
+        Exit Function
+   	EndIf
 
+	''Initialize the force constants
 	InitForceConstants
 	
+	''Initialize constants for superpuck
 	initSuperPuckConstants
+	''Initialize updateclient print level.  Controls prints to spel run window
 	GTInitPrintLevel
 	
+	''Set default dumbbell status to unknown
+	GTsetDumbbellStatus(DUMBBELL_STATUS_UNKNOWN)
+	
+	''Check points database
 	If Not GTInitAllPoints Then
-		UpdateClient(TASK_MSG, "GTInitialize:GTInitAllPoints failed", ERROR_LEVEL)
+		''Problem with points database
 		Exit Function
 	EndIf
 	
-	GTInitialize = True
-	m_GTInitialized = True
-Fend
-
-Function GTStartRobot
-	'' This is the only function in GT domain which starts the motors and sets the power   	
-	
-   	If Not CheckEnvironment Then
-   		Motor Off
-		UpdateClient(TASK_MSG, "GTStartRobot:CheckEnvironment failed. So the robot motors are stopped, it can't move.", ERROR_LEVEL)
-        Exit Function
-   	EndIf
-   	
+	''If the motors are off, turn them on
 	If Motor = Off Then
 		Motor On
 	EndIf
-   	
-
-	''Always check for dumbbell status before you move robot inside dewar
-	GTsetDumbbellStatus(DUMBBELL_STATUS_UNKNOWN)
-		
-   	Power Low ''For debugging use low power mode
-   		   	
+	
+	''Until properly tested, startup default for power is low
+	Power Low
+	
+	''Startup default is tool 0
 	Tool 0
+	
+	''Startup default speed
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+	
+	''Set flags showing initialize done
+	GTInitialize = True
+	m_GTInitialized = True
 Fend
 
