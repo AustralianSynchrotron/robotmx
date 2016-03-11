@@ -2234,7 +2234,18 @@ left_cassette A 16
 > 
 > 
 > jump p1
+> 
+> 
+> 
 > jump p0
+> 
+> 
+> 
+> 
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
 > 
 > 
 > Print g_SP_PortStatus(0,0,0)
@@ -2242,4 +2253,12 @@ left_cassette A 16
 > 
 !!Error: 3100, Syntax error.
 > motor On
+> reset error
+> 
+> 
+> 
+> jump p0
+> 
+> print g_runargs$
+left_cassette A 1
 > 

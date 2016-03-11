@@ -210,22 +210,32 @@ Fend
 ''This function is a wrapper for SendMessageWait, and SPELCOM_Event
 ''Do not call from ReceiveSendLoop, it must be separate thread
 Function UpdateClient(receiver As Integer, msg$ As String, level As Integer)
+	Integer numtokens
+	String toks$(0)
 	''Print message locally if within specified g_PrintLevel
 	If ((receiver = TASK_MSG Or receiver = CLIENT_UPDATE) And (g_PrintLevel And level > 0)) Then
 		Print msg$
 	EndIf
-	If receiver = TASK_MSG Then
-		Select level
-			Case DEBUG_LEVEL
-				msg$ = "DEBUG " + msg$
-			Case INFO_LEVEL
-				msg$ = "INFO " + msg$
-			Case WARNING_LEVEL
-				msg$ = "WARNING " + msg$
-			Case ERROR_LEVEL
-				msg$ = "ERROR " + msg$
-	    Send
-    EndIf
+	''Break msg into tokens	
+	numtokens = ParseStr(msg$, toks$(), " ")
+	''convert to upper case
+	toks$(0) = UCase$(toks$(0))
+	''Check msg prefix
+	If toks$(0) <> "DEBUG" And toks$(0) <> "WARNING" And toks$(0) <> "ERROR" And toks$(0) <> "INFO" Then
+		''Add mesg prefix if it wasnt there already
+		If receiver = TASK_MSG Then
+			Select level
+				Case DEBUG_LEVEL
+					msg$ = "DEBUG " + msg$
+				Case INFO_LEVEL
+					msg$ = "INFO " + msg$
+				Case WARNING_LEVEL
+					msg$ = "WARNING " + msg$
+				Case ERROR_LEVEL
+					msg$ = "ERROR " + msg$
+		    Send
+    	EndIf
+	EndIf
 	''send message to network client only if connected
 	''which means that ReceiveSendLoop is looping and can actually send the message
 	If tcpconnected Then

@@ -106,7 +106,6 @@ Boolean stored_InPos
 Boolean stored_TeachOn
 Boolean stored_SFree(NUM_JOINTS)
 Boolean stored_Brake(NUM_JOINTS)
-Double stored_Force(NUM_FORCES)
 Boolean stored_ErrorOn
 Boolean stored_AtHome
 Integer stored_closestPoint
@@ -955,11 +954,6 @@ SkipTaskState:
 	
 			''Check for g_RunArgs$ change of state	
 			stored_RunArgs$ = check_string_state$(g_RunArgs$, stored_RunArgs$, "g_RunArgs$:")
-	
-	        ''Check Forces change of state
-			For i = 1 To NUM_FORCES Step 1
-				stored_Force(i) = check_double_state(g_FSForces(i), stored_Force(i), "Force_GetForce(" + Str$(i) + "):", FORCE_NOISE_EGU)
-			Next
 					
 			''allow other threads to access state variables
 			SyncUnlock STATE_MSG_LOCK

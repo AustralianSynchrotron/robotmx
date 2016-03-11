@@ -44,7 +44,7 @@ Function GTInitialize() As Boolean
 	EndIf
 	
 	''Until properly tested, startup default for power is low
-	Power Low
+	Power High
 	
 	''Startup default is tool 0
 	Tool 0

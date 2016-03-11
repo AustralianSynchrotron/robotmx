@@ -17,7 +17,7 @@ Function GTInitialize() As Boolean
 	
 	''Check global variable status
 	If Not CheckEnvironment Then
-		UpdateClient(TASK_MSG, "GTInitialize: CheckEnvironment failed, check global variables and force sensor", ERROR_LEVEL)
+		''Problem detected
         Exit Function
    	EndIf
 
@@ -34,7 +34,7 @@ Function GTInitialize() As Boolean
 	
 	''Check points database
 	If Not GTInitAllPoints Then
-		UpdateClient(TASK_MSG, "GTInitialize: GTInitAllPoints failed", ERROR_LEVEL)
+		''Problem with points database
 		Exit Function
 	EndIf
 	

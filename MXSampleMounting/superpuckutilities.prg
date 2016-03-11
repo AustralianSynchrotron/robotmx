@@ -698,7 +698,6 @@ Function GTProbeSpecificPortsInSuperPuck(cassette_position As Integer) As Boolea
 					''Run adaptor angle correction for this puck only if puck is present, this reduces time to finish probing
 					UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")", INFO_LEVEL)
 					If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex, False) Then
-						g_RunResult$ = "error GTProbeSpecificPortsInSuperPuck->GTprobeAdaptorAngleCorrection!"
 						UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
 						GTProbeSpecificPortsInSuperPuck = False
 						Exit Function
@@ -1128,7 +1127,6 @@ Function GTFindPortCentersInSuperPuck(cassette_position As Integer) As Boolean
 					''Run adaptor angle correction for this puck only if puck is present, this reduces time to finish probing
 					UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")", INFO_LEVEL)
 					If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex, False) Then
-						g_RunResult$ = "error GTFindPortCentersInSuperPuck->GTprobeAdaptorAngleCorrection!"
 						UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
 						GTFindPortCentersInSuperPuck = False
 						Exit Function

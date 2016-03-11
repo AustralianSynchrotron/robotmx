@@ -962,7 +962,6 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-
 		''Move P(standbyPoint) ''This move is called at the end of this function
 	EndIf
 	

@@ -45,7 +45,7 @@ Function GTParsePortIndex(cassette_position As Integer, columnOrPuckChar$ As Str
 		
 		rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
 		If rowPuckPortIndex <> 0 And rowPuckPortIndex <> (NUM_ROWS - 1) Then
-			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Row Position supplied!", ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Row Position supplied for Calibration Cassette!", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
@@ -119,8 +119,7 @@ Function ProbeCassettes
             	''GTResetSpecificPorts is only called here because the user might forget to call it before probing
 				GTResetSpecificPorts(cassette_position)
 				If Not GTProbeSpecificPorts(cassette_position) Then
-					g_RunResult$ = "GTProbeSpecificPorts Failed"
-					UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+					UpdateClient(TASK_MSG, "GTProbeSpecificPorts Failed", ERROR_LEVEL)
 					Exit Function
 				EndIf
 			EndIf
@@ -129,14 +128,12 @@ Function ProbeCassettes
 	Next
 	
 	'' Return Magnet To Cradle And Go to Home Position
-	g_RunResult$ = "progress GTReturnMagnetAndGoHome"
 	If Not GTReturnMagnetAndGoHome Then
-		g_RunResult$ = "GTReturnMagnetAndGoHome failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTReturnMagnetAndGoHome failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
-	g_RunResult$ = "success GTProbeCassettes"
+	g_RunResult$ = "OK GTProbeCassettes"
     Print "GTProbeCassettes finished at ", Date$, " ", Time$
 Fend
 
@@ -209,8 +206,7 @@ Function MountSamplePort
     
 	'' Initialize all constants
 	If Not GTInitialize Then
-		g_RunResult$ = "error GTInitialize failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTInitialize failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
