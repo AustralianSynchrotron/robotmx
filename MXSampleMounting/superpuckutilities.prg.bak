@@ -698,7 +698,6 @@ Function GTProbeSpecificPortsInSuperPuck(cassette_position As Integer) As Boolea
 					''Run adaptor angle correction for this puck only if puck is present, this reduces time to finish probing
 					UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")", INFO_LEVEL)
 					If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex, False) Then
-						g_RunResult$ = "error GTProbeSpecificPortsInSuperPuck->GTprobeAdaptorAngleCorrection!"
 						UpdateClient(TASK_MSG, "GTProbeSpecificPortsInSuperPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
 						GTProbeSpecificPortsInSuperPuck = False
 						Exit Function
@@ -852,8 +851,8 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 			'' Whether the picker got the sample or not is unknown
 			portStatusBeforePickerCheck = PORT_ERROR
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR
-			msg$ = "GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
-			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+			g_RunResult$ = "error GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		ElseIf distErrorFromPerfectSamplePos < PICKR_TOLERANCE_IN_SP_PORT_DEPTH Then
 			'' Picker has got the sample
 			portStatusBeforePickerCheck = PORT_OCCUPIED
@@ -865,16 +864,16 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			portStatusBeforePickerCheck = PORT_VACANT
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
-			msg$ = "GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+			g_RunResult$ = "error GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
+			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 		EndIf
 	Else
 		''There is no sample (or ForceTouch failure)
 		portStatusBeforePickerCheck = PORT_VACANT
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
-		msg$ = "GTPickerCheckSPPortStatus: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
-		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		g_RunResult$ = "error GTPickerCheckSPPortStatus: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
+		UpdateClient(TASK_MSG, g_RunResult$, INFO_LEVEL)
 	EndIf
 		
 	Move P(standbyPoint)
@@ -939,8 +938,8 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
 			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR
-			msg$ = "GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
-			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
+			g_RunResult$ = "error GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_PUCK Then
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED
 			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
@@ -951,8 +950,8 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
-			msg$ = "GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!"
-			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+			g_RunResult$ = "error GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		EndIf
 
 		GTTwistOffMagnet
@@ -960,8 +959,8 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 		''There is no sample (or ForceTouch failure)
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
-		msg$ = "GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!"
-		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		g_RunResult$ = "error GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		''Move P(standbyPoint) ''This move is called at the end of this function
 	EndIf
 	
@@ -1128,7 +1127,6 @@ Function GTFindPortCentersInSuperPuck(cassette_position As Integer) As Boolean
 					''Run adaptor angle correction for this puck only if puck is present, this reduces time to finish probing
 					UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck->GTprobePuckAngleCorrection(" + GTCassetteName$(cassette_position) + "," + GTpuckName$(puckIndex) + ")", INFO_LEVEL)
 					If Not GTprobeAdaptorAngleCorrection(cassette_position, puckIndex, False) Then
-						g_RunResult$ = "error GTFindPortCentersInSuperPuck->GTprobeAdaptorAngleCorrection!"
 						UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck failed: error in GTprobeAdaptorAngleCorrection!", ERROR_LEVEL)
 						GTFindPortCentersInSuperPuck = False
 						Exit Function

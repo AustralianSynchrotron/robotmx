@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/03/11 02:31:28:399,DS:0000005781,CS:10814,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/03/11 08:10:34:540,DS:0000005783,CS:19540,MA:00-80-4C-A4-84-A0,EI:           
 sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=22
@@ -103,8 +103,8 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="cassettetype.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -125,8 +125,8 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -214,7 +214,7 @@ ProgramFile19 {
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -390,7 +390,7 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=395
+		nLeft=526
 		nTop=324
 		nWidth=470
 		nHeight=342

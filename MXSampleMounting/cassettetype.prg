@@ -69,7 +69,8 @@ Function GTScanCassetteTop(standbyPointNum As Integer, maxZdistanceToScan As Rea
 	
 	ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	If Not (ForceTouch(-FORCE_ZFORCE, maxZdistanceToScan, False)) Then
-		UpdateClient(TASK_MSG, "GTScanCassetteTop: ForceTouch failed to detect Cassette!", ERROR_LEVEL)
+		g_RunResult$ = "error GTScanCassetteTop: ForceTouch failed to detect Cassette!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTScanCassetteTop = False
 		Exit Function
 	EndIf
@@ -225,7 +226,8 @@ Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirst
 	
 	'' Verify that maxHeight-minHeight is less than Calibration Cassette Edge Height
 	If (maxHeight - minHeight) > (CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_FACTOR + MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY) Then
-		UpdateClient(TASK_MSG, "GTfindAverageCassetteHeight failed: maxHeight-minHeight > Calibration Cassette Edge Height!", ERROR_LEVEL)
+		g_RunResult$ = "error GTfindAverageCassetteHeight failed: maxHeight-minHeight > Calibration Cassette Edge Height!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTfindAverageCassetteHeight = False
 		Exit Function
 	EndIf

@@ -35,9 +35,8 @@ Function GTSetGoniometerPoints(dx As Real, dy As Real, dz As Real, du As Real) A
 	P23 = P21 +X(detachDX + sideStepDX) +Y(detachDY + sideStepDY) :Z(-1)
 	
 	If Not GTGonioReachable Then
-		String msg$
-		msg$ = "GTSetGoniometerPoints: GTGonioReachable returned false!"
-		UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+		g_RunResult$ = "GTSetGoniometerPoints: GTGonioReachable returned false!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTSetGoniometerPoints = False
 		Exit Function
 	EndIf
@@ -58,12 +57,18 @@ Function GTsetMountPort(cassette_position As Integer, puckColumnIndex As Integer
 		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_OCCUPIED Then
 			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
 			GTsetMountPort = True
+		Else
+			g_RunResult$ = "error GTsetMountPort: The port is not occupied or is invalid!"
 		EndIf
 	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_OCCUPIED Then
 			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
 			GTsetMountPort = True
+		Else
+			g_RunResult$ = "error GTsetMountPort: The port is not occupied or is invalid!"
 		EndIf
+	Else
+			g_RunResult$ = "error GTsetMountPort: The cassette is unknown or position supplied is invalid!"
 	EndIf
 	
 	GTsendSampleStateJSON
@@ -147,14 +152,16 @@ Function GTCavityGripSampleFromPicker As Boolean
 	''GTCheckSampleInCradlePicker closes gripper before checking
 	''If GTCheckSampleInCradlePicker Then
 		If Not Open_Gripper Then
-			UpdateClient(TASK_MSG, "GTCavityGripSampleFromPicker:Open_Gripper failed", ERROR_LEVEL)
+			g_RunResult$ = "error GTCavityGripSampleFromPicker:Open_Gripper failed"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
 		
 		Arc P15, P16
 
 		If Not Close_Gripper Then
-			UpdateClient(TASK_MSG, "GTCavityGripSampleFromPicker:Close_Gripper failed", ERROR_LEVEL)
+			g_RunResult$ = "error GTCavityGripSampleFromPicker:Close_Gripper failed"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
 		
@@ -178,7 +185,8 @@ Function GTReleaseSampleToGonio As Boolean
 	Move P21
 	
 	If Not Open_Gripper Then
-		UpdateClient(TASK_MSG, "GTReleaseSampleToGonio:Open_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "GTReleaseSampleToGonio:Open_Gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 		
@@ -211,8 +219,7 @@ Function GTMountInterestedPort As Boolean
 	GTMoveToInterestPortStandbyPoint
 	
 	If Not GetSampleFromInterestPort Then
-		g_RunResult$ = "GetSampleFromInterestPort failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GetSampleFromInterestPort failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 		
@@ -221,33 +228,28 @@ Function GTMountInterestedPort As Boolean
 	
 	'' Put dumbbell in Cradle
 	If Not GTReturnMagnet Then
-		g_RunResult$ = "GTReturnMagnet failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTReturnMagnet failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	''GripSample in Cavity From Picker of dumbbell in cradle
 	If Not GTCavityGripSampleFromPicker Then
-		g_RunResult$ = "GTCavityGripSampleFromPicker failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTCavityGripSampleFromPicker failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	If Not GTMoveToGoniometer Then
-		g_RunResult$ = "GTMoveToGoniometer failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTMoveToGoniometer failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	If Not GTReleaseSampleToGonio Then
-		g_RunResult$ = "GTReleaseSampleToGonio failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTReleaseSampleToGonio failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	If Not GTMoveGoniometerToDewarSide Then
-		g_RunResult$ = "GTMoveGoniometerToDewarSide failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTMoveGoniometerToDewarSide failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -272,12 +274,18 @@ Function GTsetDismountPort(cassette_position As Integer, puckColumnIndex As Inte
 		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_VACANT Then
 			g_InterestedSampleStatus = SAMPLE_IN_GONIO
 			GTsetDismountPort = True
+		Else
+			g_RunResult$ = "error GTsetDismountPort: There is already a sample present in the port to which sample is requested to be dismounted."
 		EndIf
 	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_VACANT Then
 			g_InterestedSampleStatus = SAMPLE_IN_GONIO
 			GTsetDismountPort = True
+		Else
+			g_RunResult$ = "error GTsetDismountPort: There is already a sample present in the port to which sample is requested to be dismounted."
 		EndIf
+	Else
+		g_RunResult$ = "error GTsetDismountPort: The cassette is unknown or position supplied is invalid."
 	EndIf
 	
 	GTsendSampleStateJSON
@@ -292,7 +300,8 @@ Function GTCavityGripSampleFromGonio As Boolean
 	Move P23
 	
 	If Not Open_Gripper Then
-		UpdateClient(TASK_MSG, "GTCavityGripSampleFromGonio:Open_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTCavityGripSampleFromGonio:Open_Gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 
@@ -301,7 +310,8 @@ Function GTCavityGripSampleFromGonio As Boolean
 	Move P21
 
 	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTCavityGripSampleFromGonio:Close_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTCavityGripSampleFromGonio:Close_Gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -317,7 +327,8 @@ Fend
 
 Function GTMoveGoniometerToPlacer
 	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTMoveGoniometerToPlacer:Close_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTMoveGoniometerToPlacer:Close_Gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -342,7 +353,8 @@ Function GTReleaseSampleToPlacer As Boolean
 	Move P26
 	
 	If Not Open_Gripper Then
-		UpdateClient(TASK_MSG, "GTReleaseSampleToPlacer:Open_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTReleaseSampleToPlacer:Open_Gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 		
@@ -379,8 +391,7 @@ Function GTDismountToInterestedPort As Boolean
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	
 	If Not GTMoveToGoniometer Then
-		g_RunResult$ = "GTDismountToInterestedPort->GTMoveToGoniometer failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTDismountToInterestedPort->GTMoveToGoniometer failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 		
@@ -389,22 +400,19 @@ Function GTDismountToInterestedPort As Boolean
 	
 	''GripSample in Cavity From Goniometer
 	If Not GTCavityGripSampleFromGonio Then
-		g_RunResult$ = "GTDismountToInterestedPort->GTCavityGripSampleFromGonio failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTDismountToInterestedPort->GTCavityGripSampleFromGonio failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	GTMoveGoniometerToPlacer
 		
 	If Not GTReleaseSampleToPlacer Then
-		g_RunResult$ = "GTDismountToInterestedPort->GTReleaseSampleToPlacer failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTDismountToInterestedPort->GTReleaseSampleToPlacer failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 			
 	If Not GTPickMagnet Then
-		g_RunResult$ = "GTDismountToInterestedPort->GTPickMagnet failed!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTDismountToInterestedPort->GTPickMagnet failed!", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -413,8 +421,7 @@ Function GTDismountToInterestedPort As Boolean
 	GTMoveToInterestPortStandbyPoint
 		
 	If Not GTPutSampleIntoInterestPort Then
-		g_RunResult$ = "GTDismountToInterestedPort->GTPutSampleIntoInterestPort failed! Check log for further details."
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTDismountToInterestedPort->GTPutSampleIntoInterestPort failed! Check log for further details.", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -442,8 +449,7 @@ Function PutCradlePlacerSampleIntoPort As Boolean
 	GTMoveToInterestPortStandbyPoint
 		
 	If Not GTPutSampleIntoInterestPort Then
-		g_RunResult$ = "PutCradlePlacerSampleIntoPort->GTPutSampleIntoInterestPort failed! Check log for further details."
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "PutCradlePlacerSampleIntoPort->GTPutSampleIntoInterestPort failed! Check log for further details.", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -455,15 +461,13 @@ Function TransportSamplePickerToPlacer As Boolean
 	
 	'' Put dumbbell in Cradle
 	If Not GTReturnMagnet Then
-		g_RunResult$ = "TransportSamplePickerToPlacer->GTReturnMagnet failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "TransportSamplePickerToPlacer->GTReturnMagnet failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	''GripSample in Cavity From Picker of dumbbell in cradle
 	If Not GTCavityGripSampleFromPicker Then
-		g_RunResult$ = "TransportSamplePickerToPlacer->GTCavityGripSampleFromPicker failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "TransportSamplePickerToPlacer->GTCavityGripSampleFromPicker failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 
@@ -471,8 +475,7 @@ Function TransportSamplePickerToPlacer As Boolean
 	Arc P3, P27 CP
 	
 	If Not GTReleaseSampleToPlacer Then
-		g_RunResult$ = "TransportSamplePickerToPlacer->GTReleaseSampleToPlacer failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "TransportSamplePickerToPlacer->GTReleaseSampleToPlacer failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	

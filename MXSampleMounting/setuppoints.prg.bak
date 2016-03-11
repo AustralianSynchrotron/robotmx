@@ -140,7 +140,6 @@ Function GTInitMagnetPoints() As Boolean
 	
 	GTInitMagnetPoints = True
 Fend
-
 Function GTInitCassettePoints() As Boolean
 	''Set initial value on entry
 	GTInitCassettePoints = False
@@ -154,21 +153,21 @@ Function GTInitCassettePoints() As Boolean
 	
 	'' Check Left Cassette Points P34, P41 and P44
 	If Not (GTCheckPoint(34) Or GTCheckPoint(41) Or GTCheckPoint(44)) Then
-		g_RunResult$ = "error Left cassette points are not defined"
+		g_RunResult$ = "error GTInitCassettePoints Left cassette points are not defined"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	'' Check Middle Cassette Points P35, P42 and P45
 	If Not (GTCheckPoint(35) Or GTCheckPoint(42) Or GTCheckPoint(45)) Then
-		g_RunResult$ = "error Middle Cassette points are not defined"
+		g_RunResult$ = "error GTInitCassettePoints Middle Cassette points are not defined"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	'' Check Right Cassette Points P36, P43 and P46
 	If Not (GTCheckPoint(36) Or GTCheckPoint(43) Or GTCheckPoint(46)) Then
-		g_RunResult$ = "error Right Cassette points are not defined"
+		g_RunResult$ = "error GTInitCassettePoints Right Cassette points are not defined"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
@@ -192,7 +191,7 @@ Function GTInitGoniometerPoints() As Boolean
 		UpdateClient(TASK_MSG, "GTInitGoniometerPoints completed.", INFO_LEVEL)
 		GTInitGoniometerPoints = True
 	Else
-		g_RunResult$ = "error P20 is not defined"
+		g_RunResult$ = "error GTInitGoniometerPoints P20 is not defined"
 		GTInitGoniometerPoints = False
 	EndIf
 Fend

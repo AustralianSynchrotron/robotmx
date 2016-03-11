@@ -371,8 +371,8 @@ Function StressTestAllCassettes
 	Integer cassette_position
 
 
-	For cassette_position = MIDDLE_CASSETTE To NUM_CASSETTES - 1
-		If Not StressTestCassette(cassette_position, 3) Then ''0
+	For cassette_position = LEFT_CASSETTE To NUM_CASSETTES - 1
+		If Not StressTestCassette(cassette_position, 0) Then
 			UpdateClient(TASK_MSG, "StressTestCassette failed!", ERROR_LEVEL)
 			Exit Function
 		EndIf

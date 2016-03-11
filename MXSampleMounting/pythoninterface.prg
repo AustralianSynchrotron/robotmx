@@ -225,15 +225,13 @@ Function MountSamplePort
 		EndIf
 		
 		If Not GTCheckMagnetForDismount Then
-			g_RunResult$ = "Error in MountSamplePort->GTCheckMagnetForDismount: Check log for further details"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "Error in MountSamplePort->GTCheckMagnetForDismount: Check log for further details", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	
 	
 		If Not GTDismountToInterestedPort Then
-			g_RunResult$ = "Error in MountSamplePort->GTDismountToInterestedPort: Check log for further details"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "Error in MountSamplePort->GTDismountToInterestedPort: Check log for further details", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
@@ -262,8 +260,7 @@ Function MountSamplePort
 		cassetteChar$ = Mid$(RequestTokens$(0), 1, 1)
 		If Not GTParseCassettePosition(cassetteChar$, ByRef cassette_position) Then
 			cassette_position = UNKNOWN_CASSETTE
-			g_RunResult$ = "MountSamplePort: Invalid Cassette Position supplied in g_RunArgs$"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "MountSamplePort: Invalid Cassette Position supplied in g_RunArgs$", ERROR_LEVEL)
 			Exit Function
 		EndIf
 
@@ -271,15 +268,13 @@ Function MountSamplePort
 		rowOrPuckPortChar$ = RequestTokens$(2)
 		
 		If Not GTParsePortIndex(cassette_position, columnOrPuckChar$, rowOrPuckPortChar$, ByRef columnPuckIndex, ByRef rowPuckPortIndex) Then
-			g_RunResult$ = "MountSamplePort: GTParsePortIndex failed! Please check log for further details"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "MountSamplePort: GTParsePortIndex failed! Please check log for further details", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
 	
 	If Not GTsetMountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		g_RunResult$ = "MountSamplePort->GTsetMountPort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "MountSamplePort->GTsetMountPort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -292,12 +287,11 @@ Function MountSamplePort
 	EndIf
 	
 	If Not GTMountInterestedPort Then
-		g_RunResult$ = "Error in MountSamplePort->GTMountInterestedPort: Check log for further details"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "Error in MountSamplePort->GTMountInterestedPort: Check log for further details", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
-	g_RunResult$ = "success MountSamplePort"
+	g_RunResult$ = "OK MountSamplePort"
     Print "MountSamplePort finished at ", Date$, " ", Time$
 Fend
 
@@ -312,8 +306,7 @@ Function DismountSample
     
 	'' Initialize all constants
 	If Not GTInitialize Then
-		g_RunResult$ = "error GTInitialize failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTInitialize failed", ERROR_LEVEL)
 		Exit Function
     EndIf
 	
@@ -338,8 +331,7 @@ Function DismountSample
 		cassetteChar$ = Mid$(RequestTokens$(0), 1, 1)
 		If Not GTParseCassettePosition(cassetteChar$, ByRef cassette_position) Then
 			cassette_position = UNKNOWN_CASSETTE
-			g_RunResult$ = "DismountSample: Invalid Cassette Position supplied in g_RunArgs$"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "DismountSample: Invalid Cassette Position supplied in g_RunArgs$", ERROR_LEVEL)
 			Exit Function
 		EndIf
 
@@ -347,15 +339,13 @@ Function DismountSample
 		rowOrPuckPortChar$ = RequestTokens$(2)
 		
 		If Not GTParsePortIndex(cassette_position, columnOrPuckChar$, rowOrPuckPortChar$, ByRef columnPuckIndex, ByRef rowPuckPortIndex) Then
-			g_RunResult$ = "DismountSample: GTParsePortIndex failed! Please check log for further details"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "DismountSample: GTParsePortIndex failed! Please check log for further details", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
 	
 	If Not GTsetDismountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		g_RunResult$ = "DismountSample->GTsetDismountPort: Sample already Present in Port or Invalid Port Position supplied in g_RunArgs$"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "DismountSample->GTsetDismountPort: Sample already Present in Port or Invalid Port Position supplied in g_RunArgs$", ERROR_LEVEL)
 		Exit Function
 	EndIf
 
@@ -364,25 +354,22 @@ Function DismountSample
 	EndIf
 		
 	If Not GTCheckMagnetForDismount Then
-		g_RunResult$ = "Error in DismountSample->GTCheckMagnetForDismount: Check log for further details"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "Error in DismountSample->GTCheckMagnetForDismount: Check log for further details", ERROR_LEVEL)
 		Exit Function
 	EndIf
 
 	If Not GTDismountToInterestedPort Then
-		g_RunResult$ = "Error in DismountSample->GTDismountToInterestedPort: Check log for further details"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "Error in DismountSample->GTDismountToInterestedPort: Check log for further details", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	'' Put dumbbell in Cradle and go Home (P0)
 	If Not GTReturnMagnetAndGoHome Then
-		g_RunResult$ = "GTReturnMagnet failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTReturnMagnet failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
-	g_RunResult$ = "success DismountSample"
+	g_RunResult$ = "OK DismountSample"
     Print "DismountSample finished at ", Date$, " ", Time$
 Fend
 
@@ -399,8 +386,7 @@ Function FindPortCenters
     
 	'' Initialize all constants
 	If Not GTInitialize Then
-		g_RunResult$ = "error GTInitialize failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTInitialize failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -437,8 +423,7 @@ Function FindPortCenters
 			If GTProbeCassetteType(cassette_position) Then
 				'' Only if the cassette type is known at cassette_position start probing inside the cassette
 				If Not GTFindPortCentersInSuperPuck(cassette_position) Then
-					g_RunResult$ = "error GTFindPortCentersInSuperPuck Failed"
-					UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+					UpdateClient(TASK_MSG, "GTFindPortCentersInSuperPuck Failed", ERROR_LEVEL)
 					Exit Function
 				EndIf
 			EndIf
@@ -447,14 +432,12 @@ Function FindPortCenters
 	Next
 	
 	'' Return Magnet To Cradle And Go to Home Position
-	g_RunResult$ = "progress GTReturnMagnetAndGoHome"
 	If Not GTReturnMagnetAndGoHome Then
-		g_RunResult$ = "GTReturnMagnetAndGoHome failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTReturnMagnetAndGoHome failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
-	g_RunResult$ = "success FindPortCenters"
+	g_RunResult$ = "OK FindPortCenters"
     Print "FindPortCenters finished at ", Date$, " ", Time$
 Fend
 

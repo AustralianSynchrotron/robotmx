@@ -2176,11 +2176,15 @@ lmr 0
 > tool 0
 > 
 > 
+> 
 > motor On
 > jump p3
 > g_runargs$="d lmr"
 > 
 > jump p1
+> 
+!!Error: 4006, Target point position is above the specified LimZ value.
+> 
 > 
 !!Error: 4006, Target point position is above the specified LimZ value.
 > 
@@ -2198,6 +2202,7 @@ lmr 0
 > jump p18
 > move p22
 > limz 0
+> 
 > 
 > 
 > power
@@ -2224,6 +2229,12 @@ lmr 0
 > jump p1
 > 
 > jump p0
+> tool
+	   2
+> tool 0
+> jump p1
+> jump p0
+> 
 > 
 > 
 > print g_runArgs$

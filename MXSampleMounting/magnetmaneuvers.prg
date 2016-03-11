@@ -163,6 +163,7 @@ Function GTCheckAndPickMagnet As Boolean
 	
 	If g_dumbbellStatus = DUMBBELL_MISSING Then
 	    g_RunResult$ = "error GTCheckAndPickMagnet: Dumbbell missing.  Place dumbbell in cradle"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	ElseIf g_dumbbellStatus = DUMBBELL_IN_GRIPPER Then
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:g_dumbbellStatus is DUMBBELL_IN_GRIPPER", INFO_LEVEL)
@@ -186,6 +187,7 @@ Function GTCheckAndPickMagnet As Boolean
 		Else
 			GTsetDumbbellStatus(DUMBBELL_MISSING)
 			g_RunResult$ = "error GTCheckAndPickMagnet: Dumbbell missing.  Place dumbbell in cradle"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			GTGoHome
 			Exit Function
 		EndIf
@@ -199,8 +201,7 @@ Function GTCheckMagnetForDismount As Boolean
 '' if magnet is in gripper, put it in Cradle
 	If g_dumbbellStatus = DUMBBELL_IN_GRIPPER Then
 		If Not GTReturnMagnet Then
-			g_RunResult$ = "GTCheckMagnetForDismount->GTReturnMagnet failed"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "GTCheckMagnetForDismount->GTReturnMagnet failed", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	ElseIf g_dumbbellStatus = DUMBBELL_IN_CRADLE Then
@@ -210,8 +211,7 @@ Function GTCheckMagnetForDismount As Boolean
 		'' Bit of a lengthy process but because this is called only once when robot is restarted, I am sticking with this
 		UpdateClient(TASK_MSG, "GTCheckMagnetForDismount:GTIsMagnetInGripper found magnet on tong.", INFO_LEVEL)
 		If Not GTReturnMagnet Then
-			g_RunResult$ = "GTCheckMagnetForDismount->GTReturnMagnet failed"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "GTCheckMagnetForDismount->GTReturnMagnet failed", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	Else
@@ -227,13 +227,13 @@ Function GTCheckMagnetForDismount As Boolean
 			UpdateClient(TASK_MSG, "GTCheckMagnetForDismount:GTIsMagnetInGripper found magnet on tong after GTPickMagnet.", INFO_LEVEL)
 	
 			If Not GTReturnMagnet Then
-				g_RunResult$ = "GTCheckMagnetForDismount->GTReturnMagnet failed"
-				UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+				UpdateClient(TASK_MSG, "GTCheckMagnetForDismount->GTReturnMagnet failed", ERROR_LEVEL)
 				Exit Function
 			EndIf
 		Else
 			GTsetDumbbellStatus(DUMBBELL_MISSING)
-			UpdateClient(TASK_MSG, "GTCheckMagnetForDismount:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet.", ERROR_LEVEL)
+			g_RunResult$ = "error GTCheckMagnetForDismount:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet."
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
@@ -255,7 +255,8 @@ Function GTReturnMagnet As Boolean
 	Move P6 '' gripper catches the magnet in cradle
 	
 	If Not Open_Gripper Then
-		UpdateClient(TASK_MSG, "GTReturnMagnet:Open_Gripper failed", INFO_LEVEL)
+		g_RunResult$ = "error GTReturnMagnet:Open_Gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, INFO_LEVEL)
 		Exit Function
 	EndIf
 
@@ -361,31 +362,12 @@ Function GTTwistOffMagnet
 Fend
 
 ''' *** Goniometer Mount/Dismount Moves *** '''
-Function GTJumpHomeToGonioDewarSide As Boolean
-	String msg$
-
-	If (Dist(RealPos, P0) < CLOSE_DISTANCE) Then Jump P1
-		
-	If Not Open_Lid Then
-		UpdateClient(TASK_MSG, "GTJumpHomeToGonioDewarSide:Open_Lid failed", ERROR_LEVEL)
-		GTJumpHomeToGonioDewarSide = False
-        Exit Function
-    EndIf
-   
-   	If (Dist(RealPos, P18) < CLOSE_DISTANCE) Then ''Required in StressTestSuperPuck
-   		Go P18 ''Required in StressTestSuperPuck
-   	Else
-		Jump P18
-	EndIf
-	
-	GTJumpHomeToGonioDewarSide = True
-Fend
-
 Function GTMoveToGoniometer As Boolean
 	GTMoveToGoniometer = False
 
 	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTMoveToGoniometer:Close_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTMoveToGoniometer:Close_Gripper failed"
+		UpdateClient(TASK_MSG, g_runresult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -400,7 +382,8 @@ Function GTMoveToGoniometer As Boolean
 		
 		''This function starts from P0 in Dismounting, so open lid before dismounting
 		If Not Open_Lid Then
-			UpdateClient(TASK_MSG, "GTMoveToGoniometer:Open_Lid failed", ERROR_LEVEL)
+			g_RunResult$ = "error GTMoveToGoniometer:Open_Lid failed"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 	        Exit Function
 	    EndIf
 	EndIf
@@ -426,7 +409,8 @@ Fend
 Function GTMoveGoniometerToDewarSide As Boolean
 
 	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTMoveGoniometerToDewarSide:Close_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTMoveGoniometerToDewarSide:Close_Gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTMoveGoniometerToDewarSide = False
 		Exit Function
 	EndIf
