@@ -76,7 +76,7 @@ Function GTIsMagnetInGripper As Boolean
 	''Backup current power setting
 	prevPowerMode = Power
 	''Set high power for this function
-	Power High
+	Power Low
 	
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
 		Go P(standbyPoint)
@@ -97,11 +97,12 @@ Function GTIsMagnetInGripper As Boolean
 		''distErrorFromPerfectMagnetPoint = Dist(P(standbyPoint), RealPos) - (DISTANCE_P3_TO_P6 - (MAGNET_AXIS_TO_CRADLE_EDGE + MAGNET_HEAD_RADIUS))
 		distErrorFromPerfectMagnetPoint = Abs(CX(P(standbyPoint)) - CX(RealPos)) - (DISTANCE_P3_TO_P6 - (MAGNET_AXIS_TO_CRADLE_EDGE + MAGNET_HEAD_RADIUS))
 		
-		If distErrorFromPerfectMagnetPoint < -MAGNET_PROBE_DISTANCE_TOLERANCE Then
-			GTIsMagnetInGripper = True
-			msg$ = "IsMagnetInTong: ForceTouch stopped " + Str$(distErrorFromPerfectMagnetPoint) + "mm before reaching theoretical magnet position."
-			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
-		ElseIf distErrorFromPerfectMagnetPoint < MAGNET_PROBE_DISTANCE_TOLERANCE Then
+		''If distErrorFromPerfectMagnetPoint < -MAGNET_PROBE_DISTANCE_TOLERANCE Then
+		''	GTIsMagnetInGripper = True
+		''	msg$ = "IsMagnetInTong: ForceTouch stopped " + Str$(distErrorFromPerfectMagnetPoint) + "mm before reaching theoretical magnet position."
+		''	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+		''Else
+		If distErrorFromPerfectMagnetPoint < MAGNET_PROBE_DISTANCE_TOLERANCE Then
 			GTIsMagnetInGripper = True
 			msg$ = "IsMagnetInTong: ForceTouch detected magnet in tong with distance error =" + Str$(distErrorFromPerfectMagnetPoint) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
@@ -136,14 +137,16 @@ Function GTPickMagnet As Boolean
 	EndIf
 
 	If Not Open_Gripper Then
-		UpdateClient(TASK_MSG, "GTPickMagnet:Open_Gripper failed", ERROR_LEVEL)
+	    g_RunResult$ = "error GTPickMagnet open gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
 	Move P6 '' gripper catches the magnet in cradle
 
 	If Not Close_Gripper Then
-		UpdateClient(TASK_MSG, "GTPickMagnet:Close_Gripper failed", ERROR_LEVEL)
+		g_RunResult$ = "error GTPickMagnet close gripper failed"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		Exit Function
 	EndIf
 
@@ -157,8 +160,6 @@ Fend
 
 Function GTCheckAndPickMagnet As Boolean
 	GTCheckAndPickMagnet = False
-	Print GTCheckAndPickMagnet
-	Print g_dumbbellStatus
 	
 	If g_dumbbellStatus = DUMBBELL_MISSING Then
 	    g_RunResult$ = "error GTCheckAndPickMagnet: Dumbbell missing.  Place dumbbell in cradle"
@@ -168,7 +169,6 @@ Function GTCheckAndPickMagnet As Boolean
 	ElseIf g_dumbbellStatus = DUMBBELL_IN_CRADLE Then
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:g_dumbbellStatus is DUMBBELL_IN_CRADLE", INFO_LEVEL)
 		If Not GTPickMagnet Then
-		    g_RunResult$ = "error GTCheckAndPickMagnet:GTPickMagnet failed!"
 			Exit Function
 		EndIf
 	ElseIf GTIsMagnetInGripper Then ''CheckMagnet
@@ -176,7 +176,6 @@ Function GTCheckAndPickMagnet As Boolean
 	Else
 		UpdateClient(TASK_MSG, "GTCheckAndPickMagnet:GTIsMagnetInGripper did not find magnet on tong.", INFO_LEVEL)
 		If Not GTPickMagnet Then
-			g_RunResult$ = "error GTCheckAndPickMagnet:GTPickMagnet failed!"
 			Exit Function
 		EndIf
 		

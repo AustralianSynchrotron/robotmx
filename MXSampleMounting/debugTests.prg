@@ -4,6 +4,7 @@
 #include "forcedefs.inc"
 #include "mxrobotdefs.inc"
 #include "networkdefs.inc"
+#include "mountingdefs.inc"
 
 Function testTong
 		
@@ -275,57 +276,109 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 	''debugProbePuck(cassette_position, puckIndex)
 	
 	Integer puckPortIndex
-	For puckPortIndex = startPortIndex To NUM_PUCK_PORTS
+	For puckPortIndex = startPortIndex To NUM_PUCK_PORTS - 1
 		g_RunArgs$ = GTCassetteName$(cassette_position) + " "
 		g_RunArgs$ = g_RunArgs$ + GTpuckName$(puckIndex) + " "
-		g_RunArgs$ = g_RunArgs$ + Str$(puckPortIndex)
-		
-		MountSamplePort
-		
-		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
-		If Not (Dist(P0, RealPos) < 10) Then
-			Exit Function
-		EndIf
-		
-		''if Here is not within 10mm from P18, it tells us that there was an error in mounting
-		''If Not (Dist(P18, Here) < 10) Then
-		''	If Not GTCheckAndPickMagnet Then
-				'' This means either sample is on picker or dumbbell lost
-		''		UpdateClient(TASK_MSG, "StressTestSuperPuck:GTCheckAndPickMagnet failed!", ERROR_LEVEL)
-		''		Exit Function
-		''	EndIf
-		''		
-		''	If Not GTIsMagnetInGripper Then
-		''		'' This means either sample is on picker or dumbbell lost
-		''		UpdateClient(TASK_MSG, "StressTestSuperPuck:GTIsMagnetInGripper failed!", ERROR_LEVEL)
-		''		Exit Function
-		''	EndIf
-		''EndIf
-		
-		DismountSample
+		g_RunArgs$ = g_RunArgs$ + Str$(puckPortIndex + 1)
 		
 		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
 		If Not (Dist(P0, RealPos) < 10) Then
+			UpdateClient(TASK_MSG, "Robot not at P0. DismountSample must have failed. Exiting StressTest", ERROR_LEVEL)
 			Exit Function
 		EndIf
+		
+		MountSamplePort
+	
+		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
+		If Not (Dist(P0, RealPos) < 10) Then
+			UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
+			Exit Function
+		EndIf
+		
+		DismountSample
 	Next
 	
 	StressTestSuperPuck = True
 Fend
 
-Function StressTestSuperPucks
-	Cls
+Function StressTestNormalCassette(cassette_position As Integer, columnIndex As Integer, startRowIndex As Integer) As Boolean
+	StressTestNormalCassette = False
+
+	''debugProbeCassette(cassette_position)
 	
-	Integer cassette_position, puckIndex
-	For cassette_position = LEFT_CASSETTE To NUM_CASSETTES - 1
-		For puckIndex = 0 To NUM_PUCKS - 1
-			If Not StressTestSuperPuck(cassette_position, puckIndex, 1) Then
+	Integer rowIndex
+	For rowIndex = startRowIndex To NUM_ROWS - 1
+		g_RunArgs$ = GTCassetteName$(cassette_position) + " "
+		g_RunArgs$ = g_RunArgs$ + GTcolumnName$(columnIndex) + " "
+		g_RunArgs$ = g_RunArgs$ + Str$(rowIndex + 1)
+		
+		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
+		If Not (Dist(P0, RealPos) < 10) Then
+			UpdateClient(TASK_MSG, "Robot not at P0. DismountSample must have failed. Exiting StressTest", ERROR_LEVEL)
+			Exit Function
+		EndIf
+		
+		MountSamplePort
+	
+		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
+		If Not (Dist(P0, RealPos) < 10) Then
+			UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
+			Exit Function
+		EndIf
+		If g_InterestedSampleStatus <> SAMPLE_IN_GONIO Then
+			''There was no sample in cassette to MountSamplePort did not happen
+			''So skip dismounting
+			UpdateClient(TASK_MSG, "No Sample in Gonio. MountSamplePort did not mount sample . So skipping DismountSample.", INFO_LEVEL)
+			GoTo SkipDismount
+		EndIf
+		
+		DismountSample
+		SkipDismount:
+	Next
+	
+	StressTestNormalCassette = True
+Fend
+
+Function StressTestCassette(cassette_position As Integer, puckColumnStartIndex As Integer) As Boolean
+	StressTestCassette = False
+	
+	Integer puckIndex, columnIndex
+	If g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		For puckIndex = puckColumnStartIndex To NUM_PUCKS - 1
+			If Not StressTestSuperPuck(cassette_position, puckIndex, 0) Then
 				UpdateClient(TASK_MSG, "StressTestSuperPuck failed!", ERROR_LEVEL)
 				Exit Function
 			EndIf
 		Next
+	Else
+		For columnIndex = puckColumnStartIndex To NUM_COLUMNS - 1
+			If Not StressTestNormalCassette(cassette_position, columnIndex, 0) Then
+				UpdateClient(TASK_MSG, "StressTestNormalCassette failed!", ERROR_LEVEL)
+				Exit Function
+			EndIf
+		Next
+	EndIf
+	
+	StressTestCassette = True
+Fend
+
+Function StressTestAllCassettes
+	Cls
+	
+	''Comment the following line if you don't want to probing
+	''debugProbeAllCassettes
+	
+	Integer cassette_position
+
+
+	For cassette_position = MIDDLE_CASSETTE To NUM_CASSETTES - 1
+		If Not StressTestCassette(cassette_position, 3) Then ''0
+			UpdateClient(TASK_MSG, "StressTestCassette failed!", ERROR_LEVEL)
+			Exit Function
+		EndIf
 	Next
 Fend
+
 ''Find Port Centers
 Function debugAllPucksFindCenters(cassette_position As Integer)
 

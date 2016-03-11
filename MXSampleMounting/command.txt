@@ -1941,4 +1941,305 @@ l 1
 > jump p3 + Z(140)
 > g_RunArgs$="r 1"
 > 
+> reset error
+> tool 1
+> g_RunArgs$="r 1"
+> tool 0
+> jump p1
+!!Error: 4006, Target point position is above the specified LimZ value.
+> limz 0
+> jump p1
+> jump p0
+> print g_FSAverage
+ 140
+> jump p1
+> tool 1
+> jump p990 + Z(3)
+> g_RunArgs$="l 1"
+> tool 1
+> g_RunArgs$="1 0"
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> jump p1
+> jump p3
+> move p6
+> jump p1
+> jump p0
+> g_LN2LevelHigh = false
+> print g_LN2LevelHigh
+ 0
+> move p3
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p3
+> jump p1
+> jump p0
+> print g_RunArgs$
+1 0
+> tool
+	   0
+> print here
+ X:  389.963 Y:  178.092 Z: -120.052 U:   86.476 V:    0.000 W:    0.000 /R /0
+> jump p0
+> print here
+ X:  405.751 Y:  174.333 Z: -120.040 U:   83.882 V:    0.000 W:    0.000 /R /0
+> print p1
+ X:  293.391 Y:  420.755 Z:   -3.381 U:   66.951 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   85.646 Y:  411.441 Z: -204.668 U:   97.160 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  105.646 Y:  411.441 Z: -204.668 U:   97.160 V:    0.000 W:    0.000 /R /0
+> tool 0
+> jump p1
+> jump p3
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> tool 0
+> jump p1
+> jump p0
+> g_RunArgs$="lmr 0"
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> jump p990 + Z(3)
+> 
+> 
+
+
+> 
+> 
+> 
+> move p990
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+!!Error: 4006, Target point position is above the specified LimZ value.
+> limz 0
+> jump p1
+> jump p0
+> 
+> 
+> 
+> 
+!!Error: 3205, Point is not specified.
+> 
+> 
+> 
+> 
+> 
+ 140
+> 
+ 140
+> 
+ 140
+> g_FSAverage
+!!Error: 3100, Syntax error.> 
+> Print g_PortsRequestString$(0)
+100000011000000110000001100000011000000110000001100000011000000110000001100000011000000110000001
+> 
+!!Error: 3207, Formula is missing.
+> 
+tool
+	   1
+> tool 0
+> jump p6
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p3
+> jump p1
+> jump p0
+> print g_runargs$
+lmr 0
+> print g_runargs$
+lmr 0
+> g_runargs$ = "l 0"
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+!!Error: 4006, Target point position is above the specified LimZ value.
+> limz 0
+> jump p1
+> jump p0
+> g_DumbbellStatus = 0
+> 
+> motor On
+> tool 0
+> 
+> speed 5
+> 
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> speed 5
+> tool 0
+> jump p6
+> move p3
+> jump p0
+> 
+> move here + Z(5)
+> accel
+	  10	  10
+	  10	  10
+	  10	  10
+> accel 2
+!!Error: 3101, Parameter count error.
+> Accels
+	  200.000	  200.000
+	  200.000	  200.000
+	  200.000	  200.000
+> Accels 10,10
+> accels
+	   10.000	   10.000
+	   10.000	   10.000
+	   10.000	   10.000
+> move here + Z(20)
+> tool 0
+> jump p1
+> jump p0
+> move here - Z(50)
+> move here + Z(120)
+> move here - Z(120)
+> move here + Z(120)
+> move here + Y(10)
+> speed 5
+> 
+> tool 0
+> jump p1
+> jump p0
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> print g_FSAverage
+ 8
+> g_RunArgs$ ="mr 0"
+> 
+> tool 0
+> jump p1
+
+> jump p0
+> 
+> jump p6> 
+!!Error: 3205, Point is not specified.
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> 
+> 
+> move p3
+> jump p1
+> jump p0
+> 
+> 
+> tool 0
+> 
+> 
+> motor On
+> jump p3
+> g_runargs$="d lmr"
+> 
+> jump p1
+> 
+!!Error: 4006, Target point position is above the specified LimZ value.
+> 
+> 
+!!Error: 4006, Target point position is above the specified LimZ value.
+> 
+> jump p3
+> move p6
+> jump p3
+> reset error
+> move p3
+> jump p1
+
+!!Error: 3205, Point is not specified.
+> jump p18
+> move p22
+> limz 0
+> 
+> 
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> move p23
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> 
+> print p23
+ X: -351.181 Y: -386.105 Z: -113.633 U:  272.833 V:    0.000 W:    0.000 /R /0
+> 
+ X: -351.181 Y: -386.105 Z: -113.633 U:  272.833 V:    0.000 W:    0.000 /R /0
+> print p21
+ X: -330.183 Y: -386.135 Z: -113.634 U:  272.851 V:    0.000 W:    0.000 /R /0
+> move p21
+> motor On
+> move P22 :Z(CZ(P23))
+> move p21
+> g_RunArgs$="1 0 0 0 0"
+> move here + Y(20)
+> move p18
+> jump p1
+> 
+> jump p0
+> 
+> 
+> print g_runArgs$
+middle_cassette A 8
+> 
+left_cassette A 16
+> g_runargs$ = "m a 16"
+> 
+> 
+> jump p1
+> jump p0
+> 
+> 
+> Print g_SP_PortStatus(0,0,0)
+ -1
+> 
+!!Error: 3100, Syntax error.
+> motor On
 > 

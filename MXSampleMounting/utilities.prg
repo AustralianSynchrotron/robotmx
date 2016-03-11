@@ -419,7 +419,7 @@ Function InitForceConstants
 
     ''g_XYTouchThreshold = 1.5
     g_XYTouchThreshold = 0.5
-    g_ZTouchThreshold = 0.5
+    g_ZTouchThreshold = 1.5
     g_UTouchThreshold = 0.1
     
     g_XYTouchMin = 0.1

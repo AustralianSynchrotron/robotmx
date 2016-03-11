@@ -419,7 +419,7 @@ Function InitForceConstants
 
     ''g_XYTouchThreshold = 1.5
     g_XYTouchThreshold = 0.5
-    g_ZTouchThreshold = 0.5
+    g_ZTouchThreshold = 0.7
     g_UTouchThreshold = 0.1
     
     g_XYTouchMin = 0.1
@@ -1233,6 +1233,8 @@ GoInstead:
 errHandler:
     ''Only the tool orientation was attempted to be changed by the CP statement error
     If Err = 4035 Or Err = 4242 Then
+    	''Put force measure loop to sleep
+	    ForceMeasureLoopSleep
         ''Move failed, use go instead
     	EResume GoInstead
     EndIf
@@ -1274,6 +1276,8 @@ GoInstead:
 errHandler:
     ''Only the tool orientation was attempted to be changed by the CP statement error
     If Err = 4035 Or Err = 4242 Then
+        ''Put force measure loop to sleep
+	    ForceMeasureLoopSleep
         ''Move failed, use go instead
     	EResume GoInstead
     EndIf

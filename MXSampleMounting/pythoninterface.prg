@@ -26,7 +26,7 @@ Fend
 
 Function GTParsePortIndex(cassette_position As Integer, columnOrPuckChar$ As String, rowOrPuckPortChar$ As String, ByRef columnPuckIndex As Integer, ByRef rowPuckPortIndex As Integer) As Boolean
 	GTParsePortIndex = False
-	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+	If g_CassetteType(cassette_position) = NORMAL_CASSETTE Then
 		If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
 			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Column Name supplied!", ERROR_LEVEL)
 			Exit Function
@@ -35,6 +35,17 @@ Function GTParsePortIndex(cassette_position As Integer, columnOrPuckChar$ As Str
 		rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
 		If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_ROWS - 1 Then
 			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Row Position supplied!", ERROR_LEVEL)
+			Exit Function
+		EndIf
+	ElseIf g_CassetteType(cassette_position) = CALIBRATION_CASSETTE Then
+		If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
+			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Column Name supplied!", ERROR_LEVEL)
+			Exit Function
+		EndIf
+		
+		rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
+		If rowPuckPortIndex <> 0 And rowPuckPortIndex <> (NUM_ROWS - 1) Then
+			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Row Position supplied for Calibration Cassette!", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then

@@ -173,6 +173,7 @@ Fend
 Function ForceMeasureLoopSleep
 	''Set ForceMeasureLoopSleep to true
 	m_ForceMeasureLoopSleep = True
+	''Wait .01 ''Wait to Stop ForceMeasureLoop to allow ReadForces to be called
 Fend
 Function ForceMeasureLoopWake
 	''Set ForceMeasureLoopSleep to false
@@ -181,6 +182,7 @@ Function ForceMeasureLoopWake
 	Signal FORCEMEASURELOOP_WAKE
 	''Wait till ForceMeasureLoop is acquiring
 	WaitSig FORCEMEASURELOOP_ACQUIRING
+	''Wait .01 ''start ForceMeasureLoop and wait to read few force samples before GenericMove
 Fend
 ''Background force measurement loop
 Function ForceMeasureLoop
@@ -208,7 +210,8 @@ Function ForceMeasureLoop
 			''That ForceMeasureLoop is acquiring force data
 			Signal FORCEMEASURELOOP_ACQUIRING
 		Else
-			WaitSig FORCEMEASURELOOP_WAKE ''Not acquiring
+            WaitSig FORCEMEASURELOOP_WAKE
+			''Wait .001 ''Not acquiring
 		EndIf
 	Loop
 Fend
@@ -238,16 +241,14 @@ Fend
 Function SetupForceTrigger(ByVal forceName As Integer, ByVal threshold As Real)
 	''Clear previous trigger setting
     FSClearTrigger()
-    ''Must clear global trigger manually as g_StopForceMeasureLoop = true now
-    g_FSForceTriggerStatus = 0
     ''Decide how much to average given forceName
     Select Abs(forceName)
     	Case FORCE_ZFORCE
     		''More noise in Z, so average more
-    		g_FSAverage = 300
+    		g_FSAverage = 70
     	Case FORCE_ZTORQUE
     		''More noise in Z, so average more
-    		g_FSAverage = 300
+    		g_FSAverage = 70
    		Default
    			''Less noise in XY
    		    ''Averaging for XY
@@ -338,7 +339,7 @@ Function ForceCalibrateAndCheck(thresholdx As Double, thresholdy As Double) As B
 		diffx = maxx - minx
 		diffy = maxy - miny
 		''Compare ripple against requirements
-		If (diffx < thresholdx And diffy < thresholdy) Then
+		If (diffx < thresholdx And diffy < thresholdy And forces(3) < .2) Then
 				done = True
 				msg$ = "After " + Str$(i) + " calibration attempts"
 				UpdateClient(TASK_MSG, msg$, INFO_LEVEL)

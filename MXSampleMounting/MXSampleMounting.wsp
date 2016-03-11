@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/03/09 06:52:14:758,DS:0000005783,CS:26731,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Command"
+ENVT0100,LM:2016/03/11 02:31:28:399,DS:0000005781,CS:10814,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
@@ -213,8 +213,8 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -224,7 +224,7 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -247,7 +247,7 @@ ProgramFile22 {
 nIncludeFileCount=9
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -269,7 +269,7 @@ IncludeFile2 {
 }
 IncludeFile3 {
 	sName="forcedefs.inc"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -291,13 +291,13 @@ IncludeFile4 {
 }
 IncludeFile5 {
 	sName="cassettedefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=0
-		nHeight=0
+		nWidth=452
+		nHeight=260
 	}
 }
 IncludeFile6 {
@@ -360,12 +360,12 @@ sActiveWindow="main.prg"
 CmdWindow {
 	bOpened=True
 	Window {
-		nLeft=550
-		nTop=68
+		nLeft=378
+		nTop=-3
 		nWidth=784
 		nHeight=410
 	}
-	nWinState=2
+	nWinState=0
 }
 RunWindow {
 	bOpened=True
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=571
-		nTop=327
+		nLeft=395
+		nTop=324
 		nWidth=470
 		nHeight=342
 	}
@@ -399,8 +399,8 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=765
-		nTop=140
+		nLeft=336
+		nTop=208
 		nWidth=827
 		nHeight=530
 	}
@@ -415,7 +415,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=12
 		nTop=14

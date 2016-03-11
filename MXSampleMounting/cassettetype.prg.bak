@@ -89,6 +89,7 @@ Fend
 Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight As Real, ByRef min_height_error As Real) As Integer
 	Real calib_highEdge_height_in_LN2, calib_lowEdge_height_in_LN2
 	Real normal_height_in_LN2, superpuck_height_in_LN2
+	Real guessedCassetteExpectedHeight
 	String msg$
 	
 	calib_highEdge_height_in_LN2 = CASSETTE_CAL_HEIGHT * CASSETTE_SHRINK_FACTOR
@@ -117,16 +118,23 @@ Function GTCassetteTypeFromHeight(cassette_position As Integer, cassetteHeight A
 	If (calibration_height_difference < normal_height_difference) And (calibration_height_difference < superpuck_height_difference) Then
 		guessedCassetteType = CALIBRATION_CASSETTE
 		min_height_error = calibration_height_difference
+		guessedCassetteExpectedHeight = calib_lowEdge_height_in_LN2
 	ElseIf (normal_height_difference < calibration_height_difference) And (normal_height_difference < superpuck_height_difference) Then
 		guessedCassetteType = NORMAL_CASSETTE
 		min_height_error = normal_height_difference
+		guessedCassetteExpectedHeight = normal_height_in_LN2
 	Else
 		guessedCassetteType = SUPERPUCK_CASSETTE
 		min_height_error = superpuck_height_difference
+		guessedCassetteExpectedHeight = superpuck_height_in_LN2
 	EndIf
 	
+	msg$ = "GTCassetteTypeFromHeight reports:  guessedCassetteType=" + GTCassetteType$(guessedCassetteType) + ","
+	msg$ = msg$ + "guessedCassetteExpectedHeight=" + Str$(guessedCassetteExpectedHeight) + ","
+	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		
 	GTCassetteTypeFromHeight = guessedCassetteType
-	Fend
+Fend
 
 Function GTsetfindAvgHeightStandbyPoint(cassette_position As Integer, pointNum As Integer, index As Integer, guessedCassetteType As Integer, ByRef scanZdistance As Real)
 	If guessedCassetteType = SUPERPUCK_CASSETTE Then
