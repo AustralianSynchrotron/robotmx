@@ -5,21 +5,22 @@
 Boolean m_GTInitialized
 
 Function GTInitialize() As Boolean
+	''Set return value to false
+	GTInitialize = False
+	
+	''Check global variable status
+	If Not CheckEnvironment Then
+		SetGlobals
+		Motor Off
+		''Problem detected
+        Exit Function
+   	EndIf
+
 	''Flag to ensure function is ran once
 	If m_GTInitialized Then
 		GTInitialize = True
 		Exit Function
-	Else
-		'' This is the first call of GTInitialize() function
-		GTInitialize = False
-		m_GTInitialized = False
 	EndIf
-	
-	''Check global variable status
-	If Not CheckEnvironment Then
-		''Problem detected
-        Exit Function
-   	EndIf
 
 	''Initialize the force constants
 	InitForceConstants
@@ -37,14 +38,6 @@ Function GTInitialize() As Boolean
 		''Problem with points database
 		Exit Function
 	EndIf
-	
-	''If the motors are off, turn them on
-	If Motor = Off Then
-		Motor On
-	EndIf
-	
-	''Until properly tested, startup default for power is low
-	Power Low
 	
 	''Startup default is tool 0
 	Tool 0

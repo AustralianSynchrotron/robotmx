@@ -15,6 +15,8 @@ Function GTParseColumnIndex(columnChar$ As String, ByRef columnIndex As Integer)
 	columnIndex = Asc(columnChar$) - Asc("A")
 	
 	If (columnIndex < 0) Or (columnIndex > NUM_COLUMNS - 1) Then
+		g_RunResult$ = "error GTParseColumnIndex:Invalid column char supplied!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		columnIndex = UNKNOWN_POSITION
 		GTParseColumnIndex = False
 		Exit Function
@@ -344,8 +346,8 @@ Function GTPickerCheckCASPortStatus(cassette_position As Integer, rowIndex As In
 		portStatusBeforePickerCheck = PORT_VACANT
 		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_CAS
-		msg$ = "GTPickerCheckCASPortStatus: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
-		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		g_RunResult$ = "error GTPickerCheckCASPortStatus: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 	EndIf
 		
 	Move P(standbyPoint)

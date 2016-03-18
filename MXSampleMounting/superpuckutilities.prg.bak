@@ -865,7 +865,7 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 			portStatusBeforePickerCheck = PORT_VACANT
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 			g_RunResult$ = "error GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
-			UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		EndIf
 	Else
 		''There is no sample (or ForceTouch failure)

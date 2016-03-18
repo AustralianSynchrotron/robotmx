@@ -15,6 +15,8 @@ Function GTParseColumnIndex(columnChar$ As String, ByRef columnIndex As Integer)
 	columnIndex = Asc(columnChar$) - Asc("A")
 	
 	If (columnIndex < 0) Or (columnIndex > NUM_COLUMNS - 1) Then
+		g_RunResult$ = "error GTParseColumnIndex:Invalid column char supplied!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		columnIndex = UNKNOWN_POSITION
 		GTParseColumnIndex = False
 		Exit Function
@@ -72,8 +74,8 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 	g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_UNKNOWN
 	If ForceTouch(DIRECTION_CAVITY_TAIL, maxDistanceToScan, False) Then
 		''Record Port Force immediately after ForceTouch
-		g_CAS_TriggerPortForce(cassette_position, rowIndex, ColumnIndex) = g_InitialForceTouchTrigger
-		g_CAS_FinalPortForce(cassette_position, rowIndex, ColumnIndex) = g_FinalTouchForce
+		g_CAS_TriggerPortForce(cassette_position, rowIndex, columnIndex) = g_InitialForceTouchTrigger
+		g_CAS_FinalPortForce(cassette_position, rowIndex, columnIndex) = g_FinalTouchForce
 			
 		Real distanceCASSurfacetoHere
 		distanceCASSurfacetoHere = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE
@@ -81,22 +83,22 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		'' Distance error from perfect sample position
 		Real distErrorFromPerfectSamplePos
 		distErrorFromPerfectSamplePos = distanceCASSurfacetoHere - SAMPLE_DIST_PIN_DEEP_IN_CAS
-		g_CASSampleDistanceError(cassette_position, rowIndex, ColumnIndex) = distErrorFromPerfectSamplePos
+		g_CASSampleDistanceError(cassette_position, rowIndex, columnIndex) = distErrorFromPerfectSamplePos
 
 		If distErrorFromPerfectSamplePos < -TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
 			''This condition means port jam or the sample is sticking out which is considered PORT_ERROR
-			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_ERROR
-			msg$ = "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_ERROR
+			msg$ = "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " stopped " + Str$(distErrorFromPerfectSamplePos) + "mm before reaching theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, WARNING_LEVEL)
 		ElseIf distErrorFromPerfectSamplePos < TOLERANCE_FROM_PIN_DEEP_IN_CAS Then
-			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_OCCUPIED
-			msg$ = "GTprobeCassettePort: ForceTouch detected Sample at " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_OCCUPIED
+			msg$ = "GTprobeCassettePort: ForceTouch detected Sample at " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		Else
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
-			g_CAS_PortStatus(cassette_position, rowIndex, ColumnIndex) = PORT_VACANT
-			msg$ = "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(ColumnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
+			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
+			msg$ = "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		EndIf
 		
@@ -263,7 +265,7 @@ Function GTsetCassetteMountStandbyPoints(cassette_position As Integer, rowIndex 
 	adjustedUPointingTowardsPort = GTadjustUAngle(cassette_position, uPointingTowardsPort)
 
 	Real uAngleOfPassingArcPoint
-	uAngleOfPassingArcPoint = (g_AngleOfFirstColumn(cassette_position) + adjustedUPointingTowardsPort) /2.0
+	uAngleOfPassingArcPoint = (g_UForNormalStandby(cassette_position) + adjustedUPointingTowardsPort) /2.0
 
 	Integer cassetteStandbyPoint, casStandbyToPortStandbyArcPoint, portStandbyPoint
 	cassetteStandbyPoint = 50

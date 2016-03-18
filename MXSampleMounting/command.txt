@@ -2273,4 +2273,108 @@ left_cassette A 16
 > print g_runargs$
 left_cassette A 1
 > jump p0
+> Print P6
+ X:  102.558 Y:  406.970 Z: -200.047 U:   97.238 V:    0.000 W:    0.000 /R /0
+> Print Here
+ X:  101.852 Y:  407.119 Z: -204.993 U:   97.528 V:    0.000 W:    0.000 /R /0
+> P6 = Here
+> P3 = P6 -X(20)
+> savepoints "robot1.pts"
+> CalibPls 0,0,0,0
+!!Error: 3100, Syntax error.
+> CalPls 0,0,0,0
+> Calib 1
+> Calib 2
+> Calib 3,4
+> Print Here
+ X:  550.000 Y:   -0.000 Z:   -0.000 U:    0.000 V:    0.000 W:    0.000 /L /0
+> 
+!!Error: 2513, Specified point label is not defined.
+> P0 = Here
+> savepoints "robot1.pts"
+> 
+> P6 = Here
+> 
+> Print P6
+ X:  101.852 Y:  407.119 Z: -204.993 U:   97.528 V:    0.000 W:    0.000 /R /0
+> Print P6
+ X:   94.939 Y:  412.486 Z: -213.522 U:   95.602 V:    0.000 W:    0.000 /R /0
+> Move Here - X(15)
+> 
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> P3 = Here
+> savepoints "robot1.pts"
+> 
+> 
+> P1 = Here
+> 
+> savepoints "robot1.pts"
+> g_RunArgs$ = "1 0"
+> Power
+!!Error: 3216, High/Low was not specified.
+> Print Power
+ 0
+> tool
+	   0
+> jump p1
+> 
+> jump p0
+> g_dumbbellStatus = 0
+> 
+> tool 0
+> 
+> 
+> jump p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 2
+> reset error
+> 
+> power Low
+> jump p6
+> move p3
+> jump p1
+> 
+> jump p0
+> 
+> g_RunArgs$ = "r k 1"
+> g_CAS_PortStatus(2,0,10) = -1
+> 
+!!Error: 2240, Array subscript is out of user defined range. Cannot access or update beyond array bounds.
+> Print P50
+ X:   77.797 Y:  340.941 Z: -179.903 U:  180.000 V:    0.000 W:    0.000 /R /0
+> Print P51
+ X:  -31.710 Y:  367.607 Z: -179.855 U:  -27.371 V:    0.000 W:    0.000 /R /0
+> Print P52
+ X:  -27.563 Y:  307.460 Z: -180.041 U:   35.258 V:    0.000 W:    0.000 /R /0
+> Print g_UForNormalStandby(2)
+ 180
+> 
+ 180
+> 
+ 180
+> Print g_UForPuckStandby(2)
+ 225
+> 
+ 180
+> 
+ 135
+> Print g_AngleOfFirstColumn(2)
+ -90
+> 
+ 180
+> 
+ 90
+> move p0
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> jump p0
+> 
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> reset error
+> motor On
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
 > 

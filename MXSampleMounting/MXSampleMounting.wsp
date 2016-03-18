@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/03/17 00:21:20:343,DS:0000005823,CS:27397,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="magnetmaneuvers.prg"
+ENVT0100,LM:2016/03/17 09:21:26:046,DS:0000005817,CS:17022,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="normalcassetteutilities.prg"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -16,7 +16,7 @@ ProgramFile1 {
 ProgramFile2 {
 	sName="cassette.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -26,8 +26,8 @@ ProgramFile2 {
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bOpened=False
-	nWinState=2
+	bOpened=True
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -37,8 +37,8 @@ ProgramFile3 {
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=False
-	nWinState=2
+	bOpened=True
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -49,7 +49,7 @@ ProgramFile4 {
 ProgramFile5 {
 	sName="network.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -60,7 +60,7 @@ ProgramFile5 {
 ProgramFile6 {
 	sName="force.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -71,7 +71,7 @@ ProgramFile6 {
 ProgramFile7 {
 	sName="appnetwork.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -81,8 +81,8 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bOpened=False
-	nWinState=2
+	bOpened=True
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -93,7 +93,7 @@ ProgramFile8 {
 ProgramFile9 {
 	sName="setupcassette.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -114,8 +114,8 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bOpened=False
-	nWinState=2
+	bOpened=True
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -125,7 +125,7 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -137,7 +137,7 @@ ProgramFile12 {
 ProgramFile13 {
 	sName="setuppoints.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -158,7 +158,7 @@ ProgramFile14 {
 }
 ProgramFile15 {
 	sName="robotspeed.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -170,7 +170,7 @@ ProgramFile15 {
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -180,8 +180,8 @@ ProgramFile16 {
 }
 ProgramFile17 {
 	sName="initialization.prg"
-	bOpened=False
-	nWinState=2
+	bOpened=True
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -202,8 +202,8 @@ ProgramFile18 {
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bOpened=False
-	nWinState=2
+	bOpened=True
+	nWinState=0
 	Window {
 		nLeft=49
 		nTop=48
@@ -213,19 +213,19 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=False
-	nWinState=0
+	bOpened=True
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
+		nWidth=743
 		nHeight=260
 	}
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -236,7 +236,7 @@ ProgramFile21 {
 ProgramFile22 {
 	sName="debugTests.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -248,7 +248,7 @@ nIncludeFileCount=9
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -259,7 +259,7 @@ IncludeFile1 {
 IncludeFile2 {
 	sName="networkdefs.inc"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -280,8 +280,8 @@ IncludeFile3 {
 }
 IncludeFile4 {
 	sName="genericdefs.inc"
-	bOpened=False
-	nWinState=2
+	bOpened=True
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -292,7 +292,7 @@ IncludeFile4 {
 IncludeFile5 {
 	sName="cassettedefs.inc"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -314,7 +314,7 @@ IncludeFile6 {
 IncludeFile7 {
 	sName="mountingdefs.inc"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -336,7 +336,7 @@ IncludeFile8 {
 IncludeFile9 {
 	sName="robotspeed.inc"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -358,7 +358,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=378
 		nTop=-3
@@ -368,7 +368,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=0
 		nTop=0
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=526
-		nTop=324
+		nLeft=80
+		nTop=205
 		nWidth=470
 		nHeight=342
 	}
@@ -415,7 +415,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=12
 		nTop=14

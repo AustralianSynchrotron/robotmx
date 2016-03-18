@@ -80,6 +80,8 @@ Function GTParsePuckIndex(puckChar$ As String, ByRef puckIndex As Integer) As Bo
 		Case "D"
 			puckIndex = PUCK_D
 		Default
+			g_RunResult$ = "error GTParsePuckIndex:Invalid puck char supplied!"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			puckIndex = UNKNOWN_POSITION
 			GTParsePuckIndex = False
 			Exit Function
