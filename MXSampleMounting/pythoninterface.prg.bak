@@ -66,14 +66,10 @@ Function GTParsePortIndex(cassette_position As Integer, columnOrPuckChar$ As Str
 Fend
 ''Python interface for GTJumpHomeToCoolingPointAndWait
 Function PrepareForMountDismount As Boolean
-	String msg$
-	
 	g_RunResult$ = ""
-	
 	If Not GTJumpHomeToCoolingPointAndWait Then
 		Exit Function
 	EndIf
-	
 	g_RunResult$ = "OK"
 Fend
 
@@ -222,7 +218,36 @@ Function MountSamplePort
 		Exit Function
 	EndIf
 	
-	''Before you start parsing the g_RunArgs$, 
+	''Parsing g_RunArgs$
+	String RequestTokens$(0)
+	Integer RequestArgC
+    
+    ''parse argument from global
+    ParseStr g_RunArgs$, RequestTokens$(), " "
+    ''check argument
+    RequestArgC = UBound(RequestTokens$) + 1
+
+	String cassetteChar$, columnOrPuckChar$, rowOrPuckPortChar$
+	Integer cassette_position, columnPuckIndex, rowPuckPortIndex
+
+    If RequestArgC = 3 Then
+		cassetteChar$ = Mid$(RequestTokens$(0), 1, 1)
+		If Not GTParseCassettePosition(cassetteChar$, ByRef cassette_position) Then
+			cassette_position = UNKNOWN_CASSETTE
+			UpdateClient(TASK_MSG, "MountSamplePort: Invalid Cassette Position supplied in g_RunArgs$", ERROR_LEVEL)
+			Exit Function
+		EndIf
+
+		columnOrPuckChar$ = Mid$(RequestTokens$(1), 1, 1)
+		rowOrPuckPortChar$ = RequestTokens$(2)
+		
+		If Not GTParsePortIndex(cassette_position, columnOrPuckChar$, rowOrPuckPortChar$, ByRef columnPuckIndex, ByRef rowPuckPortIndex) Then
+			UpdateClient(TASK_MSG, "MountSamplePort: GTParsePortIndex failed! Please check log for further details", ERROR_LEVEL)
+			Exit Function
+		EndIf
+	EndIf
+	
+	''Before you start mounting the sample requested by g_RunArgs$, 
 	''check the gonio to see whether there is already a sample mounted
 	''If mounted, then dismount it first then mount the new sample
 	If g_InterestedSampleStatus = SAMPLE_IN_GONIO Then
@@ -251,40 +276,7 @@ Function MountSamplePort
 	
 	''Actual mounting process starts here 
 	
-	String RequestTokens$(0)
-	Integer RequestArgC
-    
-    ''parse argument from global
-    ParseStr g_RunArgs$, RequestTokens$(), " "
-    ''check argument
-    RequestArgC = UBound(RequestTokens$) + 1
-
-
-	String cassetteChar$
-	Integer cassette_position
-	String columnOrPuckChar$
-	Integer columnPuckIndex
-	String rowOrPuckPortChar$
-	Integer rowPuckPortIndex
-
-
-    If RequestArgC = 3 Then
-		cassetteChar$ = Mid$(RequestTokens$(0), 1, 1)
-		If Not GTParseCassettePosition(cassetteChar$, ByRef cassette_position) Then
-			cassette_position = UNKNOWN_CASSETTE
-			UpdateClient(TASK_MSG, "MountSamplePort: Invalid Cassette Position supplied in g_RunArgs$", ERROR_LEVEL)
-			Exit Function
-		EndIf
-
-		columnOrPuckChar$ = Mid$(RequestTokens$(1), 1, 1)
-		rowOrPuckPortChar$ = RequestTokens$(2)
-		
-		If Not GTParsePortIndex(cassette_position, columnOrPuckChar$, rowOrPuckPortChar$, ByRef columnPuckIndex, ByRef rowPuckPortIndex) Then
-			UpdateClient(TASK_MSG, "MountSamplePort: GTParsePortIndex failed! Please check log for further details", ERROR_LEVEL)
-			Exit Function
-		EndIf
-	EndIf
-	
+	'' Here we check whether the port is filled and only then it sets the interested ports
 	If Not GTsetMountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
 		UpdateClient(TASK_MSG, "MountSamplePort->GTsetMountPort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$", ERROR_LEVEL)
 		Exit Function
@@ -322,6 +314,7 @@ Function DismountSample
 		Exit Function
     EndIf
 	
+	''Parsing g_RunArgs$
 	String RequestTokens$(0)
 	Integer RequestArgC
     

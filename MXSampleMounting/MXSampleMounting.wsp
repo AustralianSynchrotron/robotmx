@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/03/16 23:36:58:899,DS:0000005802,CS:03596,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="pythoninterface.prg"
+ENVT0100,LM:2016/03/17 00:21:20:343,DS:0000005823,CS:27397,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="magnetmaneuvers.prg"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -15,8 +15,8 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -26,8 +26,8 @@ ProgramFile2 {
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -37,8 +37,8 @@ ProgramFile3 {
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -48,8 +48,8 @@ ProgramFile4 {
 }
 ProgramFile5 {
 	sName="network.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -59,8 +59,8 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -70,8 +70,8 @@ ProgramFile6 {
 }
 ProgramFile7 {
 	sName="appnetwork.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -81,8 +81,8 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -92,8 +92,8 @@ ProgramFile8 {
 }
 ProgramFile9 {
 	sName="setupcassette.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -114,8 +114,8 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -136,8 +136,8 @@ ProgramFile12 {
 }
 ProgramFile13 {
 	sName="setuppoints.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -170,7 +170,7 @@ ProgramFile15 {
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -180,8 +180,8 @@ ProgramFile16 {
 }
 ProgramFile17 {
 	sName="initialization.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -192,7 +192,7 @@ ProgramFile17 {
 ProgramFile18 {
 	sName="pythoninterface.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -202,8 +202,8 @@ ProgramFile18 {
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=49
 		nTop=48
@@ -224,8 +224,8 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -235,8 +235,8 @@ ProgramFile21 {
 }
 ProgramFile22 {
 	sName="debugTests.prg"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -247,8 +247,8 @@ ProgramFile22 {
 nIncludeFileCount=9
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -258,8 +258,8 @@ IncludeFile1 {
 }
 IncludeFile2 {
 	sName="networkdefs.inc"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -280,8 +280,8 @@ IncludeFile3 {
 }
 IncludeFile4 {
 	sName="genericdefs.inc"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -291,8 +291,8 @@ IncludeFile4 {
 }
 IncludeFile5 {
 	sName="cassettedefs.inc"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -313,8 +313,8 @@ IncludeFile6 {
 }
 IncludeFile7 {
 	sName="mountingdefs.inc"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -335,8 +335,8 @@ IncludeFile8 {
 }
 IncludeFile9 {
 	sName="robotspeed.inc"
-	bOpened=True
-	nWinState=0
+	bOpened=False
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0

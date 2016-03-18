@@ -1,12 +1,12 @@
-ENVT0100,LM:2016/03/16 04:59:16:399,DS:0000008616,CS:06718,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/03/17 00:20:24:000,DS:0000008688,CS:07961,MA:00-0C-29-B8-F2-20,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
-	sPath="c:\\EPSONRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
+	sPath="C:\\EpsonRC60\\Projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="3/16/2016 3:59:08 PM"
-	bBuildComplete=True
+	sLastModified="3/17/2016 11:20:23 AM"
+	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
 	bClearControllerProject=False
@@ -32,47 +32,47 @@ nRobotCount=1
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile3 {
 	sName="gonio.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile5 {
 	sName="network.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile6 {
 	sName="force.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile7 {
 	sName="appnetwork.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile9 {
 	sName="setupcassette.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile10 {
@@ -82,7 +82,7 @@ ProgramFile10 {
 }
 ProgramFile11 {
 	sName="cassetteutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile12 {
@@ -92,7 +92,7 @@ ProgramFile12 {
 }
 ProgramFile13 {
 	sName="setuppoints.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile14 {
@@ -107,22 +107,22 @@ ProgramFile15 {
 }
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile17 {
 	sName="initialization.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile20 {
@@ -132,12 +132,12 @@ ProgramFile20 {
 }
 ProgramFile21 {
 	sName="jsonutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile22 {
 	sName="debugTests.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 nIncludeFileCount=9
@@ -503,4 +503,7 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=0
+nGuiBuilderFileCount=1
+GuiBuilderFile1 {
+	sName="MXSampleMounting.gui"
+}
