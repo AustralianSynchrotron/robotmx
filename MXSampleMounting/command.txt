@@ -2272,4 +2272,5 @@ left_cassette A 16
 > 
 > print g_runargs$
 left_cassette A 1
+> jump p0
 > 

@@ -232,7 +232,7 @@ Function GTCheckMagnetForDismount As Boolean
 			EndIf
 		Else
 			GTsetDumbbellStatus(DUMBBELL_MISSING)
-			g_RunResult$ = "GTCheckMagnetForDismount:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet."
+			g_RunResult$ = "error GTCheckMagnetForDismount:GTIsMagnetInGripper failed to detect magnet on tong even after GTPickMagnet."
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			Exit Function
 		EndIf

@@ -64,6 +64,18 @@ Function GTParsePortIndex(cassette_position As Integer, columnOrPuckChar$ As Str
 	EndIf
 	GTParsePortIndex = True
 Fend
+''Python interface for GTJumpHomeToCoolingPointAndWait
+Function PrepareForMountDismount As Boolean
+	String msg$
+	
+	g_RunResult$ = ""
+	
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		Exit Function
+	EndIf
+	
+	g_RunResult$ = "OK"
+Fend
 
 Function ProbeCassettes
 	Cls
@@ -432,14 +444,12 @@ Function FindPortCenters
 	Next
 	
 	'' Return Magnet To Cradle And Go to Home Position
-	g_RunResult$ = "progress GTReturnMagnetAndGoHome"
 	If Not GTReturnMagnetAndGoHome Then
-		g_RunResult$ = "GTReturnMagnetAndGoHome failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTReturnMagnetAndGoHome failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
-	g_RunResult$ = "success FindPortCenters"
+	g_RunResult$ = "OK FindPortCenters"
     Print "FindPortCenters finished at ", Date$, " ", Time$
 Fend
 

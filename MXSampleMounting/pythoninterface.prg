@@ -64,6 +64,14 @@ Function GTParsePortIndex(cassette_position As Integer, columnOrPuckChar$ As Str
 	EndIf
 	GTParsePortIndex = True
 Fend
+''Python interface for GTJumpHomeToCoolingPointAndWait
+Function PrepareForMountDismount As Boolean
+	g_RunResult$ = ""
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		Exit Function
+	EndIf
+	g_RunResult$ = "OK"
+Fend
 
 Function ProbeCassettes
 	Cls

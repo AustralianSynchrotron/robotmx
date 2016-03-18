@@ -18,7 +18,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	String msg$
 	
 	GTJumpHomeToCoolingPointAndWait = False
-
+	
 	Tool 0
 	
 	If (CX(RealPos) > 0) And (CX(P1) * CY(RealPos) < CX(RealPos) * CY(P1)) Then

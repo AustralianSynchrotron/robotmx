@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/03/11 08:10:34:540,DS:0000005783,CS:19540,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2016/03/16 23:36:58:899,DS:0000005802,CS:03596,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="pythoninterface.prg"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
@@ -104,7 +104,7 @@ ProgramFile9 {
 ProgramFile10 {
 	sName="cassettetype.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -126,7 +126,7 @@ ProgramFile11 {
 ProgramFile12 {
 	sName="superpuckutilities.prg"
 	bOpened=False
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -192,7 +192,7 @@ ProgramFile17 {
 ProgramFile18 {
 	sName="pythoninterface.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=0
@@ -358,7 +358,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=378
 		nTop=-3
@@ -368,7 +368,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=0
 		nTop=0
@@ -415,7 +415,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=12
 		nTop=14
