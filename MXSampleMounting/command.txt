@@ -2853,4 +2853,193 @@ P999 = XY(    90.832,  416.925, -202.674,   94.756 )  /R /0
  0
 > print power
  0
+> print g_dumbbellstatus
+ 0
+> print g_InterestedSampleStatus
+ 5
+> 
+ 5
+> 
+ 5
+> 
+ 9
+> 
+ 0
+> 
+ 2
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> 
+ 0
+> print realpos
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> print p0
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> power Low
+> print g_runargs$
+right_cassette A 10
+> g_runargs$ = "r a 11"
+> tool
+	   0
+> print dist(realpos, p0)
+ 25.269800864432
+> print realpos
+ X:  479.343 Y:  227.144 Z: -211.748 U: -149.403 V:    0.000 W:    0.000 /R /0
+> print p0
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> move p0
+> print power
+ 1
+> power Low
+> print power
+ 0
+> print here
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> print realpos
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> print p0
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> power Low
+> print g_runargs$
+r a 11
+> g_runargs$ = "r a 11"
+> tool
+	   0
+> print dist(realpos,p0)
+ 0.00037686428940517
+> print power
+ 0
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> print p18
+ X: -368.526 Y:  367.908 Z:   -9.619 U:  269.315 V:    0.000 W:    0.000 /R /0
+> tool
+	   0
+> 
+	   3
+> 
+	   0
+> 
+	   3
+> tool 0
+> 
+> 
+> 
+> jump p18
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> moto
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
+> 
+> print power
+ 0
+> 
+ 0
+> 
+> 
+> jump p18
+> 
+> 
+> 
+> jump p1
+> 
+> 
+> 
+> g_InterestedSampleStatus = 5
+> 
+> 
+> jump p0
+> 
+> 
+> 
+> 
+> 
+> print realpos
+ X: -331.522 Y: -384.686 Z: -118.878 U:  267.558 V:    0.000 W:    0.000 /R /0
+> print p21
+ X: -331.522 Y: -384.687 Z: -118.878 U:  267.558 V:    0.000 W:    0.000 /R /0
+> print p24
+ X: -331.503 Y: -380.431 Z: -118.897 U:  267.543 V:    0.000 W:    0.000 /R /0
+> motor On
+> jump p18
+> jump p1
+> 
+> jump p0
+> 
+> 
+> tool 0
+> print here
+ X: -322.549 Y: -397.460 Z: -118.878 U:  268.706 V:    0.000 W:    0.000 /R /0
+> tool 0
+> 
+> 
+> 
+> 
+> motor On
+> 
+> jump p18
+> 
+> 
+> jump p1
+> 
+> 
+> 
+> 
+> jump p0
+> 
+> 
+> 
+> 
+> 
+> 
+> 3.3 9.6
+!!Error: 3100, Syntax error.
+> print realpos
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> tool 3
+> jump p0
+> print realpos
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> tool 0
+> print realpos
+ X:  481.991 Y:  236.469 Z: -211.651 U:   30.446 V:    0.000 W:    0.000 /R /0
+> move p0
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> go p0
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> motor On
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> reset error
+> 
+> mortor on
+!!Error: 3100, Syntax error.
+> 
+!!Error: 3100, Syntax error.
+> 
+!!Error: 3100, Syntax error.
+> motor On
+> 
+> go p0
+> print p12
+ X:   12.663 Y:   -4.608 Z:    0.000 U:    1.148 V:    0.000 W:    0.000 /R /0
+> print p13
+ X:   12.380 Y:    9.509 Z:    0.000 U:    1.148 V:    0.000 W:    0.000 /R /0
+> print realpos
+ X:  487.845 Y:  250.940 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> tool 3
+> tlset 3
+	Tool 3:      12.380,     9.509,     0.000,     1.148
+> print here
+ X:  493.408 Y:  265.526 Z: -211.651 U:   32.743 V:    0.000 W:    0.000 /R /0
+> print (realpos - p0)
+ X:    5.563 Y:   14.585 Z:    0.000 U:    1.148 V:    0.000 W:    0.000 /R /0
+> print g_interestedsamplestatus
+ 5
+> jump p0
 > 

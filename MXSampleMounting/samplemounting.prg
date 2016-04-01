@@ -148,7 +148,7 @@ Fend
 
 Function GTCavityGripSampleFromPicker As Boolean
 	''GripSample in Cavity From Picker of dumbbell in cradle
-	''Starts from P3
+	''Starts from P3 (in Tool 0)
 
 	GTCavityGripSampleFromPicker = False
 	
@@ -331,14 +331,14 @@ Function GTCavityGripSampleFromGonio As Boolean
 	If Not Close_Gripper Then
 		''Adjust position, try again 1 time only
 		''Back away slightly
-		Dx = 0.5 * g_goniometer_cosValue
-		Dy = 0.5 * g_goniometer_sinValue
+		dx = 0.5 * g_goniometer_cosValue
+		dy = 0.5 * g_goniometer_sinValue
 		Print "P20=",
 		Print P20
 		Print "P20 adjust=",
-		Print P20 +X(Dx) +Y(Dy)
+		Print P20 +X(dx) +Y(dy)
 		Open_Gripper
-		Move (P20 +X(Dx) +Y(Dy))
+		Move (P20 +X(dx) +Y(dy))
 		If Not Close_Gripper Then
 			''Failed still
 			g_RunResult$ = "error GTCavityGripSampleFromGonio:Close_Gripper failed"
@@ -346,11 +346,15 @@ Function GTCavityGripSampleFromGonio As Boolean
 			Exit Function
 		EndIf
 	EndIf
+
+	GTTwistOffCavityFromGonio
 	
 	g_InterestedSampleStatus = SAMPLE_IN_CAVITY
 	GTsendSampleStateJSON
 	
-	Move P24
+	''if GTTwistOffCavityFromGonio is used after grabbing sample from gonio, don't Move to P24
+	''because this twists back and it might hit cryojet
+	''Move P24
 	
 	Move P22
 	

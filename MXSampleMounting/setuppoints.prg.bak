@@ -32,6 +32,23 @@ Function GTCheckPoint(pointNum As Integer) As Boolean
 		GTCheckPoint = True
 	EndIf
 Fend
+Function GTCheckArcPoint(pointNum As Integer) As Boolean
+	''This function is used only while arc-ing around SuperPuck during mount and dismount routines
+	''So we have reduced the severity level to INFO_LEVEL
+	String msg$
+	
+	If (Not PDef(P(pointNum))) Then
+		msg$ = "GTCheckArcPoint: P" + Str$(pointNum) + " is not defined yet!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		GTCheckArcPoint = False
+	ElseIf CX(P(pointNum)) = 0 Or CY(P(pointNum)) = 0 Then
+		msg$ = "GTCheckArcPoint: P" + Str$(pointNum) + " has X or Y coordinate set to 0(zero)!"
+		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+		GTCheckArcPoint = False
+	Else
+		GTCheckArcPoint = True
+	EndIf
+Fend
 Function GTCheckTool(toolNum As Integer) As Boolean
 	''Messaging variable
 	String msg$

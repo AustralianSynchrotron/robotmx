@@ -1,4 +1,4 @@
-ENVT0100,LM:2016/03/23 23:44:55:109,DS:0000005788,CS:27732,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/03/24 02:19:23:218,DS:0000005786,CS:17277,MA:00-80-4C-A4-84-A0,EI:           
 sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=22
@@ -313,7 +313,7 @@ IncludeFile6 {
 }
 IncludeFile7 {
 	sName="mountingdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=492
-		nTop=161
+		nLeft=200
+		nTop=159
 		nWidth=470
 		nHeight=342
 	}
@@ -415,7 +415,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=12
 		nTop=14

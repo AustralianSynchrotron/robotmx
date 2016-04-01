@@ -372,7 +372,31 @@ Function GTTwistOffMagnet
 	''Restore previous power setting	
 	Power prevPowerMode
 Fend
-
+''twist cavity off gonio to break magnetic field
+Function GTTwistOffCavityFromGonio
+	Integer currTool
+	Real currAngle, dx, dy
+	''Setup variables	
+	currTool = Tool()
+	currAngle = DegToRad(CU(RealPos))
+	dx = -10.0 * Cos(currAngle);
+	dy = -10.0 * Sin(currAngle);
+	''if near gonio
+	If isCloseToPoint(21) Then
+		'if near gonio (called during dismount routine after grabbing sample in cavity from gonio)
+		''If p12 defined then define toolset for cavity twistoff 
+		If PDef(P12) Then
+			''Setup the toolset
+			TLSet 3, XY(CX(P12), CY(P12), CZ(P12), CU(P12))
+			''do the move
+			Tool 3
+			Go (RealPos +U(45))
+			Move (RealPos +X(dx) +Y(dy))
+			''restore tool
+			Tool currTool
+		EndIf
+	EndIf
+Fend
 ''' *** Goniometer Mount/Dismount Moves *** '''
 Function GTMoveToGoniometer As Boolean
 	GTMoveToGoniometer = False

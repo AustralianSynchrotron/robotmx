@@ -1064,8 +1064,8 @@ Function TwistRelease
 	''Setup variables	
 	currTool = Tool()
 	currAngle = DegToRad(CU(RealPos))
-	dx = -10.0 * Cos(currAngle);
-	dy = -10.0 * Sin(currAngle);
+	Dx = -10.0 * Cos(currAngle);
+	Dy = -10.0 * Sin(currAngle);
 	''if not near gonio
 	If (Not isCloseToPoint(21)) Then
 		''If p12 defined then define toolset for cavity twistoff 
@@ -1075,8 +1075,20 @@ Function TwistRelease
 			''do the move
 			Tool 3
 			Go (RealPos +U(45))
-			Move (RealPos +X(dx) +Y(dy))
+			Move (RealPos +X(Dx) +Y(Dy))
 			''restore tool 
+			Tool currTool
+		EndIf
+	Else ''if near gonio (called during dismount routine after grabbing sample in cavity from gonio
+		''If p12 defined then define toolset for cavity twistoff 
+		If PDef(P12) Then
+			''Setup the toolset
+			TLSet 3, XY(CX(P12), CY(P12), CZ(P12), CU(P12))
+			''do the move
+			Tool 3
+			Go (RealPos +U(45))
+			Move (RealPos +X(Dx) +Y(Dy))
+			''restore tool
 			Tool currTool
 		EndIf
 	EndIf
@@ -2382,39 +2394,36 @@ Function CheckEnvironment As Boolean
 	CheckEnvironment = True
 	''check critical global variables
 	If g_Perfect_Cradle_Angle <> 90 Then
-	    g_RunResult$ = "error Problem detected with global variable g_Perfect_Cradle_Angle"
-		CheckEnvironment = False
+	    CheckEnvironment = False
 	EndIf
 	If g_Perfect_U4Holder <> 90 Then
-	    g_RunResult$ = "error Problem detected with global variable g_Perfect_U4Holder"
-		CheckEnvironment = False
+	    CheckEnvironment = False
 	EndIf
 	If g_Perfect_DownStream_Angle <> 180 Then
-		g_RunResult$ = "error Problem detected with global variable g_Perfect_DownStream_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_LeftCassette_Angle <> 90 Then
-     	g_RunResult$ = "error Problem detected with global variable g_Perfect_LeftCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_MiddleCassette_Angle <> 180 Then
-		g_RunResult$ = "error Problem detected with global variable g_Perfect_MiddleCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_RightCassette_Angle <> -90 Then
-		g_RunResult$ = "error Problem detected with global variable g_Perfect_RightCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_MagnetTransportAngle < 80 Or g_MagnetTransportAngle > 100 Then
-	    g_RunResult$ = "error Problem detected with global variable g_MagnetTransportAngle"
 		CheckEnvironment = False
 	EndIf
 	If g_U4MagnetHolder < 80 Or g_U4MagnetHolder > 100 Then
-        g_RunResult$ = "error Problem detected with global variable g_U4MagnetHolder"
 		CheckEnvironment = False
 	EndIf
+	''Problem detected in global variables, so set them to default values
+	If Not CheckEnvironment Then
+		SetGlobals
+		CheckEnvironment = True
+	EndIf
 	If Not g_FSInitOK Then
-		g_RunResult$ = "error Problem detected with force sensor"
+		g_RunResult$ = "Problem detected with force sensor during initialization"
 		CheckEnvironment = False
 	EndIf
 	

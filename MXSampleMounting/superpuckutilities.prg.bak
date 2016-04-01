@@ -820,7 +820,7 @@ Function GTMoveToSPMountPortStandbyPoint(cassette_position As Integer, puckIndex
 	Move P(SPStandbyPoint)
 	
 	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
-	If GTCheckPoint(SPStandbyToPortStandbyArcPoint) And GTCheckPoint(SPSecondaryArcPoint) Then
+	If GTCheckArcPoint(SPStandbyToPortStandbyArcPoint) And GTCheckArcPoint(SPSecondaryArcPoint) Then
 		Arc P(SPStandbyToPortStandbyArcPoint), P(SPSecondaryArcPoint) CP
 	EndIf
 
@@ -946,6 +946,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 			msg$ = "GTPutSampleIntoSPPort: ForceTouch detected Sample at " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 			GTPutSampleIntoSPPort = True
+			GTTwistOffMagnet
 		Else
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
@@ -953,8 +954,6 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 			UpdateClient(TASK_MSG, "GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!", WARNING_LEVEL)
 			GTPutSampleIntoSPPort = True ''The sample is lost, but still continue the dismount routine	
 		EndIf
-
-		GTTwistOffMagnet
 	Else
 		''There is no sample (or ForceTouch failure)
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT

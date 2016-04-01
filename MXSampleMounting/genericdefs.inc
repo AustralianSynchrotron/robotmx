@@ -18,6 +18,7 @@
 #define UNIVERSAL_TOOL 0
 #define PICKER_TOOL 1
 #define PLACER_TOOL 2
+''Toolset 3 is used in TwistRelease and GTTwistOffCavity function so don't use it.
 #define PORT_JAM_RECHECK_TOOL 4
 
 '' PORT Status

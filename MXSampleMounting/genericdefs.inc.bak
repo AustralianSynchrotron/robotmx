@@ -18,6 +18,7 @@
 #define UNIVERSAL_TOOL 0
 #define PICKER_TOOL 1
 #define PLACER_TOOL 2
+''Toolset 3 is used in TwistRelease function so don't use it.
 #define PORT_JAM_RECHECK_TOOL 4
 
 '' PORT Status
@@ -28,7 +29,7 @@
 
 #define DISTANCE_P3_TO_P6 20.0 ''mm
 #define MAGNET_AXIS_TO_CRADLE_EDGE 1.1 ''mm (4.45)
-#define MAGNET_PROBE_DISTANCE_TOLERANCE 0.5 ''mm
+#define MAGNET_PROBE_DISTANCE_TOLERANCE 0.6 ''mm
 
 '' Could be CASSETTE_SHRINK_IN_LN2 (0.9961126827)
 #define CASSETTE_SHRINK_FACTOR (1.0 + g_LN2LevelHigh * (1.0 - CASSETTE_SHRINK_IN_LN2))

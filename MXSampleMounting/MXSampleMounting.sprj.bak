@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/03/23 23:43:07:437,DS:0000008619,CS:25441,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/03/24 02:13:52:031,DS:0000008618,CS:01835,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="3/24/2016 10:43:07 AM"
+	sLastModified="3/24/2016 1:13:49 PM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -57,7 +57,7 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile7 {
@@ -122,7 +122,7 @@ ProgramFile18 {
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile20 {

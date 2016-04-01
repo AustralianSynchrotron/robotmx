@@ -820,7 +820,7 @@ Function GTMoveToSPMountPortStandbyPoint(cassette_position As Integer, puckIndex
 	Move P(SPStandbyPoint)
 	
 	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
-	If GTCheckPoint(SPStandbyToPortStandbyArcPoint) And GTCheckPoint(SPSecondaryArcPoint) Then
+	If GTCheckArcPoint(SPStandbyToPortStandbyArcPoint) And GTCheckArcPoint(SPSecondaryArcPoint) Then
 		Arc P(SPStandbyToPortStandbyArcPoint), P(SPSecondaryArcPoint) CP
 	EndIf
 
@@ -904,7 +904,7 @@ Function GTMoveBackToSPStandbyPoint
 	puckPortStandbyPoint = 52 '' destination point
 	
 	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
-	If GTCheckPoint(SPStandbyToPortStandbyArcPoint) And GTCheckPoint(SPSecondaryArcPoint) Then
+	If GTCheckArcPoint(SPStandbyToPortStandbyArcPoint) And GTCheckArcPoint(SPSecondaryArcPoint) Then
 		Move P(SPSecondaryArcPoint) CP
 		Arc P(SPStandbyToPortStandbyArcPoint), P(SPStandbyPoint)
 	Else
