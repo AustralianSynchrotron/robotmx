@@ -1,6 +1,6 @@
-ENVT0100,LM:2016/03/31 02:16:29:433,DS:0000005809,CS:18984,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="mountingdefs.inc"
-bMdiMaximized=False
+ENVT0100,LM:2016/04/01 01:30:16:156,DS:0000005810,CS:18271,MA:00-0C-29-B8-F2-20,EI:           
+sActiveChild="samplemounting.prg"
+bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
@@ -203,7 +203,7 @@ ProgramFile18 {
 ProgramFile19 {
 	sName="samplemounting.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=49
 		nTop=48

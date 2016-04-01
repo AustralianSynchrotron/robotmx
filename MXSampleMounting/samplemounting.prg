@@ -44,6 +44,32 @@ Function GTSetGoniometerPoints(dx As Real, dy As Real, dz As Real, du As Real) A
 	GTSetGoniometerPoints = True
 Fend
 
+Function GTcheckMountPort(cassette_position As Integer, puckColumnIndex As Integer, rowPuckPortIndex As Integer) As Boolean
+	'' This function returns false if the port supplied is Invalid or if there is no sample in that port
+	GTcheckMountPort = False
+
+	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_OCCUPIED Then
+			GTcheckMountPort = True
+		Else
+			g_RunResult$ = "error GTcheckMountPort: Cassette port " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " is not occupied, cannot mount this port"
+		EndIf
+	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_OCCUPIED Then
+			GTcheckMountPort = True
+		Else
+			g_RunResult$ = "error GTcheckMountPort: Superpuck port " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " is not occupied, cannot mount this port"
+		EndIf
+	Else
+			g_RunResult$ = "error GTcheckMountPort: The cassette is unknown or position supplied is invalid!"
+	EndIf
+	
+	If Not GTcheckMountPort Then
+		''Something went wrong, inform client
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	EndIf
+Fend
+
 Function GTsetMountPort(cassette_position As Integer, puckColumnIndex As Integer, rowPuckPortIndex As Integer) As Boolean
 	'' This function returns false if the port supplied is Invalid or if there is no sample in that port
 	GTsetMountPort = False
@@ -53,29 +79,13 @@ Function GTsetMountPort(cassette_position As Integer, puckColumnIndex As Integer
 	g_InterestedRowPuckPortIndex = rowPuckPortIndex
 	g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
 	
-	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
-		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_OCCUPIED Then
-			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
-			GTsetMountPort = True
-		Else
-			g_RunResult$ = "GTsetMountPort: Cassette port " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " is not occupied, cannot mount this port"
-		EndIf
-	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_OCCUPIED Then
-			g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
-			GTsetMountPort = True
-		Else
-			g_RunResult$ = "GTsetMountPort: Superpuck port " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " is not occupied, cannot mount this port"
-		EndIf
+	If GTcheckMountPort(cassette_position, puckColumnIndex, rowPuckPortIndex) Then
+		g_InterestedSampleStatus = SAMPLE_IN_CASSETTE
+		GTsetMountPort = True
 	Else
-			g_RunResult$ = "GTsetMountPort: The cassette is unknown or position supplied is invalid!"
+		UpdateClient(TASK_MSG, "GTsetMountPort: GTcheckMountPort failed on checking Cassette port: " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1), ERROR_LEVEL)
 	EndIf
-	
-	If Not GTsetMountPort Then
-		''Something went wrong, inform client
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-	EndIf
-	
+		
 	GTsendSampleStateJSON
 Fend
 
@@ -275,9 +285,34 @@ Function GTMountInterestedPort As Boolean
 Fend
 
 ''' *** Dismounting Code Starts Here *** '''
+Function GTcheckDismountPort(cassette_position As Integer, puckColumnIndex As Integer, rowPuckPortIndex As Integer) As Boolean
+	'' This function returns false if the port supplied is Invalid or if there is already a sample in that port
+	GTcheckDismountPort = False
+	
+	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
+		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_VACANT Then
+			GTcheckDismountPort = True
+		Else
+			g_RunResult$ = "error GTcheckDismountPort: Sample already present in " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " cannot continue with dismount"
+		EndIf
+	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
+		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_VACANT Then
+			GTcheckDismountPort = True
+		Else
+			g_RunResult$ = "error GTcheckDismountPort: Sample already present in " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " cannot continue with dismount"
+		EndIf
+	Else
+		g_RunResult$ = "error GTcheckDismountPort: The cassette is unknown or position supplied is invalid."
+	EndIf
+	
+	If Not GTcheckDismountPort Then
+		''Something went wrong, inform client
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	EndIf
+Fend
 
 Function GTsetDismountPort(cassette_position As Integer, puckColumnIndex As Integer, rowPuckPortIndex As Integer) As Boolean
-	'' This function returns false if the port supplied is Invalid or if there is no sample in that port
+	'' This function returns false if the port supplied is Invalid or if there is already a sample in that port
 	GTsetDismountPort = False
 	
 	g_InterestedCassettePosition = cassette_position
@@ -285,28 +320,13 @@ Function GTsetDismountPort(cassette_position As Integer, puckColumnIndex As Inte
 	g_InterestedRowPuckPortIndex = rowPuckPortIndex
 	g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
 	
-	If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
-		If g_CAS_PortStatus(cassette_position, rowPuckPortIndex, puckColumnIndex) = PORT_VACANT Then
-			g_InterestedSampleStatus = SAMPLE_IN_GONIO
-			GTsetDismountPort = True
-		Else
-			g_RunResult$ = "GTsetDismountPort: Sample already present in " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " cannot continue with dismount"
-		EndIf
-	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_VACANT Then
-			g_InterestedSampleStatus = SAMPLE_IN_GONIO
-			GTsetDismountPort = True
-		Else
-			g_RunResult$ = "GTsetDismountPort: Sample already present in " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " cannot continue with dismount"
-		EndIf
+	If GTcheckDismountPort(cassette_position, puckColumnIndex, rowPuckPortIndex) Then
+		g_InterestedSampleStatus = SAMPLE_IN_GONIO
+		GTsetDismountPort = True
 	Else
-		g_RunResult$ = "GTsetDismountPort: The cassette is unknown or position supplied is invalid."
+		UpdateClient(TASK_MSG, "GTsetDismountPort: GTcheckDismountPort failed checking Cassette Port " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1), ERROR_LEVEL)
 	EndIf
-	
-	If Not GTsetDismountPort Then
-		''Something went wrong, inform client
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-	EndIf
+
 	GTsendSampleStateJSON
 Fend
 

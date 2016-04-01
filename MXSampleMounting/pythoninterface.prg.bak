@@ -275,6 +275,12 @@ Function MountSamplePort
 		Exit Function
 	EndIf
 	
+	''Check whether the port to be mounted is occupied. If not exit this function
+	If Not GTcheckMountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
+		UpdateClient(TASK_MSG, "MountSamplePort: GTcheckMountPort Failed!", WARNING_LEVEL)
+		Exit Function
+	EndIf
+	
 	''Before you start mounting the sample requested by g_RunArgs$, 
 	''check the gonio to see whether there is already a sample mounted
 	''If mounted, then dismount it first then mount the new sample
@@ -295,7 +301,6 @@ Function MountSamplePort
 	
 	
 		If Not GTDismountToInterestedPort Then
-			UpdateClient(TASK_MSG, "Error in MountSamplePort->GTDismountToInterestedPort: Check log for further details", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
