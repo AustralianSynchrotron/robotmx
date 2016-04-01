@@ -290,12 +290,19 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		MountSamplePort
 	
 		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
-		If Not (Dist(P0, RealPos) < 10) Then
-			UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
-			Exit Function
-		EndIf
+		''If Not (Dist(P0, RealPos) < 10) Then
+		''	UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
+		''	Exit Function
+		''EndIf
+		''If g_InterestedSampleStatus <> SAMPLE_IN_GONIO Then
+		''	''There was no sample in cassette to MountSamplePort did not happen
+		''	''So skip dismounting
+		''	UpdateClient(TASK_MSG, "No Sample in Gonio. MountSamplePort did not mount sample . So skipping DismountSample.", INFO_LEVEL)
+		''	GoTo SkipDismount
+		''EndIf
 		
-		DismountSample
+		''DismountSample
+		''SkipDismount:
 	Next
 	
 	StressTestSuperPuck = True
@@ -321,19 +328,19 @@ Function StressTestNormalCassette(cassette_position As Integer, columnIndex As I
 		MountSamplePort
 	
 		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
-		If Not (Dist(P0, RealPos) < 10) Then
-			UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
-			Exit Function
-		EndIf
-		If g_InterestedSampleStatus <> SAMPLE_IN_GONIO Then
-			''There was no sample in cassette to MountSamplePort did not happen
-			''So skip dismounting
-			UpdateClient(TASK_MSG, "No Sample in Gonio. MountSamplePort did not mount sample . So skipping DismountSample.", INFO_LEVEL)
-			GoTo SkipDismount
-		EndIf
+		''If Not (Dist(P0, RealPos) < 10) Then
+		''	UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
+		''	Exit Function
+		''EndIf
+		''If g_InterestedSampleStatus <> SAMPLE_IN_GONIO Then
+		''	''There was no sample in cassette to MountSamplePort did not happen
+		''	''So skip dismounting
+		''	UpdateClient(TASK_MSG, "No Sample in Gonio. MountSamplePort did not mount sample . So skipping DismountSample.", INFO_LEVEL)
+		''	GoTo SkipDismount
+		''EndIf
 		
-		DismountSample
-		SkipDismount:
+		''DismountSample
+		''SkipDismount:
 	Next
 	
 	StressTestNormalCassette = True

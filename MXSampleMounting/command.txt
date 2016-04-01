@@ -3042,4 +3042,240 @@ r a 11
 > print g_interestedsamplestatus
  5
 > jump p0
+> jump p18
+> jump p1
+> jump p0
+> tool
+	   2
+> tool 0
+> jump p1
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p1
+> jump p0
+> print g_runargs$
+right_cassette A 1
+> print g_InterestedPuckColumnIndex
+ 0
+> 
+!!Error: 2513, Specified point label is not defined.
+> 
+ 10
+> print g_interestedsamplestatus
+ 0
+print g_SP_PortStatus(2,0,1)
+ 2
+> 
+ -1
+> 
+> 
+ 2
+> 
+ -1
+> 
+ -1
+> print g_SP_PortStatus(2,0,10)
+ 2
+>  g_SP_PortStatus(2,0,10) = -1
+> 
+> tool 0
+> jump p3
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> power Low
+> 
+> jump p1
+> 
+> jump p0
+> 
+> motor On
+> move p18
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
+> 
+> jump p1
+> 
+> 
+> 
+> tool 0
+> 
+> 
+> 
+> jump p0
+> 
+> 
+> 
+> g_RunArgs$="0 0 0 0 0"
+> print g_interestedsamplestatus
+ 0
+> 
+ 5
+> print g_runresult$
+error GTPutSampleIntoSPPort: ForceTouch on A:10 stopped -2.16895mm before reaching theoretical sample surface.
+> tool 0
+> 
+> jump p3
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p3
+> jump p1
+> 
+> jump p0
+> print g_DumbbellStatus
+ 2
+> g_DumbbellStatus = 0
+> motors on
+!!Error: 3100, Syntax error.
+> motor On
+> 
+> tool 0
+> motor On
+> 
+> jump p1
+> 
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> 
+> print g_SP_PortStatus(2,0,13)
+ -1
+> g_SP_PortStatus(2,0,8) = -1
+> 
+> 
+> 
+> 
+ 2
+> 
+ -1
+> 
+ -1
+> 
+ 1
+> 
+ 2
+> 
+ 2
+> print g_LN2LevelHigh
+ 0
+> plist
+P0   = XY(   487.845,  250.941, -211.651,   31.594 )  /R /0   
+P1   = XY(   261.789,  412.735,   -8.455,   67.289 )  /R /0   
+P2   = XY(    87.265,  410.883,   -2.000,   93.414 )  /R /0   
+P3   = XY(    87.265,  410.883, -209.202,   93.414 )  /R /0   
+P4   = XY(   107.265,  410.883, -179.202,   93.414 )  /R /0   
+P5   = XY(   108.848,  437.325, -209.516,  -86.546 )  /R /0   
+P6   = XY(   107.265,  410.883, -209.202,   93.414 )  /R /0   
+P10  = XY(    14.247,  -20.290,    0.000,    0.997 )  /R /0   
+P11  = XY(   -17.349,  -20.840,    0.080,  180.997 )  /R /0   
+P12  = XY(    12.663,   -4.608,    0.000,    1.148 )  /R /0   
+P13  = XY(    12.380,    9.509,    0.000,    1.148 )  /R /0   
+P15  = XY(   103.628,  454.825, -209.516,  -86.546 )  /R /0   
+P16  = XY(   121.128,  437.325, -209.516,  -86.546 )  /R /0   
+P17  = XY(   121.128,  447.325, -209.516,  -86.546 )  /R /0   
+P18  = XY(  -368.526,  367.908,   -9.619,  269.315 )  /R /0   
+P20  = XY(  -331.506, -385.233, -118.333,  267.578 )  /R /0   
+P21  = XY(  -331.506, -385.233, -118.333,  267.578 )  /R /0   
+P22  = XY(  -352.522, -380.387,   -1.000,  267.558 )  /R /0   
+P23  = XY(  -352.522, -384.687, -118.878,  267.558 )  /R /0   
+P24  = XY(  -331.508, -380.977, -118.878,  267.561 )  /R /0   
+P25  = XY(   108.013,  364.792, -209.701,   93.433 )  /R /0   
+P26  = XY(   125.513,  382.292, -209.701,   93.433 )  /R /0   
+P27  = XY(   125.513,  372.292, -209.701,   93.433 )  /R /0   
+P28  = XY(  -357.211,  363.219,   -9.619,  269.315 )  /R /0   
+P30  = XY(   487.833,  250.961, -211.674,   31.463 )  /R /0   
+P34  = XY(    19.219,  469.481, -292.002,    3.847 )  /R /0   left_cassette
+P35  = XY(   -90.833,  396.216, -292.366,    3.577 )  /R /0   middle_cassette
+P36  = XY(    27.857,  338.082, -292.725,    4.206 )  /R /0   right_cassette
+P38  = XY(  -352.522,  351.905,   -9.619,  269.315 )  /R /0   
+P41  = XY(    19.229,  469.678, -273.028,    0.000 )  /R /0   
+P42  = XY(   -90.848,  396.427, -273.370,    0.000 )  /R /0   
+P43  = XY(    27.886,  338.225, -273.736,    0.000 )  /R /0   
+P44  = XY(    19.274,  469.203, -168.028,    0.000 )  /R /0   
+P45  = XY(   -90.814,  395.948, -168.370,    0.000 )  /R /0   
+P46  = XY(    27.810,  337.812, -168.736,    0.000 )  /R /0   
+P49  = XY(    98.197,  393.879, -179.202,  224.003 )  /R /0   
+P50  = XY(    66.722,  376.816, -197.457,  225.000 )  /R /0   
+P51  = XY(     0.000,    0.000,    0.000,    0.000 )  /R /0   
+P52  = XY(   107.481,  341.837, -197.565,  229.206 )  /R /0   
+P55  = XY(     0.000,    0.000,    0.000,    0.000 )  /R /0   
+P56  = XY(   121.812,  427.944, -209.205,   94.411 )  /R /0   
+P60  = XY(    62.857,  323.082, -157.725, -180.000 )  /R /0   
+P76  = XY(   121.128,  437.325, -209.516,  -86.546 )  /R /0   
+P86  = XY(   107.240,  410.907, -209.187,   93.340 )  /R /0   
+P93  = XY(    86.128,  437.325, -209.516,  -86.546 )  /R /0   
+P94  = XY(    90.513,  382.292, -209.701,   93.433 )  /R /0   
+P111 = XY(    88.338,  319.656, -197.565,  229.206 )  /R /0   
+P990 = XY(    16.234,  471.205, -145.539,   91.008 )  /R /0   
+P991 = XY(   -92.812,  394.822, -145.347,  186.484 )  /R /0   
+P999 = XY(   550.000,   -0.000,   -0.000,   -0.000 )  /L /0   
+> 
+!!Error: 2513, Specified point label is not defined.
+> g_runargs$ = "r 0"
+> 
+> print p36
+ X:   27.905 Y:  338.023 Z: -292.710 U:    3.649 V:    0.000 W:    0.000 /R /0
+> 
+ X:   27.916 Y:  338.027 Z: -292.726 U:    3.645 V:    0.000 W:    0.000 /R /0
+> g_runargs$ = "1 0"
+> print p6
+ X:  107.319 Y:  411.346 Z: -209.200 U:   93.366 V:    0.000 W:    0.000 /R /0
+> print g_runargs$
+1 0
+> print p6
+ X:  107.288 Y:  411.344 Z: -209.187 U:   93.358 V:    0.000 W:    0.000 /R /0
+> print g_CassetteType(2)
+ 3
+> print g_SP_PortStatus(2,0,15)
+ -1
+> 
+ -1
+> 
+ 0
+> 
+ -1
+> 
+ -1
+> 
+ 2
+> 
+ -1
+> 
+ -1
+> 
+ -1
+> g_SP_PortStatus(2,0,11)=-1
+> motor On
+> 
+> jump p1
+> jump p0
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> print g_dumbbellstatus
+ 2
+> g_dumbbellstatus = 0
+> print g_dumbbellstatus
+ 2
+> 
+!!Error: 3100, Syntax error.
+> tool 0
+> jump p1
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p1
+> jump p0
+> tool 0
+> jump p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p6
+> move p3
+> jump p1
+jump>  p0
+!!Error: 3100, Syntax error.
+> jump p0
 > 

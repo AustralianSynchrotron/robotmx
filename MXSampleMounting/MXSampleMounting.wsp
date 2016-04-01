@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/03/24 02:19:23:218,DS:0000005786,CS:17277,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2016/03/24 06:54:35:375,DS:0000005790,CS:28509,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Command"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
@@ -213,7 +213,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -365,7 +365,7 @@ CmdWindow {
 		nWidth=784
 		nHeight=410
 	}
-	nWinState=0
+	nWinState=2
 }
 RunWindow {
 	bOpened=True
@@ -415,7 +415,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=12
 		nTop=14

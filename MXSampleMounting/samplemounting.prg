@@ -331,14 +331,11 @@ Function GTCavityGripSampleFromGonio As Boolean
 	If Not Close_Gripper Then
 		''Adjust position, try again 1 time only
 		''Back away slightly
-		dx = 0.5 * g_goniometer_cosValue
-		dy = 0.5 * g_goniometer_sinValue
-		Print "P20=",
-		Print P20
-		Print "P20 adjust=",
-		Print P20 +X(dx) +Y(dy)
+		Dx = 0.5 * g_goniometer_cosValue
+		Dy = 0.5 * g_goniometer_sinValue
+		UpdateClient(TASK_MSG, "GTCavityGripSampleFromGonio: close gripper failed, trying hampton adjust", WARNING_LEVEL)
 		Open_Gripper
-		Move (P20 +X(dx) +Y(dy))
+		Move (P20 +X(Dx) +Y(Dy))
 		If Not Close_Gripper Then
 			''Failed still
 			g_RunResult$ = "error GTCavityGripSampleFromGonio:Close_Gripper failed"
@@ -347,14 +344,16 @@ Function GTCavityGripSampleFromGonio As Boolean
 		EndIf
 	EndIf
 
+	''If you don't want GTTwistOffCavityFromGonio, then uncomment Move P24 below
 	GTTwistOffCavityFromGonio
-	
-	g_InterestedSampleStatus = SAMPLE_IN_CAVITY
-	GTsendSampleStateJSON
 	
 	''if GTTwistOffCavityFromGonio is used after grabbing sample from gonio, don't Move to P24
 	''because this twists back and it might hit cryojet
 	''Move P24
+	
+	''Once backed away from GONIO set interested sample status to "sample in cavity"
+	g_InterestedSampleStatus = SAMPLE_IN_CAVITY
+	GTsendSampleStateJSON
 	
 	Move P22
 	
