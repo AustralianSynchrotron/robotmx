@@ -100,7 +100,10 @@ Function GetSampleFromInterestPort As Boolean
 		g_InterestedSampleStatus = SAMPLE_IN_PICKER
 		GetSampleFromInterestPort = True
 	ElseIf portStatusBeforePickerCheck = PORT_VACANT Then
-		g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
+		''g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
+		''Just continue mount routine as if there was a pin there (rather than stopping here)
+		g_InterestedSampleStatus = SAMPLE_IN_PICKER
+		GetSampleFromInterestPort = True
 	Else
 		''If portStatusBeforePickerCheck = PORT_ERROR Then
 		g_InterestedSampleStatus = SAMPLE_STATUS_UNKNOWN
@@ -179,6 +182,10 @@ Function GTReleaseSampleToGonio As Boolean
 	GTReleaseSampleToGonio = False
 
 	'' Probe speed is the slowest speed so use it around GONIO
+	'' Use low power mode around GONIO
+	Integer prevPower
+	prevPower = Power
+	Power Low
 	GTsetRobotSpeedMode(PROBE_SPEED)
 
 	Move P24
@@ -203,6 +210,9 @@ Function GTReleaseSampleToGonio As Boolean
 	
 	'' Close_Gripper check is not required because it is moving to heater after this step anyway
 	Close_Gripper
+
+	''Restore previous Power
+	Power prevPower
 	
 	GTReleaseSampleToGonio = True
 Fend
@@ -292,10 +302,19 @@ Function GTsetDismountPort(cassette_position As Integer, puckColumnIndex As Inte
 Fend
 
 Function GTCavityGripSampleFromGonio As Boolean
+	''For hampton pin adjust
+	Real Dx, Dy
 	''GripSample in Cavity From Goniometer
 	''Starts from P22
 
 	GTCavityGripSampleFromGonio = False
+	
+	'' Probe speed is the slowest speed so use it around GONIO
+	'' Use low power mode around GONIO
+	Integer prevPower
+	prevPower = Power
+	Power Low
+	GTsetRobotSpeedMode(PROBE_SPEED)
 	
 	Move P23
 	
@@ -310,9 +329,22 @@ Function GTCavityGripSampleFromGonio As Boolean
 	Move P21
 
 	If Not Close_Gripper Then
-		g_RunResult$ = "error GTCavityGripSampleFromGonio:Close_Gripper failed"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
+		''Adjust position, try again 1 time only
+		''Back away slightly
+		Dx = 0.5 * g_goniometer_cosValue
+		Dy = 0.5 * g_goniometer_sinValue
+		Print "P20=",
+		Print P20
+		Print "P20 adjust=",
+		Print P20 +X(Dx) +Y(Dy)
+		Open_Gripper
+		Move (P20 +X(Dx) +Y(Dy))
+		If Not Close_Gripper Then
+			''Failed still
+			g_RunResult$ = "error GTCavityGripSampleFromGonio:Close_Gripper failed"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			Exit Function
+		EndIf
 	EndIf
 	
 	g_InterestedSampleStatus = SAMPLE_IN_CAVITY
@@ -321,6 +353,8 @@ Function GTCavityGripSampleFromGonio As Boolean
 	Move P24
 	
 	Move P22
+	
+	Power prevPower
 	
 	GTCavityGripSampleFromGonio = True
 Fend
@@ -394,10 +428,7 @@ Function GTDismountToInterestedPort As Boolean
 		UpdateClient(TASK_MSG, "GTDismountToInterestedPort->GTMoveToGoniometer failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
-		
-	'' Probe speed is the slowest speed so use it around GONIO
-	GTsetRobotSpeedMode(PROBE_SPEED)
-	
+			
 	''GripSample in Cavity From Goniometer
 	If Not GTCavityGripSampleFromGonio Then
 		UpdateClient(TASK_MSG, "GTDismountToInterestedPort->GTCavityGripSampleFromGonio failed", ERROR_LEVEL)

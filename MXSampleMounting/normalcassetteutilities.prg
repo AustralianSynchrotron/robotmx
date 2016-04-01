@@ -338,16 +338,14 @@ Function GTPickerCheckCASPortStatus(cassette_position As Integer, rowIndex As In
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			portStatusBeforePickerCheck = PORT_VACANT
 			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
-			g_RunResult$ = "error GTPickerCheckCASPortStatus: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "GTPickerCheckCASPortStatus: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface.", WARNING_LEVEL)
 		EndIf
 	Else
 		'' There is no sample (or ForceTouch failure)
 		portStatusBeforePickerCheck = PORT_VACANT
 		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_CAS
-		g_RunResult$ = "error GTPickerCheckCASPortStatus: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "GTPickerCheckCASPortStatus: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance!", WARNING_LEVEL)
 	EndIf
 		
 	Move P(standbyPoint)
@@ -421,22 +419,21 @@ Function GTPutSampleIntoCASPort(cassette_position As Integer, rowIndex As Intege
 			msg$ = "GTPutSampleIntoCASPort: ForceTouch detected Sample at " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 			GTPutSampleIntoCASPort = True
+			GTTwistOffMagnet
 		Else
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
-			g_RunResult$ = "error GTPutSampleIntoCASPort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "GTPutSampleIntoCASPort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!", ERROR_LEVEL)
+			GTPutSampleIntoCASPort = True ''You have just lost a sample, just continue dismounting routine
 		EndIf
-		
-		GTTwistOffMagnet
 	Else
 		'' There is no sample (or ForceTouch failure)
 		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_CAS
 		g_RunResult$ = "error GTPutSampleIntoCASPort: ForceTouch failed to detect " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		''Move P(standbyPoint) ''This is called at the end of this function
+		GTPutSampleIntoCASPort = True ''You have just lost a sample, just continue dismounting routine
 	EndIf
 	
 	'' Client Update after moving back

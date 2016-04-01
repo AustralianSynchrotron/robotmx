@@ -73,6 +73,12 @@ Fend
 ''Python interface for GTJumpHomeToCoolingPointAndWait
 Function PrepareForMountDismount As Boolean
 	g_RunResult$ = ""
+	
+	If Not GTPositionCheckBeforeMotion Then
+		UpdateClient(TASK_MSG, "error PrepareForMountDismount: GTPositionCheckBeforeMotion Failed!", ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
 	If Not GTJumpHomeToCoolingPointAndWait Then
 		Exit Function
 	EndIf
@@ -92,6 +98,11 @@ Function ProbeCassettes
 	'' Initialize all constants
 	If Not GTInitialize Then
 		''Problem detected
+		Exit Function
+	EndIf
+	
+	If Not GTPositionCheckBeforeMotion Then
+		UpdateClient(TASK_MSG, "error ProbeCassettes: GTPositionCheckBeforeMotion Failed!", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -257,6 +268,11 @@ Function MountSamplePort
 		Exit Function
 	EndIf
 	
+	If Not GTPositionCheckBeforeMotion Then
+		UpdateClient(TASK_MSG, "error MountSamplePort: GTPositionCheckBeforeMotion Failed!", ERROR_LEVEL)
+		Exit Function
+	EndIf
+	
 	''Before you start mounting the sample requested by g_RunArgs$, 
 	''check the gonio to see whether there is already a sample mounted
 	''If mounted, then dismount it first then mount the new sample
@@ -357,6 +373,12 @@ Function DismountSample
 		Exit Function
 	EndIf
 	
+	
+	If Not GTPositionCheckBeforeMotion Then
+		UpdateClient(TASK_MSG, "error DismountSample: GTPositionCheckBeforeMotion Failed!", ERROR_LEVEL)
+		Exit Function
+	EndIf
+
 	''Dismounting Starts Here
 	
 	'' Here we check whether the port is empty and only then it sets the interested ports
@@ -406,6 +428,11 @@ Function FindPortCenters
 		Exit Function
 	EndIf
 	
+	If Not GTPositionCheckBeforeMotion Then
+		UpdateClient(TASK_MSG, "error FindPortCenters: GTPositionCheckBeforeMotion Failed!", ERROR_LEVEL)
+		Exit Function
+	EndIf
+
 	If Not GTJumpHomeToCoolingPointAndWait Then
 		Exit Function
 	EndIf
@@ -473,6 +500,8 @@ Function SetPortState
 	Integer cassette_position, columnPuckIndex, rowPuckPortIndex
 	Integer requestedPortStatus
 	
+	String msg$
+	
     If RequestArgC = 4 Then
 		cassetteChar$ = Mid$(RequestTokens$(0), 1, 1)
 		If Not GTParseCassettePosition(cassetteChar$, ByRef cassette_position) Then
@@ -500,8 +529,12 @@ Function SetPortState
 		''Only after all the above checks have passed, set the status
 		If (g_CassetteType(cassette_position) = NORMAL_CASSETTE) Or (g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
 			g_CAS_PortStatus(cassette_position, rowPuckPortIndex, columnPuckIndex) = requestedPortStatus
+			msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnPuckIndex, rowPuckPortIndex)) + ", 'value':[" + Str$(g_CAS_PortStatus(cassette_position, columnPuckIndex, rowPuckPortIndex)) + ",]}"
+			UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 		ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 			g_SP_PortStatus(cassette_position, columnPuckIndex, rowPuckPortIndex) = requestedPortStatus
+			msg$ = "{'set':'port_states', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, columnPuckIndex, rowPuckPortIndex)) + ", 'value':[" + Str$(g_SP_PortStatus(cassette_position, columnPuckIndex, rowPuckPortIndex)) + ",]}"
+			UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 		Else
 			g_RunResult$ = "error SetPortState: Invalid Cassette Type found at cassette_position supplied in g_RunArgs$"
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)

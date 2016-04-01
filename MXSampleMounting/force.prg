@@ -252,7 +252,7 @@ Function SetupForceTrigger(ByVal forceName As Integer, ByVal threshold As Real)
    		Default
    			''Less noise in XY
    		    ''Averaging for XY
-   			g_FSAverage = 8
+   			g_FSAverage = 80
     Send
     
     ''for torque, "less" is "greater". Will be changed if vendor fix this bug

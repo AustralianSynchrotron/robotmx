@@ -866,16 +866,14 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			portStatusBeforePickerCheck = PORT_VACANT
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
-			g_RunResult$ = "error GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "GTPickerCheckSPPortStatus: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface.", WARNING_LEVEL)
 		EndIf
 	Else
 		''There is no sample (or ForceTouch failure)
 		portStatusBeforePickerCheck = PORT_VACANT
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
-		g_RunResult$ = "error GTPickerCheckSPPortStatus: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
-		UpdateClient(TASK_MSG, g_RunResult$, INFO_LEVEL)
+		UpdateClient(TASK_MSG, "GTPickerCheckSPPortStatus: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!", WARNING_LEVEL)
 	EndIf
 		
 	Move P(standbyPoint)
@@ -948,22 +946,20 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 			msg$ = "GTPutSampleIntoSPPort: ForceTouch detected Sample at " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 			GTPutSampleIntoSPPort = True
+			GTTwistOffMagnet
 		Else
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
-			g_RunResult$ = "error GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+			UpdateClient(TASK_MSG, "GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!", WARNING_LEVEL)
+			GTPutSampleIntoSPPort = True ''The sample is lost, but still continue the dismount routine	
 		EndIf
-
-		GTTwistOffMagnet
 	Else
 		''There is no sample (or ForceTouch failure)
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
-		g_RunResult$ = "error GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		''Move P(standbyPoint) ''This move is called at the end of this function
+		UpdateClient(TASK_MSG, "GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!", WARNING_LEVEL)
+		GTPutSampleIntoSPPort = True ''The sample is lost, but still continue the dismount routine
 	EndIf
 	
 	'' Client Update after probing decision has been made

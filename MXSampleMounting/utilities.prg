@@ -2382,39 +2382,36 @@ Function CheckEnvironment As Boolean
 	CheckEnvironment = True
 	''check critical global variables
 	If g_Perfect_Cradle_Angle <> 90 Then
-	    g_RunResult$ = "error Problem detected with global variable g_Perfect_Cradle_Angle"
-		CheckEnvironment = False
+	    CheckEnvironment = False
 	EndIf
 	If g_Perfect_U4Holder <> 90 Then
-	    g_RunResult$ = "error Problem detected with global variable g_Perfect_U4Holder"
-		CheckEnvironment = False
+	    CheckEnvironment = False
 	EndIf
 	If g_Perfect_DownStream_Angle <> 180 Then
-		g_RunResult$ = "error Problem detected with global variable g_Perfect_DownStream_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_LeftCassette_Angle <> 90 Then
-     	g_RunResult$ = "error Problem detected with global variable g_Perfect_LeftCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_MiddleCassette_Angle <> 180 Then
-		g_RunResult$ = "error Problem detected with global variable g_Perfect_MiddleCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_Perfect_RightCassette_Angle <> -90 Then
-		g_RunResult$ = "error Problem detected with global variable g_Perfect_RightCassette_Angle"
 		CheckEnvironment = False
 	EndIf
 	If g_MagnetTransportAngle < 80 Or g_MagnetTransportAngle > 100 Then
-	    g_RunResult$ = "error Problem detected with global variable g_MagnetTransportAngle"
 		CheckEnvironment = False
 	EndIf
 	If g_U4MagnetHolder < 80 Or g_U4MagnetHolder > 100 Then
-        g_RunResult$ = "error Problem detected with global variable g_U4MagnetHolder"
 		CheckEnvironment = False
 	EndIf
+	''Problem detected in global variables, so set them to default values
+	If Not CheckEnvironment Then
+		SetGlobals
+		CheckEnvironment = True
+	EndIf
 	If Not g_FSInitOK Then
-		g_RunResult$ = "error Problem detected with force sensor"
+		g_RunResult$ = "Problem detected with force sensor during initialization"
 		CheckEnvironment = False
 	EndIf
 	
@@ -2517,14 +2514,26 @@ Function ToDewarClearFrame As Boolean
 	ToDewarClearFrame = True
 	''setup error handler to catch errors
 	OnErr GoTo errHandler
+	''Select tool 0
+	Tool 0
 	''Open the lid
 	If Not Open_Lid Then
+		''set runResult and update the clients
+		g_RunResult$ = "Open lid failed in ToDewarClearFrame"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 	    ''Lid failed to open
 		ToDewarClearFrame = False
 		Exit Function
 	EndIf
 	''Ensure gripper closed
-	Close_Gripper
+	If Not Close_Gripper Then
+		''set runResult and update the clients
+		g_RunResult$ = "Close gripper failed in ToDewarClearFrame"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		''Lid failed to open
+		ToDewarClearFrame = False
+		Exit Function
+	EndIf
 	''Determine what side of dewar we are on now
 	xpos = CX(RealPos)
 	''Gonio side of dewar
@@ -2546,7 +2555,7 @@ Function ToDewarClearFrame As Boolean
 	EndIf
 	
 	LimZ 0
-	Jump P3 :Z(0)
+	Jump P3
 	
 SkipTask:
 	Exit Function

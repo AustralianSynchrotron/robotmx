@@ -2377,4 +2377,480 @@ left_cassette A 1
 > 
 !!Error: 4031, Cannot execute a motion command when the motor is in the off state.
 > motor On
+> TC
+	TC OFF
+> TCLim
+> TCLim(1)
+!!Error: 3101, Parameter count error.
+> print TCLim(1)
+ -1
+> print TCLim(2)
+ -1
+> PTRQ(1)
+	   3.271
+> PTRQ(2)
+	   3.983
+> PTRQ(3)
+	   1.781
+> PTRQ(4)
+	   1.962
+> TC
+	TC OFF
+> ptrq
+	   3.271	   3.983
+	   1.781	   1.962
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000	   0.000
+> atrq
+!!Error: 4030, Buffer for the average torque calculation has overflowed. Shorten the time interval from Atclr to Atrq., Robot 1, Joint 1
+> atclr
+> atrq
+	   0.002	   0.004
+	   0.037	   0.021
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000
+> atrq
+	   0.002	   0.004
+	   0.037	   0.021
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000
+> atrq
+	   0.002	   0.004
+	   0.037	   0.021
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000
+> ptclr
+> ptrq
+	   0.563	   0.574
+	   0.740	   0.311
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000	   0.000
+> ptrq
+	   0.563	   0.574
+	   0.740	   0.311
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000	   0.000
+> ptrq
+	   0.563	   0.574
+	   0.740	   0.311
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000	   0.000
+> ptrq
+	   0.563	   0.574
+	   0.740	   0.311
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000	   0.000
+> move p3
+> tool 0
+> jump p1
+> jump p0
+> g_RunArgs$="l 0"
+> ptrq
+	   0.563	   0.625
+	   0.823	   0.327
+	   0.000	   0.000
+	   0.000	   0.000
+	   0.000	   0.000
+> tool 0
+> print here
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> print p0
+ X:  487.845 Y:  250.941 Z: -211.651 U:   31.594 V:    0.000 W:    0.000 /R /0
+> print athome
+ 0
+> jump p0
+> print athome
+ 0
+> atrq
+!!Error: 4030, Buffer for the average torque calculation has overflowed. Shorten the time interval from Atclr to Atrq., Robot 1, Joint 1
+> tc
+	TC OFF
+> tc Off
+> reset error
+> print here
+ X:  313.696 Y:  483.812 Z:    2.596 U:  367.533 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  326.090 Y:  460.263 Z:   -6.488 U:  310.438 V:    0.000 W:    0.000 /R /0
+> print p*
+ X:  282.352 Y:  487.744 Z:  -25.059 U:   67.749 V:    0.000 W:    0.000 /R /0
+> print p*
+ X:  299.977 Y:  454.973 Z:   -1.340 U:  -87.939 V:    0.000 W:    0.000 /R /0
+> calib 1
+> calib 2
+> calib 3,4
+> print p*
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.457 V:    0.000 W:    0.000 /L /0
+> calib 1
+> calib 2
+> calib 3,4
+> print p*
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.457 V:    0.000 W:    0.000 /L /0
+> print p*
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.457 V:    0.000 W:    0.000 /L /0
+> calib 1
+> calib 2
+> calib 3,4
+> print p*
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.457 V:    0.000 W:    0.000 /L /0
+> calpls
+0, 0, 0, 0
+> homf
+!!Error: 3100, Syntax error.
+> homef
+!!Error: 3100, Syntax error.
+> hofs
+-18345, -178421, 1102232, 653009
+> encReset 1
+> encReset 2
+> encReset 3,4
+> print p*
+ X:  534.867 Y:   55.907 Z: -180.657 U:   69.360 V:    0.000 W:    0.000 /R /0
+> calib 1
+> calib 2
+> calib 3,4
+> print P*
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> print p*
+ X:  536.559 Y:   -2.818 Z: -112.349 U: -166.628 V:    0.000 W:    0.000 /R /0
+> calib 3,4
+> print P*
+ X:  532.900 Y:   -8.618 Z:   -0.194 U:  183.782 V:    0.000 W:    0.000 /L /0
+> encReset 2
+> print p*
+ X:  533.244 Y:    7.101 Z:   -0.204 U:  186.452 V:    0.000 W:    0.000 /R /0
+> encreset 1
+> print p*
+ X:  532.158 Y:  -34.758 Z:   -0.204 U:  181.952 V:    0.000 W:    0.000 /R /0
+> calpls 0,0,0,0
+> print p*
+ X:  532.158 Y:  -34.758 Z:   -0.204 U:  181.952 V:    0.000 W:    0.000 /R /0
+> calib 1
+> calib 2
+> calib 3,4
+> print p*
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> calib 3,4
+> print p*
+ X:  532.994 Y:    3.053 Z:   -0.194 U:  185.123 V:    0.000 W:    0.000 /R /0
+> calib 4
+> print p*
+ X:  532.994 Y:    3.053 Z:   -0.194 U:  185.123 V:    0.000 W:    0.000 /R /0
+> calib 1
+> calib 2
+> calib 3,4
+> print p*
+ X:  532.559 Y:  -21.745 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /R /0
+> reset
+> calib 1
+> calib 2
+> calib 3,4
+> calpls 0,0,0,0
+> calib 1
+> calib 2
+> calib 3,4
+> calpls 0,0,0,0
+> calib 1
+> calib 2
+> calib 3,4
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /R /0
+> calib 3,4
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.457 V:    0.000 W:    0.000 /R /0
+> encreset 4
+> print here
+ X:  532.899 Y:  -22.001 Z:   39.904 U:  543.346 V:    0.000 W:    0.000 /R /0
+> calib 3,4
+> print here
+ X:  532.560 Y:  -21.733 Z:   -0.194 U:  182.458 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  535.265 Y:  -23.589 Z:   64.492 U:  189.275 V:    0.000 W:    0.000 /R /0
+> calib 3,4
+> print here
+ X:  532.564 Y:  -21.676 Z:   -0.194 U:  182.469 V:    0.000 W:    0.000 /R /0
+> hofs
+-192497, 3697, 313198, 15771
+> hofs 0,0,0,0
+> print here
+ X:  527.719 Y:  -82.987 Z:   56.846 U:  178.958 V:    0.000 W:    0.000 /R /0
+> calib 1
+> calib 2
+> calib 3,4
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.457 V:    0.000 W:    0.000 /R /0
+> calpls 0,0,0,0
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.457 V:    0.000 W:    0.000 /R /0
+> calib 3,4
+> print here
+ X:  532.094 Y:  -28.465 Z:   -0.194 U:  181.364 V:    0.000 W:    0.000 /L /0
+> calib 3,4
+> print here
+ X:  531.571 Y:  -34.656 Z:   -0.194 U:  180.350 V:    0.000 W:    0.000 /L /0
+> calib 3,4
+> print here
+ X:  531.515 Y:  -35.353 Z:   -0.194 U:  180.253 V:    0.000 W:    0.000 /L /0
+> calib 3,4
+> print here
+ X:  531.562 Y:  -34.950 Z:   -0.194 U:  180.341 V:    0.000 W:    0.000 /L /0
+> print here
+ X:  531.562 Y:  -34.949 Z:   -0.194 U:  180.340 V:    0.000 W:    0.000 /L /0
+> calpls 0,0,0,0
+> 
+!!Error: 3201, Expected ','.
+> calpls 0,0,0,0
+> calib 1
+> calib 2
+> calib 3,4
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.457 V:    0.000 W:    0.000 /L /0
+
+> print here
+ X:  524.590 Y:   28.500 Z:  -50.609 U:  162.897 V:    0.000 W:    0.000 /L /0
+> calib 1
+> calib 2
+> calib 3,4
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> calpls 0,0,0,0
+> hofs 0,0,0,0
+> print here
+ X:  523.826 Y:  -45.141 Z:    3.868 U:  156.719 V:    0.000 W:    0.000 /L /0
+> calib 1
+> print here
+ X:  525.468 Y:  -17.758 Z:    3.868 U:  159.709 V:    0.000 W:    0.000 /L /0
+> calib 2
+> calib 3,4
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> calpls 0,0,0,0
+> 
+> calib 1
+> 
+> calib 2
+> 
+> calib 3,4
+> 
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> TC
+	TC OFF
+> motor On
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> calib 1
+> calib 2
+> calib 3,4
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> plist
+P0   = XY(   487.845,  250.941, -211.651,   31.594 )  /R /0   
+P1   = XY(   261.789,  412.735,   -8.455,   67.289 )  /R /0   
+P2   = XY(    73.054,  412.412,   -2.000,   95.564 )  /R /0   
+P3   = XY(    73.054,  412.412, -213.460,   95.564 )  /R /0   
+P4   = XY(    93.027,  412.423, -183.467,   95.537 )  /R /0   
+P5   = XY(   103.928,  444.080, -213.549,  -84.423 )  /R /0   
+P6   = XY(    93.054,  412.412, -213.460,   95.564 )  /R /0   
+P10  = XY(    16.331,  -25.021,    0.000,    2.457 )  /R /0   
+P11  = XY(   -15.240,  -26.376,   -0.198,  182.457 )  /R /0   
+P12  = XY(    15.552,   -8.583,    0.000,    2.106 )  /R /0   
+P13  = XY(    15.033,    5.528,    0.000,    2.106 )  /R /0   
+P15  = XY(    98.708,  461.580, -213.549,  -84.423 )  /R /0   
+P16  = XY(   116.203,  444.110, -213.582,  -84.401 )  /R /0   
+P17  = XY(   116.208,  454.080, -213.549,  -84.423 )  /R /0   
+P18  = XY(  -368.529,  407.900,   -9.587,  269.303 )  /R /0   
+P20  = XY(  -321.077, -391.315, -122.218,  273.431 )  /R /0   
+P21  = XY(  -321.077, -391.315, -122.218,  273.431 )  /R /0   
+P22  = XY(  -342.044, -386.999,   -1.000,  273.416 )  /R /0   
+P23  = XY(  -342.044, -391.299, -122.217,  273.416 )  /R /0   
+P24  = XY(  -321.036, -387.059, -122.221,  273.417 )  /R /0   
+P25  = XY(    94.573,  366.674, -213.776,   95.551 )  /R /0   
+P26  = XY(   112.064,  384.179, -213.761,   95.578 )  /R /0   
+P27  = XY(   112.073,  374.174, -213.776,   95.551 )  /R /0   
+P28  = XY(  -349.804,  400.139,   -9.587,  269.303 )  /R /0   
+P30  = XY(   487.845,  250.940, -211.651,   31.594 )  /R /0   
+P34  = XY(     8.146,  471.030, -296.270,    5.147 )  /R /0   left_cassette
+P35  = XY(   -91.887,  396.121, -287.795,    4.153 )  /R /0   middle_cassette
+P36  = XY(    19.808,  341.119, -296.922,    5.258 )  /R /0   right_cassette
+P38  = XY(  -342.044,  381.415,   -9.587,  269.303 )  /R /0   
+P41  = XY(     8.208,  471.360, -277.275,    0.000 )  /R /0   
+P42  = XY(   -92.060,  396.310, -268.797,    0.000 )  /R /0   
+P43  = XY(    19.828,  341.247, -277.914,    0.000 )  /R /0   
+P44  = XY(     8.150,  470.597, -172.275,    0.000 )  /R /0   
+P45  = XY(   -91.681,  395.831, -163.796,    0.000 )  /R /0   
+P46  = XY(    19.795,  340.919, -172.913,    0.000 )  /R /0   
+P50  = XY(    11.373,  -11.196,    0.000,   -0.736 )  /R /0   
+P51  = XY(   -36.850,  470.597, -231.275,    0.000 )  /R /0   
+P52  = XY(    39.970,  438.777, -231.275,  135.005 )  /R /0   
+P56  = XY(   111.422,  432.413, -213.463,   98.020 )  /R /0   
+P60  = XY(   -26.854,  486.030, -161.270,    0.000 )  /R /0   
+P76  = XY(   114.380,  443.879, -213.561,  -84.403 )  /R /0   
+P86  = XY(    93.027,  412.423, -213.467,   95.537 )  /R /0   
+P93  = XY(    81.208,  444.080, -213.549,  -84.423 )  /R /0   
+P94  = XY(    77.073,  384.174, -213.776,   95.551 )  /R /0   
+P111 = XY(    -6.854,  486.030, -161.270,   -0.000 )  /R /0   
+P990 = XY(    16.234,  471.205, -145.539,   91.008 )  /R /0   
+P991 = XY(   -92.812,  394.822, -145.347,  186.484 )  /R /0   
+P999 = XY(    90.832,  416.925, -202.674,   94.756 )  /R /0   
+> p999 = Realpos
+> savepoints "robot1.ptw"
+> motor On
+> jump p0
+> Speed 1
+> power Low
+> jump p1
+> 
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> reset error
+> print here
+ X:  532.559 Y:  -21.746 Z:   -0.194 U:  182.456 V:    0.000 W:    0.000 /L /0
+> 
+> 
+> 
+> encReset 1,2,3,4
+> p6=here
+> p3=p6 - X(20)
+> savepoints "robot1.pts"
+> print here
+ X:  105.381 Y:  410.299 Z: -209.413 U:   93.149 V:    0.000 W:    0.000 /R /0
+> motor On
+> move p3
+> jump p1
+> jump p0
+> plist p38
+!!Error: 3207, Formula is missing.
+> print p38
+ X: -352.454 Y:  391.824 Z:   -9.587 U:  269.303 V:    0.000 W:    0.000 /R /0
+> print p18
+ X: -368.529 Y:  407.900 Z:   -9.587 U:  269.303 V:    0.000 W:    0.000 /R /0
+> print p28
+ X: -357.164 Y:  403.189 Z:   -9.587 U:  269.303 V:    0.000 W:    0.000 /R /0
+> print p20
+ X: -331.480 Y: -384.671 Z: -118.369 U:  267.524 V:    0.000 W:    0.000 /R /0
+> print p22
+ X: -352.454 Y: -380.399 Z:   -1.000 U:  267.505 V:    0.00prin0 W:    0.000 /R /0
+> motor On
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> reset error
+> motor On
+> move p18
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> power High
+> motor On
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> reset error
+> motor On
+>move p38
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> motor On
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> reset error
+> 
+> motor On
+
+> power High
+> 
+!!Error: 3216, High/Low was not specified.
+> 
+!!Error: 3216, High/Low was not specified.
+> 
+> move p18
+> move p18
+> jump p1
+> jump p0
+> motor On
+> 
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> power High
+> 
+> jump p1
+> jump p18
+> move p20 + Y(30)
+> reset error
+> power High
+> move p18 - Y(20)
+> motor On
+> move p18 - Y(40)
+> p18 = here
+> motor On
+> savepoints "robot1.pts"
+> power High
+> move p18
+> jump p1
+> jump p0
+> 
+> 
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> 
+> power Low
+> 
+> move p18
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> 
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> reset error
+> power High
+> motor On
+> power High
+> 
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> 
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 2
+> reset error
+> power High
+> power Low
+> print g_goniometer_cosValue
+ 0.0429239
+> motor On
+> move p18
+> jump p1
+> jump p0
+> 
+ 0
+> g_goniometer_sinValue
+!!Error: 3100, Syntax error.
+> print g_goniometer_sinValue
+ 0.999078
+> motor On
+> jump p0
+> 
+ 0
+> tool 0
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> motor On
+> motor On
+> tool 0
+> jump p1
+> power Low
+> tool 0
+> jump p1
+> jump p3
+> move p6
+> jump p1
+> jump p0
+> power Low
+> jump p0
+> print power
+ 0
+> print power
+ 0
 > 

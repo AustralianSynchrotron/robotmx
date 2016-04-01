@@ -14,6 +14,18 @@ Function GTsetDumbbellStatus(status As Integer)
 	GTsendMagnetStateJSON
 Fend
 
+Function GTPositionCheckBeforeMotion As Boolean
+	GTPositionCheckBeforeMotion = False
+	
+	If isCloseToPoint(0) Or isCloseToPoint(1) Or isCloseToPoint(3) Then
+		GTPositionCheckBeforeMotion = True
+	Else
+		g_RunResult$ = "error GTPositionCheckBeforeMotion: Robot can only start from P0, P1 or P3. But Current position is not Close to any of them!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+	EndIf
+
+Fend
+
 Function GTJumpHomeToCoolingPointAndWait As Boolean
 	String msg$
 	
@@ -407,7 +419,7 @@ Fend
 
 
 Function GTMoveGoniometerToDewarSide As Boolean
-
+	''Starts from P22 or away from goniometer by 40mm from P22
 	If Not Close_Gripper Then
 		g_RunResult$ = "error GTMoveGoniometerToDewarSide:Close_Gripper failed"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)

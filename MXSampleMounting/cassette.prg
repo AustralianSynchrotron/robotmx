@@ -984,7 +984,7 @@ Function VB_CassetteCal
         If g_FlagAbort Then
             g_RunResult$ = "User Abort"
         EndIf
-        Recovery
+        ''Recovery
         ''SPELCom_Return 2
         Exit Function
     EndIf

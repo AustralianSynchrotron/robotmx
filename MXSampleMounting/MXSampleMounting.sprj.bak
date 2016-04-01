@@ -1,11 +1,11 @@
-ENVT0100,LM:2016/03/17 08:58:03:625,DS:0000008618,CS:06960,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/03/23 23:43:07:437,DS:0000008619,CS:25441,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="3/17/2016 7:58:03 PM"
+	sLastModified="3/24/2016 10:43:07 AM"
 	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
@@ -57,7 +57,7 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile7 {
@@ -127,7 +127,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile21 {

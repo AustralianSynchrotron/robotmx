@@ -2,8 +2,8 @@
 #include "networkdefs.inc"
 #include "forcedefs.inc"
 
+''my test comment
 
-''Useful comment
 
 ''================================
 '' module variable
@@ -203,7 +203,7 @@ Function CassetteXY() As Boolean
         msg$ = "touch point[" + Str$(CXYIndex) + "]" + "to center distance=" + Str$(CXYNewX)
         UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
         Print "CXYNewX -CXYRadius=", Abs(CXYNewX - CXYRadius)
-        If Abs(CXYNewX - CXYRadius) > 2 Then
+        If Abs(CXYNewX - CXYRadius) > 1 Then
             g_RunResult$ = "cassette cal: failed, toolset calibration is way too off"
             UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
             g_RobotStatus = g_RobotStatus Or FLAG_NEED_CAL_MAGNET

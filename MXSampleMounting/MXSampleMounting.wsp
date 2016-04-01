@@ -1,10 +1,10 @@
-ENVT0100,LM:2016/03/17 09:21:26:046,DS:0000005817,CS:17022,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="normalcassetteutilities.prg"
+ENVT0100,LM:2016/03/23 23:44:55:109,DS:0000005788,CS:27732,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Run"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -15,7 +15,7 @@ ProgramFile1 {
 }
 ProgramFile2 {
 	sName="cassette.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -48,7 +48,7 @@ ProgramFile4 {
 }
 ProgramFile5 {
 	sName="network.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -59,7 +59,7 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -92,7 +92,7 @@ ProgramFile8 {
 }
 ProgramFile9 {
 	sName="setupcassette.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -136,7 +136,7 @@ ProgramFile12 {
 }
 ProgramFile13 {
 	sName="setuppoints.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -213,8 +213,8 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=True
-	nWinState=2
+	bOpened=False
+	nWinState=0
 	Window {
 		nLeft=0
 		nTop=0
@@ -235,7 +235,7 @@ ProgramFile21 {
 }
 ProgramFile22 {
 	sName="debugTests.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -360,8 +360,8 @@ sActiveWindow="main.prg"
 CmdWindow {
 	bOpened=True
 	Window {
-		nLeft=378
-		nTop=-3
+		nLeft=172
+		nTop=2
 		nWidth=784
 		nHeight=410
 	}
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=80
-		nTop=205
+		nLeft=492
+		nTop=161
 		nWidth=470
 		nHeight=342
 	}
@@ -399,8 +399,8 @@ IOMonitor {
 TaskMgr {
 	bOpened=False
 	Window {
-		nLeft=336
-		nTop=208
+		nLeft=763
+		nTop=141
 		nWidth=827
 		nHeight=530
 	}
@@ -415,7 +415,7 @@ Macros {
 	}
 }
 RobotMgr {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=12
 		nTop=14

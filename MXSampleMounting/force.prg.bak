@@ -173,7 +173,7 @@ Fend
 Function ForceMeasureLoopSleep
 	''Set ForceMeasureLoopSleep to true
 	m_ForceMeasureLoopSleep = True
-	''Wait .01
+	''Wait .01 ''Wait to Stop ForceMeasureLoop to allow ReadForces to be called
 Fend
 Function ForceMeasureLoopWake
 	''Set ForceMeasureLoopSleep to false
@@ -182,7 +182,7 @@ Function ForceMeasureLoopWake
 	Signal FORCEMEASURELOOP_WAKE
 	''Wait till ForceMeasureLoop is acquiring
 	WaitSig FORCEMEASURELOOP_ACQUIRING
-	''Wait .01
+	''Wait .01 ''start ForceMeasureLoop and wait to read few force samples before GenericMove
 Fend
 ''Background force measurement loop
 Function ForceMeasureLoop
@@ -252,7 +252,7 @@ Function SetupForceTrigger(ByVal forceName As Integer, ByVal threshold As Real)
    		Default
    			''Less noise in XY
    		    ''Averaging for XY
-   			g_FSAverage = 8
+   			g_FSAverage = 140
     Send
     
     ''for torque, "less" is "greater". Will be changed if vendor fix this bug
