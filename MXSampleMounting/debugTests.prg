@@ -320,8 +320,8 @@ Function StressTestNormalCassette(cassette_position As Integer, columnIndex As I
 		g_RunArgs$ = g_RunArgs$ + Str$(rowIndex + 1)
 		
 		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
-		If Not (Dist(P0, RealPos) < 10) Then
-			UpdateClient(TASK_MSG, "Robot not at P0. DismountSample must have failed. Exiting StressTest", ERROR_LEVEL)
+		If Not (Dist(P0, RealPos) < 10) And Not (Dist(P1, RealPos) < 10) And Not (Dist(P3, RealPos) < 10) And Not (Dist(P4, RealPos) < 10) Then
+			UpdateClient(TASK_MSG, "Robot not at P0, P1, P3, or P4. DismountSample must have failed. Exiting StressTest", ERROR_LEVEL)
 			Exit Function
 		EndIf
 		

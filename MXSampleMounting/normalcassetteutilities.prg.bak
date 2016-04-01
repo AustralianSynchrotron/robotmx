@@ -419,7 +419,7 @@ Function GTPutSampleIntoCASPort(cassette_position As Integer, rowIndex As Intege
 			msg$ = "GTPutSampleIntoCASPort: ForceTouch detected Sample at " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 			GTPutSampleIntoCASPort = True
-		GTTwistOffMagnet
+			GTTwistOffMagnet
 		Else
 			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
 			''This condition is only to complete the If..Else Statement if an error occurs then we reach here

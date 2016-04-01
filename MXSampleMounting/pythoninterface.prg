@@ -223,6 +223,8 @@ Fend
 Function MountSamplePort
     Print "MountSamplePort entered at ", Date$, " ", Time$
     
+    String msg$
+    
     ''Ensure moves are not restricted to XY plane for probe
     g_OnlyAlongAxis = False
 
@@ -269,7 +271,7 @@ Function MountSamplePort
 	EndIf
 	
 	If Not GTPositionCheckBeforeMotion Then
-		UpdateClient(TASK_MSG, "error MountSamplePort: GTPositionCheckBeforeMotion Failed!", ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "MountSamplePort: GTPositionCheckBeforeMotion Failed!", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -279,7 +281,6 @@ Function MountSamplePort
 	If g_InterestedSampleStatus = SAMPLE_IN_GONIO Then
 		''Notice that the input parameters are the global variables which are already set. Only recheck is done here.
 	 	If Not GTsetDismountPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex) Then
-			UpdateClient(TASK_MSG, "MountSamplePort->GTsetDismountPort: Sample already Present in Port or Invalid Port Position supplied in g_RunArgs$", ERROR_LEVEL)
 			Exit Function
 		EndIf
 		
@@ -294,7 +295,6 @@ Function MountSamplePort
 	
 	
 		If Not GTDismountToInterestedPort Then
-			UpdateClient(TASK_MSG, "Error in MountSamplePort->GTDismountToInterestedPort: Check log for further details", ERROR_LEVEL)
 			Exit Function
 		EndIf
 	EndIf
@@ -304,7 +304,6 @@ Function MountSamplePort
 	
 	'' Here we check whether the port is filled and only then it sets the interested ports
 	If Not GTsetMountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		UpdateClient(TASK_MSG, "MountSamplePort->GTsetMountPort: No Sample Present in Port or Invalid Port Position supplied in g_RunArgs$", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	

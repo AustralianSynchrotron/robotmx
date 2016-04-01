@@ -294,8 +294,15 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		''	UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
 		''	Exit Function
 		''EndIf
+		''If g_InterestedSampleStatus <> SAMPLE_IN_GONIO Then
+		''	''There was no sample in cassette to MountSamplePort did not happen
+		''	''So skip dismounting
+		''	UpdateClient(TASK_MSG, "No Sample in Gonio. MountSamplePort did not mount sample . So skipping DismountSample.", INFO_LEVEL)
+		''	GoTo SkipDismount
+		''EndIf
 		
 		''DismountSample
+		''SkipDismount:
 	Next
 	
 	StressTestSuperPuck = True

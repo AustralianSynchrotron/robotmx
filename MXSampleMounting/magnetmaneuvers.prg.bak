@@ -373,7 +373,7 @@ Function GTTwistOffMagnet
 	Power prevPowerMode
 Fend
 ''twist cavity off gonio to break magnetic field
-Function GTTwistOffCavity
+Function GTTwistOffCavityFromGonio
 	Integer currTool
 	Real currAngle, dx, dy
 	''Setup variables	

@@ -3278,4 +3278,124 @@ P999 = XY(   550.000,   -0.000,   -0.000,   -0.000 )  /L /0
 jump>  p0
 !!Error: 3100, Syntax error.
 > jump p0
+> g_RunArgs$ = "1 0"
+> g_RunArgs$ = "r 0"
+> print p34
+ X:   19.219 Y:  469.481 Z: -292.002 U:    3.847 V:    0.000 W:    0.000 /R /0
+> print p36
+ X:   27.869 Y:  338.082 Z: -292.700 U:    3.604 V:    0.000 W:    0.000 /R /0
+> print p46
+ X:   27.837 Y:  337.770 Z: -168.710 U:    0.000 V:    0.000 W:    0.000 /R /0
+> print p43
+ X:   27.891 Y:  338.253 Z: -273.710 U:    0.000 V:    0.000 W:    0.000 /R /0
+> reset error
+> motor On
+> tool 0
+> motor On
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> motor On
+> speed 5
+> tool 0
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> power low
+> tool 0
+> speed 5
+> jump p1
+> jump p0
+> print power
+ 0
+> power Low
+> print power
+ 0
+> power Low
+> print power
+ 0
+> tool 0
+> jump p1
+> jump p0
+> jump p1
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> tool 0
+> jump p0
+> jump p1
+> jump p0
+> print here
+ X:  107.231 Y:  411.395 Z: -194.465 U:   93.464 V:    0.000 W:    0.000 /R /0
+> reset error
+> move p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> move p6
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> print p6
+ X:  107.245 Y:  411.384 Z: -209.168 U:   93.359 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  107.229 Y:  411.398 Z: -194.423 U:   93.530 V:    0.000 W:    0.000 /R /0
+> motor On
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> motor On
+> power High
+> move p6
+!!Error: 5040, Motor torque output failure in high power state. Check the power cable connection, the robot, the driver or the motor., Robot 1, Joint 3
+> print tool
+ 0
+> tool 0
+> reset error
+> motor On
+j> jump p1
+> jump p 0
+!!Error: 3100, Syntax error.
+> jump p0
+> print g_DumbbellStatus
+ 2
+> g_DumbbellStatus = 0
+> print g_RunResult$
+error GTsetMountPort: The port is not occupied or is invatolid!
+> 
+!!Error: 2513, Specified point label is not defined.
+> tool 0
+> jump p6
+> move p3
+> jump p6
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+>reset error
+> jump p1
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p1
+> jump p6
+!!Error: 5043, Position error overflow in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> 
+> reset error 
+> motor On
+> jump p1
+> jump p0
+> power Low
+> reset error
+> motor On
+> power Low
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> motor On
+> power Low
+> print power
+ 0
+> power Low
+> print power
+ 0
+> jump p0
 > 
