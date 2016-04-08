@@ -297,7 +297,7 @@ Function GTcheckDismountPort(cassette_position As Integer, puckColumnIndex As In
 		EndIf
 	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
 		If g_SP_PortStatus(cassette_position, puckColumnIndex, rowPuckPortIndex) = PORT_VACANT Then
-			GTsetDismountPort = True
+			GTcheckDismountPort = True
 		Else
 			g_RunResult$ = "error GTcheckDismountPort: Sample already present in " + GTCassetteName$(cassette_position) + " " + GTcolumnName$(puckColumnIndex) + ":" + Str$(rowPuckPortIndex + 1) + " cannot continue with dismount"
 		EndIf

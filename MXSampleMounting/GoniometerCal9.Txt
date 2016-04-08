@@ -1,0 +1,18 @@
+=======================================================
+Goniometer calibration at 2016/03/03 10:41:44
+dx= 0dy= 0, dz= 0du= 0
+init position ( -330.154,  -385.88,  -113.639,  272.838)
+CutMiddle  5position moved from ( -330.155,  -385.879,  -113.638,  272.838) to ( -330.206,  -385.887,  -113.637,  272.841), force changed from  0.010346747934818 to  0.0007055732421577
+Freedom:  1.5072
+after cut middle for X ( -330.204,  -385.886,  -113.637,  272.841)
+CutMiddle  3position moved from ( -330.204,  -385.886,  -113.637,  272.841) to ( -330.207,  -385.886,  -113.63,  272.839), force changed from  0.055185034871101 to  0.055191032588482
+Freedom:  1.3306
+after cut middle for Z ( -330.208,  -385.886,  -113.629,  272.839)
+CutMiddle  5position moved from ( -330.208,  -385.885,  -113.63,  272.838) to ( -330.233,  -385.891,  -113.63,  272.84), force changed from  0.0034560281783342 to  -0.0033633734565228
+Freedom:  1.47519
+after cut middle for X ( -330.229,  -385.891,  -113.63,  272.841)
+touched goniometer for Y at ( -337.254,  -383.135)
+final ( -330.183,  -386.135,  -113.634,  272.851)
+old P20 ( -330.181,  -386.105,  -113.633,  272.833)
+new P20 ( -330.183,  -386.135,  -113.634,  272.851)
+Goniometer calibration completed at 2016/03/03 10:44:13

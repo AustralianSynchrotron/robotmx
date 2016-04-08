@@ -1,0 +1,6 @@
+=======================================================
+toolset FineTune 2016/03/09 21:33:32
+sideScale for placer  1.1974253281951
+sideScale for picker  1.194219738245
+Old g_MagnetTransportAngle = 94.5689
+new g_MagnetTransportAngle= 94.5323

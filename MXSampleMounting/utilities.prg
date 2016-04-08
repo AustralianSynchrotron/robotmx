@@ -459,7 +459,7 @@ Function InitForceConstants
     g_FCheckMagnet = 0.2
     
     'default speeds'
-    Power High
+    ''Power High
     Accel VERY_SLOW_GO_ACCEL, VERY_SLOW_GO_DEACCEL
     Speed VERY_SLOW_GO_SPEED
     

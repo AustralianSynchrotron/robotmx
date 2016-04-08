@@ -1,0 +1,6 @@
+#searching points used
+grep -E -i "P[0-9]{1,3} = " *.prg
+grep -E -i "point(num)? = [0-9]" *.prg
+
+#searching functions
+grep "Function " MXSampleMounting/*.prg

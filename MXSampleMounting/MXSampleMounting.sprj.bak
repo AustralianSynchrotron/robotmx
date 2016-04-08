@@ -1,12 +1,12 @@
-ENVT0100,LM:2016/04/01 01:12:50:578,DS:0000008672,CS:22546,MA:00-0C-29-B8-F2-20,EI:           
+ENVT0100,LM:2016/04/07 06:23:31:793,DS:0000008615,CS:04352,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
-	sPath="C:\\EpsonRC60\\Projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
+	sPath="c:\\EPSONRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="4/1/2016 12:12:50 PM"
-	bBuildComplete=False
+	sLastModified="4/7/2016 4:20:56 PM"
+	bBuildComplete=True
 	bFirstBuildComplete=True
 	bRebuildRequired=False
 	bClearControllerProject=False
@@ -117,12 +117,12 @@ ProgramFile17 {
 }
 ProgramFile18 {
 	sName="pythoninterface.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile19 {
 	sName="samplemounting.prg"
-	bCompiled=False
+	bCompiled=True
 	bStoreInController=True
 }
 ProgramFile20 {
@@ -503,7 +503,4 @@ IOCustomView3 {
 	nNumberOfRows=0
 }
 nVisFileCount=0
-nGuiBuilderFileCount=1
-GuiBuilderFile1 {
-	sName="MXSampleMounting.gui"
-}
+nGuiBuilderFileCount=0

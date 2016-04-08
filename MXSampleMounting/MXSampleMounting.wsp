@@ -1,6 +1,6 @@
-ENVT0100,LM:2016/04/01 01:30:16:156,DS:0000005810,CS:18271,MA:00-0C-29-B8-F2-20,EI:           
-sActiveChild="samplemounting.prg"
-bMdiMaximized=True
+ENVT0100,LM:2016/04/07 06:23:40:949,DS:0000005808,CS:27711,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="mountingdefs.inc"
+bMdiMaximized=False
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
@@ -40,10 +40,10 @@ ProgramFile4 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=0
-		nWidth=452
-		nHeight=260
+		nLeft=209
+		nTop=12
+		nWidth=848
+		nHeight=568
 	}
 }
 ProgramFile5 {
@@ -103,7 +103,7 @@ ProgramFile9 {
 }
 ProgramFile10 {
 	sName="cassettetype.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -203,7 +203,7 @@ ProgramFile18 {
 ProgramFile19 {
 	sName="samplemounting.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=49
 		nTop=48
@@ -238,8 +238,8 @@ ProgramFile22 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=463
-		nTop=74
+		nLeft=309
+		nTop=-11
 		nWidth=628
 		nHeight=619
 	}
@@ -247,7 +247,7 @@ ProgramFile22 {
 nIncludeFileCount=9
 IncludeFile1 {
 	sName="mxrobotdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -269,7 +269,7 @@ IncludeFile2 {
 }
 IncludeFile3 {
 	sName="forcedefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -291,7 +291,7 @@ IncludeFile4 {
 }
 IncludeFile5 {
 	sName="cassettedefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -370,10 +370,10 @@ CmdWindow {
 RunWindow {
 	bOpened=False
 	Window {
-		nLeft=-7
-		nTop=185
+		nLeft=71
+		nTop=88
 		nWidth=717
-		nHeight=545
+		nHeight=401
 	}
 	nWinState=0
 }
@@ -417,8 +417,8 @@ Macros {
 RobotMgr {
 	bOpened=False
 	Window {
-		nLeft=666
-		nTop=18
+		nLeft=170
+		nTop=59
 		nWidth=690
 		nHeight=485
 	}

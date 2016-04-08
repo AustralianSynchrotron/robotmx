@@ -1,0 +1,9 @@
+=======================================================
+Goniometer calibration at 2016/03/21 12:11:32
+dx= 0dy= 0, dz= 0du= 0
+init position ( -330.144,  -386.11,  -117.378,  267.749)
+CutMiddle  5position moved from ( -330.144,  -386.11,  -117.379,  267.75) to ( -330.14,  -386.117,  -117.378,  267.752), force changed from  7.3143153801267E-005 to  0.020317052767449
+Freedom:  0.287109
+after cut middle for X ( -330.14,  -386.117,  -117.378,  267.752)
+FTXTRisingCross  0.5 failed, give up
+Cut middle failed for Z. abort

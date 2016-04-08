@@ -1,0 +1,4 @@
+picker calibration at 2016/03/08 11:19:44
+touched seat at ( 109.488,  411.342) and ( 108.093,  431.34)
+touched magnet head at ( 113.072,  440.341)
+FAILED: did not touch magnet head when lower the cavity for picker

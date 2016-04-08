@@ -219,18 +219,24 @@ Function JSONDataRequest
 		Next
     EndIf
 Fend
-
+Function MountSamplePortAndGoHome
+	MountSamplePort
+	GTGoHome
+Fend
 Function MountSamplePort
     Print "MountSamplePort entered at ", Date$, " ", Time$
     
     String msg$
+    
+    Print "power=",
+    Print Power
     
     ''Ensure moves are not restricted to XY plane for probe
     g_OnlyAlongAxis = False
 
 	''init result
     g_RunResult$ = ""
-    
+       
 	'' Initialize all constants
 	If Not GTInitialize Then
 		UpdateClient(TASK_MSG, "GTInitialize failed", ERROR_LEVEL)
@@ -278,7 +284,7 @@ Function MountSamplePort
 	''Check whether the port to be mounted is occupied. If not exit this function
 	If Not GTcheckMountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
 		''In stress testing, this just skips an empty port
-		UpdateClient(TASK_MSG, "MountSamplePort: GTcheckMountPort Failed!", WARNING_LEVEL)
+		UpdateClient(TASK_MSG, "MountSamplePort: GTcheckMountPort Failed!", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	
@@ -286,24 +292,8 @@ Function MountSamplePort
 	''check the gonio to see whether there is already a sample mounted
 	''If mounted, then dismount it first then mount the new sample
 	If g_InterestedSampleStatus = SAMPLE_IN_GONIO Then
+		DismountSample
 		''Notice that the input parameters are the global variables which are already set. Only recheck is done here.
-	 	If Not GTsetDismountPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex) Then
-			Exit Function
-		EndIf
-		
-		If Not GTJumpHomeToCoolingPointAndWait Then
-			Exit Function
-		EndIf
-		
-		If Not GTCheckMagnetForDismount Then
-			UpdateClient(TASK_MSG, "Error in MountSamplePort->GTCheckMagnetForDismount: Check log for further details", ERROR_LEVEL)
-			Exit Function
-		EndIf
-	
-	
-		If Not GTDismountToInterestedPort Then
-			Exit Function
-		EndIf
 	EndIf
 	
 	
@@ -330,7 +320,14 @@ Function MountSamplePort
 	g_RunResult$ = "OK MountSamplePort"
     Print "MountSamplePort finished at ", Date$, " ", Time$
 Fend
-
+Function DismountSampleAndGoHome
+	DismountSample
+	'' Put dumbbell in Cradle and go Home (P0)
+	If Not GTReturnMagnetAndGoHome Then
+		UpdateClient(TASK_MSG, "GTReturnMagnet failed", ERROR_LEVEL)
+		Exit Function
+	EndIf
+Fend
 Function DismountSample
     Print "DismountSample entered at ", Date$, " ", Time$
     
@@ -346,40 +343,6 @@ Function DismountSample
 		Exit Function
     EndIf
 	
-	''Parsing g_RunArgs$
-	String RequestTokens$(0)
-	Integer RequestArgC
-    
-    ''parse argument from global
-    ParseStr g_RunArgs$, RequestTokens$(), " "
-    ''check argument
-    RequestArgC = UBound(RequestTokens$) + 1
-
-	String cassetteChar$, columnOrPuckChar$, rowOrPuckPortChar$
-	Integer cassette_position, columnPuckIndex, rowPuckPortIndex
-
-    If RequestArgC = 3 Then
-		cassetteChar$ = Mid$(RequestTokens$(0), 1, 1)
-		If Not GTParseCassettePosition(cassetteChar$, ByRef cassette_position) Then
-			cassette_position = UNKNOWN_CASSETTE
-			UpdateClient(TASK_MSG, "DismountSample: Invalid Cassette Position supplied in g_RunArgs$", ERROR_LEVEL)
-			Exit Function
-		EndIf
-
-		columnOrPuckChar$ = Mid$(RequestTokens$(1), 1, 1)
-		rowOrPuckPortChar$ = RequestTokens$(2)
-		
-		If Not GTParsePortIndex(cassette_position, columnOrPuckChar$, rowOrPuckPortChar$, ByRef columnPuckIndex, ByRef rowPuckPortIndex) Then
-			UpdateClient(TASK_MSG, "DismountSample: GTParsePortIndex failed! Please check log for further details", ERROR_LEVEL)
-			Exit Function
-		EndIf
-	Else
-		g_RunResult$ = "error DismountSample: Invalid number of arguments in g_RunArgs$!"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
-	EndIf
-	
-	
 	If Not GTPositionCheckBeforeMotion Then
 		UpdateClient(TASK_MSG, "error DismountSample: GTPositionCheckBeforeMotion Failed!", ERROR_LEVEL)
 		Exit Function
@@ -388,8 +351,7 @@ Function DismountSample
 	''Dismounting Starts Here
 	
 	'' Here we check whether the port is empty and only then it sets the interested ports
-	If Not GTsetDismountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
-		UpdateClient(TASK_MSG, "DismountSample->GTsetDismountPort: Sample already Present in Port or Invalid Port Position supplied in g_RunArgs$", ERROR_LEVEL)
+	If Not GTsetDismountPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex) Then
 		Exit Function
 	EndIf
 
@@ -404,12 +366,6 @@ Function DismountSample
 
 	If Not GTDismountToInterestedPort Then
 		UpdateClient(TASK_MSG, "Error in DismountSample->GTDismountToInterestedPort: Check log for further details", ERROR_LEVEL)
-		Exit Function
-	EndIf
-	
-	'' Put dumbbell in Cradle and go Home (P0)
-	If Not GTReturnMagnetAndGoHome Then
-		UpdateClient(TASK_MSG, "GTReturnMagnet failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	

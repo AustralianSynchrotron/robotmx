@@ -1,0 +1,729 @@
+cassette.prg:    P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
+cassette.prg:   	''Hand P51, CassetteOrientation
+cassette.prg: 	Jump P51
+cassette.prg:        Move P51
+cassette.prg:            P51 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 90))
+cassette.prg:            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 45))
+cassette.prg:            Hand P51, CassetteOrientation
+cassette.prg:            Hand P52, CassetteOrientation
+cassette.prg:            Arc P52, P51
+cassette.prg:        	''this P51 is the same at the beginning of this function.
+cassette.prg:		    P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
+cassette.prg:            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) - 135))
+cassette.prg:            Hand P51, CassetteOrientation
+cassette.prg:            Hand P52, CassetteOrientation
+cassette.prg:            Arc P52, P51
+cassette.prg:       	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), (BottomZ + CASSETTE_HEIGHT / 2), tmp_Real)
+cassette.prg:        Hand P60, CassetteOrientation
+cassette.prg:            Jump P60 :Z(BottomZ + CASSETTE_CAL_HEIGHT + MAGNET_HEAD_RADIUS + 20)
+cassette.prg:   	        Jump P60 :Z(CCZTouch(1) + 5)
+cassette.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+cassette.prg:			Hand P60, CassetteOrientation
+cassette.prg:            Jump P60
+cassette.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+cassette.prg:			Hand P60, CassetteOrientation
+cassette.prg:            Move P60
+cassette.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+cassette.prg:			Hand P60, CassetteOrientation
+cassette.prg:            Jump P60
+cassette.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+cassette.prg:			Hand P60, CassetteOrientation
+cassette.prg:            Move P60
+cassette.prg:        Move P60
+cassette.prg:    P52 = XY((XCenter + (CASSETTE_RADIUS + SAFE_BUFFER_FOR_DETACH) * CCACos), (YCentre + (CASSETTE_RADIUS + SAFE_BUFFER_FOR_DETACH) * CCASin), CCAOldZ, CCAInDeg)
+cassette.prg:    P53 = XY((XCenter + (CASSETTE_RADIUS - 4) * CCACos), (YCentre + (CASSETTE_RADIUS - 4) * CCASin), CCAOldZ, CCAInDeg)
+cassette.prg:	Hand P52, CassetteOrientation
+cassette.prg:	Hand P53, CassetteOrientation
+cassette.prg:        Jump P52
+cassette.prg:        Move P53
+cassette.prg:        Move P52
+cassette.prg:        	P51 = TLSet(1)
+cassette.prg:                CenterX = CX(P34)
+cassette.prg:                CenterY = CY(P34)
+cassette.prg:                BottomZ = CZ(P34)
+cassette.prg:                Angle = CU(P34)
+cassette.prg:                CassetteOrientation = Hand(P34)
+cassette.prg:                CenterX = CX(P35)
+cassette.prg:                CenterY = CY(P35)
+cassette.prg:                BottomZ = CZ(P35)
+cassette.prg:                Angle = CU(P35)
+cassette.prg:                CassetteOrientation = Hand(P35)
+cassette.prg:                CenterX = CX(P36)
+cassette.prg:                CenterY = CY(P36)
+cassette.prg:                BottomZ = CZ(P36)
+cassette.prg:                Angle = CU(P36)
+cassette.prg:                CassetteOrientation = Hand(P36)
+cassette.prg:            P34 = XY(CenterX, CenterY, BottomZ, Angle)
+cassette.prg:			Hand P34, Hand(P6)
+cassette.prg:            P35 = XY(CenterX, CenterY, BottomZ, Angle)
+cassette.prg:			Hand P35, Hand(P6)
+cassette.prg:            P36 = XY(CenterX, CenterY, BottomZ, Angle)
+cassette.prg:			Hand P36, Hand(P6)
+cassette.prg:        Jump P6
+cassette.prg:        Move P3
+debugTests.prg:	'' The XY and U coordinates for Robot P1 post (manually checked) for placer tool
+debugTests.prg:	P450 = XY(251.707, 236.774, 0, Uangle) /R /0
+debugTests.prg:	'' The XY and U coordinates for Robot P1 post (manually checked) for picker tool	
+debugTests.prg:	''P450 = XY(292.011, 232.864, 0, -25.727) /R /0
+debugTests.prg:	P453 = P450 -X(standbyDistance * cosVal) -Y(standbyDistance * sinVal)
+debugTests.prg:	Jump P453
+debugTests.prg:		P(standbyPoint) = P453 '':Z(zIndex * -10.0)
+debugTests.prg:	Move P0
+debugTests.prg:		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
+debugTests.prg:		If Not (Dist(P0, RealPos) < 10) Then
+debugTests.prg:			UpdateClient(TASK_MSG, "Robot not at P0. DismountSample must have failed. Exiting StressTest", ERROR_LEVEL)
+debugTests.prg:		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
+debugTests.prg:		If Not (Dist(P0, RealPos) < 10) Then
+debugTests.prg:			UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
+debugTests.prg:		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
+debugTests.prg:		If Not (Dist(P0, RealPos) < 10) Then
+debugTests.prg:			UpdateClient(TASK_MSG, "Robot not at P0. DismountSample must have failed. Exiting StressTest", ERROR_LEVEL)
+debugTests.prg:		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
+debugTests.prg:		If Not (Dist(P0, RealPos) < 10) Then
+debugTests.prg:			UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
+gautum_cassette.prg:    P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
+gautum_cassette.prg:   	''Hand P51, CassetteOrientation
+gautum_cassette.prg: 	Jump P51
+gautum_cassette.prg:        Move P51
+gautum_cassette.prg:            P51 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 90))
+gautum_cassette.prg:            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 45))
+gautum_cassette.prg:            Hand P51, CassetteOrientation
+gautum_cassette.prg:            Hand P52, CassetteOrientation
+gautum_cassette.prg:            Arc P52, P51
+gautum_cassette.prg:        	''this P51 is the same at the beginning of this function.
+gautum_cassette.prg:		    P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
+gautum_cassette.prg:            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) - 135))
+gautum_cassette.prg:            Hand P51, CassetteOrientation
+gautum_cassette.prg:            Hand P52, CassetteOrientation
+gautum_cassette.prg:            Arc P52, P51
+gautum_cassette.prg:       	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), (BottomZ + CASSETTE_HEIGHT / 2), tmp_Real)
+gautum_cassette.prg:        Hand P60, CassetteOrientation
+gautum_cassette.prg:            Jump P60 :Z(BottomZ + CASSETTE_CAL_HEIGHT + MAGNET_HEAD_RADIUS + 20)
+gautum_cassette.prg:   	        Jump P60 :Z(CCZTouch(1) + 5)
+gautum_cassette.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+gautum_cassette.prg:			Hand P60, CassetteOrientation
+gautum_cassette.prg:            Jump P60
+gautum_cassette.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+gautum_cassette.prg:			Hand P60, CassetteOrientation
+gautum_cassette.prg:            Move P60
+gautum_cassette.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+gautum_cassette.prg:			Hand P60, CassetteOrientation
+gautum_cassette.prg:            Jump P60
+gautum_cassette.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+gautum_cassette.prg:			Hand P60, CassetteOrientation
+gautum_cassette.prg:            Move P60
+gautum_cassette.prg:        Move P60
+gautum_cassette.prg:    P52 = XY((XCenter + (CASSETTE_RADIUS + SAFE_BUFFER_FOR_DETACH) * CCACos), (YCentre + (CASSETTE_RADIUS + SAFE_BUFFER_FOR_DETACH) * CCASin), CCAOldZ, CCAInDeg)
+gautum_cassette.prg:    P53 = XY((XCenter + (CASSETTE_RADIUS - 4) * CCACos), (YCentre + (CASSETTE_RADIUS - 4) * CCASin), CCAOldZ, CCAInDeg)
+gautum_cassette.prg:	Hand P52, CassetteOrientation
+gautum_cassette.prg:	Hand P53, CassetteOrientation
+gautum_cassette.prg:        Jump P52
+gautum_cassette.prg:        Move P53
+gautum_cassette.prg:        Move P52
+gautum_cassette.prg:        	P51 = TLSet(1)
+gautum_cassette.prg:                CenterX = CX(P34)
+gautum_cassette.prg:                CenterY = CY(P34)
+gautum_cassette.prg:                BottomZ = CZ(P34)
+gautum_cassette.prg:                Angle = CU(P34)
+gautum_cassette.prg:                CassetteOrientation = Hand(P34)
+gautum_cassette.prg:                CenterX = CX(P35)
+gautum_cassette.prg:                CenterY = CY(P35)
+gautum_cassette.prg:                BottomZ = CZ(P35)
+gautum_cassette.prg:                Angle = CU(P35)
+gautum_cassette.prg:                CassetteOrientation = Hand(P35)
+gautum_cassette.prg:                CenterX = CX(P36)
+gautum_cassette.prg:                CenterY = CY(P36)
+gautum_cassette.prg:                BottomZ = CZ(P36)
+gautum_cassette.prg:                Angle = CU(P36)
+gautum_cassette.prg:                CassetteOrientation = Hand(P36)
+gautum_cassette.prg:            P34 = XY(CenterX, CenterY, BottomZ, Angle)
+gautum_cassette.prg:			Hand P34, Hand(P6)
+gautum_cassette.prg:            P35 = XY(CenterX, CenterY, BottomZ, Angle)
+gautum_cassette.prg:			Hand P35, Hand(P6)
+gautum_cassette.prg:            P36 = XY(CenterX, CenterY, BottomZ, Angle)
+gautum_cassette.prg:			Hand P36, Hand(P6)
+gautum_cassette.prg:        Jump P6
+gautum_cassette.prg:        Move P3
+gautum_cassette_2.prg:    P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
+gautum_cassette_2.prg:   	''Hand P51, CassetteOrientation
+gautum_cassette_2.prg: 	Jump P51
+gautum_cassette_2.prg:        Move P51
+gautum_cassette_2.prg:            P51 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 90))
+gautum_cassette_2.prg:            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) + 45))
+gautum_cassette_2.prg:            Hand P51, CassetteOrientation
+gautum_cassette_2.prg:            Hand P52, CassetteOrientation
+gautum_cassette_2.prg:            Arc P52, P51
+gautum_cassette_2.prg:        	''this P51 is the same at the beginning of this function.
+gautum_cassette_2.prg:		    P51 = XY((CenterX - CASSETTE_STANDBY_DISTANCE), CenterY, desiredZ, 0)
+gautum_cassette_2.prg:            P52 = XY((CenterX + CASSETTE_STANDBY_DISTANCE * Cos(CXYDirection)), (CenterY + CASSETTE_STANDBY_DISTANCE * Sin(CXYDirection)), desiredZ, (CU(RealPos) - 135))
+gautum_cassette_2.prg:            Hand P51, CassetteOrientation
+gautum_cassette_2.prg:            Hand P52, CassetteOrientation
+gautum_cassette_2.prg:            Arc P52, P51
+gautum_cassette_2.prg:       	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), (BottomZ + CASSETTE_HEIGHT / 2), tmp_Real)
+gautum_cassette_2.prg:        Hand P60, CassetteOrientation
+gautum_cassette_2.prg:            Jump P60 :Z(BottomZ + CASSETTE_CAL_HEIGHT + MAGNET_HEAD_RADIUS + 20)
+gautum_cassette_2.prg:   	        Jump P60 :Z(CCZTouch(1) + 5)
+gautum_cassette_2.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+gautum_cassette_2.prg:			Hand P60, CassetteOrientation
+gautum_cassette_2.prg:            Jump P60
+gautum_cassette_2.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+gautum_cassette_2.prg:			Hand P60, CassetteOrientation
+gautum_cassette_2.prg:            Move P60
+gautum_cassette_2.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+gautum_cassette_2.prg:			Hand P60, CassetteOrientation
+gautum_cassette_2.prg:            Jump P60
+gautum_cassette_2.prg:        	P60 = XY((CenterX + tmp_DX), (CenterY + tmp_DY), cutOutZ, tmp_Real)
+gautum_cassette_2.prg:			Hand P60, CassetteOrientation
+gautum_cassette_2.prg:            Move P60
+gautum_cassette_2.prg:        Move P60
+gautum_cassette_2.prg:    P52 = XY((XCenter + (CASSETTE_RADIUS + SAFE_BUFFER_FOR_DETACH) * CCACos), (YCentre + (CASSETTE_RADIUS + SAFE_BUFFER_FOR_DETACH) * CCASin), CCAOldZ, CCAInDeg)
+gautum_cassette_2.prg:    P53 = XY((XCenter + (CASSETTE_RADIUS - 4) * CCACos), (YCentre + (CASSETTE_RADIUS - 4) * CCASin), CCAOldZ, CCAInDeg)
+gautum_cassette_2.prg:	Hand P52, CassetteOrientation
+gautum_cassette_2.prg:	Hand P53, CassetteOrientation
+gautum_cassette_2.prg:        Jump P52
+gautum_cassette_2.prg:        Move P53
+gautum_cassette_2.prg:        Move P52
+gautum_cassette_2.prg:        	P51 = TLSet(1)
+gautum_cassette_2.prg:                CenterX = CX(P34)
+gautum_cassette_2.prg:                CenterY = CY(P34)
+gautum_cassette_2.prg:                BottomZ = CZ(P34)
+gautum_cassette_2.prg:                Angle = CU(P34)
+gautum_cassette_2.prg:                CassetteOrientation = Hand(P34)
+gautum_cassette_2.prg:                CenterX = CX(P35)
+gautum_cassette_2.prg:                CenterY = CY(P35)
+gautum_cassette_2.prg:                BottomZ = CZ(P35)
+gautum_cassette_2.prg:                Angle = CU(P35)
+gautum_cassette_2.prg:                CassetteOrientation = Hand(P35)
+gautum_cassette_2.prg:                CenterX = CX(P36)
+gautum_cassette_2.prg:                CenterY = CY(P36)
+gautum_cassette_2.prg:                BottomZ = CZ(P36)
+gautum_cassette_2.prg:                Angle = CU(P36)
+gautum_cassette_2.prg:                CassetteOrientation = Hand(P36)
+gautum_cassette_2.prg:            P34 = XY(CenterX, CenterY, BottomZ, Angle)
+gautum_cassette_2.prg:			Hand P34, Hand(P6)
+gautum_cassette_2.prg:            P35 = XY(CenterX, CenterY, BottomZ, Angle)
+gautum_cassette_2.prg:			Hand P35, Hand(P6)
+gautum_cassette_2.prg:            P36 = XY(CenterX, CenterY, BottomZ, Angle)
+gautum_cassette_2.prg:			Hand P36, Hand(P6)
+gautum_cassette_2.prg:        Jump P6
+gautum_cassette_2.prg:        Move P3
+gonio.prg:''fromPoint should be P16 (right hand, most cases) or P26 (SSRL BL 11-3)
+gonio.prg:    ''check P76 to see if P16 was copied to P76 in previous run
+gonio.prg:    ''check to see if P16 changed a lot
+gonio.prg:    If Dist(P16, P76) > 5 Then
+gonio.prg:        g_RunResult$ = "P76 and P16 too big difference.  Run Manual Gonio CAL"
+gonio.prg:''support from P21 or P22
+gonio.prg:		Move P24
+gonio.prg:		Print "GoHomeFromGonio move P24 completed"
+gonio.prg:		Print "P24=",
+gonio.prg:		Print P24
+gonio.prg:		Move P22
+gonio.prg:		Move P38 CP
+gonio.prg:		Arc P28, P18 CP
+gonio.prg:            g_RunResult$ = "P20 not defined yet, run GonioCalibration with Init first"
+gonio.prg:        GonioX = CX(P20)
+gonio.prg:        GonioY = CY(P20)
+gonio.prg:        GonioZ = CZ(P20)
+gonio.prg:        GonioU = CU(P20)
+gonio.prg:        ''adjust P20 to P21
+gonio.prg:        P21 = P20 + XY(dx, dy, dz, du)
+gonio.prg:        P23 = P21 +X(GONIO_X_SAFE_BUFFER * Cos(GNDwnStrmRad)) +Y(GONIO_X_SAFE_BUFFER * Sin(GNDwnStrmRad))
+gonio.prg:        P24 = P21 +X(GonioStandbySteps(1)) +Y(GonioStandbySteps(2))
+gonio.prg:        ''P22 take both offset of P23 and P24
+gonio.prg:        P22 = P23 +X(GonioStandbySteps(1)) +Y(GonioStandbySteps(2)) :Z(-1)
+gonio.prg:		tmp_Real1 = CX(P22) - CX(P18)
+gonio.prg:		tmp_Real2 = CY(P22) - CY(P18)
+gonio.prg:				P38 = P18 +X(tmp_Real2) +Y(tmp_Real2)
+gonio.prg:				P28 = P18 +X(0.293 * tmp_Real2) +Y(0.707 * tmp_Real2)
+gonio.prg:				P38 = P18 -X(tmp_Real2) +Y(tmp_Real2)
+gonio.prg:				P28 = P18 -X(0.293 * tmp_Real2) +Y(0.707 * tmp_Real2)
+gonio.prg:				P38 = P18 +X(tmp_Real1) +Y(tmp_Real1)
+gonio.prg:				P28 = P18 +X(0.707 * tmp_Real1) +Y(0.293 * tmp_Real1)
+gonio.prg:				P38 = P18 +X(tmp_Real1) -Y(tmp_Real1)
+gonio.prg:				P28 = P18 +X(0.707 * tmp_Real1) -Y(0.293 * tmp_Real1)
+gonio.prg:        Jump P1
+gonio.prg:            Jump P3
+gonio.prg:   		Go P18 CP
+gonio.prg:        Move P18 CP
+gonio.prg:		Arc P28, P38 CP
+gonio.prg:        Move P22
+gonio.prg:        Move P22 :Z(GonioZ + 10)
+gonio.prg:			Move P22
+gonio.prg:			Move P22
+gonio.prg:	    ''now side step to P24 with force sensor on
+gonio.prg:		P51 = RealPos
+gonio.prg:					Move P51
+gonio.prg:					P51 = RealPos
+gonio.prg:					Move P51
+gonio.prg:					P51 = RealPos
+gonio.prg:					Move P51
+gonio.prg:					Move P22
+gonio.prg:			Move P22
+gonio.prg:		P51 = RealPos
+gonio.prg:            Move P51
+gonio.prg:			Move P22
+gonio.prg:		Print "Before P24=",
+gonio.prg:		Print P24
+gonio.prg:		P24 = RealPos
+gonio.prg:		Print "After P24=",
+gonio.prg:		Print P24
+gonio.prg:                Move P24
+gonio.prg:        ''        Move P21
+gonio.prg:                Move P24
+gonio.prg:                Move P24
+gonio.prg:                Move P24
+gonio.prg:	P51 = RealPos
+gonio.prg:            Move P24
+gonio.prg:		P52 = RealPos
+gonio.prg:            Move P52
+gonio.prg:            Move P51
+gonio.prg:                Print #LOG_FILE_NO, "old P20 (", CX(P20), ", ", CY(P20), ", ", CZ(P20), ", ", CU(P20), ")"
+gonio.prg:            P21 = RealPos
+gonio.prg:            P20 = P21 - XY(dx, dy, dz, du)
+gonio.prg:            msg$ = "new P20 (" + Str$(CX(P20)) + ", " + Str$(CY(P20)) + ", " + Str$(CZ(P20)) + ", " + Str$(CU(P20)) + ")"
+gonio.prg:            Print #LOG_FILE_NO, "new P20 (", CX(P20), ", ", CY(P20), ", ", CZ(P20), ", ", CU(P20), ")"
+gonio.prg:            ''save current P16 for next time adjust
+gonio.prg:            P76 = P16
+gonio.prg:            msg$ = "new P20: (" + Str$(CX(P20)) + ", " + Str$(CY(P20)) + ", " + Str$(CZ(P20)) + ", " + Str$(CU(P20)) + ")"
+gonio.prg:		    g_RunResult$ = "normal " + Str$(CX(P21)) + " " + Str$(CY(P21)) + " " + Str$(CZ(P21)) + " " + Str$(CU(P21))
+gonio.prg:        Move P24
+gonio.prg:        Print "Gonio calibration move p24 complete"
+gonio.prg:        Print "P24=",
+gonio.prg:        Print P24
+gonio.prg:            g_RunResult$ = "P90 not defined yet, run BeamToolCalibration with Init first"
+gonio.prg:        	GonioX = CX(P90)
+gonio.prg:        	GonioY = CY(P90)
+gonio.prg:        	GonioZ = CZ(P90)
+gonio.prg:        	GonioU = CU(P90)
+gonio.prg:        ''generate P91 from P90
+gonio.prg:        P91 = P90 +X(BTStandbySteps(1)) +Y(BTStandbySteps(2))
+gonio.prg:        Jump P91
+gonio.prg:            Jump P0
+gonio.prg:            Jump P0
+gonio.prg:        Move P90
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:        Jump P0
+gonio.prg:    	msg$ = "old P90 (" + Str$(CX(P90)) + ", " + Str$(CY(P90)) + ", " + Str$(CZ(P90)) + ", " + Str$(CU(P90)) + ")"
+gonio.prg:    	Print #LOG_FILE_NO, "old P90 (", CX(P90), ", ", CY(P90), ", ", CZ(P90), ", ", CU(P90), ")"
+gonio.prg:    P90 = RealPos
+gonio.prg:    msg$ = "new P90 (" + Str$(CX(P90)) + ", " + Str$(CY(P90)) + ", " + Str$(CZ(P90)) + ", " + Str$(CU(P90)) + ")"
+gonio.prg:    Print #LOG_FILE_NO, "new P90 (", CX(P90), ", ", CY(P90), ", ", CZ(P90), ", ", CU(P90), ")"
+gonio.prg:    msg$ = "new P90 (" + Str$(CX(P90)) + ", " + Str$(CY(P90)) + ", " + Str$(CZ(P90)) + ", " + Str$(CU(P90)) + ")"
+gonio.prg:    ''generate P92 from P90
+gonio.prg:    CalculateStepSize(DIRECTION_CAVITY_TO_MAGNET, 15, CU(P90), ByRef BTStandbySteps())
+gonio.prg:    P92 = P90 +X(BTStandbySteps(1)) +Y(BTStandbySteps(2))
+gonio.prg:    ''calculate P91 from P90
+gonio.prg:    CalculateStepSize(DIRECTION_CAVITY_TAIL, 10, CU(P90), ByRef BTStandbySteps())
+gonio.prg:    P91 = P90 +X(BTStandbySteps(1)) +Y(BTStandbySteps(2))
+gonio.prg:        Jump P0
+magnet.prg:Real ISP16IdealX
+magnet.prg:Real ISP16IdealY
+magnet.prg:Real ISP16IdealZ
+magnet.prg:Real ISP16IdealU
+magnet.prg:Real ISP16DX
+magnet.prg:Real ISP16DY
+magnet.prg:Real ISP16DZ
+magnet.prg:Real ISP16DU
+magnet.prg:            Move P6
+magnet.prg:            Move P3
+magnet.prg:            Jump P1
+magnet.prg:            Jump P0
+magnet.prg:        If Abs(CX(P6) - CX(P86)) < 0.1 And Abs(CY(P6) - CY(P86)) < 0.3 And Abs(CZ(P6) - CZ(P86)) < 0.1 Then
+magnet.prg:    ''set to CU(P6) if not in calibration
+magnet.prg:        P86 = P6
+magnet.prg:        P6 = RealPos
+magnet.prg:        msg$ = "P6 moved from (" + Str$(CX(P86)) + ", " + Str$(CY(P86)) + ", " + Str$(CZ(P86)) + ", " + Str$(CU(P86)) + ") "
+magnet.prg:		msg$ = "to (" + Str$(CX(P6)) + ", " + Str$(CY(P6)) + ", " + Str$(CZ(P6)) + ", " + Str$(CU(P6)) + ") "
+magnet.prg:        Print #LOG_FILE_NO, "P6 moved from (", CX(P86), ", ", CY(P86), ", ", CZ(P86), ", ", CU(P86), ") ",
+magnet.prg:        Print #LOG_FILE_NO, "to (", CX(P6), ", ", CY(P6), ", ", CZ(P6), ", ", CU(P6), ") "
+magnet.prg:        msg$ = "Old P6 (" + Str$(CX(P86)) + ", " + Str$(CY(P86)) + ", " + Str$(CZ(P86)) + ", " + Str$(CU(P86)) + ")"
+magnet.prg:        msg$ = "New P6 (" + Str$(CX(P6)) + ", " + Str$(CY(P6)) + ", " + Str$(CZ(P6)) + ", " + Str$(CU(P6)) + ")"
+magnet.prg:        ''P3 is 20 mm from P6: cooling point
+magnet.prg:        P3 = P6 +X(20 * Cos(tmp_Real)) +Y(20 * Sin(tmp_Real))
+magnet.prg:        ''P2 is above P3
+magnet.prg:        P2 = P3 :Z(-2)
+magnet.prg:	        msg$ = "P7 moved from (" + Str$(CX(P7)) + ", " + Str$(CY(P7)) + ", " + Str$(CZ(P7)) + ", " + Str$(CU(P7)) + ") "
+magnet.prg:        	Print #LOG_FILE_NO, "P7 moved from (", CX(P7), ", ", CY(P7), ", ", CZ(P7), ", ", CU(P7), ") ",
+magnet.prg:        P7 = RealPos
+magnet.prg:        msg$ = "to (" + Str$(CX(P7)) + ", " + Str$(CY(P7)) + ", " + Str$(CZ(P7)) + ", " + Str$(CU(P7)) + ") "
+magnet.prg:        Print #LOG_FILE_NO, "to (", CX(P7), ", ", CY(P7), ", ", CZ(P7), ", ", CU(P7), ") "
+magnet.prg:        Move P6
+magnet.prg:    ''derive init value from magnet transport P6
+magnet.prg:    ''move from P6 to the init point
+magnet.prg:    	UpdateClient(TASK_MSG, "PickerCalibration: Fail! Must start from P6 position", ERROR_LEVEL)
+magnet.prg:        Print #LOG_FILE_NO, "FAILED: It must start from P6 position"
+magnet.prg:	    msg$ = "P16 moved from (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ") "
+magnet.prg:	    Print #LOG_FILE_NO, "P16 moved from (", CX(P16), ", ", CY(P16), ", ", CZ(P16), ", ", CU(P16), ") ",
+magnet.prg:	    msg$ = "Old P16 (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ")"
+magnet.prg:    P16 = RealPos
+magnet.prg:    msg$ = "to (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ") "
+magnet.prg:    Print #LOG_FILE_NO, "to (", CX(P16), ", ", CY(P16), ", ", CZ(P16), ", ", CU(P16), ") "
+magnet.prg:	msg$ = "New P16 (" + Str$(CX(P16)) + ", " + Str$(CY(P16)) + ", " + Str$(CZ(P16)) + ", " + Str$(CU(P16)) + ")"
+magnet.prg:    	UpdateClient(TASK_MSG, "not a good place to start placer calibration,  It should be P16 +Y(10)", ERROR_LEVEL)
+magnet.prg:        Print #LOG_FILE_NO, "FAILED: not a good place to start placer calibration,  It should be P16 +Y(10)"
+magnet.prg:    ''calculate the final position from P6:
+magnet.prg:    ''from P6 move from Cavity to magnet of distance of CAVITY_TO_MAGNET,
+magnet.prg:    CalculateStepSize(DIRECTION_CAVITY_TO_MAGNET, H_DISTANCE_CAVITY_TO_GRIPPER, CU(P6), ByRef CPCStepSize())
+magnet.prg:    CPCFinalX = CX(P6) + CPCStepSize(1)
+magnet.prg:    CPCFinalY = CY(P6) + CPCStepSize(2)
+magnet.prg:    ''in P6, the cavity tail is the direction where we want to move
+magnet.prg:    CalculateStepSize(DIRECTION_CAVITY_TAIL, DISTANCE_PLACER_FROM_MAGNET, CU(P6), ByRef CPCStepSize())
+magnet.prg:    CalculateStepSize(DIRECTION_MAGNET_TO_CAVITY, CAVITY_RADIUS, CU(P6), ByRef CPCStepSize())
+magnet.prg:    ''CPCFinalZ = CZ(P6) + V_DISTANCE_CAVITY_TO_GRIPPER
+magnet.prg:    CPCFinalU = CU(P6)
+magnet.prg:    P51 = XY(CPCMiddleX, CPCMiddleY, CPCMiddleZ, CPCMiddleU)
+magnet.prg:    P52 = XY(CPCFinalX, CPCFinalY, CPCFinalZ, CPCFinalU)
+magnet.prg:	Hand P51, Hand(P6)
+magnet.prg:	Hand P52, Hand(P6)
+magnet.prg:    Arc P51, P52
+magnet.prg:	    msg$ = "P26 moved from (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ") "
+magnet.prg:		Print #LOG_FILE_NO, "P26 moved from (", CX(P26), ", ", CY(P26), ", ", CZ(P26), ", ", CU(P26), ") ",
+magnet.prg:	    msg$ = "Old P26 (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ")"
+magnet.prg:    P26 = RealPos
+magnet.prg:    msg$ = "to (" + Str$(CX(P26)) + ", " + Str$(CY(P26)) + ", " + Str$(CZ(P26)) + ", " + Str$(CU(P26)) + ") "
+magnet.prg:    Print #LOG_FILE_NO, "to (", CX(P26), ", ", CY(P26), ", ", CZ(P26), ", ", CU(P26), ") "
+magnet.prg:    PostLevelError = Abs(CZ(P16) - CZ(P26))
+magnet.prg:    P10 = XY(TSTWX, TSTWY, TSZ, TSU)
+magnet.prg:    	   	P51 = TLSet(1)
+magnet.prg:		   	msg$ = "old picker: (" + Str$(CX(P51)) + ", " + Str$(CY(P51)) + ", " + Str$(CZ(P51)) + ", " + Str$(CU(P51)) + ")"
+magnet.prg: 		  	Print #LOG_FILE_NO, "old picker: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+magnet.prg:    	P51 = TLSet(2)
+magnet.prg:    	TSZ = CZ(P51) ''keep the old Z offset from last FineTineToolSet
+magnet.prg:    P11 = XY(TSTWX, TSTWY, TSZ, TSU)
+magnet.prg:    	P51 = TLSet(2)
+magnet.prg:    	msg$ = "old placer: (" + Str$(CX(P51)) + ", " + Str$(CY(P51)) + ", " + Str$(CZ(P51)) + ", " + Str$(CU(P51)) + ")"
+magnet.prg:		Print #LOG_FILE_NO, "old placer: (", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+magnet.prg:    P12 = P6
+magnet.prg:    P12 = XY(TSTWX, TSTWY, 0, TSU)
+magnet.prg:    P13 = P6
+magnet.prg:    P13 = XY(TSTWX, TSTWY, 0, TSU)
+magnet.prg:    If g_Picker_X = 0 Or g_Picker_Y = 0 Or g_Placer_X = 0 Or g_Placer_X = 0 Or CY(P6) = 0 Then
+magnet.prg:        P51 = TLSet(1)
+magnet.prg:    	msg$ = "Old TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+magnet.prg:        P51 = TLSet(2)
+magnet.prg:	    msg$ = "Old TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+magnet.prg:	    TSa = TSa - CY(P6)
+magnet.prg:	    TSX = (g_Placer_X - CX(P6)) / TSAdjust
+magnet.prg:	    TSa = TSa - CX(P6)
+magnet.prg:	    TSX = (g_Placer_Y - CY(P6)) / TSAdjust
+magnet.prg:    ISP16IdealX = CX(P16) + STANDBY_DISTANCE * Cos(tmp_Real)
+magnet.prg:    ISP16IdealY = CY(P16) + STANDBY_DISTANCE * Sin(tmp_Real)
+magnet.prg:    ISP16IdealZ = CZ(P16)
+magnet.prg:    ISP16IdealU = CU(P16)
+magnet.prg:    ISP16DX = CX(RealPos) - ISP16IdealX
+magnet.prg:    ISP16DY = CY(RealPos) - ISP16IdealY
+magnet.prg:    ISP16DZ = CZ(RealPos) - ISP16IdealZ
+magnet.prg:    ISP16DU = CU(RealPos) - ISP16IdealU
+magnet.prg:    If Abs(ISP16DU) > 2 Then
+magnet.prg:    If Abs(ISP16DZ) > 2 Then
+magnet.prg:    If Sqr(ISP16DX * ISP16DX + ISP16DY * ISP16DY) > 2 Then
+magnet.prg:    ''more safe, check against P6 also
+magnet.prg:    ISP16DU = Abs(CU(RealPos) - CU(P6))
+magnet.prg:    ISP16DU = ISP16DU - 180
+magnet.prg:    If Abs(ISP16DU) > 2 Then
+magnet.prg:''FindMagnet now will utilize existing P6.  So, it should only be used
+magnet.prg:''It will start from anyplace that can jump to P3
+magnet.prg:    Jump P1
+magnet.prg:		Jump P0
+magnet.prg:	Jump P6 +X(tmp_DX) +Y(tmp_DY)
+magnet.prg:        MagLevelError = CZ(P6) - STRIP_PLACER_Z_OFFSET - CZ(RealPos)
+magnet.prg:    ''adjust and move to P6
+magnet.prg:    Jump P3
+magnet.prg:    Move P6
+magnet.prg:        Move P6
+magnet.prg:        Move P3
+magnet.prg:        Jump P1
+magnet.prg:        Jump P0
+magnet.prg:	P51 = XY((FTTSDestX + tmp_DX), (FTTSDestY + tmp_DY), CZ(P6), (g_Perfect_Cradle_Angle + 180.0))
+magnet.prg:	Hand P51, Hand(P6)
+magnet.prg:    ''P51 will be standby position
+magnet.prg:    Jump P51
+magnet.prg:	P51 = XY((FTTSDestX + tmp_DX), (FTTSDestY + tmp_DY), CZ(P6), (g_Perfect_Cradle_Angle - 90.0 + FTTSDeltaU))
+magnet.prg:	Hand P51, Hand(P6)
+magnet.prg:        Jump P51
+magnet.prg:        Move P51
+magnet.prg:    Jump P6 +Z(20)
+magnet.prg:    Move P6 +Z(2)    ''the 2mm here is because both cradle and the magnet hold by tong may not level
+magnet.prg:        g_RunResult$ = "failed to touch in cradle for a in P6"
+magnet.prg:        Print #LOG_FILE_NO, "failed to touch in cradle for a in P6"
+magnet.prg:    Move P6 +Z(2)
+magnet.prg:    P51 = RealPos
+magnet.prg:    Jump P51 +Z(18)
+magnet.prg:        msg$ = "failed to touch in cradle for a in P51"
+magnet.prg:        Print #LOG_FILE_NO, "failed to touch in cradle for a in P51"
+magnet.prg:    Jump P6
+magnet.prg:    	msg$ = "old (absolute magnet position) P56," + Str$(CX(P56)) + "," + Str$(CY(P56)) + "," + Str$(CZ(P56)) + "," + Str$(CU(P56))
+magnet.prg:    	Print #LOG_FILE_NO, "old (absolute magnet position) P56,", CX(P56), ",", CY(P56), ",", CZ(P56), ",", CU(P56)
+magnet.prg:    P56 = RealPos
+magnet.prg:    msg$ = "new P56," + Str$(CX(P56)) + "," + Str$(CY(P56)) + "," + Str$(CZ(P56)) + "," + Str$(CU(P56)) + " " + Date$ + " " + Time$
+magnet.prg:    Print #LOG_FILE_NO, "new P56,", CX(P56), ",", CY(P56), ",", CZ(P56), ",", CU(P56), " ", Date$, " ", Time$
+magnet.prg:    P51 = RealPos + P56
+magnet.prg:    P51 = XY((CX(P51) / 2), (CY(P51) / 2), (CZ(P51) / 2), (CU(P51) / 2))
+magnet.prg:    P51 = P51 +X(tmp_DX) +Y(tmp_DY)
+magnet.prg:    Hand P51, Hand(P6)
+magnet.prg:    CU(P51) = CU(P6) - 60
+magnet.prg:    Jump P51
+magnet.prg:    CU(P51) = CU(P6) + 240
+magnet.prg:    Jump P51
+magnet.prg:    Jump P6
+magnet.prg:    P51 = TLSet(2)
+magnet.prg:    TLSet 2, P51 :Z(FTTSZ)
+magnet.prg:    P51 = TLSet(1)
+magnet.prg:    msg$ = "New TLSet 1: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+magnet.prg:    P51 = TLSet(2)
+magnet.prg:    msg$ = "New TLSet 2: (" + Str$(CX(P51)) + "," + Str$(CY(P51)) + "," + Str$(CZ(P51)) + "," + Str$(CU(P51)) + ")"
+magnet.prg:    msg$ = "new P56: (" + Str$(CX(P56)) + ", " + Str$(CY(P56)) + ", " + Str$(CZ(P56)) + ", " + Str$(CU(P56)) + ")"
+magnet.prg:    Move P3
+magnet.prg:		P51 = TLSet(1)
+magnet.prg:		P52 = TLSet(2)
+magnet.prg:		TLSet 3, XY(((CX(P51) + CX(P52)) / 2), ((CY(P51) + CY(P52)) / 2), ((CZ(P51) + CZ(P52)) / 2), CU(P51))
+magnet.prg:        P51 = RealPos
+magnet.prg:        Go P51
+magnet.prg:    P52 = TLSet(2)
+magnet.prg:    msg$ = "old Z for Toolset 2: " + Str$(CZ(P52))
+magnet.prg:        Go P51
+magnet.prg:        Print "FAILED: It must start from P3 position"
+magnet.prg:        Print #LOG_FILE_NO, "FAILED: It must start from P3 position"
+magnet.prg:    Go P3
+magnet.prg:    Move P6
+magnet.prg:        Move P6
+magnet.prg:        Move P3
+magnet.prg:        Jump P1
+magnet.prg:        Jump P0
+magnet.prg:	''here 20 is from we moved tong to P6+20
+magnet.prg:	P8 = RealPos +X(tmp_DX) +Y(tmp_DY) -Z(STRIP_PLACER_Z_OFFSET + 20) +U(90)
+magnet.prg:	''P80 is standby point, away 10 mm
+magnet.prg:	P80 = P8 +X(tmp_DX) +Y(tmp_DY) +Z(STRIP_PLACER_LIFT_Z)
+magnet.prg:	Jump P80
+magnet.prg:			Move P80
+magnet.prg:        P81 = RealPos
+magnet.prg:			Move P81
+magnet.prg:				Move P80
+magnet.prg:		P8 = RealPos
+magnet.prg:		msg$ = "done, new P8=" + StringPoint$(8)
+magnet.prg:	Move P80
+magnet.prg:	Jump P6
+magnet.prg:    Move P3
+magnet.prg:        P51 = RealPos
+magnet.prg:        Go P51
+magnet.prg:        Go P51
+magnetmaneuvers.prg:	If (CX(RealPos) > 0) And (CX(P1) * CY(RealPos) < CX(RealPos) * CY(P1)) Then
+magnetmaneuvers.prg:		''The above condition checks whether the robot is in the region before P1 containing P0 
+magnetmaneuvers.prg:		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
+magnetmaneuvers.prg:		Jump P1
+magnetmaneuvers.prg:	''This following condition check allows GTJumpHomeToCoolingPointAndWait to start from P3 
+magnetmaneuvers.prg:	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
+magnetmaneuvers.prg:		Go P3
+magnetmaneuvers.prg:		Jump P3
+magnetmaneuvers.prg:	P(standbyPoint) = P3 -X(probeDistanceFromCradleCenter * g_dumbbell_Perfect_cosValue) -Y(probeDistanceFromCradleCenter * g_dumbbell_Perfect_sinValue)
+magnetmaneuvers.prg:	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
+magnetmaneuvers.prg:	maxDistanceToScan = DISTANCE_P3_TO_P6 ''+ MAGNET_PROBE_DISTANCE_TOLERANCE
+magnetmaneuvers.prg:		''distErrorFromPerfectMagnetPoint = Dist(P(standbyPoint), RealPos) - (DISTANCE_P3_TO_P6 - (MAGNET_AXIS_TO_CRADLE_EDGE + MAGNET_HEAD_RADIUS))
+magnetmaneuvers.prg:		distErrorFromPerfectMagnetPoint = Abs(CX(P(standbyPoint)) - CX(RealPos)) - (DISTANCE_P3_TO_P6 - (MAGNET_AXIS_TO_CRADLE_EDGE + MAGNET_HEAD_RADIUS))
+magnetmaneuvers.prg:	Move P3 ''because this function is called in several places, I didnot like it to end at standbyPoint
+magnetmaneuvers.prg:	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
+magnetmaneuvers.prg:		Go P3
+magnetmaneuvers.prg:		Jump P3 '' Cooling Point in front of cradle		
+magnetmaneuvers.prg:	Move P6 '' gripper catches the magnet in cradle
+magnetmaneuvers.prg:	''Move P4 '' point directly above cradle : P4 can be thought of as ready for action point = Instead of jump to p3, move to p4
+magnetmaneuvers.prg:	Jump P3
+magnetmaneuvers.prg:	If Dist(RealPos, P4) < CLOSE_DISTANCE Then
+magnetmaneuvers.prg:		Go P4
+magnetmaneuvers.prg:		Jump P4 '' this point is directly above cradle
+magnetmaneuvers.prg:	Move P6 '' gripper catches the magnet in cradle
+magnetmaneuvers.prg:	Move P3 '' Cooling Point in front of cradle
+magnetmaneuvers.prg:	If (Dist(RealPos, P18) > CLOSE_DISTANCE) And (CX(RealPos) < 0) And (CX(P18) * CY(RealPos) > CX(RealPos) * CY(P18)) Then
+magnetmaneuvers.prg:		''The above condition checks whether the robot is in the region after P18 containing gonio 
+magnetmaneuvers.prg:		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) >  Atan(CY(P18)/CX(P18)) checks the angle made by realpos > angle of P18
+magnetmaneuvers.prg:		'' Also checks Dist(RealPos, P18) > CLOSE_DISTANCE because if it is close we just jump to p1 directly (we don't have to jump to p18)
+magnetmaneuvers.prg:		Jump P18
+magnetmaneuvers.prg:	Jump P1
+magnetmaneuvers.prg:	Jump P0
+magnetmaneuvers.prg:	If (CX(RealPos) > 0) And (CX(P1) * CY(RealPos) < CX(RealPos) * CY(P1)) Then
+magnetmaneuvers.prg:		''The above condition checks whether the robot is in the region before P1 containing P0 
+magnetmaneuvers.prg:		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
+magnetmaneuvers.prg:		Jump P1
+magnetmaneuvers.prg:		''This function starts from P0 in Dismounting, so open lid before dismounting
+magnetmaneuvers.prg:	If Dist(RealPos, P4) < CLOSE_DISTANCE Then
+magnetmaneuvers.prg:		'' This function is called when Robot is at P4, during MountSample
+magnetmaneuvers.prg:		Move P2 CP
+magnetmaneuvers.prg:		Move P18 CP
+magnetmaneuvers.prg:	ElseIf Dist(RealPos, P18) < CLOSE_DISTANCE Then ''Required in StressTestSuperPuck
+magnetmaneuvers.prg:		Go P18 ''Required in StressTestSuperPuck
+magnetmaneuvers.prg:		'' This allows us to call GTMoveToGoniometer from P3
+magnetmaneuvers.prg:        Jump P18
+magnetmaneuvers.prg:	Move P22 CP
+magnetmaneuvers.prg:	'' Only if P22 is reached return True
+magnetmaneuvers.prg:	Move P18 CP
+normalcassetteutilities.prg:			Move P52 '' P52 is used as standbyPoint throughout GT domain
+pythoninterface.prg:	'' Put dumbbell in Cradle and go Home (P0)
+samplemounting.prg:	'' P21 is the real goniometer point which will be used for robot movement
+samplemounting.prg:	P21 = P20 +X(dx) +Y(dy) +Z(dz) +U(du)
+samplemounting.prg:	'' P24 is the point	to move to detach goniometer head along gonio orientation
+samplemounting.prg:	P24 = P21 +X(detachDX) +Y(detachDY)
+samplemounting.prg:	'' P23 downstream shift from P21. P23 is the dismount standby point
+samplemounting.prg:	P23 = P21 +X(sideStepDX) +Y(sideStepDY)
+samplemounting.prg:	'' X,Y coordinates of P22 is the corner of the rectangle P24-P21-P23
+samplemounting.prg:	'' P22 is the Mount/Dismount point on Gonio
+samplemounting.prg:	P23 = P21 +X(detachDX + sideStepDX) +Y(detachDY + sideStepDY) :Z(-1)
+samplemounting.prg:	desiredX = (CX(P4) + CX(RealPos)) / 2.0
+samplemounting.prg:	desiredY = (CY(P4) + CY(RealPos)) / 2.0
+samplemounting.prg:	'' desiredZ = maximum of CZ(P4) and CZ(RealPos)
+samplemounting.prg:	If CZ(P4) > CZ(RealPos) Then
+samplemounting.prg:		desiredZ = CZ(P4)
+samplemounting.prg:	P49 = XY(desiredX, desiredY, desiredZ, CU(RealPos)) /R
+samplemounting.prg:	Move P49
+samplemounting.prg:	Jump P4
+samplemounting.prg:	''Starts from P3
+samplemounting.prg:		Arc P15, P16
+samplemounting.prg:	''starts from P22
+samplemounting.prg:	Move P24
+samplemounting.prg:	Move P21
+samplemounting.prg:	Move P23
+samplemounting.prg:	'' move away from goniometer by 40mm while raising to P22
+samplemounting.prg:	Move P22 +X(40.0 * g_goniometer_cosValue) +Y(40.0 * g_goniometer_sinValue)
+samplemounting.prg:	'' GTMountInterestedPort should start with dumbbell in gripper usually from P3
+samplemounting.prg:	''Starts from P22
+samplemounting.prg:	Move P23
+samplemounting.prg:	Move P21
+samplemounting.prg:	Move P24
+samplemounting.prg:	Move P22
+samplemounting.prg:   	Move P18 CP
+samplemounting.prg:	Move P27 :Z(0)
+samplemounting.prg:	Move P27
+samplemounting.prg:	''starts from P27
+samplemounting.prg:	Move P26
+samplemounting.prg:	Arc P25, P94 CP
+samplemounting.prg:	Move P3
+samplemounting.prg:	'' GTDismountToInterestedPort should start without dumbbell in gripper usually from P18
+samplemounting.prg:	Arc P3, P27 CP
+setupcassette.prg:	standbyU = CU(P6) + GTBoundAngle(-180, 180, standbyU - CU(P6))
+setuppoints.prg:	P51 = TLSet(toolNum)
+setuppoints.prg:	If CX(P51) = 0 Or CY(P51) = 0 Or CU(P51) = 0 Then
+setuppoints.prg: 	'' Check Points P0, P1 and P18
+setuppoints.prg: 	'' Check Points P6, P16 and P26
+setuppoints.prg:	'' Check Points P10, P11 and P12
+setuppoints.prg:	g_dumbbell_Perfect_Angle = GTAngleToPerfectOrientationAngle(CU(P6))
+setuppoints.prg:	'' Cooling Point: DISTANCE_P3_TO_P6=20.0mm in the perpendicular direction from center of dumbbell
+setuppoints.prg:	P3 = P6 +X(DISTANCE_P3_TO_P6 * -g_dumbbell_Perfect_sinValue) +Y(DISTANCE_P3_TO_P6 * g_dumbbell_Perfect_cosValue)
+setuppoints.prg:	P2 = P3 :Z(-2)
+setuppoints.prg:	P4 = P6 +Z(30.0)
+setuppoints.prg:	P17 = P16 +X(10.0 * g_dumbbell_Perfect_cosValue) +Y(10.0 * g_dumbbell_Perfect_sinValue)
+setuppoints.prg:	P27 = P26 -X(10.0 * g_dumbbell_Perfect_cosValue) -Y(10.0 * g_dumbbell_Perfect_sinValue)
+setuppoints.prg:	P93 = P16 +X(35.0 * -g_dumbbell_Perfect_sinValue) +Y(35.0 * g_dumbbell_Perfect_cosValue)
+setuppoints.prg:	P94 = P26 +X(35.0 * -g_dumbbell_Perfect_sinValue) +Y(35.0 * g_dumbbell_Perfect_cosValue)
+setuppoints.prg:	P15 = P16 +X(17.5 * dumbbell_cos_minus_sin) +Y(17.5 * dumbbell_cos_plus_sin)
+setuppoints.prg:	P25 = P26 +X(17.5 * -dumbbell_cos_plus_sin) +Y(17.5 * dumbbell_cos_minus_sin)
+setuppoints.prg:	P5 = P16 +X(tong_dumbbell_gap * -g_dumbbell_Perfect_sinValue) +Y(tong_dumbbell_gap * g_dumbbell_Perfect_cosValue)
+setuppoints.prg: 	'' Check Point P6: dumbbell cradle needed to decided cassette orientation
+setuppoints.prg:		g_RunResult$ = "error P6 is not defined"
+setuppoints.prg:	'' Check Left Cassette Points P34, P41 and P44
+setuppoints.prg:	'' Check Middle Cassette Points P35, P42 and P45
+setuppoints.prg:	'' Check Right Cassette Points P36, P43 and P46
+setuppoints.prg: 	'' Check Point P20
+setuppoints.prg:		'' P20 is pointing towards Gonio, so Gonio orientation is 180 degrees from CU(P20)
+setuppoints.prg:		g_goniometer_Angle = CU(P20) + 180
+setuppoints.prg:		g_RunResult$ = "error GTInitGoniometerPoints P20 is not defined"
+superpuckutilities.prg:					Move P52 '' P52 is used as standbyPoint throughout GT domain
+superpuckutilities.prg:					Move P52 '' P52 is used as standbyPoint throughout GT domain
+superpuckutilities.prg:	P453 = RealPos
+superpuckutilities.prg:		 P450 = TLSet(previousTool) +X(0.2) ''Left
+superpuckutilities.prg:		 P450 = TLSet(previousTool) +X(0.14) -Z(0.14) ''Left-Down		
+superpuckutilities.prg:		 P450 = TLSet(previousTool) -Z(0.2) ''Down
+superpuckutilities.prg:		 P450 = TLSet(previousTool) -X(0.14) -Z(0.14) ''Right-Down
+superpuckutilities.prg:		 P450 = TLSet(previousTool) -X(0.2) ''Right
+superpuckutilities.prg:		 P450 = TLSet(previousTool) -X(0.14) +Z(0.14) ''Right-Up
+superpuckutilities.prg:		 P450 = TLSet(previousTool) +Z(0.2) ''Up		 
+superpuckutilities.prg:		 P450 = TLSet(previousTool) +X(0.14) +Z(0.14) ''Left-Up	
+superpuckutilities.prg:		 P450 = TLSet(previousTool) ''Same Toolset as before
+superpuckutilities.prg:	TLSet PORT_JAM_RECHECK_TOOL, P450
+superpuckutilities.prg:	Move P453
+utilities.prg:''must make sure that it can jump P6 or jump P1
+utilities.prg:	P30 = RealPos
+utilities.prg:	g_ArmOrientation = Hand(P30)
+utilities.prg:    	g_U4MagnetHolder = CU(P6)
+utilities.prg:	''P111 is used as a temporary point only for calling GTForceTouch
+utilities.prg:	P111 = XY(FTHDestP(1), FTHDestP(2), FTHDestP(3), FTHDestP(4))
+utilities.prg:        ''P50 = TLSet(currentToolset)
+utilities.prg:		''If p12 defined then define toolset for cavity twistoff 
+utilities.prg:		If PDef(P12) Then
+utilities.prg:			TLSet 3, XY(CX(P12), CY(P12), CZ(P12), CU(P12))
+utilities.prg:    LimZ (CZ(P0) + 15)
+utilities.prg:        Jump P0 +U(10)
+utilities.prg:        Jump P0 -U(10)
+utilities.prg:    Jump P0
+utilities.prg:        Move P3
+utilities.prg:    ''Maybe called with LimZ set lower than P1, so avoid jump command
+utilities.prg:    If Dist(RealPos, P0) > 3 Then
+utilities.prg:        Go P1
+utilities.prg:        Move P1
+utilities.prg:        Move P0 :Z(-1)
+utilities.prg:        Move P0
+utilities.prg:	Go P1
+utilities.prg:    Move P1
+utilities.prg:    Jump P1
+utilities.prg:		Jump P0
+utilities.prg:    Jump P3
+utilities.prg:        Move P3
+utilities.prg:            Jump P1
+utilities.prg:            Jump P0
+utilities.prg:        Jump P1
+utilities.prg:        Jump P0
+utilities.prg:    Move P6
+utilities.prg:        Move P6
+utilities.prg:        Move P3
+utilities.prg:        Jump P1
+utilities.prg:        Jump P0
+utilities.prg:    P51 = TLSet(Tl)
+utilities.prg:    Print #LOG_FILE_NO, "ToolSet[", Tl, "]=(", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+utilities.prg:    Print "ToolSet[", Tl, "]=(", CX(P51), ", ", CY(P51), ", ", CZ(P51), ", ", CU(P51), ")"
+utilities.prg:        Jump P0
+utilities.prg:        Move P6 :Z(g_Jump_LimZ_LN2)
+utilities.prg:        Move P6 +Z(20)
+utilities.prg:        Move P6
+utilities.prg:        Move P3
+utilities.prg:    P51 = TLSet(Number)
+utilities.prg:    Print #POINT_FILE_NO, "TLSET" + Str$(Number), ",", CX(P51), ",", CY(P51), ",", CZ(P51), ",", CU(P51), ",", Cnt, ",", Date$, " ", Time$
+utilities.prg:			Move P3
+utilities.prg:			Jump P1
+utilities.prg:			Jump P0
+utilities.prg:		Move P3
+utilities.prg:		Jump P1
+utilities.prg:		Jump P0
+utilities.prg:''From any position, goto P3, and clear dewar frame
+utilities.prg:		''GoHomeFromGonio will do nothing or finish at p18
+utilities.prg:	    ''Jump to p1 if not there already
+utilities.prg:	    	Print "Jump p1"
+utilities.prg:		    Jump P1
+utilities.prg:	Jump P3 :Z(0)
+utilities.prg:	Jump P6 +Z(15)
+utilities.prg:	Move P6
+utilities.prg:	''Move back to p3 releasing the dumbell in cradle
+utilities.prg:	Move P3
+utilities.prg:''Retrieve dumbell from cradle and bring to p1
+utilities.prg:		Jump P3
+utilities.prg:	Move P6
+utilities.prg:	''Jump to P1 inspection point
+utilities.prg:	Jump P1
+utilities.prg:	Jump P16 -X(20)
+utilities.prg:	Move P16
+utilities.prg:	Jump P18
+utilities.prg:	Arc P28, P38 CP
+utilities.prg:	Move P24
+utilities.prg:	Move P20
+utilities.prg:	Move P23
+utilities.prg:	Move P38
+utilities.prg:	Arc P28, P18 CP
+utilities.prg:	Jump P1
+utilities.prg:Function GoP1
+utilities.prg:	''If not at p1, jump to it
+utilities.prg:		Jump P1
+utilities.prg:	error$ = "GoP1 !!Error: " + Str$(Err) + " " + ErrMsg$(Err)

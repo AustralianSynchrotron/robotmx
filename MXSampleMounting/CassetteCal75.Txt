@@ -1,0 +1,7 @@
+=======================================================
+Cassette calibration at 2016/03/21 12:37:30
+left cassettecalibration
+Old position ( 19.2053,  469.467,  -292.028,  3.8209)
+Old Bottom ( 19.204,  469.669,  -273.02)
+old Top ( 19.2549,  469.164,  -168.02)
+Failed: maybe there is no cassette

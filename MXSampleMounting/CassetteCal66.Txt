@@ -1,0 +1,51 @@
+=======================================================
+Cassette calibration at 2016/03/17 17:58:43
+left cassettecalibration
+Old position ( 8.17308,  471.052,  -296.122,  5.13295)
+Old Bottom ( 8.24892,  471.384,  -277.151)
+old Top ( 8.18257,  470.637,  -172.151)
+Center (Z= -277.122) XY position ( 8.2452,  471.38)
+Center (Z= -172.122) XY position ( 8.1801,  470.63)
+distance between center of top row and bottomt row:  0.753338
+Center (Z= -231.122) XY position ( 8.18173,  471.052)
+picker touched at ( 8.18391,  500.053,  -156.149)
+picker touched at ( -20.8181,  471.052,  -164.952)
+picker touched at ( 8.18237,  442.053,  -165.181)
+picker touched at ( 37.1847,  471.054,  -156.366)
+Z touched at  -156.148,  -164.952,  -165.181,  -156.365
+calibration cassette
+average= -156.412
+BottomZ =  -296.132
+Touched edge at ( 23.174,  448.752)
+Touched edge at ( -6.84215,  446.033)
+Touched edge at ( -14.5656,  456.052)
+Touched edge at ( -17.2267,  486.051)
+angle from horizontal edge = 5.17556
+angle from vertical edge = 5.0693
+final Angle = 5.12243
+new position ( 8.18173,  471.052,  -296.132,  5.12243)
+right cassettecalibration
+Old position ( 19.8131,  341.108,  -296.914,  5.26504)
+Old Bottom ( 19.8278,  341.239,  -277.936)
+old Top ( 19.7933,  340.918,  -172.936)
+Center (Z= -277.914) XY position ( 19.8283,  341.247)
+Center (Z= -172.913) XY position ( 19.795,  340.919)
+distance between center of top row and bottomt row:  0.32969
+Center (Z= -231.913) XY position ( 19.8081,  341.119)
+picker touched at ( 19.8092,  312.12,  -157.315)
+picker touched at ( 48.8092,  341.12,  -165.684)
+picker touched at ( 19.8096,  370.119,  -165.583)
+picker touched at ( -9.19209,  341.119,  -157.225)
+Z touched at  -157.315,  -165.684,  -165.583,  -157.225
+calibration cassette
+average= -157.202
+BottomZ =  -296.922
+Touched edge at ( 4.80374,  363.225)
+Touched edge at ( 34.8022,  365.881)
+Touched edge at ( 42.8112,  356.117)
+Touched edge at ( 45.6769,  326.117)
+angle from horizontal edge = 5.05943
+angle from vertical edge = 5.45647
+final Angle = 5.25795
+new position ( 19.8081,  341.119,  -296.922,  5.25795)
+Cassette calibration finished OK at 2016/03/17 18:12:27

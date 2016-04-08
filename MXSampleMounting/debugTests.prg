@@ -281,28 +281,8 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		g_RunArgs$ = g_RunArgs$ + GTpuckName$(puckIndex) + " "
 		g_RunArgs$ = g_RunArgs$ + Str$(puckPortIndex + 1)
 		
-		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
-		If Not (Dist(P0, RealPos) < 10) Then
-			UpdateClient(TASK_MSG, "Robot not at P0. DismountSample must have failed. Exiting StressTest", ERROR_LEVEL)
-			Exit Function
-		EndIf
-		
 		MountSamplePort
-	
-		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
-		''If Not (Dist(P0, RealPos) < 10) Then
-		''	UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
-		''	Exit Function
-		''EndIf
-		''If g_InterestedSampleStatus <> SAMPLE_IN_GONIO Then
-		''	''There was no sample in cassette to MountSamplePort did not happen
-		''	''So skip dismounting
-		''	UpdateClient(TASK_MSG, "No Sample in Gonio. MountSamplePort did not mount sample . So skipping DismountSample.", INFO_LEVEL)
-		''	GoTo SkipDismount
-		''EndIf
-		
 		''DismountSample
-		''SkipDismount:
 	Next
 	
 	StressTestSuperPuck = True
@@ -319,28 +299,8 @@ Function StressTestNormalCassette(cassette_position As Integer, columnIndex As I
 		g_RunArgs$ = g_RunArgs$ + GTcolumnName$(columnIndex) + " "
 		g_RunArgs$ = g_RunArgs$ + Str$(rowIndex + 1)
 		
-		''if Here is not within 10mm from P0, it tells us that there was an error in dismounting
-		If Not (Dist(P0, RealPos) < 10) And Not (Dist(P1, RealPos) < 10) And Not (Dist(P3, RealPos) < 10) And Not (Dist(P4, RealPos) < 10) Then
-			UpdateClient(TASK_MSG, "Robot not at P0, P1, P3, or P4. DismountSample must have failed. Exiting StressTest", ERROR_LEVEL)
-			Exit Function
-		EndIf
-		
 		MountSamplePort
-	
-		''if Here is not within 10mm from P0, it tells us that there was an error in mounting
-		''If Not (Dist(P0, RealPos) < 10) Then
-		''	UpdateClient(TASK_MSG, "Robot not at P0. MountSamplePort must have failed. Exiting StressTest", ERROR_LEVEL)
-		''	Exit Function
-		''EndIf
-		''If g_InterestedSampleStatus <> SAMPLE_IN_GONIO Then
-		''	''There was no sample in cassette to MountSamplePort did not happen
-		''	''So skip dismounting
-		''	UpdateClient(TASK_MSG, "No Sample in Gonio. MountSamplePort did not mount sample . So skipping DismountSample.", INFO_LEVEL)
-		''	GoTo SkipDismount
-		''EndIf
-		
 		''DismountSample
-		''SkipDismount:
 	Next
 	
 	StressTestNormalCassette = True
@@ -384,6 +344,10 @@ Function StressTestAllCassettes
 			Exit Function
 		EndIf
 	Next
+	
+	If isCloseToPoint(3) Or isCloseToPoint(4) Then
+		GTGoHome
+	EndIf
 Fend
 
 ''Find Port Centers

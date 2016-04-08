@@ -37,6 +37,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 		''The above condition checks whether the robot is in the region before P1 containing P0 
 		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
 		'' CX(RealPos) > 0 checks whether the robot is in first quadrant (near home and not near goni)
+		GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 		Jump P1
 	EndIf
 	
@@ -45,6 +46,9 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
+    
+    '' for testing only, should be put inside the below if statement
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
 	
 	''This following condition check allows GTJumpHomeToCoolingPointAndWait to start from P3 
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
@@ -52,9 +56,6 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	Else
 		Jump P3
 	EndIf
-	
-	'' for testing only, should be put inside the below if statement
-	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
 	
 	If g_LN2LevelHigh Then
 		Integer timeTakenToCoolTong
@@ -379,8 +380,8 @@ Function GTTwistOffCavityFromGonio
 	''Setup variables	
 	currTool = Tool()
 	currAngle = DegToRad(CU(RealPos))
-	dx = -10.0 * Cos(currAngle);
-	dy = -10.0 * Sin(currAngle);
+	Dx = -10.0 * Cos(currAngle);
+	Dy = -10.0 * Sin(currAngle);
 	''if near gonio
 	If isCloseToPoint(21) Then
 		'if near gonio (called during dismount routine after grabbing sample in cavity from gonio)
@@ -391,7 +392,7 @@ Function GTTwistOffCavityFromGonio
 			''do the move
 			Tool 3
 			Go (RealPos +U(45))
-			Move (RealPos +X(dx) +Y(dy))
+			Move (RealPos +X(Dx) +Y(Dy))
 			''restore tool
 			Tool currTool
 		EndIf
@@ -453,6 +454,7 @@ Function GTMoveGoniometerToDewarSide As Boolean
 	
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 	Move P18 CP
+	Jump P4
 
 	GTMoveGoniometerToDewarSide = True
 Fend

@@ -278,9 +278,6 @@ Function GTMountInterestedPort As Boolean
 		Exit Function
 	EndIf
 	
-	''Return Home
-	GTGoHome
-	
 	GTMountInterestedPort = True
 Fend
 

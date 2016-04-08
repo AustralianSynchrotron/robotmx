@@ -1,0 +1,51 @@
+=======================================================
+Cassette calibration at 2016/03/15 15:18:37
+left cassettecalibration
+Old position ( 17.5933,  469.44,  -287.435,  4.10142)
+Old Bottom ( 17.6357,  469.727,  -268.438)
+old Top ( 17.5516,  469.032,  -163.438)
+Center (Z= -268.435) XY position ( 17.6393,  469.737)
+Center (Z= -163.434) XY position ( 17.5498,  469.03)
+distance between center of top row and bottomt row:  0.712955
+Center (Z= -222.434) XY position ( 17.591,  469.44)
+picker touched at ( 17.5913,  498.441,  -147.479)
+picker touched at ( -11.4085,  469.44,  -156.246)
+picker touched at ( 17.5916,  440.44,  -156.482)
+picker touched at ( 46.5928,  469.441,  -147.694)
+Z touched at  -147.479,  -156.246,  -156.482,  -147.694
+calibration cassette
+average= -147.725
+BottomZ =  -287.445
+Touched edge at ( 32.577,  446.48)
+Touched edge at ( 2.56914,  444.333)
+Touched edge at ( -5.31748,  454.439)
+Touched edge at ( -7.48165,  484.439)
+angle from horizontal edge = 4.09225
+angle from vertical edge = 4.12445
+final Angle = 4.10835
+new position ( 17.591,  469.44,  -287.445,  4.10835)
+right cassettecalibration
+Old position ( 26.7544,  338.441,  -287.478,  4.19013)
+Old Bottom ( 26.7686,  338.546,  -269.05)
+old Top ( 26.6947,  338.216,  -164.05)
+Center (Z= -268.478) XY position ( 26.7617,  338.545)
+Center (Z= -163.478) XY position ( 26.6964,  338.234)
+distance between center of top row and bottomt row:  0.318352
+Center (Z= -222.478) XY position ( 26.739,  338.438)
+picker touched at ( 26.739,  309.439,  -148.62)
+picker touched at ( 55.7398,  338.439,  -157)
+picker touched at ( 26.74,  367.438,  -156.896)
+picker touched at ( -2.26084,  338.438,  -147.224)
+Z touched at  -148.62,  -157.001,  -156.895,  -147.224
+calibration cassette
+average= -148.185
+BottomZ =  -287.905
+Touched edge at ( 11.7309,  360.931)
+Touched edge at ( 41.7365,  363.063)
+Touched edge at ( 49.647,  353.437)
+Touched edge at ( 51.9044,  323.431)
+angle from horizontal edge = 4.06403
+angle from vertical edge = 4.30257
+final Angle = 4.1833
+new position ( 26.739,  338.438,  -287.905,  4.1833)
+Cassette calibration finished OK at 2016/03/15 15:32:28

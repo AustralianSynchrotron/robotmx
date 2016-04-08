@@ -3385,17 +3385,165 @@ error GTsetMountPort: The port is not occupied or is invatolid!
 > motor On
 > power Low
 > tool 0
+> 
+> 
 > speed 5
 > jump p6
 > move p3
 > jump p1
+> 
+> 
 > jump p0
+> 
+> 
 > motor On
 > power Low
 > print power
  0
 > power Low
+> 
 > print power
  0
+> 
+ 0
+> 
+ 0
+> 
+ 0
 > jump p0
+> 
+> 
+> motor On
+> tool 0
+> jump p6
+> motor On
+> move p3
+> jump p1
+> jump p0
+> g_RunArgs$ = "1 0"
+> print p6
+ X:  107.253 Y:  411.497 Z: -209.270 U:   93.439 V:    0.000 W:    0.000 /R /0
+> print p16
+ X:  121.390 Y:  436.588 Z: -209.563 U:  -86.533 V:    0.000 W:    0.000 /R /0
+> print p26
+ X:  125.476 Y:  382.924 Z: -209.845 U:   93.455 V:    0.000 W:    0.000 /R /0
+> print p6
+ X:  107.236 Y:  411.515 Z: -209.278 U:   93.412 V:    0.000 W:    0.000 /R /0
+> print p16
+ X:  121.380 Y:  436.610 Z: -209.571 U:  -86.556 V:    0.000 W:    0.000 /R /0
+> g_RunArgs$ = "r 0"
+> print p34
+ X:   19.340 Y:  469.474 Z: -292.063 U:    3.821 V:    0.000 W:    0.000 /R /0
+> print p36
+ X:   28.006 Y:  338.085 Z: -292.768 U:    3.949 V:    0.000 W:    0.000 /R /0
+> print p36
+ X:   27.998 Y:  338.084 Z: -292.767 U:    3.947 V:    0.000 W:    0.000 /R /0
+> print p43
+ X:   27.993 Y:  338.237 Z: -273.768 U:    0.000 V:    0.000 W:    0.000 /R /0
+> tool 0
+> jump p3
+> jump p6
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> power High
+> print power
+ 0
+> power High
+> print power
+ 1
+> jump p0
+> jump p0
+> power Low
+> jump p0
+> power High
+> jump p0
+> power High
+> jump p0
+> jump p0
+> power High
+> print power
+ 1
+> power Low
+> power High
+!!Error: 2300, Robot in use. Cannot execute the motion command when other task is using the robot.
+> power High
+> tool 0
+> jump p0
+> motor On
+> tool 0
+> jump p3
+> jump p1
+> jump p0
+> jump p0
+> print power
+ 0
+> power High
+> print power
+ 0
+> power High
+> print power
+ 1
+> print power
+ 1
+> jump p1
+> jump p0
+> print power
+ 1
+> power High
+> jump p0
+> jump p0
+> print power
+ 0
+> power High
+> power High
+> motor On
+> Jump p0
+> power High
+> motor On
+> power High
+> print power
+ 1
+> power high
+> print power
+ 1
+> jump p0
+> power hihg
+!!Error: 3100, Syntax error.
+> power High
+> jump p0
+> print power
+ 1
+> move p18
+> jump p1
+> jump p0
+> power High
+> print power
+ 0
+> print power
+ 0
+> power High
+> jump p1
+> jump p0
+> power High
+> motor On
+> tool 0
+> speed 5
+> jump p4
+> move p6
+> move p3
+> jump p1
+> jump p0
+> print power
+ 0
+> power High
+> power High
+> jump p0
+> move p18
+> jump p1
+> jump p0
+> power High
 > 

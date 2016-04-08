@@ -1,0 +1,27 @@
+=======================================================
+Cassette calibration at 2016/03/18 11:52:12
+left cassettecalibration
+Old position ( 8.18173,  471.052,  -296.132,  5.12243)
+Old Bottom ( 8.2452,  471.38,  -277.122)
+old Top ( 8.1801,  470.63,  -172.122)
+Center (Z= -277.132) XY position ( 8.19495,  471.36)
+Center (Z= -172.132) XY position ( 8.13896,  470.613)
+distance between center of top row and bottomt row:  0.749318
+Center (Z= -231.132) XY position ( 8.13966,  471.031)
+picker touched at ( 8.14139,  500.031,  -156.274)
+picker touched at ( -20.8599,  471.031,  -165.066)
+picker touched at ( 8.14102,  442.031,  -165.297)
+picker touched at ( 37.1404,  471.031,  -156.48)
+Z touched at  -156.274,  -165.066,  -165.297,  -156.48
+calibration cassette
+average= -156.529
+BottomZ =  -296.249
+Touched edge at ( 23.1173,  448.663)
+Touched edge at ( -6.87287,  445.945)
+Touched edge at ( -14.6354,  456.028)
+Touched edge at ( -17.2916,  486.028)
+angle from horizontal edge = 5.17743
+angle from vertical edge = 5.05964
+final Angle = 5.11853
+new position ( 8.13966,  471.031,  -296.249,  5.11853)
+Cassette calibration finished OK at 2016/03/18 11:59:17

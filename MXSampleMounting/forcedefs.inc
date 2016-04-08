@@ -36,7 +36,7 @@
 ''Lower is more sensitive, higher is less sensitive
 #define HIGH_SENSITIVITY 0.012
 #define MEDIUM_SENSITIVITY 0.02
-#define LOW_SENSITIVITY 0.03
+#define LOW_SENSITIVITY 0.06
 ''TIMEOUT for LN2 boil detection
 #define SENSE_TIMEOUT 120
 

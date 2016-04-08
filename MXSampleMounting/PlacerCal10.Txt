@@ -1,0 +1,10 @@
+placer calibration at 2016/03/08 16:17:17
+touched magnet head at ( 114.402,  380.078)
+cavity touched holder arm at ( 111.199,  388.07)
+touch magnet head at Z= -183.328
+Failed for accurate post angle: touching picker head
+SUCCESS: Placer position ( 123.212,  383.063,  -195.058,  97.1744)
+placer calibration end at 2016/03/08 16:18:29
+P26 moved from ( 123.928,  383.07,  -205.211,  97.1057) to ( 123.212,  383.063,  -195.058,  97.1743) 
+post   level error:  4.72572mm
+Warning: post level error exceeded threshold ( 0.5mm)
