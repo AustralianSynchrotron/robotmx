@@ -286,7 +286,7 @@ Function GTReturnMagnet As Boolean
 	GTReturnMagnet = True
 Fend
 
-Function GTGoHome As Boolean
+Function GTGoHome
 	LimZ 0
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
@@ -380,8 +380,8 @@ Function GTTwistOffCavityFromGonio
 	''Setup variables	
 	currTool = Tool()
 	currAngle = DegToRad(CU(RealPos))
-	Dx = -10.0 * Cos(currAngle);
-	Dy = -10.0 * Sin(currAngle);
+	dx = -10.0 * Cos(currAngle);
+	dy = -10.0 * Sin(currAngle);
 	''if near gonio
 	If isCloseToPoint(21) Then
 		'if near gonio (called during dismount routine after grabbing sample in cavity from gonio)
@@ -392,7 +392,7 @@ Function GTTwistOffCavityFromGonio
 			''do the move
 			Tool 3
 			Go (RealPos +U(45))
-			Move (RealPos +X(Dx) +Y(Dy))
+			Move (RealPos +X(dx) +Y(dy))
 			''restore tool
 			Tool currTool
 		EndIf

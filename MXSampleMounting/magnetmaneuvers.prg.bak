@@ -37,6 +37,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 		''The above condition checks whether the robot is in the region before P1 containing P0 
 		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
 		'' CX(RealPos) > 0 checks whether the robot is in first quadrant (near home and not near goni)
+		GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
 		Jump P1
 	EndIf
 	
@@ -45,6 +46,9 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Exit Function
     EndIf
+    
+    '' for testing only, should be put inside the below if statement
+	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
 	
 	''This following condition check allows GTJumpHomeToCoolingPointAndWait to start from P3 
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
@@ -52,9 +56,6 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	Else
 		Jump P3
 	EndIf
-	
-	'' for testing only, should be put inside the below if statement
-	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
 	
 	If g_LN2LevelHigh Then
 		Integer timeTakenToCoolTong
@@ -285,7 +286,7 @@ Function GTReturnMagnet As Boolean
 	GTReturnMagnet = True
 Fend
 
-Function GTGoHome As Boolean
+Function GTGoHome
 	LimZ 0
 	Tool 0
 	GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
@@ -367,7 +368,7 @@ Function GTTwistOffMagnet
 	Move RealPos +X(twistMagnetRadiusSafeDistanceX) +Y(twistMagnetRadiusSafeDistanceY)
 	
 	''Perform the twistoff, (If the following XY move is not added, then the back of the magnet head's backedge hits the port edge)
-	Move RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates)
+	Go RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates)
 	
 	''Restore previous power setting	
 	Power prevPowerMode

@@ -3546,4 +3546,94 @@ error GTsetMountPort: The port is not occupied or is invatolid!
 > jump p1
 > jump p0
 > power High
+> power Low
+> print power
+ 1
+> 
+ 0
+> 
+ 0
+> 
+ 0
+> print g_interestedsamplestatus
+ 5
+> 
+ 5
+> g_interestedsamplestatus = 0
+> print g_sp_portstatus(2,3,15)
+ -1
+> 
+ 1
+> print g_runargs$
+r a 1
+> 
+r a 1
+> 
+0 0 0 0 0
+> g_runargs$ = "r a 1"
+> motor On
+> 
+> tool
+	   2
+> too
+> reset error
+> 
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> 
+> motor On
+> 
+> print p6
+ X:  106.844 Y:  411.552 Z: -209.842 U:   93.461 V:    0.000 W:    0.000 /R /0
+> print here
+ X:  106.844 Y:  411.552 Z: -179.842 U:   93.461 V:    0.000 W:    0.000 /R /0
+> print p3
+ X:   86.844 Y:  411.552 Z: -209.842 U:   93.461 V:    0.000 W:    0.000 /R /0
+> print p4
+ X:  106.844 Y:  411.552 Z: -179.842 U:   93.461 V:    0.000 W:    0.000 /R /0
+> jump p1
+> jump p0
+> reset error
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> motor On
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> power Low
+> 
+> 
+> 
+> 
+> 
+> 
+> print g_Jump_LimZ_LN2
+ -5
+> 
+> 
+> jump p1
+> 
+> print g_runargs$
+l c 1
+> 
+r a 1
+> g_runargs$="r b 1"
+> 
+> 
+> 
 > 

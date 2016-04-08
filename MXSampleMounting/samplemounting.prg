@@ -491,6 +491,35 @@ Function GTDismountToInterestedPort As Boolean
 	GTDismountToInterestedPort = True
 Fend
 
+Function GTDismountWithoutParsingRunArgs As Boolean
+	''Dismount Sample From Gonio without parsing g_RunArgs$
+	'' i.e. directly using the control variable ex. g_InterestedCassettePosition without setting them
+	''This function doesn't take the robot home at the end. Call GTReturnMagnetAndGoHome after this function to go home.
+    
+   	GTDismountWithoutParsingRunArgs = False
+    	
+	'' Here we check whether the port is empty and only then it sets the interested ports
+	If Not GTsetDismountPort(g_InterestedCassettePosition, g_InterestedPuckColumnIndex, g_InterestedRowPuckPortIndex) Then
+		Exit Function
+	EndIf
+
+	If Not GTJumpHomeToCoolingPointAndWait Then
+		Exit Function
+	EndIf
+		
+	If Not GTCheckMagnetForDismount Then
+		UpdateClient(TASK_MSG, "Error in GTDismountWithoutParsingRunArgs->GTCheckMagnetForDismount: Check log for further details", ERROR_LEVEL)
+		Exit Function
+	EndIf
+
+	If Not GTDismountToInterestedPort Then
+		UpdateClient(TASK_MSG, "Error in GTDismountWithoutParsingRunArgs->GTDismountToInterestedPort: Check log for further details", ERROR_LEVEL)
+		Exit Function
+	EndIf
+
+   	GTDismountWithoutParsingRunArgs = True
+Fend
+
 ''*** Manually TroubleShooting Mounting/Dismounting errors ***
 
 ''This function puts the sample on placer (in cradle) back into interested port (Used when there are errors in mounting)
