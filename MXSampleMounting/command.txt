@@ -3963,9 +3963,28 @@ Low Power Mode
 > print power
  0
 > power High
+> 
 > jump p0
 > jump p0
 > power High
 > print p*
  X:   39.845 Y:  523.614 Z: -174.713 U:  250.188 V:    0.000 W:    0.000 /L /0
-> 
+> reset
+> power on
+> power High
+> motor On
+> toolset 0
+!!Error: 3100, Syntax error.
+> tool 0
+> Jump P1
+> Jimp P0
+!!Error: 3100, Syntax error.
+> Jump P0
+> power High
+> reset
+> motor On
+> power High
+> print power
+ 0
+> print 
+

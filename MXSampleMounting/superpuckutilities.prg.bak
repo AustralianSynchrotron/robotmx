@@ -595,12 +595,11 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 			GTTwistOffMagnet
 		Else
-			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
-			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			''This condition is rare because ForceTouch usually stops when maxDistanceToScan is reached
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 			msg$ = "GTprobeSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-			Go P(standbyPoint)
+			GTTwistOffMagnet
 		EndIf
 	Else
 		''remove after debug - start
@@ -613,7 +612,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTprobeSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-		Go P(standbyPoint)
+		GTTwistOffMagnet
 	EndIf
 	
 	'' Client Update after probing decision has been made
@@ -628,13 +627,6 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	
 	msg$ = "{'set':'final_port_forces', 'position':'" + GTCassettePosition$(cassette_position) + "', 'start':" + Str$(GTgetPortIndexFromCassetteVars(cassette_position, puckIndex, portIndex)) + ", 'value':[" + Str$(g_SP_FinalPortForce(cassette_position, puckIndex, portIndex)) + ",]}"
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
-
-	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
-	Go P(standbyPoint) '' This is commented to reduce the time for probing
-	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
-
-	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
-	GTLoadPreviousRobotSpeedMode
 	
 	''Recheck port by probing again if PORT_ERROR (port jam) is detected
 	If (g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR) Then
@@ -645,8 +637,14 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 			GTPortJamRecheck(cassette_position, puckIndex, portIndex, False, portRecheckMoveDirection)
 			portRecheckMoveDirection = portRecheckMoveDirection + 1
 		Loop
-		Go P(standbyPoint)
 	EndIf
+	
+	'' The following code just realigns the dumbbell from twistoffmagnet position
+	Go P(standbyPoint)
+
+	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
+	GTLoadPreviousRobotSpeedMode
+	
 Fend
 
 Function GTProbeSpecificPortsInSuperPuck(cassette_position As Integer) As Boolean
@@ -929,6 +927,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 			UpdateClient(TASK_MSG, "GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!", WARNING_LEVEL)
 			GTPutSampleIntoSPPort = True ''The sample is lost, but still continue the dismount routine	
+			GTTwistOffMagnet
 		EndIf
 	Else
 		''There is no sample (or ForceTouch failure)
@@ -1252,10 +1251,8 @@ Function GTPortJamRecheck(cassette_position As Integer, puckIndex As Integer, po
 	SetProbeSpeed
 	If g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_ERROR Then
 		''Stay at the same position
-	ElseIf g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED Then
+	Else '' Port occupied or vacant do twist off - recheck will not happen again for this port
 		GTTwistOffMagnet
-	Else
-		Go P(standbyPoint)
 	EndIf
 	
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet

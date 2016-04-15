@@ -1,6 +1,6 @@
-ENVT0100,LM:2016/04/14 04:14:11:750,DS:0000005805,CS:31581,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="robotspeed.inc"
-bMdiMaximized=False
+ENVT0100,LM:2016/04/15 01:57:43:015,DS:0000005791,CS:19712,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="Run"
+bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
@@ -358,7 +358,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=172
 		nTop=2
@@ -368,7 +368,7 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=False
+	bOpened=True
 	Window {
 		nLeft=315
 		nTop=85

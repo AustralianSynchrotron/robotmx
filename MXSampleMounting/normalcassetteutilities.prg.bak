@@ -61,7 +61,6 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 		Go P(standbyPoint)
 		If (rowIndex = NUM_ROWS - 1 And g_CassetteType(cassette_position) = CALIBRATION_CASSETTE) Then
 			Wait .2
-			UpdateClient(TASK_MSG, "Calibration cassette row 8, so pause a moment", INFO_LEVEL)
 		EndIf
 	EndIf
 	
@@ -410,13 +409,18 @@ Function GTPutSampleIntoCASPort(cassette_position As Integer, rowIndex As Intege
 			GTPutSampleIntoCASPort = True
 			GTTwistOffMagnet
 		Else
-			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
-			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			'' LABEL: FORCE_TOUCH_BEYOND_EXPECTED_PIN_LOCATION
+			'' WARNING: This code should be the same as NO_FORCE_TOUCH_IN_PROBE
+			'' This condition is rare because ForceTouch should stop when maxDistanceToScan is reached
 			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
-			UpdateClient(TASK_MSG, "GTPutSampleIntoCASPort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!", ERROR_LEVEL)
+			g_RunResult$ = "error GTPutSampleIntoCASPort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			GTPutSampleIntoCASPort = True ''You have just lost a sample, just continue dismounting routine
+			GTTwistOffMagnet
 		EndIf
 	Else
+		'' LABEL: NO_FORCE_TOUCH_IN_PROBE
+		'' WARNING: This code should be the same as FORCE_TOUCH_BEYOND_EXPECTED_PIN_LOCATION
 		'' There is no sample (or ForceTouch failure)
 		g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_CAS
