@@ -130,7 +130,7 @@ Function GTIsMagnetInGripper As Boolean
 	
 	GTLoadPreviousRobotSpeedMode
 	
-	Move P(standbyPoint)
+	Go P(standbyPoint)
 	
 	Move P3 ''because this function is called in several places, I didnot like it to end at standbyPoint
 	
@@ -320,7 +320,7 @@ Fend
 
 Function GTTwistOffMagnet
 	Real currentUAngle
-	Integer prevPowerMode
+	
 	currentUAngle = CU(RealPos)
 	
 	Integer currentTool
@@ -358,20 +358,13 @@ Function GTTwistOffMagnet
 			Exit Function
 	Send
 	
-	''Twist off must be in high power mode	
-	''Save current power setting
-	prevPowerMode = Power
-	''Change to high power
-	Power High
-	
 	''Move safe distance before twistoff so that there is no overpress of sample due to magnet radius
 	Move RealPos +X(twistMagnetRadiusSafeDistanceX) +Y(twistMagnetRadiusSafeDistanceY)
 	
 	''Perform the twistoff, (If the following XY move is not added, then the back of the magnet head's backedge hits the port edge)
-	Move RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates)
+	Move RealPos +X(twistMagnetHeadSafeDistanceX) +Y(twistMagnetHeadSafeDistanceY) +U(twistAngleInGlobalCoordinates) ROT
 	
-	''Restore previous power setting	
-	Power prevPowerMode
+	Exit Function
 Fend
 ''twist cavity off gonio to break magnetic field
 Function GTTwistOffCavityFromGonio

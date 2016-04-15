@@ -1,0 +1,13 @@
+=======================================================
+toolset calibration at 2016/04/14 09:15:30
+center to hold:  -2.92729
+a= 15.8413, b= 14.8727, c= 20.7273, theta= 1.08627
+Old toolset A: 15.4777, B: 14.2568, C: 21.3432, Theta: 1.07951
+cavity twist off toolset: ( 11.2595,  -4.89350,  1.08627)
+cavity twist off toolset for left hand: ( 10.9918,  9.223960,  1.08627)
+Toolset picker: ( 15.1704,  -15.5565,  0,  1.08627)
+picker twist off toolset: ( 13.2602,  -20.3136,  0,  1.08627)
+old picker: ( 14.5459,  -15.2064,  0,  1.07951)
+placer twist off toolset: ( -18.3341,  -20.9126,  0.155121,  181.086)
+Toolset placer: ( -20.4233,  -16.2314,  0.155121,  181.086)
+old placer: ( -21.0478,  -15.8771,  0.155121,  181.079)

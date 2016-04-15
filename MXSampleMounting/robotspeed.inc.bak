@@ -4,9 +4,9 @@
 #define SUPERSLOW_GO_DEACCEL 5
 #define SUPERSLOW_GO_SPEED 1
 '' Move speed settings for Probing Recheck
-#define SUPERSLOW_MOVE_ACCEL 600
-#define SUPERSLOW_MOVE_DEACCEL 600
-#define SUPERSLOW_MOVE_SPEED 4
+#define SUPERSLOW_MOVE_ACCEL 25
+#define SUPERSLOW_MOVE_DEACCEL 25
+#define SUPERSLOW_MOVE_SPEED 10
 
 '' Go speed settings for Probing (Same as very slow speed)
 #define PROBE_GO_ACCEL 24
@@ -22,8 +22,8 @@
 #define INSIDE_LN2_GO_DEACCEL 30
 #define INSIDE_LN2_GO_SPEED 90
 '' Move speed settings for INSIDE_LN2
-#define INSIDE_LN2_MOVE_ACCEL 150
-#define INSIDE_LN2_MOVE_DEACCEL 150
+#define INSIDE_LN2_MOVE_ACCEL 100
+#define INSIDE_LN2_MOVE_DEACCEL 100
 #define INSIDE_LN2_MOVE_SPEED 200
 
 '' Go speed settings for OUTSIDE_LN2

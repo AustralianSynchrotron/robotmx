@@ -1198,89 +1198,82 @@ Function MoveTongOut
 Fend
 
 Function GenericMove(ByRef position() As Real, tillForce As Boolean)
-	''Setup error handler
-	OnErr GoTo errHandler
+	Double diffx, diffy, diffz, diffu
+	Boolean useMove
 	
-	''Try move command first default
-    If tillForce Then
-    	''Wake force measure loop for move till force command
-    	ForceMeasureLoopWake
-    	''Do the move
-  		Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4)) Till g_FSForceTriggerStatus <> 0
-    	''Done, put force measure loop back to sleep
-    	ForceMeasureLoopSleep
-    Else
-      	Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4))
-    EndIf
-    ''Move command successful
-    Exit Function
-    
-    ''Move command failed, so use go command instead
-GoInstead:
-    If tillForce Then
-        ''Wake force measure loop for move till force command
-    	ForceMeasureLoopWake
-    	''Do the move
-    	Go RealPos :U(position(4)) Till g_FSForceTriggerStatus <> 0
-    	''Done, put force measure loop back to sleep
-    	ForceMeasureLoopSleep
-    Else
-        Go RealPos :U(position(4))
-    EndIf
-    ''Go command successful
-    Exit Function
-    
-errHandler:
-    ''Only the tool orientation was attempted to be changed by the CP statement error
-    If Err = 4035 Or Err = 4242 Then
-    	''Put force measure loop to sleep
-	    ForceMeasureLoopSleep
-        ''Move failed, use go instead
-    	EResume GoInstead
-    EndIf
-Fend
+	useMove = False
+	
+	''calculate move size
+    diffx = Abs(CX(RealPos) - position(1))
+    diffy = Abs(CY(RealPos) - position(2))
+	diffz = Abs(CZ(RealPos) - position(3))
+	diffu = Abs(CU(RealPos) - position(4))
 
+	If (diffu > (2 * diffx) And diffu > (2 * diffy) And diffu > (2 * diffz)) Then
+		useMove = False
+	Else
+		useMove = True
+	EndIf
+
+	If ((diffx > 0.001 Or diffy > 0.001 Or diffz > 0.001) And useMove) Then
+		''Use move command
+   		If tillForce Then
+    		''Wake force measure loop for move till force command
+	    	ForceMeasureLoopWake
+    		''Do the move
+  			Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4)) Till g_FSForceTriggerStatus <> 0
+    		''Done, put force measure loop back to sleep
+    		ForceMeasureLoopSleep
+    	Else
+      		Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4))
+    	EndIf
+	Else
+		''use go command
+		If tillForce Then
+        	''Wake force measure loop for move till force command
+	    	ForceMeasureLoopWake
+    		''Do the move
+    		Go RealPos :U(position(4)) Till g_FSForceTriggerStatus <> 0
+	    	''Done, put force measure loop back to sleep
+    		ForceMeasureLoopSleep
+	    Else
+    	    Go RealPos :U(position(4))
+	    EndIf
+	EndIf
+Fend
 Function StepMove(ByRef stepSize() As Real, tillForce As Boolean)
-	''Setup error handler
-	OnErr GoTo errHandler
-		
-	''Try move command first default
-    If tillForce Then
-        ''Wake force measure loop for move till force command
-    	ForceMeasureLoopWake
-    	''Do the move
-		Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4)) Till g_FSForceTriggerStatus <> 0
-    	''Done, put force measure loop back to sleep
-    	ForceMeasureLoopSleep
-    Else
-        Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4))
-    EndIf
-    ''Move command successful
-    Exit Function
-    
-    ''Move command failed, so use go command instead
-GoInstead:
-    If tillForce Then
-        ''Wake force measure loop for move till force command
-    	ForceMeasureLoopWake
-    	''Do the move
-    	Go RealPos +U(stepSize(4)) Till g_FSForceTriggerStatus <> 0
-    	''Done, put force measure loop back to sleep
-    	ForceMeasureLoopSleep
-    Else
-    	Go RealPos +U(stepSize(4))
-    EndIf
-    ''Go command successful
-    Exit Function
-    
-errHandler:
-    ''Only the tool orientation was attempted to be changed by the CP statement error
-    If Err = 4035 Or Err = 4242 Then
-        ''Put force measure loop to sleep
-	    ForceMeasureLoopSleep
-        ''Move failed, use go instead
-    	EResume GoInstead
-    EndIf
+	Boolean useMove
+				
+	If (Abs(stepSize(4) > Abs(2 * stepSize(1))) And Abs(stepSize(4) > Abs(2 * stepSize(2))) And Abs(stepSize(4) > Abs(2 * stepSize(3)))) Then
+		useMove = False
+	Else
+		useMove = True
+	EndIf
+	
+	If ((Abs(stepSize(1)) > 0.001 Or Abs(stepSize(2)) > 0.001 Or Abs(stepSize(3)) > 0.001) And useMove) Then
+		''Use move command
+	    If tillForce Then
+     	   ''Wake force measure loop for move till force command
+    		ForceMeasureLoopWake
+	    	''Do the move
+			Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4)) Till g_FSForceTriggerStatus <> 0
+    		''Done, put force measure loop back to sleep
+    		ForceMeasureLoopSleep
+	    Else
+    	    Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4))
+	    EndIf
+	Else
+	    If tillForce Then
+    	    ''Wake force measure loop for move till force command
+    		ForceMeasureLoopWake
+	    	''Do the move
+    		Go RealPos +U(stepSize(4)) Till g_FSForceTriggerStatus <> 0
+    		''Done, put force measure loop back to sleep
+	    	ForceMeasureLoopSleep
+	    Else
+    		Go RealPos +U(stepSize(4))
+	    EndIf
+	EndIf
 Fend
 
 Function GetCurrentPosition(ByRef position() As Real)

@@ -1933,6 +1933,8 @@ Fend
 Function FindMagnet As Boolean
 	String msg$
 	
+	Cls
+	
 	''are the global variables setup for Australian Synchrotron
 	''Did the force sensor initialize ok 
 	If Not CheckEnvironment Then

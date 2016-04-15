@@ -3636,4 +3636,336 @@ r a 1
 > 
 > 
 > 
+> move p3
+> jump p1
+> jump p0
+> tool 0
+> motor On
+!!Error: 4241, Overspeed duringlow power mode was detected., Robot 1, Joint 4
+> reset error
+> motor On
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> reset error
+> motor on
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p0
+> 
+> print OnErr
+!!Error: 3806, Specified function cannot be executed from the Command window.
+> print AtHome
+ 0
+> print OnErr
+!!Error: 3806, Specified function cannot be executed from the Command window.
+> reset
+> print OnErr
+!!Error: 3806, Specified function cannot be executed from the Command window.
+> Print g_dumbbellstatus
+ 0
+> 
+ 2
+> g_dumbbellstatus=0
+> tlset
+	Tool 1:      15.469,   -15.428,     0.000,     0.913
+	Tool 2:     -20.126,   -15.995,     0.186,   180.913
+	Tool 3:      -2.332,   -15.693,     0.124,     0.915
+	Tool 4:     -20.224,   -16.207,     0.193,   180.863
+	Tool 5:     -24.224,   -10.739,     0.124,   179.264
+> print toolset
+!!Error: 2513, Specified point label is not defined.
+> toolset
+!!Error: 3100, Syntax error.
+> tool
+	   0
+> 
+	   0
+> Print Power
+ 0
+> 
+ 0
+> 
+ 0
+> 
+ 0
+> Jump P1
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> reset
+> 
+> motor On
+> 
+> tool 0
+> 
+	   2
+> tool
+	   0
+> GTReturnMagnet
+!!Error: 2305, Cannot execute a Call statement from the command window.
+> Print g_PortsRequestString$(2)
+> 
+> 
+> 
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 3207, Formula is missing.
+> g_RunArgs$= "1 0"
+> jump p1
+> jump p0
+> move p3
+> print tool
+ 0
+> tool 0
+> speed 5
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> move p3
+> jump p1
+> jump p0
+> g_RunArgs$="m 0"
+> move p18
+> move p1
+> move p0
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> motor On
+!!Error: 5041, Motor torque output failure in low power state. Check the power cable connection, robot, brake, driver, or motor., Robot 1, Joint 3
+> reset error
+> motor On
+> jump p1
+> jump p0
+> power High
+> move p18
+> reset 
+> move p20 + Y(60)
+> Speeds
+Low Power Mode
+	   50.000
+	   50.000	   50.000
+> power High
+> move p18
+> speeds
+	   50.000
+	   50.000	   50.000
+> speeds 1000
+> speeds
+	 1000.000
+	 1000.000	 1000.000
+> move p20 + Y(60)
+> speeds
+	 1000.000
+	 1000.000	 1000.000
+> move p18
+> speeds
+Low Power Mode
+	   10.000
+	   10.000	   10.000
+> power High
+> speeds 1000
+> speeds 100
+> move p20 + Y(60)
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> motor On
+> power High
+> move p20 + Y(60)
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> reset error
+> move p20 + Y(60)
+> speeds
+Low Power Mode
+	   10.000
+	   10.000	   10.000
+> power High
+> speeds 100
+> motor On
+> move p18
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> reset error
+> move p18
+> speeds 2000
+> move p20 +Y(100)
+> Speeds
+Low Power Mode
+	 2000.000
+	 2000.000	 2000.000
+> print power
+ 0
+> power High
+> print power
+ 1
+> move p18
+> speeds
+	 2000.000
+	 2000.000	 2000.000
+> move p20 + Y(100)
+> accels
+	  200.000	  200.000
+	  200.000	  200.000
+	  200.000	  200.000
+> accels 2000
+> move p18
+> speeds 5
+> speed 5
+> jump p1
+> jump p0
+> jump p18
+> jump p1
+> jump p0
+> g_InterestedSampleStatus = 0
+> reset error
+> tool 0
+> Speed 1
+> Jump p6
+> move p3
+> jump p1
+> jump p0
+> power High
+> > 
+> tool 0
+> speed 1 
+> jump p1
+> jump p0
+> print power
+ 0
+> power High
+!!Error: 2300, Robot in use. Cannot execute the motion command when other task is using the robot.
+> tool
+	   2
+> tool 0
+> jump p4
+> power High
+> print power
+ 1
+> print Accels
+!!Error: 3101, Parameter count error.
+> Accels
+	  150.000	  150.000
+	  150.000	  150.000
+	  150.000	  150.000
+> tool 0
+> speed 1
+> power Low
+> jump p6
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> reset error
+> motor On
+> power Low
+> speed 1
+> tool 0
+> jump p6
+> move p4
+> move p6
+> move p3
+> jump p1
+> jump p0
+
+!!Error: 3207, Formula is missing.
+> g_RunArgs$= "1 0"
+> motor On
+> jump p0
+!!Error: 4005, Current point position is above the specified LimZ value.
+> move here - Z(20)
+> jump p0
+> jump p0
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> jump p0
+> motor On
+> jump p0
+> g_RunArgs$ = "lmr 0"
+> g_RunArgs$ = "0 0 0 0 0"
+> print g_InterestedSampleStatus
+ 0
+> power High
+> g_DumbbellStatus = 0
+> power High
+> tool 0
+> reset error
+> motor On
+> jump p1
+> tool 0
+> motor On
+> jump p0
+> motor On
+> jump p0
+> g_RunArgs$ = "1 0"
+> move here - Y(10)
+> tool 0
+> jump p4
+> speed 5
+> jump p1
+> jump p0
+> print p6
+ X:  107.717 Y:  412.476 Z: -209.298 U:   93.287 V:    0.000 W:    0.000 /R /0
+> print p16
+ X:  121.601 Y:  435.861 Z: -209.733 U:  -86.680 V:    0.000 W:    0.000 /R /0
+> print p26
+ X:  125.492 Y:  383.656 Z: -210.041 U:   93.310 V:    0.000 W:    0.000 /R /0
+> g_RunArgs$= "lmr 0"
+> print p6
+ X:  107.737 Y:  412.458 Z: -209.318 U:   93.281 V:    0.000 W:    0.000 /R /0
+> power High
+> print power
+ 1
+> print power
+ 0
+>motor On
+> 
+> reset
+> reset error
+> power Low
+> 
+> Print Here
+ X:   46.075 Y:  520.305 Z: -204.867 U:  241.247 V:    0.000 W:    0.000 /R /0
+> accels
+Low Power Mode
+	  150.000	  150.000
+	  150.000	  150.000
+	  150.000	  150.000
+> motor On
+> print power
+ 0
+> jump p0
+> power High
+> print power
+ 1
+> print power
+ 0
+> power High
+> print power
+ 1
+> reset error
+> motor On
+> print power
+ 0
+> power High
+> tool 0
+> print here
+ X:   29.998 Y:  549.177 Z: -204.985 U:   67.874 V:    0.000 W:    0.000 /L /0
+> 
+ 1
+> print power
+ 0
+> print power
+ 0
+> jump p0
+> power High
+> print power
+ 1
+> print power
+ 0
+> power High
+> jump p0
+> jump p0
+> power High
+> print p*
+ X:   39.845 Y:  523.614 Z: -174.713 U:  250.188 V:    0.000 W:    0.000 /L /0
 > 

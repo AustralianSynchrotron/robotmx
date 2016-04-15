@@ -1,6 +1,6 @@
-ENVT0100,LM:2016/04/08 08:44:41:312,DS:0000005790,CS:24359,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
-bMdiMaximized=True
+ENVT0100,LM:2016/04/14 04:14:11:750,DS:0000005805,CS:31581,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="robotspeed.inc"
+bMdiMaximized=False
 nProgramFileCount=22
 ProgramFile1 {
 	sName="magnet.prg"
@@ -59,7 +59,7 @@ ProgramFile5 {
 }
 ProgramFile6 {
 	sName="force.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -172,8 +172,8 @@ ProgramFile16 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=0
+		nLeft=185
+		nTop=76
 		nWidth=804
 		nHeight=570
 	}
@@ -196,8 +196,8 @@ ProgramFile18 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=452
-		nHeight=260
+		nWidth=791
+		nHeight=645
 	}
 }
 ProgramFile19 {
@@ -218,8 +218,8 @@ ProgramFile20 {
 	Window {
 		nLeft=0
 		nTop=0
-		nWidth=743
-		nHeight=260
+		nWidth=875
+		nHeight=343
 	}
 }
 ProgramFile21 {
@@ -238,8 +238,8 @@ ProgramFile22 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=309
-		nTop=-11
+		nLeft=293
+		nTop=-2
 		nWidth=628
 		nHeight=619
 	}
@@ -258,7 +258,7 @@ IncludeFile1 {
 }
 IncludeFile2 {
 	sName="networkdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -302,7 +302,7 @@ IncludeFile5 {
 }
 IncludeFile6 {
 	sName="superpuckdefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -335,7 +335,7 @@ IncludeFile8 {
 }
 IncludeFile9 {
 	sName="robotspeed.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -358,7 +358,7 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
 		nLeft=172
 		nTop=2
@@ -368,10 +368,10 @@ CmdWindow {
 	nWinState=0
 }
 RunWindow {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=71
-		nTop=88
+		nLeft=315
+		nTop=85
 		nWidth=717
 		nHeight=401
 	}
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=266
-		nTop=159
+		nLeft=824
+		nTop=365
 		nWidth=470
 		nHeight=342
 	}

@@ -282,7 +282,7 @@ Function StressTestSuperPuck(cassette_position As Integer, puckIndex As Integer,
 		g_RunArgs$ = g_RunArgs$ + Str$(puckPortIndex + 1)
 		
 		MountSamplePort
-		DismountSample
+		''DismountSample
 	Next
 	
 	StressTestSuperPuck = True

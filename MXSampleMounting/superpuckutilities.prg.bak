@@ -148,7 +148,7 @@ Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer,
 	If jumpToStandbyPoint Then
 		Jump P(standbyPoint)
 	Else
-		Move P(standbyPoint)
+		Go P(standbyPoint)
 	EndIf
 	
 	Real scanDistance
@@ -165,7 +165,7 @@ Function GTSPpositioningMove(cassette_position As Integer, puckIndex As Integer,
 	EndIf
 	
 	GTLoadPreviousRobotSpeedMode
-	Move P(standbyPoint)
+	Go P(standbyPoint)
 	GTSPpositioningMove = True
 Fend
 
@@ -285,7 +285,7 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 	GTgetAdaptorAngleErrorProbePoint(cassette_position, puckIndex, perfectPoint, standbyPoint, destinationPoint)
 	
 	'' Set to Jump, if GTSPpositioningMove is not used
-	Move P(standbyPoint)
+	Go P(standbyPoint)
 	
 	Real scanDistance
 	scanDistance = PROBE_STANDBY_DISTANCE + PROBE_ADAPTOR_DISTANCE
@@ -317,7 +317,7 @@ Function GTprobeAdaptorAngleCorrection(cassette_position As Integer, puckIndex A
 	msg$ = "GTprobeAdaptorAngleCorrection: PUCK_" + GTpuckName$(puckIndex) + " error_from_perfectPoint_in_mm=" + Str$(error_from_perfectPoint_in_mm)
 	UpdateClient(TASK_MSG, msg$, ERROR_LEVEL)
 
-	Move P(standbyPoint)
+	Go P(standbyPoint)
 
 	If Not GTsetupAdaptorAngleCorrection(cassette_position, puckIndex, error_from_perfectPoint_in_mm) Then
 		UpdateClient(TASK_MSG, "GTprobeAdaptorAngleCorrection failed: error in GTsetupPuckAngleCorrection!", ERROR_LEVEL)
@@ -493,7 +493,7 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpT
 	If jumpToStandbyPoint Then
 		Jump P(standbyPoint)
 	Else
-		Move P(standbyPoint)
+		Go P(standbyPoint)
 	EndIf
 	
 	GTsetRobotSpeedMode(PROBE_SPEED)
@@ -529,13 +529,12 @@ Function GTprobeSPPuck(cassette_position As Integer, puckIndex As Integer, jumpT
 	msg$ = "{'set':'adaptor_puck_status', 'position':'" + GTCassettePosition$(cassette_position) + "', 'puck':'" + GTpuckName$(puckIndex) + "', 'value':'" + Str$(g_PuckStatus(cassette_position, puckIndex)) + "'}" ''GTPuckStatusString$
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
-	Move P(standbyPoint)
+	Go P(standbyPoint)
 	GTLoadPreviousRobotSpeedMode
 Fend
 
 Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portIndex As Integer, jumpToStandbyPoint As Boolean)
 	String msg$
-	Integer prevPowerMode
 	
 	Tool PLACER_TOOL
 	LimZ g_Jump_LimZ_LN2
@@ -560,14 +559,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		Jump P(standbyPoint)
 		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	Else
-		''Need high power for this move
-		''Save current power settings
-		prevPowerMode = Power
-		''Set high power
-		Power High
-		Move P(standbyPoint)
-		''Restore original power setting
-		Power prevPowerMode
+		Go P(standbyPoint)
 	EndIf
 		
 	GTsetRobotSpeedMode(PROBE_SPEED)
@@ -608,7 +600,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 			msg$ = "GTprobeSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-			Move P(standbyPoint)
+			Go P(standbyPoint)
 		EndIf
 	Else
 		''remove after debug - start
@@ -621,7 +613,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 		g_SPSampleDistanceError(cassette_position, puckIndex, portIndex) = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		msg$ = "GTprobeSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!"
 		UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
-		Move P(standbyPoint)
+		Go P(standbyPoint)
 	EndIf
 	
 	'' Client Update after probing decision has been made
@@ -638,7 +630,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 
 	'' The following code just realigns the dumbbell from twistoffmagnet position so not required if sample present in port
-	'' Move P(standbyPoint) '' This is commented to reduce the time for probing
+	Go P(standbyPoint) '' This is commented to reduce the time for probing
 	'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called
 
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
@@ -653,15 +645,7 @@ Function GTprobeSPPort(cassette_position As Integer, puckIndex As Integer, portI
 			GTPortJamRecheck(cassette_position, puckIndex, portIndex, False, portRecheckMoveDirection)
 			portRecheckMoveDirection = portRecheckMoveDirection + 1
 		Loop
-		
-		''Need high power for this move
-		''Save current power settings
-		prevPowerMode = Power
-		''Set high power
-		Power High
-		Move P(standbyPoint)
-		''Restore original power setting
-		Power prevPowerMode
+		Go P(standbyPoint)
 	EndIf
 Fend
 
@@ -674,7 +658,6 @@ Function GTProbeSpecificPortsInSuperPuck(cassette_position As Integer) As Boolea
 		Integer puckIndex, puckPortIndex
 		String PortProbeRequestChar$
 		Boolean probeThisPuck
-		Integer prevPowerMode
 		For puckIndex = 0 To NUM_PUCKS - 1
 			'' probeStringLengthToCheck is also the number of ports in this puck to check
 			probeStringLengthToCheck = Len(g_PortsRequestString$(cassette_position)) - puckIndex * NUM_PUCK_PORTS
@@ -714,14 +697,7 @@ Function GTProbeSpecificPortsInSuperPuck(cassette_position As Integer) As Boolea
 						EndIf
 					Next
 					'' we have to move to standbyPoint only for the last port probe to avoid hitting the cassette when jump is called					
-					''Need high power for this move
-					''Save current power settings
-					prevPowerMode = Power
-					''Set high power
-					Power High
-					Move P52 '' P52 is used as standbyPoint throughout GT domain
-					''Restore original power setting
-					Power prevPowerMode
+					Go P52 '' P52 is used as standbyPoint throughout GT domain
 				EndIf
 			EndIf
 		Next
@@ -876,7 +852,7 @@ Function GTPickerCheckSPPortStatus(cassette_position As Integer, puckIndex As In
 		UpdateClient(TASK_MSG, "GTPickerCheckSPPortStatus: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance!", WARNING_LEVEL)
 	EndIf
 		
-	Move P(standbyPoint)
+	Go P(standbyPoint)
 
 	'' The following routine needs to be called only after moving back to standbypoint
 	If portStatusBeforePickerCheck = PORT_OCCUPIED Then
@@ -904,7 +880,7 @@ Function GTMoveBackToSPStandbyPoint
 	puckPortStandbyPoint = 52 '' destination point
 	
 	'' GTsetSPMountStandbyPoints sets P(SPStandbyToPortStandbyArcPoint) and P(SPSecondaryArcPoint) to 0,0,0,0 if Arc is not required
-	If GTCheckPoint(SPStandbyToPortStandbyArcPoint) And GTCheckPoint(SPSecondaryArcPoint) Then
+	If GTCheckArcPoint(SPStandbyToPortStandbyArcPoint) And GTCheckArcPoint(SPSecondaryArcPoint) Then
 		Move P(SPSecondaryArcPoint) CP
 		Arc P(SPStandbyToPortStandbyArcPoint), P(SPStandbyPoint)
 	Else
@@ -960,6 +936,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
 		UpdateClient(TASK_MSG, "GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!", WARNING_LEVEL)
 		GTPutSampleIntoSPPort = True ''The sample is lost, but still continue the dismount routine
+		GTTwistOffMagnet
 	EndIf
 	
 	'' Client Update after probing decision has been made
@@ -969,15 +946,7 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 	UpdateClient(CLIENT_UPDATE, msg$, INFO_LEVEL)
 	
 	'' The Picker/Cavity side hits neighbouring cassettes if we don't move back to standbypoint (while moving/twisting back cassetteStandbyPoint)
-	''Need high power for this move
-	''Save current power settings
-	Integer prevPowerMode
-	prevPowerMode = Power
-	''Set high power
-	Power High
-	Move P(standbyPoint)
-	''Restore original power setting
-	Power prevPowerMode
+	Go P(standbyPoint)
 	
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
 	GTLoadPreviousRobotSpeedMode
@@ -1038,7 +1007,7 @@ Function GTfindSPPortCenter(cassette_position As Integer, puckIndex As Integer, 
 		Jump P(standbyPoint)
 		ForceCalibrateAndCheck(LOW_SENSITIVITY, LOW_SENSITIVITY)
 	Else
-		Move P(standbyPoint)
+		Go P(standbyPoint)
 	EndIf
 		
 	GTsetRobotSpeedMode(PROBE_SPEED)
@@ -1088,7 +1057,7 @@ BackoutofPortandExitFunction:
 	GTLoadPreviousRobotSpeedMode
 	
 	Move P(assumedPortCenterPoint)
-	Move P(standbyPoint)
+	Go P(standbyPoint)
 Fend
 
 Function GTFindPortCentersInSuperPuck(cassette_position As Integer) As Boolean
@@ -1286,7 +1255,7 @@ Function GTPortJamRecheck(cassette_position As Integer, puckIndex As Integer, po
 	ElseIf g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_OCCUPIED Then
 		GTTwistOffMagnet
 	Else
-		Move P(standbyPoint)
+		Go P(standbyPoint)
 	EndIf
 	
 	'' previous robot speed is restored only after coming back to standby point, otherwise sample might stick to placer magnet
