@@ -273,8 +273,8 @@ Function GTMountInterestedPort As Boolean
 		Exit Function
 	EndIf
 	
-	If Not GTMoveGoniometerToDewarSide Then
-		UpdateClient(TASK_MSG, "GTMoveGoniometerToDewarSide failed", ERROR_LEVEL)
+	If Not GTMoveGoniometerToAboveCradle Then
+		UpdateClient(TASK_MSG, "GTMoveGoniometerToAboveCradle failed", ERROR_LEVEL)
 		Exit Function
 	EndIf
 	

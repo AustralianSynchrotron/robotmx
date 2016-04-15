@@ -922,10 +922,10 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 			GTPutSampleIntoSPPort = True
 			GTTwistOffMagnet
 		Else
-			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
-			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			''This condition is rare because ForceTouch usually stops when maxDistanceToScan is reached
 			g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
-			UpdateClient(TASK_MSG, "GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!", WARNING_LEVEL)
+			g_RunResult$ = "error GTPutSampleIntoSPPort: ForceTouch on " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface, in short, Sample Lost!!!"
+			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 			GTPutSampleIntoSPPort = True ''The sample is lost, but still continue the dismount routine	
 			GTTwistOffMagnet
 		EndIf

@@ -508,12 +508,12 @@ Function GTDismountWithoutParsingRunArgs As Boolean
 	EndIf
 		
 	If Not GTCheckMagnetForDismount Then
-		UpdateClient(TASK_MSG, "Error in DismountSample->GTCheckMagnetForDismount: Check log for further details", ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "Error in GTDismountWithoutParsingRunArgs->GTCheckMagnetForDismount: Check log for further details", ERROR_LEVEL)
 		Exit Function
 	EndIf
 
 	If Not GTDismountToInterestedPort Then
-		UpdateClient(TASK_MSG, "Error in DismountSample->GTDismountToInterestedPort: Check log for further details", ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "Error in GTDismountWithoutParsingRunArgs->GTDismountToInterestedPort: Check log for further details", ERROR_LEVEL)
 		Exit Function
 	EndIf
 
