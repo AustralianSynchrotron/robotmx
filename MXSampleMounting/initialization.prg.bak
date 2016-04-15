@@ -10,12 +10,16 @@ Function GTInitialize() As Boolean
 	
 	''Check global variable status
 	If Not CheckEnvironment Then
-		SetGlobals
+		''SetGlobals
 		Motor Off
 		''Problem detected
         Exit Function
    	EndIf
 
+	'' g_Jump_LimZ_LN2 should only be set in SetGlobals - remove after debugging
+	g_Jump_LimZ_LN2 = -102
+	'' g_Jump_LimZ_LN2 should only be set in SetGlobals - remove after debugging
+	
 	''Flag to ensure function is ran once
 	If m_GTInitialized Then
 		GTInitialize = True

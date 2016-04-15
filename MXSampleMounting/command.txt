@@ -3986,5 +3986,105 @@ Low Power Mode
 > power High
 > print power
  0
-> print 
+> 
+> 
+> 
+> 
+> power Low
+> motor On
+r>
+> print power
+ 0
+> g_RunArgs$="r A 2"
+> 
+> print g_runargs$
+r A 2
+> 
+l A 1
+> 
+!Error: 2513, Specified point label is not defined.
 
+> print power
+ 0
+> 
+ 0
+>motor On
+
+> > 
+AccelR
+Low Power Mode
+	  200.000	  200.000
+> 
+	  200.000	  200.000
+> 
+Low Power Mode
+	  200.000	  200.000
+> AccelS
+Low Power Mode
+	 4000.000	 4000.000
+	 4000.000	 4000.000
+	 4000.000	 4000.000
+> 
+	 4000.000	 4000.000
+	 4000.000	 4000.000
+	 4000.000	 4000.000
+> 
+Low Power Mode
+!!Error: 3100, Syntax error.
+> 
+	 4000.000	 4000.000
+	 4000.000	 4000.000
+	 4000.000	 4000.000
+> Accel
+	  40	  40
+	  40	  40
+	  40	  40
+> 
+Low Power Mode
+	  40	  40
+	  40	  40
+	  40	  40
+> power low
+> 
+> 
+> 
+!!Error: 3101, Parameter count error.
+> Print g_Jump_LimZ_LN2
+ -5
+> 
+!!Error: 3100, Syntax error.
+> reset
+> print motor
+ 1
+> 
+ 0
+> 
+> 
+> 
+> motor On
+> 
+> 
+> 
+> power Low
+> print motor
+ 1
+> 
+> 
+> 
+> 
+> g_RunArgs$ = "r B 14"
+> 
+> 
+> 
+> 
+> 
+> 
+> Print g_RunArgs$
+r B 14
+> 
+r B 1
+> 
+!!Error: 2513, Specified point label is not defined.
+> print power
+ 0
+> 

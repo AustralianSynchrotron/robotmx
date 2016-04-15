@@ -46,7 +46,7 @@ Function testTong
 	Integer zIndex
 	For zIndex = 0 To 20
 		P(standbyPoint) = P453 '':Z(zIndex * -10.0)
-		Move P(standbyPoint)
+		Go P(standbyPoint)
 		
 		''Wait 5
 		

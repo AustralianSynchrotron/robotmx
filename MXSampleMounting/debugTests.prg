@@ -33,6 +33,7 @@ Function testTong
 	Tool PLACER_TOOL
 	
 	P453 = P450 -X(standbyDistance * cosVal) -Y(standbyDistance * sinVal)
+	LimZ 0
 	Jump P453
 
 	Real maxDistanceToScan

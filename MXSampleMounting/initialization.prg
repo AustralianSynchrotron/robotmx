@@ -16,6 +16,10 @@ Function GTInitialize() As Boolean
         Exit Function
    	EndIf
 
+	'' g_Jump_LimZ_LN2 should only be set in SetGlobals (called inside CheckEnvironment) - remove after debugging
+	g_Jump_LimZ_LN2 = -102
+	'' g_Jump_LimZ_LN2 should only be set in SetGlobals - remove after debugging
+	
 	''Flag to ensure function is ran once
 	If m_GTInitialized Then
 		GTInitialize = True

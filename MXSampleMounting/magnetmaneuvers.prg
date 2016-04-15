@@ -38,6 +38,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 		'' Mathematically, Atan(CY(RealPos)/CX(RealPos)) <  Atan(CY(P1)/CX(P1)) checks the angle made by realpos < angle of P1
 		'' CX(RealPos) > 0 checks whether the robot is in first quadrant (near home and not near goni)
 		GTsetRobotSpeedMode(OUTSIDE_LN2_SPEED)
+		LimZ 0
 		Jump P1
 	EndIf
 	
@@ -57,6 +58,7 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 		'' After dismount before mount the robot ends at P4 and we don't want to jump out of the LN2
 		Move P3
 	Else
+		LimZ 0
 		Jump P3
 	EndIf
 	
@@ -70,6 +72,8 @@ Function GTJumpHomeToCoolingPointAndWait As Boolean
 	GTJumpHomeToCoolingPointAndWait = True
 Fend
 
+'' WARNING: GTJumpCoolingPointAndWait should be called before GTIsMagnetInGripper
+'' because this function can only start from inside dewar (LimZ g_Jump_LimZ_LN2 is called inside this function)
 Function GTIsMagnetInGripper As Boolean
 	String msg$
 	Integer prevPowerMode
@@ -97,6 +101,7 @@ Function GTIsMagnetInGripper As Boolean
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
 		Go P(standbyPoint)
 	Else
+		LimZ g_Jump_LimZ_LN2
 		Jump P(standbyPoint)
 	EndIf
 	
@@ -149,6 +154,7 @@ Function GTPickMagnet As Boolean
 	If Dist(RealPos, P3) < CLOSE_DISTANCE Then
 		Go P3
 	Else
+		LimZ g_Jump_LimZ_LN2
 		Jump P3 '' Cooling Point in front of cradle		
 	EndIf
 
@@ -175,6 +181,8 @@ Function GTPickMagnet As Boolean
 	GTPickMagnet = True
 Fend
 
+'' WARNING: GTJumpCoolingPointAndWait should be called before GTCheckAndPickMagnet
+'' because this function can only start from inside dewar (LimZ g_Jump_LimZ_LN2 is called inside this function)
 Function GTCheckAndPickMagnet As Boolean
 	GTCheckAndPickMagnet = False
 	
@@ -213,6 +221,8 @@ Function GTCheckAndPickMagnet As Boolean
 	GTCheckAndPickMagnet = True
 Fend
 
+'' WARNING: GTJumpCoolingPointAndWait should be called before GTCheckMagnetForDismount
+'' because this function can only start from inside dewar (LimZ g_Jump_LimZ_LN2 is called inside this function)
 Function GTCheckMagnetForDismount As Boolean
 	GTCheckMagnetForDismount = False
 '' if magnet is in gripper, put it in Cradle
@@ -266,6 +276,7 @@ Function GTReturnMagnet As Boolean
 	If Dist(RealPos, P4) < CLOSE_DISTANCE Then
 		Go P4
 	Else
+		LimZ g_Jump_LimZ_LN2
 		Jump P4 '' this point is directly above cradle
 	EndIf
 
