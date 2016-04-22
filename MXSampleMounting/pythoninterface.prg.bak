@@ -85,6 +85,20 @@ Function PrepareForMountDismount As Boolean
 	g_RunResult$ = "OK"
 Fend
 
+Function ResetCassettePorts
+	''This function resets the ports as below, corresponding to 1's in g_PortsRequestString$ for all cassettes
+	''If cassette type is unknown, then it resets all the ports
+	''	g_<>SampleDistanceError = 0.0
+	''	g_<>_PortStatus = PORT_UNKNOWN
+	''  g_<>_TriggerPortForce = 0.0
+	''  g_<>_FinalPortForce = 0.0
+	Integer cassette_position
+	For cassette_position = LEFT_CASSETTE To RIGHT_CASSETTE
+		GTResetSpecificPorts(cassette_position)
+		GTsendCassetteData(PORT_STATES, cassette_position)
+	Next
+Fend
+
 Function ProbeCassettes
 	Cls
     Print "GTProbeCassettes entered at ", Date$, " ", Time$
@@ -377,6 +391,12 @@ Function DismountSample
 	EndIf
 	
 	''Actual dismounting process starts here 
+	
+	'' Here we check whether the port is empty and only then it sets the interested ports
+	If Not GTsetDismountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
+		Exit Function
+	EndIf
+	
 	If Not GTDismountWithoutParsingRunArgs Then
 		UpdateClient(TASK_MSG, "DismountSample->GTDismountWithoutParsingRunArgs Failed!", ERROR_LEVEL);
 		Exit Function

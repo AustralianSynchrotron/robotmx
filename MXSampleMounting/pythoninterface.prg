@@ -85,6 +85,20 @@ Function PrepareForMountDismount As Boolean
 	g_RunResult$ = "OK"
 Fend
 
+Function ResetCassettePorts
+	''This function resets the ports as below, corresponding to 1's in g_PortsRequestString$ for all cassettes
+	''If cassette type is unknown, then it resets all the ports as below
+	''	g_<>SampleDistanceError = 0.0
+	''	g_<>_PortStatus = PORT_UNKNOWN
+	''  g_<>_TriggerPortForce = 0.0
+	''  g_<>_FinalPortForce = 0.0
+	Integer cassette_position
+	For cassette_position = LEFT_CASSETTE To RIGHT_CASSETTE
+		GTResetSpecificPorts(cassette_position)
+		GTsendCassetteData(PORT_STATES, cassette_position)
+	Next
+Fend
+
 Function ProbeCassettes
 	Cls
     Print "GTProbeCassettes entered at ", Date$, " ", Time$

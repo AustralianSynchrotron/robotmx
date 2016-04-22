@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/04/15 05:55:44:234,DS:0000005807,CS:07460,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="magnetmaneuvers.prg"
+ENVT0100,LM:2016/04/22 06:32:19:840,DS:0000005839,CS:14896,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="debugTests.prg"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
@@ -8,7 +8,7 @@ ProgramFile1 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -19,7 +19,7 @@ ProgramFile2 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -30,14 +30,14 @@ ProgramFile3 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
 }
 ProgramFile4 {
 	sName="utilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=209
@@ -52,7 +52,7 @@ ProgramFile5 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -81,11 +81,11 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -96,7 +96,7 @@ ProgramFile9 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -107,7 +107,7 @@ ProgramFile10 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -118,18 +118,18 @@ ProgramFile11 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -140,7 +140,7 @@ ProgramFile13 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -162,7 +162,7 @@ ProgramFile15 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -170,10 +170,10 @@ ProgramFile15 {
 ProgramFile16 {
 	sName="magnetmaneuvers.prg"
 	bOpened=True
-	nWinState=2
+	nWinState=0
 	Window {
 		nLeft=185
-		nTop=76
+		nTop=68
 		nWidth=804
 		nHeight=570
 	}
@@ -184,7 +184,7 @@ ProgramFile17 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -194,8 +194,8 @@ ProgramFile18 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=0
+		nLeft=356
+		nTop=-21
 		nWidth=791
 		nHeight=645
 	}
@@ -206,7 +206,7 @@ ProgramFile19 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=512
+		nTop=504
 		nWidth=123
 		nHeight=34
 	}
@@ -217,7 +217,7 @@ ProgramFile20 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=875
 		nHeight=343
 	}
@@ -228,7 +228,7 @@ ProgramFile21 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -236,10 +236,10 @@ ProgramFile21 {
 ProgramFile22 {
 	sName="debugTests.prg"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=293
-		nTop=-2
+		nTop=-10
 		nWidth=628
 		nHeight=619
 	}
@@ -251,7 +251,7 @@ IncludeFile1 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -262,7 +262,7 @@ IncludeFile2 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -273,7 +273,7 @@ IncludeFile3 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -284,7 +284,7 @@ IncludeFile4 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -295,7 +295,7 @@ IncludeFile5 {
 	nWinState=0
 	Window {
 		nLeft=0
-		nTop=0
+		nTop=-8
 		nWidth=452
 		nHeight=260
 	}
@@ -305,9 +305,9 @@ IncludeFile6 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=0
-		nWidth=452
+		nLeft=173
+		nTop=-8
+		nWidth=279
 		nHeight=260
 	}
 }
@@ -316,15 +316,15 @@ IncludeFile7 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=0
+		nLeft=227
+		nTop=53
 		nWidth=452
 		nHeight=260
 	}
 }
 IncludeFile8 {
 	sName="jsondefs.inc"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -338,8 +338,8 @@ IncludeFile9 {
 	bOpened=True
 	nWinState=0
 	Window {
-		nLeft=0
-		nTop=0
+		nLeft=347
+		nTop=55
 		nWidth=452
 		nHeight=260
 	}
@@ -358,10 +358,10 @@ PointFile1 {
 }
 sActiveWindow="main.prg"
 CmdWindow {
-	bOpened=True
+	bOpened=False
 	Window {
-		nLeft=172
-		nTop=2
+		nLeft=628
+		nTop=18
 		nWidth=784
 		nHeight=410
 	}
@@ -370,8 +370,8 @@ CmdWindow {
 RunWindow {
 	bOpened=True
 	Window {
-		nLeft=315
-		nTop=85
+		nLeft=208
+		nTop=82
 		nWidth=717
 		nHeight=401
 	}
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=824
-		nTop=365
+		nLeft=909
+		nTop=364
 		nWidth=470
 		nHeight=342
 	}

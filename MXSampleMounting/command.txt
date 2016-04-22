@@ -4088,3 +4088,137 @@ r B 1
 > print power
  0
 > 
+ 0
+> motor On
+> 
+ 0
+> g_Jump_LimZ_LN2 = -102
+> jump p1
+> Print P6
+ X:  107.682 Y:  412.404 Z: -209.305 U:   93.260 V:    0.000 W:    0.000 /R /0
+> Print Here
+ X:  107.202 Y:  412.685 Z: -208.673 U:   92.627 V:    0.000 W:    0.000 /R /0
+> P6 = Here
+> savepoints "robot1.pts"
+> 
+> move Here - X(5)
+!!Error: 2309, Cannot execute a motion command while the safeguard is open.
+> P3 = P6 - X(20)
+> reset
+> Move Here - X(20)
+> 
+!!Error: 4031, Cannot execute a motion command when the motor is in the off state.
+> motor On
+> 
+> 
+> power Low
+> 
+> 
+> reset
+> 
+> Print g_InterestedPort$
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 2513, Specified point label is not defined.
+> Print g_InterestedSampleStatus
+ 1
+> 
+ 5
+> g_InterestedSampleStatus = 1
+> 
+!!Error: 3100, Syntax error.
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 3207, Formula is missing.
+> g_RunArgs$ = "m A 1"
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> Print g_RunArgs$
+m A 1
+> 
+l J 2
+> 
+l J 7
+> 
+l E 7
+> 
+r D 10
+> 
+m C 2
+> motor On
+> 
+> 
+> 
+> reset
+> 
+> 
+> 
+> 
+> 
+> motor On
+> 
+> 
+> 
+> 
+> 
+> 
+> power High
+> 
+> 
+> print power
+ 1
+> motor On
+> power High
+> 
+ 1
+> 
+ 0
+> 
+ 1
+> 
+> 
+> 
+> g_DumbbellStatus = 0
+> 
+> power Low
+> motor On
+> Print limz
+ 0
+> limz
+	    0.000
+> motor On
+> power High
+> print p*
+ X:  434.873 Y:  195.388 Z:    8.707 U:   65.245 V:    0.000 W:    0.000 /R /0
+> jump p0
+!!Error: 4005, Current point position is above the specified LimZ value.
+> move p0
+> move p0
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> power High
+> print power
+ 1
+> motor On
+> move p0
+> tool 0
+> jump p1
+> jump p6
+> move p3
+> jump p1
+> jump p0
+> 
+> motor On
+> move p0
+> power High
+> 
