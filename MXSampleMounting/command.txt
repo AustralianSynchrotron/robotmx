@@ -4221,4 +4221,110 @@ m C 2
 > motor On
 > move p0
 > power High
+> Print g_CAS_PortStatus(0, 7, 11)
+ -1
+> 
+ -1
+> 
+ 0
+> 
+!!Error: 2240, Array subscript is out of user defined range. Cannot access or update beyond array bounds.
+> 
+ 0
+> 
+ 1
+> 
+ 0
+> GTgetPortIndexFromCassetteVars(0,0,0)
+!!Error: 2305, Cannot execute a Call statement from the command window.
+> Print Mid$(g_PortsRequestString$(0), 95, 1)
+0
+> 
+1
+> 
+0
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 3207, Formula is missing.
+> 
+ 96
+> 
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 3100, Syntax error.
+> 
+!!Error: 3100, Syntax error.
+> 
+> 
+!!Error: 2240, Array subscript is out of user defined range. Cannot access or update beyond array bounds.
+> 
+ 0
+> Len
+!!Error: 3100, Syntax error.
+> 
+ 0
+> 
+ 0
+> 
+ 0
+> 
+ 0
+> 
+ 0
+> 
+!!Error: 2240, Array subscript is out of user defined range. Cannot access or update beyond array bounds.
+> 
+ 0
+> 
+ 0
+> 
+ 0
+> 
+ -1
+> 
+ 1
+> 
+ 0
+> 
+ 0
+> 
+!!Error: 3116, Array number of dimensions does not match the declaration.
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 3116, Array number of dimensions does not match the declaration.
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 3207, Formula is missing.
+> 
+!!Error: 2513, Specified point label is not defined.
+> Print Mid$("abc", 1, 0)
+> 
+a
+> 
+!!Error: 3100, Syntax error.
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> power High
+> motor On
+> move p18
+> jump p1
+> jump p0
+>
+> print g_InterestedRowPuckPortIndex
+ 14
+> print power
+ 0
+> power High
+> reset error
+> motor On
+> power High
 > 

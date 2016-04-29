@@ -90,8 +90,8 @@ Function GTprobeCassettePort(cassette_position As Integer, rowIndex As Integer, 
 			msg$ = "GTprobeCassettePort: ForceTouch detected Sample at " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " with distance error =" + Str$(distErrorFromPerfectSamplePos) + "."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 		Else
-			''This condition is never reached because ForceTouch stops when maxDistanceToScan is reached	
-			''This condition is only to complete the If..Else Statement if an error occurs then we reach here
+			'' This condition is rare because ForceTouch usually stops when maxDistanceToScan is reached	
+			'' This condition is only to complete the If..Else Statement if an error occurs then we reach here
 			g_CAS_PortStatus(cassette_position, rowIndex, columnIndex) = PORT_VACANT
 			msg$ = "GTprobeCassettePort: ForceTouch on " + GTcolumnName$(columnIndex) + ":" + Str$(rowIndex + 1) + " moved " + Str$(distErrorFromPerfectSamplePos) + "mm beyond theoretical sample surface."
 			UpdateClient(TASK_MSG, msg$, INFO_LEVEL)

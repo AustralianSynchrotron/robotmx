@@ -1,25 +1,25 @@
 =======================================================
-toolset FineTune 2016/01/19 15:11:06
-sideScale for placer  1.2406749352813
-sideScale for picker  1.245973944664
-Old g_MagnetTransportAngle = 95.1578
-new g_MagnetTransportAngle= 95.0318
-Toolset picker: ( 14.9038,  -16.065,  0,  5.21398)
-picker twist off toolset: ( 13.341,  -20.9473,  0,  5.21398)
-old picker: ( 16.0156,  -15.9316,  0,  5.33992)
-placer twist off toolset: ( -18.1282,  -23.8189,  0.0593872,  185.214)
-Toolset placer: ( -20.5489,  -19.3002,  0.0593872,  185.214)
-old placer: ( -19.4299,  -19.2447,  0.0593872,  185.34)
+toolset FineTune 2016/04/29 10:10:41
+sideScale for placer  1.1111026331782
+sideScale for picker  1.1062177121639
+Old g_MagnetTransportAngle = 94.3928
+new g_MagnetTransportAngle= 94.46
+Toolset picker: ( 15.1039,  -15.5393,  0,  1.0869)
+picker twist off toolset: ( 13.1938,  -20.2964,  0,  1.0869)
+old picker: ( 15.7053,  -15.5459,  0,  1.01975)
+placer twist off toolset: ( -18.4006,  -20.8958,  0.141342,  181.087)
+Toolset placer: ( -20.4897,  -16.2146,  0.141342,  181.087)
+old placer: ( -19.8891,  -16.1795,  0.141342,  181.02)
 force too small, ignore
-A not match: from square:  16.7656, from individual case:  16.7793
-new a: 16.7793, b: 13.3822, c: 22.2178, theta: 5.21398
-old a: 17.3529, b: 14.4634, c: 21.1366, theta: 5.33992
-Toolset picker: ( 14.8517,  -15.4937,  0,  5.21398)
-picker twist off toolset: ( 13.2889,  -20.3759,  0,  5.21398)
-old picker: ( 14.9038,  -16.065,  0,  5.21398)
-placer twist off toolset: ( -18.1804,  -23.2476,  0.0593872,  185.214)
-Toolset placer: ( -20.601,  -18.7289,  0.0593872,  185.214)
-old placer: ( -20.5489,  -19.3002,  0.0593872,  185.214)
-old (absolute magnet position) P56, 117.799, 424.469, -227.129, 95.1578
-new P56, 117.883, 424.475, -225.082, 95.032 2016/01/19 15:13:24
-magnet level error:  0.0658264mm
+A not match: from square:  15.4641, from individual case:  15.4693
+new a: 15.4693, b: 14.8064, c: 20.7936, theta: 1.0869
+old a: 15.823, b: 15.4261, c: 20.1739, theta: 1.01975
+Toolset picker: ( 15.0971,  -15.1857,  0,  1.0869)
+picker twist off toolset: ( 13.187,  -19.9428,  0,  1.0869)
+old picker: ( 15.1039,  -15.5393,  0,  1.0869)
+placer twist off toolset: ( -18.4073,  -20.5422,  0.141342,  181.087)
+Toolset placer: ( -20.4964,  -15.861,  0.141342,  181.087)
+old placer: ( -20.4897,  -16.2146,  0.141342,  181.087)
+old (absolute magnet position) P56, 122.046, 428.084, -207.089, 94.3929
+new P56, 121.96, 428.099, -207.107, 94.46 2016/04/29 10:12:46
+magnet level error:  0.15863mm
