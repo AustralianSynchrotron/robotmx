@@ -92,11 +92,17 @@ Function ResetCassettePorts
 	''	g_<>_PortStatus = PORT_UNKNOWN
 	''  g_<>_TriggerPortForce = 0.0
 	''  g_<>_FinalPortForce = 0.0
+	
+	''init result
+    g_RunResult$ = ""
+    
 	Integer cassette_position
 	For cassette_position = LEFT_CASSETTE To RIGHT_CASSETTE
 		GTResetSpecificPorts(cassette_position)
 		GTsendCassetteData(PORT_STATES, cassette_position)
 	Next
+	
+	g_RunResult$ = "OK"
 Fend
 
 Function ProbeCassettes

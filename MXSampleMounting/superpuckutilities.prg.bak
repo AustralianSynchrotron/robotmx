@@ -933,7 +933,8 @@ Function GTPutSampleIntoSPPort(cassette_position As Integer, puckIndex As Intege
 		''There is no sample (or ForceTouch failure)
 		g_SP_PortStatus(cassette_position, puckIndex, portIndex) = PORT_VACANT
 		distErrorFromPerfectSamplePos = Dist(P(standbyPoint), RealPos) - PROBE_STANDBY_DISTANCE - SAMPLE_DIST_PIN_DEEP_IN_PUCK
-		UpdateClient(TASK_MSG, "GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!", WARNING_LEVEL)
+		g_RunResult$ = "error GTPutSampleIntoSPPort: ForceTouch failed to detect " + GTpuckName$(puckIndex) + ":" + Str$(portIndex + 1) + " even after travelling maximum scan distance, in short, Sample Lost!!!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTPutSampleIntoSPPort = True ''The sample is lost, but still continue the dismount routine
 		GTTwistOffMagnet
 	EndIf

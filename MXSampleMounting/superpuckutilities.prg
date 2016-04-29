@@ -790,6 +790,8 @@ Function GTMoveToSPMountPortStandbyPoint(cassette_position As Integer, puckIndex
 	SPSecondaryArcPoint = 55
 	puckPortStandbyPoint = 52 '' destination point
 	
+	GTsetRobotSpeedMode(SAMPLE_ON_TONG_SPEED)
+	
 	''Check the following whether toolsets need to be changed before moving
 	Move P(SPStandbyPoint)
 	

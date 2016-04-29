@@ -1,9 +1,9 @@
 
-'' Go speed settings for Probing Recheck
+'' Go speed settings for Probing Recheck (The Hail-Mary Algorithm)
 #define SUPERSLOW_GO_ACCEL 5
 #define SUPERSLOW_GO_DEACCEL 5
 #define SUPERSLOW_GO_SPEED 1
-'' Move speed settings for Probing Recheck
+'' Move speed settings for Probing Recheck (The Hail-Mary Algorithm)
 #define SUPERSLOW_MOVE_ACCEL 25
 #define SUPERSLOW_MOVE_DEACCEL 25
 #define SUPERSLOW_MOVE_SPEED 10
@@ -16,6 +16,15 @@
 #define PROBE_MOVE_ACCEL 51
 #define PROBE_MOVE_DEACCEL 51
 #define PROBE_MOVE_SPEED 72
+
+'' Go speed settings when sample is in tong
+#define SAMPLE_ON_TONG_GO_ACCEL 5
+#define SAMPLE_ON_TONG_GO_DEACCEL 5
+#define SAMPLE_ON_TONG_GO_SPEED 7
+'' Move speed settings when sample is in tong
+#define SAMPLE_ON_TONG_MOVE_ACCEL 150
+#define SAMPLE_ON_TONG_MOVE_DEACCEL 150
+#define SAMPLE_ON_TONG_MOVE_SPEED 200
 
 '' Go speed settings for INSIDE_LN2
 #define INSIDE_LN2_GO_ACCEL 20
@@ -35,3 +44,11 @@
 #define OUTSIDE_LN2_MOVE_DEACCEL 4000
 #define OUTSIDE_LN2_MOVE_SPEED 1000
 
+'' Go speed settings for Robot Dance inside heater at P0
+#define ROBOT_DANCE_GO_ACCEL 10
+#define ROBOT_DANCE_GO_DEACCEL 10
+#define ROBOT_DANCE_GO_SPEED 1
+'' Move speed settings for Robot Dance inside heater at P0
+#define ROBOT_DANCE_MOVE_ACCEL 40
+#define ROBOT_DANCE_MOVE_DEACCEL 40
+#define ROBOT_DANCE_MOVE_SPEED 50

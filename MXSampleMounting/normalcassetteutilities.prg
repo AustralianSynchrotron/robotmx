@@ -275,7 +275,7 @@ Function GTMoveToCASMountPortStandbyPoint(cassette_position As Integer, rowIndex
 	casStandbyToPortStandbyArcPoint = 51
 	portStandbyPoint = 52
 	
-	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+	GTsetRobotSpeedMode(SAMPLE_ON_TONG_SPEED)
 
 	''Check the following whether toolsets need to be changed before moving
 	Move P(cassetteStandbyPoint)

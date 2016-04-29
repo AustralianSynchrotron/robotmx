@@ -33,6 +33,14 @@ Function SetProbeSpeed
     SpeedS PROBE_MOVE_SPEED
 Fend
 
+Function SetSampleOnTongSpeed
+	Accel SAMPLE_ON_TONG_GO_ACCEL, SAMPLE_ON_TONG_GO_DEACCEL
+    Speed SAMPLE_ON_TONG_GO_SPEED
+    
+    AccelS SAMPLE_ON_TONG_MOVE_ACCEL, SAMPLE_ON_TONG_MOVE_DEACCEL
+    SpeedS SAMPLE_ON_TONG_MOVE_SPEED
+Fend
+
 Function SetInsideLN2Speed
 	Accel Inside_Ln2_GO_ACCEL, INSIDE_LN2_GO_DEACCEL
     Speed INSIDE_LN2_GO_SPEED
@@ -42,11 +50,19 @@ Function SetInsideLN2Speed
 Fend
 
 Function SetOutsideLN2Speed
-	Accel outside_Ln2_GO_ACCEL, outside_LN2_GO_DEACCEL
-    Speed outside_LN2_GO_SPEED
+	Accel OUTSIDE_Ln2_GO_ACCEL, OUTSIDE_LN2_GO_DEACCEL
+    Speed OUTSIDE_LN2_GO_SPEED
     
-    AccelS outside_LN2_MOVE_ACCEL, outside_LN2_MOVE_DEACCEL
-    SpeedS outside_LN2_MOVE_SPEED
+    AccelS OUTSIDE_LN2_MOVE_ACCEL, OUTSIDE_LN2_MOVE_DEACCEL
+    SpeedS OUTSIDE_LN2_MOVE_SPEED
+Fend
+
+Function SetRobotDanceSpeed
+	Accel ROBOT_DANCE_GO_ACCEL, ROBOT_DANCE_GO_DEACCEL
+    Speed ROBOT_DANCE_GO_SPEED
+    
+    AccelS ROBOT_DANCE_MOVE_ACCEL, ROBOT_DANCE_MOVE_DEACCEL
+    SpeedS ROBOT_DANCE_MOVE_SPEED
 Fend
 
 Function GTsetRobotSpeedMode(speed_mode As Byte)
@@ -56,6 +72,9 @@ Function GTsetRobotSpeedMode(speed_mode As Byte)
 		Case PROBE_SPEED
 			SetProbeSpeed
 			
+		Case SAMPLE_ON_TONG_SPEED
+			SetSampleOnTongSpeed ''Inside LN2 only
+			
 		Case INSIDE_LN2_SPEED
 			SetInsideLN2Speed
 			
@@ -64,6 +83,9 @@ Function GTsetRobotSpeedMode(speed_mode As Byte)
 			
 		Case SUPERSLOW_SPEED
 			SetSuperSlowSpeed
+			
+		Case DANCE_SPEED
+			SetRobotDanceSpeed
 	Send
 Fend
 

@@ -1,12 +1,12 @@
-ENVT0100,LM:2016/04/29 01:50:46:735,DS:0000008617,CS:11575,MA:00-80-4C-A4-84-A0,EI:           
+ENVT0100,LM:2016/04/29 05:13:00:339,DS:0000008619,CS:20502,MA:00-80-4C-A4-84-A0,EI:           
 SystemProperties {
 	sRCVersion="6.2.3"
 	sRCRevision="R5"
 	sGUID="44c6af51-c58b-4e7c-a120-c5f6a1bf4514"
 	sPath="c:\\EPSONRC60\\projects\\Dev\\SBS\\3_Beamlines\\Common\\px\\Robot\\MXSampleMounting\\"
 	sCreated=""
-	sLastModified="4/27/2016 12:14:39 PM"
-	bBuildComplete=True
+	sLastModified="4/29/2016 3:11:24 PM"
+	bBuildComplete=False
 	bFirstBuildComplete=True
 	bRebuildRequired=False
 	bClearControllerProject=False
@@ -87,7 +87,7 @@ ProgramFile11 {
 }
 ProgramFile12 {
 	sName="superpuckutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile13 {
@@ -127,7 +127,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bCompiled=True
+	bCompiled=False
 	bStoreInController=True
 }
 ProgramFile21 {

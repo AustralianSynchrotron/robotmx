@@ -87,7 +87,7 @@ Fend
 
 Function ResetCassettePorts
 	''This function resets the ports as below, corresponding to 1's in g_PortsRequestString$ for all cassettes
-	''If cassette type is unknown, then it resets all the ports
+	''If cassette type is unknown, then it resets all the ports as below
 	''	g_<>SampleDistanceError = 0.0
 	''	g_<>_PortStatus = PORT_UNKNOWN
 	''  g_<>_TriggerPortForce = 0.0

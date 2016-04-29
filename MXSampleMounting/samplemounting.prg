@@ -138,7 +138,7 @@ Fend
 
 Function GTMoveCassetteStandbyToCradle
 	Tool 0
-	GTsetRobotSpeedMode(INSIDE_LN2_SPEED)
+	GTsetRobotSpeedMode(SAMPLE_ON_TONG_SPEED)
 	
 	Real desiredX, desiredY, desiredZ
 	desiredX = (CX(P4) + CX(RealPos)) / 2.0

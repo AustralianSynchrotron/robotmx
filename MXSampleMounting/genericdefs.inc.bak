@@ -18,7 +18,7 @@
 #define UNIVERSAL_TOOL 0
 #define PICKER_TOOL 1
 #define PLACER_TOOL 2
-''Toolset 3 is used in TwistRelease function so don't use it.
+''Toolset 3 is used in TwistRelease and GTTwistOffCavity function so don't use it.
 #define PORT_JAM_RECHECK_TOOL 4
 
 '' PORT Status
@@ -45,6 +45,7 @@
 #define INSIDE_LN2_SPEED 1
 #define OUTSIDE_LN2_SPEED 2
 #define SUPERSLOW_SPEED 3
+#define DANCE_SPEED 4
 
 '' Dumbbell Status
 #define DUMBBELL_STATUS_UNKNOWN 0

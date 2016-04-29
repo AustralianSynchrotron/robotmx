@@ -42,9 +42,11 @@
 
 ''Robot Speed Modes
 #define PROBE_SPEED 0
+#define SAMPLE_ON_TONG_SPEED 5
 #define INSIDE_LN2_SPEED 1
 #define OUTSIDE_LN2_SPEED 2
 #define SUPERSLOW_SPEED 3
+#define DANCE_SPEED 4
 
 '' Dumbbell Status
 #define DUMBBELL_STATUS_UNKNOWN 0

@@ -1209,22 +1209,13 @@ Function GenericMove(ByRef position() As Real, tillForce As Boolean)
 	diffz = Abs(CZ(RealPos) - position(3))
 	diffu = Abs(CU(RealPos) - position(4))
 
-	''Estimate u move size relative to XY move size
-	Print "diffx=", diffx
-	Print "diffy=", diffy
-	Print "diffz=", diffz
-	Print "diffu=", diffu
-
 	If (diffu > (2 * diffx) And diffu > (2 * diffy) And diffu > (2 * diffz)) Then
-		Print "GenericMove useMove false"
 		useMove = False
 	Else
-		Print "GenericMove useMove true"
 		useMove = True
 	EndIf
 
 	If ((diffx > 0.001 Or diffy > 0.001 Or diffz > 0.001) And useMove) Then
-		Print "GenericMove using move"
 		''Use move command
    		If tillForce Then
     		''Wake force measure loop for move till force command
@@ -1237,7 +1228,6 @@ Function GenericMove(ByRef position() As Real, tillForce As Boolean)
       		Move RealPos :X(position(1)) :Y(position(2)) :Z(position(3)) :U(position(4))
     	EndIf
 	Else
-				Print "GenericMove using go"
 		''use go command
 		If tillForce Then
         	''Wake force measure loop for move till force command
@@ -1251,14 +1241,8 @@ Function GenericMove(ByRef position() As Real, tillForce As Boolean)
 	    EndIf
 	EndIf
 Fend
-
 Function StepMove(ByRef stepSize() As Real, tillForce As Boolean)
 	Boolean useMove
-	
-	Print "stepSize(1)=", stepSize(1)
-	Print "stepSize(2)=", stepSize(2)
-	Print "stepSize(3)=", stepSize(3)
-	Print "stepSize(4)=", stepSize(4)
 				
 	If (Abs(stepSize(4) > Abs(2 * stepSize(1))) And Abs(stepSize(4) > Abs(2 * stepSize(2))) And Abs(stepSize(4) > Abs(2 * stepSize(3)))) Then
 		useMove = False
@@ -1267,7 +1251,6 @@ Function StepMove(ByRef stepSize() As Real, tillForce As Boolean)
 	EndIf
 	
 	If ((Abs(stepSize(1)) > 0.001 Or Abs(stepSize(2)) > 0.001 Or Abs(stepSize(3)) > 0.001) And useMove) Then
-		Print "StepMove using move cmd"
 		''Use move command
 	    If tillForce Then
      	   ''Wake force measure loop for move till force command
@@ -1280,7 +1263,6 @@ Function StepMove(ByRef stepSize() As Real, tillForce As Boolean)
     	    Move RealPos + XY(stepSize(1), stepSize(2), stepSize(3), stepSize(4))
 	    EndIf
 	Else
-				Print "StepMove using go cmd"
 	    If tillForce Then
     	    ''Wake force measure loop for move till force command
     		ForceMeasureLoopWake
@@ -2342,7 +2324,7 @@ Function CheckMagnet As Boolean
 	EndIf
 Fend
 Function NarrowAngle(angle As Real) As Real
-	NarrowAngle = angle
+	NarrowAngle = Angle
 	Do While NarrowAngle <= -180.0
 		NarrowAngle = NarrowAngle + 360.0
 	Loop
@@ -2352,8 +2334,8 @@ Function NarrowAngle(angle As Real) As Real
 Fend
 ''Use this function to set the site configurable global variables
 Function SetGlobals
-g_LeftarmSystem = 0
-g_IncludeStrip = 0
+g_LeftarmSystem = False
+g_IncludeStrip = False
 g_Perfect_Cradle_Angle = 90
 g_Perfect_U4Holder = 90
 g_Perfect_DownStream_Angle = 180
@@ -2376,15 +2358,15 @@ g_ToolSet_B = 20.8719
 g_ToolSet_C = 14.7281
 g_ToolSet_Theta = 0.305809
 g_Dumbbell_Free_Y = 1.18741
-g_IncludeFindMagnet = -1
-g_Quick = 0
-g_AtLeastOnce = -1
+g_IncludeFindMagnet = True
+g_Quick = False
+g_AtLeastOnce = True
 g_TQScale_Picker = 1.3316067457199
 g_TQScale_Placer = -1.3087668269873
 g_SideScale_Picker = 1.1956003457308
 g_SideScale_Placer = 1.2594241499901
-g_OnlyAlongAxis = 0
-g_LN2LevelHigh = 1
+g_OnlyAlongAxis = False
+g_LN2LevelHigh = True
 Fend
 ''check if global varables set correctly for Australian Synchrotron.
 ''Check if force sensor initialized ok
