@@ -1130,6 +1130,9 @@ Function MoveTongHome
     Tool 0
 
     InitForceConstants
+    
+    ''Set current operation
+    g_CurrentOperation$ = "Moving tong home"
 
     If g_LN2LevelHigh Then
         TurnOnHeater
@@ -1184,6 +1187,9 @@ Function MoveTongHome
     EndIf
     TurnOffHeater
     LimZ 0
+    
+    ''Set current operation
+    g_CurrentOperation$ = "Idle"
 Fend
 
 Function MoveTongOut
@@ -2126,7 +2132,7 @@ Function Open_Lid As Boolean
 #ifdef NO_DEWAR_LID
    	Open_Lid = True
 #else
-    On OUT_LID
+    Off OUT_LID
     Wait Sw(IN_LID_OPEN) = 1, 6
     If TW = 1 Then
     	UpdateClient(TASK_MSG, "Failed to open lid", ERROR_LEVEL)
@@ -2141,7 +2147,7 @@ Function Close_Lid As Boolean
 #ifdef NO_DEWAR_LID
    	Close_Lid = True
 #else
-    Off OUT_LID
+    On OUT_LID
     Wait Sw(IN_LID_CLOSE) = 1, 6
     If TW = 1 Then
     	Print "Close lid failed"

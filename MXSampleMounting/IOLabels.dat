@@ -1,31 +1,46 @@
-ENVT0100,LM:2013/07/03 00:25:46:937,DS:0000001225,CS:30498,MA:A0-F3-C1-01-2C-7F,EI:           
-sRCVersion="6.2.1"
+ENVT0100,LM:2016/05/04 03:09:32:511,DS:0000001458,CS:24087,MA:00-80-4C-A4-84-A0,EI:           
+sRCVersion="6.2.3"
 InputBitLabels {
-	nNumberOfLabels=5
+	nNumberOfLabels=8
 	Label1 {
-		nBit=8
+		nBit=0
 		sLabel="IN_GRIP_OPEN"
 		sDescription="Gripper is opened"
 	}
 	Label2 {
-		nBit=9
+		nBit=1
 		sLabel="IN_GRIP_CLOSE"
 		sDescription="Gripper is closed"
 	}
 	Label3 {
-		nBit=11
+		nBit=2
+		sLabel="LN2_FILLING"
+		sDescription="LN2 is filling"
+	}
+	Label4 {
+		nBit=3
 		sLabel="LID_CLOSE"
 		sDescription="Lid is closed"
 	}
-	Label4 {
-		nBit=12
+	Label5 {
+		nBit=4
 		sLabel="LID_OPEN"
 		sDescription="Lid is opened"
 	}
-	Label5 {
-		nBit=13
+	Label6 {
+		nBit=5
 		sLabel="HEATER_HOT"
 		sDescription="Heater is hot"
+	}
+	Label7 {
+		nBit=6
+		sLabel="AIR_FLOW"
+		sDescription="Dry air flow"
+	}
+	Label8 {
+		nBit=23
+		sLabel="EPS1"
+		sDescription="EPS test switch 1"
 	}
 }
 InputByteLabels {
@@ -37,22 +52,22 @@ InputWordLabels {
 OutputBitLabels {
 	nNumberOfLabels=4
 	Label1 {
-		nBit=1
+		nBit=0
 		sLabel="OUT_GRIP"
 		sDescription="Gripper output"
 	}
 	Label2 {
-		nBit=3
+		nBit=2
 		sLabel="LID_OUT"
 		sDescription="Lid output"
 	}
 	Label3 {
-		nBit=13
+		nBit=8
 		sLabel="DRY_AIR_OUT"
 		sDescription="Dry air output"
 	}
 	Label4 {
-		nBit=14
+		nBit=9
 		sLabel="HEAT_OUT"
 		sDescription="Heater output"
 	}

@@ -66,6 +66,9 @@ Function GoHomeFromGonio
         Exit Function
     EndIf
     
+    ''Set current operation
+    g_CurrentOperation$ = "Moving home from goniometer"
+    
     If isCloseToPoint(21) Then
 		SetFastSpeed
 		''detach
@@ -100,6 +103,9 @@ Function GoHomeFromGonio
         Exit Function
     EndIf
 
+    ''Set current operation
+    g_CurrentOperation$ = "Idle"
+
     g_SafeToGoHome = False
 Fend
 Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, du As Real) As Boolean
@@ -120,6 +126,9 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	
 	msg$ = "Goniometer calibration at " + Date$ + " " + Time$
 	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	
+	''Set current operation
+    g_CurrentOperation$ = "Goniometer calibration"
 	
 	''Calibrate the force sensor and check its readback health
 	If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then

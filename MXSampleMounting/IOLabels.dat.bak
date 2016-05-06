@@ -1,0 +1,79 @@
+ENVT0100,LM:2016/05/03 02:26:56:776,DS:0000001298,CS:21087,MA:00-80-4C-A4-84-A0,EI:           
+sRCVersion="6.2.3"
+InputBitLabels {
+	nNumberOfLabels=6
+	Label1 {
+		nBit=0
+		sLabel="IN_GRIP_OPEN"
+		sDescription="Gripper is opened"
+	}
+	Label2 {
+		nBit=1
+		sLabel="IN_GRIP_CLOSE"
+		sDescription="Gripper is closed"
+	}
+	Label3 {
+		nBit=3
+		sLabel="LID_CLOSE"
+		sDescription="Lid is closed"
+	}
+	Label4 {
+		nBit=4
+		sLabel="LID_OPEN"
+		sDescription="Lid is opened"
+	}
+	Label5 {
+		nBit=6
+		sLabel="AIR_FLOW"
+		sDescription="Dry air flow"
+	}
+	Label6 {
+		nBit=13
+		sLabel="HEATER_HOT"
+		sDescription="Heater is hot"
+	}
+}
+InputByteLabels {
+	nNumberOfLabels=0
+}
+InputWordLabels {
+	nNumberOfLabels=0
+}
+OutputBitLabels {
+	nNumberOfLabels=4
+	Label1 {
+		nBit=0
+		sLabel="OUT_GRIP"
+		sDescription="Gripper output"
+	}
+	Label2 {
+		nBit=2
+		sLabel="LID_OUT"
+		sDescription="Lid output"
+	}
+	Label3 {
+		nBit=8
+		sLabel="DRY_AIR_OUT"
+		sDescription="Dry air output"
+	}
+	Label4 {
+		nBit=9
+		sLabel="HEAT_OUT"
+		sDescription="Heater output"
+	}
+}
+OutputByteLabels {
+	nNumberOfLabels=0
+}
+OutputWordLabels {
+	nNumberOfLabels=0
+}
+MemoryBitLabels {
+	nNumberOfLabels=0
+}
+MemoryByteLabels {
+	nNumberOfLabels=0
+}
+MemoryWordLabels {
+	nNumberOfLabels=0
+}

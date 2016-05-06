@@ -26,6 +26,7 @@
 
 #include "networkdefs.inc"
 #include "genericdefs.inc"
+#include "mxrobotdefs.inc"
 #include "cassettedefs.inc"
 
 ''Returns false if request is not application specific background task
@@ -50,6 +51,8 @@ Function IsAppCmdBackground(cmd$ As String) As Boolean
 	Select toks$(0)
 		Case "JSONDataRequest"
 			Xqt JSONDataRequest
+		Case "ResetRobotStatus"
+			Xqt ResetRobotStatus
 		Case "MyQuickTest"
 			Xqt MyQuickTest
 		Default
@@ -72,5 +75,27 @@ Function MyQuickTest
 			Next
 		Next
 	Next
+Fend
+Function ResetRobotStatus
+	''Clear any errors
+	If ErrorOn Then
+		Reset Error
+	EndIf
+	''If robot at home, and not at home reason set in RobotStatus then clear it
+	If AtHome And ((g_RobotStatus And FLAG_REASON_NOT_HOME) = FLAG_REASON_NOT_HOME) Then
+		g_RobotStatus = g_RobotStatus - FLAG_REASON_NOT_HOME
+	EndIf
+	''If estop not on, yet estop reason set in RobotStatus then clear it
+	If Not EStopOn And ((g_RobotStatus And FLAG_REASON_ESTOP) = FLAG_REASON_ESTOP) Then
+		g_RobotStatus = g_RobotStatus - FLAG_REASON_ESTOP
+	EndIf
+	''If SafetyOn not on, yet estop reason set in RobotStatus then clear it	
+	If Not SafetyOn And ((g_RobotStatus And FLAG_REASON_SAFEGUARD) = FLAG_REASON_SAFEGUARD) Then
+		g_RobotStatus = g_RobotStatus - FLAG_REASON_SAFEGUARD
+	EndIf
+	''Force dumbbell status blindly to be in cradle
+	g_DumbbellStatus = DUMBBELL_IN_CRADLE
+	''Force clear all status
+	g_RobotStatus = 0
 Fend
 

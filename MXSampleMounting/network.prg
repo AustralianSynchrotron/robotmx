@@ -51,6 +51,8 @@ Global Preserve String g_RunResult$ ''Return results from function
 Global Preserve Boolean g_FlagAbort
 ''set by script, read by SPELCOM (C++)
 Global Preserve Long g_RobotStatus
+''SPEL application current operation
+Global Preserve String g_CurrentOperation$
 ''point coordinates
 Global Integer g_point
 Global Integer g_teachpoint
@@ -110,6 +112,7 @@ Boolean stored_ErrorOn
 Boolean stored_AtHome
 Integer stored_closestPoint
 Long stored_RobotStatus
+String stored_CurrentOperation$
 String stored_Time$
 ''Run statuses
 String stored_RunResult$
@@ -958,6 +961,9 @@ SkipTaskState:
 			
 			''Check for g_RobotStatus change of state
 			stored_RobotStatus = check_long_state(g_RobotStatus, stored_RobotStatus, "g_RobotStatus:", 0)
+			
+			''Check for g_CurrentOperation change of state
+			stored_CurrentOperation$ = check_string_state$(g_CurrentOperation$, stored_CurrentOperation$, "g_CurrentOperation$:")
 	   
 			''Check for g_RunResult$ change of state
 		    stored_RunResult$ = check_string_state$(g_RunResult$, stored_RunResult$, "g_RunResult$:")

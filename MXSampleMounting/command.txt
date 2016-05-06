@@ -4325,6 +4325,46 @@ a
  0
 > power High
 > reset error
+> 
+> 
 > motor On
-> power High
+> 
+> 
+> power Low
+> 
+> Print g_LN2LevelHigh
+ 0
+> g_LN2LevelHigh = 0
+> 
+> 
+> If 3 Then Print "Y"
+!!Error: 3804, Specified command cannot be executed from the Command window.
+> 
+> Print True
+ -1
+> LimZ
+	 -102.000
+> Print Here
+ X:  -49.451 Y:  431.632 Z:  -64.296 U: -111.442 V:    0.000 W:    0.000 /R /0
+> Move Here :Z(-103)
+> 
+!!Error: 2318, Cannot execute a motion command when an error has been detected.
+> reset error
+> 
+> motor on
+> power
+!!Error: 3216, High/Low was not specified.
+> print power
+ 0
+> motor On
+> tool 0
+> jump p1
+> jump p0
+> 
+> motor On
+> jump p1
+> jump p0
+> g_RunArgs$="1 0"
+> print g_RobotStatus
+ 34078739
 > 

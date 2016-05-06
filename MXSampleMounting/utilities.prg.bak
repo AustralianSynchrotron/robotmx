@@ -2126,7 +2126,7 @@ Function Open_Lid As Boolean
 #ifdef NO_DEWAR_LID
    	Open_Lid = True
 #else
-    On OUT_LID
+    Off OUT_LID
     Wait Sw(IN_LID_OPEN) = 1, 6
     If TW = 1 Then
     	UpdateClient(TASK_MSG, "Failed to open lid", ERROR_LEVEL)
@@ -2141,7 +2141,7 @@ Function Close_Lid As Boolean
 #ifdef NO_DEWAR_LID
    	Close_Lid = True
 #else
-    Off OUT_LID
+    On OUT_LID
     Wait Sw(IN_LID_CLOSE) = 1, 6
     If TW = 1 Then
     	Print "Close lid failed"
@@ -2334,39 +2334,39 @@ Function NarrowAngle(angle As Real) As Real
 Fend
 ''Use this function to set the site configurable global variables
 Function SetGlobals
-g_LeftarmSystem = False
-g_IncludeStrip = False
-g_Perfect_Cradle_Angle = 90
-g_Perfect_U4Holder = 90
-g_Perfect_DownStream_Angle = 180
-g_Perfect_LeftCassette_Angle = 90
-g_Perfect_MiddleCassette_Angle = 180
-g_Perfect_RightCassette_Angle = -90
-g_Jump_LimZ_LN2 = -5
-g_Jump_LimZ_Magnet = -5
-g_Perfect_Cassette_Angle = 0
-g_MagnetTransportAngle = 94.9439
-g_U4MagnetHolder = 94.638
-g_PickerWallToHead = -0.676804
-g_PlacerWallToHead = 1.26004
-g_Picker_X = 193.221
-g_Picker_Y = 407.535
-g_Placer_X = 202.888
-g_Placer_Y = 337.548
-g_ToolSet_A = 13.779
-g_ToolSet_B = 20.8719
-g_ToolSet_C = 14.7281
-g_ToolSet_Theta = 0.305809
-g_Dumbbell_Free_Y = 1.18741
-g_IncludeFindMagnet = True
-g_Quick = False
-g_AtLeastOnce = True
-g_TQScale_Picker = 1.3316067457199
-g_TQScale_Placer = -1.3087668269873
-g_SideScale_Picker = 1.1956003457308
-g_SideScale_Placer = 1.2594241499901
-g_OnlyAlongAxis = False
-g_LN2LevelHigh = True
+	g_LeftarmSystem = False
+	g_IncludeStrip = False
+	g_Perfect_Cradle_Angle = 90
+	g_Perfect_U4Holder = 90
+	g_Perfect_DownStream_Angle = 180
+	g_Perfect_LeftCassette_Angle = 90
+	g_Perfect_MiddleCassette_Angle = 180
+	g_Perfect_RightCassette_Angle = -90
+	g_Jump_LimZ_LN2 = -5
+	g_Jump_LimZ_Magnet = -5
+	g_Perfect_Cassette_Angle = 0
+	g_MagnetTransportAngle = 94.9439
+	g_U4MagnetHolder = 94.638
+	g_PickerWallToHead = -0.676804
+	g_PlacerWallToHead = 1.26004
+	g_Picker_X = 193.221
+	g_Picker_Y = 407.535
+	g_Placer_X = 202.888
+	g_Placer_Y = 337.548
+	g_ToolSet_A = 13.779
+	g_ToolSet_B = 20.8719
+	g_ToolSet_C = 14.7281
+	g_ToolSet_Theta = 0.305809
+	g_Dumbbell_Free_Y = 1.18741
+	g_IncludeFindMagnet = True
+	g_Quick = False
+	g_AtLeastOnce = True
+	g_TQScale_Picker = 1.3316067457199
+	g_TQScale_Placer = -1.3087668269873
+	g_SideScale_Picker = 1.1956003457308
+	g_SideScale_Placer = 1.2594241499901
+	g_OnlyAlongAxis = False
+	g_LN2LevelHigh = True
 Fend
 ''check if global varables set correctly for Australian Synchrotron.
 ''Check if force sensor initialized ok

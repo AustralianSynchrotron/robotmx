@@ -51,6 +51,8 @@ Global Preserve String g_RunResult$ ''Return results from function
 Global Preserve Boolean g_FlagAbort
 ''set by script, read by SPELCOM (C++)
 Global Preserve Long g_RobotStatus
+''SPEL application current operation
+Global Preserve String g_CurrentOperation$
 ''point coordinates
 Global Integer g_point
 Global Integer g_teachpoint
@@ -110,6 +112,7 @@ Boolean stored_ErrorOn
 Boolean stored_AtHome
 Integer stored_closestPoint
 Long stored_RobotStatus
+String stored_CurrentOperation$
 String stored_Time$
 ''Run statuses
 String stored_RunResult$
@@ -210,22 +213,32 @@ Fend
 ''This function is a wrapper for SendMessageWait, and SPELCOM_Event
 ''Do not call from ReceiveSendLoop, it must be separate thread
 Function UpdateClient(receiver As Integer, msg$ As String, level As Integer)
+	Integer numtokens
+	String toks$(0)
 	''Print message locally if within specified g_PrintLevel
 	If ((receiver = TASK_MSG Or receiver = CLIENT_UPDATE) And (g_PrintLevel And level > 0)) Then
 		Print msg$
 	EndIf
-	If receiver = TASK_MSG Then
-		Select level
-			Case DEBUG_LEVEL
-				msg$ = "DEBUG " + msg$
-			Case INFO_LEVEL
-				msg$ = "INFO " + msg$
-			Case WARNING_LEVEL
-				msg$ = "WARNING " + msg$
-			Case ERROR_LEVEL
-				msg$ = "ERROR " + msg$
-	    Send
-    EndIf
+	''Break msg into tokens	
+	numtokens = ParseStr(msg$, toks$(), " ")
+	''convert to upper case
+	toks$(0) = UCase$(toks$(0))
+	''Check msg prefix
+	If toks$(0) <> "DEBUG" And toks$(0) <> "WARNING" And toks$(0) <> "ERROR" And toks$(0) <> "INFO" Then
+		''Add mesg prefix if it wasnt there already
+		If receiver = TASK_MSG Then
+			Select level
+				Case DEBUG_LEVEL
+					msg$ = "DEBUG " + msg$
+				Case INFO_LEVEL
+					msg$ = "INFO " + msg$
+				Case WARNING_LEVEL
+					msg$ = "WARNING " + msg$
+				Case ERROR_LEVEL
+					msg$ = "ERROR " + msg$
+		    Send
+    	EndIf
+	EndIf
 	''send message to network client only if connected
 	''which means that ReceiveSendLoop is looping and can actually send the message
 	If tcpconnected Then
@@ -948,6 +961,9 @@ SkipTaskState:
 			
 			''Check for g_RobotStatus change of state
 			stored_RobotStatus = check_long_state(g_RobotStatus, stored_RobotStatus, "g_RobotStatus:", 0)
+			
+			''Check for g_CurrentOperation change of state
+			stored_CurrentOperation$ = check_string_state$(g_CurrentOperation$, stored_CurrentOperation, "g_CurrentOperation$:")
 	   
 			''Check for g_RunResult$ change of state
 		    stored_RunResult$ = check_string_state$(g_RunResult$, stored_RunResult$, "g_RunResult$:")

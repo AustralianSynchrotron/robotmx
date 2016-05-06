@@ -551,6 +551,9 @@ Function CassetteCalibration(ByVal cassettes$ As String, Init As Boolean) As Boo
 	msg$ = "Cassette calibration start at " + Date$ + " " + Time$
 	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	
+	''Set current operation
+	g_CurrentOperation$ = "Cassette calibration " + cassettes$
+	
     ''log file
     g_FCntCassette = g_FCntCassette + 1
     WOpen "CassetteCal" + Str$(g_FCntCassette) + ".Txt" As #LOG_FILE_NO

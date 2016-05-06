@@ -121,6 +121,9 @@ Function GonioCalibration(Init As Boolean, dx As Real, dy As Real, dz As Real, d
 	msg$ = "Goniometer calibration at " + Date$ + " " + Time$
 	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	
+	''Set current operation
+    g_CurrentOperation$ = "Goniometer calibration"
+	
 	''Calibrate the force sensor and check its readback health
 	If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then
 		UpdateClient(TASK_MSG, "Stopping GonioCalibration..", ERROR_LEVEL)
@@ -923,8 +926,8 @@ Function BeamToolCalibration(Init As Boolean) As Boolean
     g_SafeToGoHome = True
 
     If g_FlagAbort Then
-        g_RunArgs$ = "beamtool: user abort"
-    	UpdateClient(TASK_MSG, g_RunArgs$, ERROR_LEVEL)
+        g_RunResult$ = "beamtool: user abort"
+    	UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
         Close #LOG_FILE_NO
         Jump P0
         Exit Function

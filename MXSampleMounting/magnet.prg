@@ -436,6 +436,9 @@ Function PostCalibration As Boolean
     
     msg$ = "Post calibration at " + Date$ + " " + Time$
 	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
+	
+	''Set current operation
+	g_CurrentOperation$ = "Post calibration"
     
     PCStepStart = g_CurrentSteps
     PCStepTotal = g_Steps
@@ -1062,6 +1065,9 @@ Function PickerCalibration As Boolean
     msg$ = "Picker calibration at " + Date$ + " " + Time$
 	UpdateClient(TASK_MSG, msg$, DEBUG_LEVEL)
     PickerCalibration = False
+    
+    ''Set current operation
+	g_CurrentOperation$ = "Picker calibration"
 
     ''safety check
     If Not isCloseToPoint(6) Then
@@ -1315,6 +1321,9 @@ Function PlacerCalibration As Boolean
     g_OnlyAlongAxis = True
 
     PlacerCalibration = False
+    
+    ''Set current operation
+	g_CurrentOperation$ = "Placer calibration"
 
     ''pre-condition: current position: cavity should be Picker's place +Y(10)'
     If Not isGoodForPlacerCal Then
@@ -1697,6 +1706,9 @@ Function CalculateToolset As Boolean
 	
     CalculateToolset = False
     
+    ''Set current operation
+	g_CurrentOperation$ = "Calculate toolset"
+    
     ''check data availability
     If g_Picker_X = 0 Or g_Picker_Y = 0 Or g_Placer_X = 0 Or g_Placer_X = 0 Or CY(P6) = 0 Then
         Print "do post, picker, and placer calibration first."
@@ -1945,6 +1957,9 @@ Function FindMagnet As Boolean
     msg$ = "Findmagnet calibration at " + Date$ + " " + Time$
 	UpdateClient(TASK_MSG, msg$, INFO_LEVEL)
 	
+	''Set current operation
+	g_CurrentOperation$ = "FindMagnet"
+	
 	UpdateClient(TASK_MSG, "find magnet: move tong to dewar", INFO_LEVEL)
 
     Tool 0
@@ -1981,26 +1996,28 @@ Function FindMagnet As Boolean
     
     ''Calibrate the force sensor and check its readback health
 	If Not ForceCalibrateAndCheck(HIGH_SENSITIVITY, HIGH_SENSITIVITY) Then
-		UpdateClient(TASK_MSG + TASK_MSG, "Force sensor calibration failed, stopping FindMagnet..", ERROR_LEVEL)
+		UpdateClient(TASK_MSG, "Force sensor calibration failed, stopping FindMagnet..", ERROR_LEVEL)
 		''problem with force sensor so exit
 		Exit Function
 	EndIf
 
     If Not Check_Gripper Then
-    	UpdateClient(TASK_MSG + TASK_MSG, "find magnet: abort: check gripper failed", ERROR_LEVEL)
+    	UpdateClient(TASK_MSG, "find magnet: abort: check gripper failed", ERROR_LEVEL)
+    	g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
         ''not need recovery
         g_SafeToGoHome = False
         Exit Function
     EndIf
     If Not Close_Gripper Then
-    	UpdateClient(TASK_MSG + TASK_MSG, "find magnet: abort: failed to close gripper", ERROR_LEVEL)
+    	UpdateClient(TASK_MSG, "find magnet: abort: failed to close gripper", ERROR_LEVEL)
+    	g_RobotStatus = g_RobotStatus Or FLAG_REASON_GRIPPER_JAM
         ''not need recovery
         g_SafeToGoHome = False
         Exit Function
     EndIf
 
     If Not Open_Lid Then
-    	UpdateClient(TASK_MSG + TASK_MSG, "find magnet: abort: failed to open Dewar lid", ERROR_LEVEL)
+    	UpdateClient(TASK_MSG, "find magnet: abort: failed to open Dewar lid", ERROR_LEVEL)
         ''not need recovery
         g_SafeToGoHome = False
         Exit Function
@@ -2284,6 +2301,9 @@ Function FineTuneToolSet As Boolean
     InitForceConstants
     
     g_OnlyAlongAxis = True
+    
+    ''Set current operation
+    g_CurrentOperation$ = "Fine tune toolset"
 
     If Motor = Off Then
         Motor On
