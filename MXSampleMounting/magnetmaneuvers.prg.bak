@@ -319,45 +319,26 @@ Function GTGoHome
 	Close_Lid
 	
 	If g_LN2LevelHigh Then
-		UpdateClient(TASK_MSG, "Performing Robot Dance to heat tong.", INFO_LEVEL)
+		UpdateClient(TASK_MSG, "Tong is cold. Performing Robot Dance to heat tong.", INFO_LEVEL)
 		'' Turn on air flow before switching heater on
-		On DRY_AIR_OUT
-		Wait 1
-		On HEAT_OUT
+		TurnOnHeater
 		
 		'' Wait 40 Seconds
 		UpdateClient(TASK_MSG, "Waiting 40 seconds to allow for enough heat propogation in space around (and to) the tong.", INFO_LEVEL)
-		Wait 40
 		
 		''If heater is still not hot, report error
-		If Sw(HEATER_HOT) = 0 Then
+		If Not WaitHeaterHot(40) Then
 			g_RunResult$ = "error Heater is not working!"
 			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		EndIf
 		
 		'' Start Robot Dance inside Heater
-		Real dance_limz
-		dance_limz = CZ(P0) + 15
-		
-		LimZ (dance_limz)
 		GTsetRobotSpeedMode(DANCE_SPEED)
-		
-		Jump P0 +U(10)
-		Jump P0 -U(10)
-		Jump P0 +U(10)
-		Jump P0 -U(10)
-		
-		'' Dancing finished go back to P0
-		Jump P0
-		LimZ 0
+		Dance
 		GTLoadPreviousRobotSpeedMode
 		
 		'' Turn off Heater and then turn off air flow
-		Off HEAT_OUT
-		UpdateClient(TASK_MSG, "Waiting (~8-33secs) until heater cools down to turn off air flow.", INFO_LEVEL)
-		Wait Sw(HEATER_HOT) = 0, 25 ''Wait until heater cools down or atmost for 25 seconds
-		Wait 8
-		Off DRY_AIR_OUT
+		TurnOffHeater
 		UpdateClient(TASK_MSG, "Robot Dance Complete.", INFO_LEVEL)
 	EndIf
 Fend

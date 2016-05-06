@@ -1,77 +1,14 @@
 #include "networkdefs.inc"
-#include "genericdefs.inc"
-#include "cassettedefs.inc"
-#include "superpuckdefs.inc"
 #include "jsondefs.inc"
+#include "genericdefs.inc"
 #include "mountingdefs.inc"
 
 Global String g_PortsRequestString$(NUM_CASSETTES)
 
-Function GTParseCassettePosition(cassetteChar$ As String, ByRef cassette_position As Integer) As Boolean
-	Select UCase$(cassetteChar$)
-		Case "L"
-			cassette_position = LEFT_CASSETTE
-		Case "M"
-			cassette_position = MIDDLE_CASSETTE
-		Case "R"
-			cassette_position = RIGHT_CASSETTE
-		Default
-			cassette_position = UNKNOWN_CASSETTE
-			g_RunResult$ = "error GTParseCassettePosition: Invalid Cassette Position supplied!"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-			GTParseCassettePosition = False
-			Exit Function
-	Send
-	GTParseCassettePosition = True
-Fend
-
-Function GTParsePortIndex(cassette_position As Integer, columnOrPuckChar$ As String, rowOrPuckPortChar$ As String, ByRef columnPuckIndex As Integer, ByRef rowPuckPortIndex As Integer) As Boolean
-	GTParsePortIndex = False
-	If g_CassetteType(cassette_position) = NORMAL_CASSETTE Then
-		If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
-			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Column Name supplied!", ERROR_LEVEL)
-			Exit Function
-		EndIf
-		
-		rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
-		If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_ROWS - 1 Then
-			g_RunResult$ = "error GTParsePortIndex: Invalid Row Position supplied!"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-			Exit Function
-		EndIf
-	ElseIf g_CassetteType(cassette_position) = CALIBRATION_CASSETTE Then
-		If Not GTParseColumnIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
-			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Column Name supplied!", ERROR_LEVEL)
-			Exit Function
-		EndIf
-		
-		rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
-		If rowPuckPortIndex <> 0 And rowPuckPortIndex <> (NUM_ROWS - 1) Then
-			g_RunResult$ = "error GTParsePortIndex: Invalid Row Position supplied for Calibration Cassette!"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-			Exit Function
-		EndIf
-	ElseIf g_CassetteType(cassette_position) = SUPERPUCK_CASSETTE Then
-		If Not GTParsePuckIndex(columnOrPuckChar$, ByRef columnPuckIndex) Then
-			UpdateClient(TASK_MSG, "GTParsePortIndex: Invalid Puck Name supplied!", ERROR_LEVEL)
-			Exit Function
-		EndIf
-		rowPuckPortIndex = Val(rowOrPuckPortChar$) - 1
-		If rowPuckPortIndex < 0 Or rowPuckPortIndex > NUM_PUCK_PORTS - 1 Then
-			g_RunResult$ = "error GTParsePortIndex: Invalid Puck Port supplied!"
-			UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-			Exit Function
-		EndIf
-	Else
-		g_RunResult$ = "error GTParsePortIndex: Invalid CassetteType Detected! Please probe this cassette again"
-		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
-		Exit Function
-	EndIf
-	GTParsePortIndex = True
-Fend
-
 ''Python interface for GTJumpHomeToCoolingPointAndWait
 Function PrepareForMountDismount As Boolean
+	g_CurrentOperation$ = "PrepareForMountDismount"
+	
 	g_RunResult$ = ""
 	
 	If Not GTPositionCheckBeforeMotion Then
@@ -83,6 +20,44 @@ Function PrepareForMountDismount As Boolean
 		Exit Function
 	EndIf
 	g_RunResult$ = "OK"
+	
+	g_CurrentOperation$ = "idle"
+Fend
+
+Function ResetCassettes
+	g_CurrentOperation$ = "ResetCassettes"
+	
+	''init result
+	g_RunResult$ = ""
+	
+	''Parsing g_RunArgs$
+	String RequestTokens$(0)
+	Integer RequestArgC
+    
+    ''parse argument from global
+    ParseStr g_RunArgs$, RequestTokens$(), " "
+    ''check argument
+    RequestArgC = UBound(RequestTokens$) + 1
+
+	String cassetteChar$
+	Integer cassetteIndex, cassette_position, cassette_string_len
+
+    If RequestArgC = 1 Then
+    	For cassetteIndex = 0 To Len(g_RunArgs$) - 1
+			cassetteChar$ = Mid$(g_RunArgs$, cassetteIndex + 1, 1)
+			If Not GTParseCassettePosition(cassetteChar$, ByRef cassette_position) Then
+				cassette_position = UNKNOWN_CASSETTE
+				UpdateClient(TASK_MSG, "ResetCassettes: Invalid Cassette Position supplied in g_RunArgs$", ERROR_LEVEL)
+			EndIf
+		Next
+		GTResetCassette(cassette_position)
+	Else
+		g_RunResult$ = "error ResetCassettes: Invalid number of arguments in g_RunArgs$!"
+		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
+		Exit Function
+    EndIf
+    
+   	g_CurrentOperation$ = "idle"
 Fend
 
 Function ResetCassettePorts
@@ -92,14 +67,24 @@ Function ResetCassettePorts
 	''	g_<>_PortStatus = PORT_UNKNOWN
 	''  g_<>_TriggerPortForce = 0.0
 	''  g_<>_FinalPortForce = 0.0
+	g_CurrentOperation$ = "ResetCassettePorts"
+		
+	''init result
+    g_RunResult$ = ""
+    
 	Integer cassette_position
 	For cassette_position = LEFT_CASSETTE To RIGHT_CASSETTE
 		GTResetSpecificPorts(cassette_position)
 		GTsendCassetteData(PORT_STATES, cassette_position)
 	Next
+	
+	g_RunResult$ = "OK"
+	g_CurrentOperation$ = "idle"
 Fend
 
 Function ProbeCassettes
+	g_CurrentOperation$ = "ProbeCassettes"
+
 	Cls
     Print "GTProbeCassettes entered at ", Date$, " ", Time$
     
@@ -152,6 +137,7 @@ Function ProbeCassettes
 		Next
 		
 		If probeThisCassette Then
+			g_CurrentOperation$ = "ProbeCassettes: " + GTCassetteName$(cassette_position)
 			If GTProbeCassetteType(cassette_position) Then
 				'' Only if the cassette type is known at cassette_position start probing inside the cassette
             	''only the ports that are to be probed are reset to unknown before probing.
@@ -174,6 +160,7 @@ Function ProbeCassettes
 	
 	g_RunResult$ = "OK GTProbeCassettes"
     Print "GTProbeCassettes finished at ", Date$, " ", Time$
+    g_CurrentOperation$ = "idle"
 Fend
 
 Function JSONDataRequest
@@ -238,6 +225,8 @@ Function MountSamplePortAndGoHome
 	GTGoHome
 Fend
 Function MountSamplePort
+	g_CurrentOperation$ = "MountSamplePort"
+	
     Print "MountSamplePort entered at ", Date$, " ", Time$
     
     String msg$
@@ -303,6 +292,7 @@ Function MountSamplePort
 	''check the gonio to see whether there is already a sample mounted
 	''If mounted, then dismount it first then mount the new sample
 	If g_InterestedSampleStatus = SAMPLE_IN_GONIO Then
+		g_CurrentOperation$ = "MountSamplePort: Dismounting Sample on Gonio first."
 		If Not GTDismountWithoutParsingRunArgs Then
 			UpdateClient(TASK_MSG, "MountSamplePort->GTDismountWithoutParsingRunArgs Failed!", ERROR_LEVEL);
 			Exit Function
@@ -312,7 +302,7 @@ Function MountSamplePort
 	
 	
 	''Actual mounting process starts here 
-	
+	g_CurrentOperation$ = "MountSamplePort: " + g_RunArgs$
 	'' Here we check whether the port is filled and only then it sets the interested ports
 	If Not GTsetMountPort(cassette_position, columnPuckIndex, rowPuckPortIndex) Then
 		Exit Function
@@ -333,9 +323,12 @@ Function MountSamplePort
 	
 	g_RunResult$ = "OK MountSamplePort"
     Print "MountSamplePort finished at ", Date$, " ", Time$
+    g_CurrentOperation$ = "idle"
 Fend
 
 Function DismountSample
+	g_CurrentOperation$ = "DismountSample: " + g_RunArgs$
+	
 	Print "DismountSample entered at ", Date$, " ", Time$
     
 	String msg$
@@ -410,10 +403,12 @@ Function DismountSample
 
 	g_RunResult$ = "OK DismountSample"
     Print "DismountSample finished at ", Date$, " ", Time$
+    g_CurrentOperation$ = "idle"
 Fend
 
 ''Find Centers
 Function FindPortCenters
+	g_CurrentOperation$ = "FindPortCenters"
 	Cls
     Print "FindPortCenters entered at ", Date$, " ", Time$
     
@@ -464,6 +459,7 @@ Function FindPortCenters
 		Next
 		
 		If probeThisCassette Then
+			g_CurrentOperation$ = "FindPortCenters: " + GTCassetteName$(cassette_position)
 			If GTProbeCassetteType(cassette_position) Then
 				'' Only if the cassette type is known at cassette_position start probing inside the cassette
 				If Not GTFindPortCentersInSuperPuck(cassette_position) Then

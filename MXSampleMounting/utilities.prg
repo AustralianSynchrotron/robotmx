@@ -1075,7 +1075,7 @@ Function TwistRelease
 			''do the move
 			Tool 3
 			Go (RealPos +U(45))
-			Move (RealPos +X(dx) +Y(dy))
+			Move (RealPos +X(Dx) +Y(Dy))
 			''restore tool 
 			Tool currTool
 		EndIf
@@ -1089,6 +1089,7 @@ Fend
 Function TurnOffHeater As Boolean
     TurnOffHeater = True
     Off OUT_HEATER
+    UpdateClient(TASK_MSG, "Waiting (~8-33secs) until heater cools down to turn off air flow.", INFO_LEVEL)
     Wait Sw(IN_HEATERHOT) = 0, 60
     If TW = 1 Then
         TurnOffHeater = False
@@ -1102,7 +1103,7 @@ Function WaitHeaterHot(timeInSeconds As Integer) As Boolean
     WaitHeaterHot = False
     Wait Sw(IN_HEATERHOT) = 1, timeInSeconds
     If TW = 1 Then
-        WaitHeaterHot = False
+        WaitHeaterHot = False ''Timed out so heater not hot
     Else
         WaitHeaterHot = True
     EndIf

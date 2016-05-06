@@ -20,10 +20,15 @@ Function GTCassetteType$(cassetteType As Integer) As String
 	EndIf
 Fend
 
-
 Function GTResetCassette(cassette_position As Integer)
 	'' Reset Cassette Type to Unknown Cassette
 	g_CassetteType(cassette_position) = UNKNOWN_CASSETTE
+	
+	GTResetSpecificPorts(cassette_position)
+	
+	GTsendCassetteData(CASSETTE_TYPE, cassette_position)
+	GTsendCassetteData(PUCK_STATES, cassette_position)
+	GTsendCassetteData(PORT_STATES, cassette_position)
 Fend
 
 Function GTSetScanCassetteTopStandbyPoint(cassette_position As Integer, pointNum As Integer, uOffset As Real, ByRef scanZdistance As Real)
@@ -226,7 +231,7 @@ Function GTfindAverageCassetteHeight(cassette_position As Integer, cassetteFirst
 	
 	'' Verify that maxHeight-minHeight is less than Calibration Cassette Edge Height
 	If (maxHeight - minHeight) > (CASSETTE_EDGE_HEIGHT * CASSETTE_SHRINK_FACTOR + MAX_ERR_FOR_SCAN_CAS_TYPE_RTRY) Then
-		g_RunResult$ = "GTfindAverageCassetteHeight failed: maxHeight-minHeight > Calibration Cassette Edge Height!"
+		g_RunResult$ = "error GTfindAverageCassetteHeight failed: maxHeight-minHeight > Calibration Cassette Edge Height!"
 		UpdateClient(TASK_MSG, g_RunResult$, ERROR_LEVEL)
 		GTfindAverageCassetteHeight = False
 		Exit Function

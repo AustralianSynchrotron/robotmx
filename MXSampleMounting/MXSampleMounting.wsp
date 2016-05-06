@@ -1,5 +1,5 @@
-ENVT0100,LM:2016/05/06 01:38:41:850,DS:0000005825,CS:30507,MA:00-80-4C-A4-84-A0,EI:           
-sActiveChild="Run"
+ENVT0100,LM:2016/05/06 03:17:37:168,DS:0000005836,CS:08831,MA:00-80-4C-A4-84-A0,EI:           
+sActiveChild="genericdefs.inc"
 bMdiMaximized=True
 nProgramFileCount=22
 ProgramFile1 {
@@ -81,7 +81,7 @@ ProgramFile7 {
 }
 ProgramFile8 {
 	sName="cassetteprobing.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -109,7 +109,7 @@ ProgramFile10 {
 		nLeft=0
 		nTop=-8
 		nWidth=452
-		nHeight=260
+		nHeight=411
 	}
 }
 ProgramFile11 {
@@ -147,7 +147,7 @@ ProgramFile13 {
 }
 ProgramFile14 {
 	sName="numericmanipulations.prg"
-	bOpened=False
+	bOpened=True
 	nWinState=0
 	Window {
 		nLeft=0
@@ -213,7 +213,7 @@ ProgramFile19 {
 }
 ProgramFile20 {
 	sName="normalcassetteutilities.prg"
-	bOpened=True
+	bOpened=False
 	nWinState=0
 	Window {
 		nLeft=0
@@ -281,7 +281,7 @@ IncludeFile3 {
 IncludeFile4 {
 	sName="genericdefs.inc"
 	bOpened=True
-	nWinState=0
+	nWinState=2
 	Window {
 		nLeft=0
 		nTop=-8
@@ -390,8 +390,8 @@ IOLabelEditor {
 IOMonitor {
 	bOpened=False
 	Window {
-		nLeft=946
-		nTop=120
+		nLeft=415
+		nTop=125
 		nWidth=470
 		nHeight=609
 	}
